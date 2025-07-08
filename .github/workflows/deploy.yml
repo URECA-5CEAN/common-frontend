@@ -35,7 +35,7 @@ jobs:
 
     - name: Upload build folder to EC2
       run: |
-        scp -r ./dist ubuntu@${{ secrets.EC2_HOST }}:~/temp_dist/
+        scp -r ./dist/* ubuntu@${{ secrets.EC2_HOST }}:~/temp_dist/
 
     - name: Move build contents to Nginx directory with sudo
       run: |
