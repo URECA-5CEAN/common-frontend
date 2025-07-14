@@ -1,10 +1,11 @@
 import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom';
-import LandingPage from './LandingPage';
-import MapPage from './MapPage';
-import ExplorePage from './ExplorePage';
-import MyPage from './MyPage';
+import LandingPage from './domains/Landing/pages/LandingPage';
+import MapPage from './domains/Map/pages/MapPage';
+import ExplorePage from './domains/Explore/pages/ExplorePage';
+import MyPage from './domains/MyPage/pages/MyPage';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
+import LoginPage from './domains/Auth/pages/LoginPage';
 
 const AppLayout = () => {
   return (
@@ -17,12 +18,12 @@ const AppLayout = () => {
 
 const SidebarLayout = () => {
   return (
-    <div className="flex">
+    <>
       <Sidebar />
-      <main>
+      <main className="mt-[86px] ml-[240px] flex justify-center">
         <Outlet />
       </main>
-    </div>
+    </>
   );
 };
 
@@ -34,6 +35,7 @@ function App() {
         <Route element={<AppLayout />}>
           <Route path="/" element={<LandingPage />} />
           <Route path="/map" element={<MapPage />} />
+          <Route path="/login" element={<LoginPage />} />
 
           {/* 사이드바 레이아웃 포함 */}
           <Route element={<SidebarLayout />}>
