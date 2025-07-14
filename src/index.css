@@ -2,10 +2,23 @@
 
 :root {
   font-family: 'NanumSquareRound';
-  line-height: 1.5;
-  font-weight: 400;
+}
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+@theme {
+  --color-primaryGreen: #6fc3d1;
+  --color-primaryGreen-40: #a3e0ea;
+  --color-primaryGreen-60: #73d6e6;
+  --color-primaryGreen-80: #158c9f;
+  --color-backGround: #f9f9f9;
+  --color-backGround-40: #ffffff;
+  --color-backGround-80: #eeeeee;
+  --color-alertYellow: #ff6d48;
+  --color-dangerRed: #e94e4e;
+  --color-gray-700: #1e1e1e;
+  --color-gray-600: #3a3a3a;
+  --color-gray-500: #717379;
+  --color-gray-400: #9a9da4;
+  --color-gray-300: #a5a8af;
+  --color-gray-200: #d5d7df;
+  --color-gray-100: #fcfcfc;
 }
