@@ -1,9 +1,9 @@
-const ExplorePage = () => {
+const RankingPage = () => {
   return (
     <div className="h-[1500px] w-full max-w-[1050px] bg-red-100">
-      ExplorePage
+      RankingPage
     </div>
   );
 };
 
-export default ExplorePage;
+export default RankingPage;
