@@ -4,6 +4,10 @@
   font-family: 'NanumSquareRound';
 }
 
+* {
+  box-sizing: border-box;
+}
+
 @theme {
   --color-primaryGreen: #6fc3d1;
   --color-primaryGreen-40: #a3e0ea;
