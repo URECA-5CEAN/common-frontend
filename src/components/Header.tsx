@@ -51,7 +51,7 @@ const STYLES = {
   logo: 'text-xl md:text-[2rem] px-3 md:px-2 py-3 md:py-2 font-bold z-1000',
   desktopNav: 'text-xl hidden md:flex',
   desktopLogin:
-    'p-[0.625rem] text-xl absolute right-[38px] top-[18px] hidden md:block',
+    'p-[0.625rem] text-xl absolute right-[38px] top-[18px] hidden md:block transition-[background-color] duration-300 hover:bg-black/5 rounded-xl z-1000',
   mobileMenuButton: 'absolute right-6 top-0 p-3 cursor-pointer md:hidden',
   mobileMenuContainer: `
     transition-[max-height,padding-top,padding-bottom] duration-300 ease-in-out z-10
@@ -70,23 +70,33 @@ const Logo = ({ onMenuClose }: { onMenuClose: () => void }) => (
   </NavLink>
 );
 
-const DesktopNavigation = () => (
-  <nav className={STYLES.desktopNav}>
-    {DESKTOP_MENU.map(({ to, label }) =>
-      to ? (
-        <NavLink
-          key={to}
-          to={to}
-          className={({ isActive }) =>
-            `p-[0.625rem] ${isActive ? 'font-bold' : ''}`
-          }
-        >
-          {label}
-        </NavLink>
-      ) : null,
-    )}
-  </nav>
-);
+const DesktopNavigation = () => {
+  const location = useLocation();
+
+  return (
+    <nav className={STYLES.desktopNav}>
+      {DESKTOP_MENU.map(({ to, label }) => {
+        if (!to) return null;
+
+        const isExplore = to.startsWith('/explore');
+        const isActive =
+          isExplore && location.pathname.startsWith('/explore')
+            ? true
+            : location.pathname === to;
+
+        return (
+          <NavLink
+            key={to}
+            to={to}
+            className={`p-[0.625rem] z-1000 transition-[background-color] duration-300 hover:bg-black/5 rounded-xl ${isActive ? 'font-bold' : ''}`}
+          >
+            {label}
+          </NavLink>
+        );
+      })}
+    </nav>
+  );
+};
 
 const DesktopLogin = () => (
   <NavLink
@@ -271,7 +281,7 @@ const Header = () => {
     <>
       <header className={`${STYLES.header.base} ${bgClass}`}>
         {/* 왼쪽: 로고 + 데스크탑 메뉴 */}
-        <div className="flex items-center absolute left-3 md:left-10 top-1 md:top-3">
+        <div className="flex items-center absolute left-3 md:left-10 top-1 md:top-3 gap-2">
           <Logo onMenuClose={handleMenuClose} />
           <DesktopNavigation />
         </div>
