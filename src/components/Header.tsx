@@ -44,7 +44,7 @@ const MOBILE_MENU: MenuItem[] = [
 // 스타일 클래스 상수
 const STYLES = {
   header: {
-    base: 'z-100 fixed top-0 w-full h-[42px] md:h-[52px] px-6 md:px-12 flex items-end justify-between',
+    base: 'z-100 fixed top-0 w-full h-[42px] md:h-[52px] px-6 md:px-12 flex items-end justify-between text-white',
     transparent: 'bg-transparent',
     default: 'bg-primaryGreen',
   },
@@ -55,7 +55,7 @@ const STYLES = {
   mobileMenuButton: 'absolute right-6 top-0 p-3 cursor-pointer md:hidden',
   mobileMenuContainer: `
     transition-[max-height,padding-top,padding-bottom] duration-300 ease-in-out z-10
-    overflow-hidden absolute top-[42px] left-0 w-full bg-white text-gray-500 shadow-md px-5 rounded-b-2xl
+    overflow-hidden absolute top-[62px] left-0 w-full bg-white text-gray-500 shadow-md px-5 rounded-b-2xl
   `,
   activeMenuItem:
     'font-bold bg-[#DDF4FF] border-2 border-[#84D8FF] rounded-lg text-[#1CB0F7]',
@@ -219,7 +219,7 @@ const MobileMenu = ({
       ${isOpen ? 'max-h-[700px] md:max-h-0' : 'max-h-0'}
     `}
   >
-    <div className="w-full flex flex-col gap-3 pb-5 pt-10">
+    <div className="w-full flex flex-col gap-3 py-5">
       {MOBILE_MENU.map((item, index) =>
         item.subItems ? (
           <MenuItemWithSubItems
