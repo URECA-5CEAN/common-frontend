@@ -1,5 +1,5 @@
 ---
-name: "\U0001F41E Bug"
+name: Bug Template
 about: 버그 제보
 title: '예시) bug: 제휴처 상세 이미지가 안 나옴'
 labels: ''
