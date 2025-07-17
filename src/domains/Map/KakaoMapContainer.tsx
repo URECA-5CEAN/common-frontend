@@ -4,9 +4,10 @@ import {
   MapMarker,
   useKakaoLoader,
 } from 'react-kakao-maps-sdk';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import rankingIcon from '@/assets/icons/ranking_icon.png';
 import missionsIcon from '@/assets/icons/missions_icon.png';
+import StoreOverlay from './StoreOverlay';
 
 export interface MarkerProps {
   id: number;
@@ -86,16 +87,16 @@ const KakaoMapContainer = ({
   const [map, setMap] = useState<kakao.maps.Map | null>(null);
   const [center, setCenter] = useState<LatLng>({ lat, lng });
   const radiusKm = 3;
+  // hover-out 딜레이용 ref
+  const hoverOutTimeout = useRef<number>();
   const [nearbyMarkers, farMarkers] = useMemo(() => {
     const near: MarkerProps[] = [];
     const far: MarkerProps[] = [];
-
     markerList.forEach((m) => {
       const d = getDistance(center, { lat: m.lat, lng: m.lng });
       if (d <= radiusKm) near.push(m);
       else far.push(m);
     });
-
     return [near, far];
   }, [center]);
 
@@ -107,66 +108,82 @@ const KakaoMapContainer = ({
   if (error) return '지도를 불러올 수 없습니다.';
 
   return (
-    <>
-      <Map
-        center={center}
-        level={Level}
-        onCreate={(map) => {
-          setMap(map);
-          onMapCreate?.(map);
-        }}
-        onCenterChanged={(map) => {
-          const newCenter = map.getCenter();
-          const latLng = {
-            lat: newCenter.getLat(),
-            lng: newCenter.getLng(),
-          };
-          setCenter(latLng);
-          onCenterChanged?.(latLng);
-        }}
-        style={{ width: '100%', height: '100%' }}
-      >
-        <MapMarker position={center}></MapMarker>
+    <Map
+      center={center}
+      level={Level}
+      onCreate={(m) => {
+        setMap(m);
+        onMapCreate?.(m);
+      }}
+      onCenterChanged={(m) => {
+        const nc = { lat: m.getCenter().getLat(), lng: m.getCenter().getLng() };
+        setCenter(nc);
+        onCenterChanged?.(nc);
+      }}
+      style={{ width: '100%', height: '100%' }}
+    >
+      {farMarkers.map((m) => (
+        <React.Fragment key={m.id}>
+          <MapMarker
+            position={{ lat: m.lat, lng: m.lng }}
+            image={{
+              src: m.imageUrl,
+              size: { width: 40, height: 40 },
+              options: { offset: { x: 20, y: 40 } },
+            }}
+            zIndex={1}
+            onMouseOver={() => {
+              // hover 아웃 타이머 취소
+              if (hoverOutTimeout.current)
+                clearTimeout(hoverOutTimeout.current);
+              setHoveredMarkerId?.(m.id);
+            }}
+            onMouseOut={() => {
+              if (hoverOutTimeout.current)
+                clearTimeout(hoverOutTimeout.current);
+              hoverOutTimeout.current = window.setTimeout(() => {
+                setHoveredMarkerId?.(null);
+              }, 300);
+            }}
+          />
 
-        {farMarkers.map((m) => (
-          <React.Fragment key={m.id}>
-            <MapMarker
-              position={{ lat: m.lat, lng: m.lng }}
-              image={{
-                src: m.imageUrl,
-                size: { width: 40, height: 40 },
-                options: { offset: { x: 20, y: 40 } },
-              }}
-              zIndex={1}
-              onMouseOver={() => setHoveredMarkerId?.(m.id)}
-              onMouseOut={() => setHoveredMarkerId?.(null)}
-            />
-            {hoveredMarkerId === m.id && (
-              <CustomOverlayMap
-                position={{ lat: m.lat, lng: m.lng }}
-                yAnchor={0.91}
-              >
-                <div
-                  key={m.id}
-                  style={{
-                    background: 'white',
-                    padding: '6px 10px',
-                    borderRadius: '8px',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
-                    fontSize: '12px',
-                    whiteSpace: 'nowrap',
-                    position: 'relative',
-                    top: '-50px',
-                  }}
+          {hoveredMarkerId != null &&
+            (() => {
+              // hoveredMarkerId 에 대응하는 마커 찾기
+              const mk = [...nearbyMarkers, ...farMarkers].find(
+                (x) => x.id === hoveredMarkerId,
+              );
+              if (!mk) return null;
+
+              return (
+                <CustomOverlayMap
+                  position={{ lat: mk.lat, lng: mk.lng }}
+                  yAnchor={1.2}
                 >
-                  📍 마커 ID: {m.id}
-                </div>
-              </CustomOverlayMap>
-            )}
-          </React.Fragment>
-        ))}
-      </Map>
-    </>
+                  <div
+                    className="pointer-events-auto"
+                    onMouseEnter={() => {
+                      if (hoverOutTimeout.current)
+                        clearTimeout(hoverOutTimeout.current);
+                      setHoveredMarkerId?.(mk.id);
+                    }}
+                    onMouseLeave={() => {
+                      if (hoverOutTimeout.current)
+                        clearTimeout(hoverOutTimeout.current);
+                      hoverOutTimeout.current = window.setTimeout(
+                        () => setHoveredMarkerId?.(null),
+                        200,
+                      );
+                    }}
+                  >
+                    <StoreOverlay />
+                  </div>
+                </CustomOverlayMap>
+              );
+            })()}
+        </React.Fragment>
+      ))}
+    </Map>
   );
 };
 
