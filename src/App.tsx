@@ -43,7 +43,7 @@ function App() {
           <Route path="/map" element={<MapPage />} />
           <Route path="/login" element={<LoginPage />} />
 
-          {/* 사이드바 레이아웃 포함 */}
+          {/* 사이드바 레이아웃 포함 */}  
           <Route element={<SidebarLayout />}>
             <Route path="/explore/rankings" element={<RankingPage />} />
             <Route path="/explore/share" element={<SharePage />} />

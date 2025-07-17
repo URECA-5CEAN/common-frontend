@@ -1,3 +1,4 @@
+// src/components/ThreeJsMarker.tsx
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three-stdlib';
@@ -6,80 +7,122 @@ import type { MarkerProps } from './KakaoMapContainer';
 interface ThreeJsMarkerProps {
   markers: MarkerProps[];
   map: kakao.maps.Map;
+  hoveredMarkerId?: number | null;
+  setHoveredMarkerId?: (id: number | null) => void;
+  container?: HTMLDivElement; // MapPage에서 넘겨받은 ref
 }
 
-export default function ThreeJsMarker({ markers, map }: ThreeJsMarkerProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
-  const cameraRef = useRef<THREE.OrthographicCamera | null>(null);
-  const sceneRef = useRef<THREE.Scene | null>(null);
-  const groupRef = useRef<THREE.Group | null>(null);
-  const textureCacheRef = useRef<Map<string, THREE.Texture>>(new Map());
-  const markerMeshesRef = useRef<THREE.Mesh[]>([]);
+export default function ThreeJsMarker({
+  markers,
+  map,
+  hoveredMarkerId,
+  setHoveredMarkerId,
+  container,
+}: ThreeJsMarkerProps) {
+  const raycaster = useRef(new THREE.Raycaster());
+  const mouse = useRef(new THREE.Vector2());
+  const rendererRef = useRef<THREE.WebGLRenderer>();
+  const cameraRef = useRef<THREE.OrthographicCamera>();
+  const sceneRef = useRef<THREE.Scene>();
+  const groupRef = useRef<THREE.Group>();
+  const textureCache = useRef<Map<string, THREE.Texture>>(new Map());
+  const meshMap = useRef<Map<number, THREE.Mesh>>(new Map());
+  const overlayRef = useRef<kakao.maps.CustomOverlay | null>(null);
 
-  const renderScene = () => {
-    if (rendererRef.current && cameraRef.current && sceneRef.current) {
-      rendererRef.current.render(sceneRef.current, cameraRef.current);
-    }
-  };
+  // 1) 씬/카메라/렌더러 초기화
+  useEffect(() => {
+    if (!container || !map) return;
 
-  const updatePositions = () => {
-    if (!map || !cameraRef.current || !groupRef.current) return;
+    const width = container.clientWidth;
+    const height = container.clientHeight;
 
-    const projection = map.getProjection();
-    if (!projection) return;
+    // Scene
+    const scene = new THREE.Scene();
+    sceneRef.current = scene;
 
-    const center = map.getCenter();
-    const centerPoint = projection.containerPointFromCoords(center);
-    const cx = centerPoint.x;
-    const cy = centerPoint.y;
+    // Camera
+    const camera = new THREE.OrthographicCamera(
+      -width / 2,
+      width / 2,
+      height / 2,
+      -height / 2,
+      1,
+      2000,
+    );
+    camera.position.set(0, 0, 1000);
+    camera.lookAt(0, 0, 0);
+    cameraRef.current = camera;
 
-    markers.forEach((marker, index) => {
-      const point = projection.containerPointFromCoords(
-        new window.kakao.maps.LatLng(marker.lat, marker.lng),
-      );
-      const x = point.x - cx;
-      const y = cy - point.y;
+    // Renderer
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(width, height);
+    renderer.domElement.style.position = 'absolute';
+    renderer.domElement.style.top = '0';
+    renderer.domElement.style.left = '0';
+    renderer.domElement.style.pointerEvents = 'none'; // 지도의 이벤트 통과
+    renderer.domElement.style.zIndex = '10';
+    container.appendChild(renderer.domElement);
+    rendererRef.current = renderer;
 
-      const mesh = markerMeshesRef.current[index];
-      if (mesh) {
-        mesh.position.set(x, y, 50);
+    // Light + Group
+    scene.add(new THREE.AmbientLight(0xffffff, 1));
+    const light = new THREE.DirectionalLight(0xffffff, 2);
+    light.position.set(0, 0, 1000);
+    scene.add(light);
+
+    const group = new THREE.Group();
+    scene.add(group);
+    groupRef.current = group;
+
+    // 리사이즈 & idle 시 위치 업데이트
+    const handleResize = () => {
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+      camera.left = -w / 2;
+      camera.right = w / 2;
+      camera.top = h / 2;
+      camera.bottom = -h / 2;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+      updatePositions();
+    };
+    window.addEventListener('resize', handleResize);
+    kakao.maps.event.addListener(map, 'idle', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      kakao.maps.event.removeListener(map, 'idle', handleResize);
+      if (renderer.domElement.parentNode === container) {
+        container.removeChild(renderer.domElement);
       }
+      renderer.dispose();
+    };
+  }, [container, map]);
+
+  // 2) 마커 Mesh 생성/업데이트
+  const buildOrUpdateMeshes = () => {
+    const group = groupRef.current!;
+    meshMap.current.forEach((m) => {
+      group.remove(m);
+      m.geometry.dispose();
+      Array.isArray(m.material)
+        ? m.material.forEach((x) => x.dispose())
+        : m.material.dispose();
     });
+    meshMap.current.clear();
 
-    renderScene();
-  };
-
-  const updateMarkers = () => {
-    const group = groupRef.current;
-    if (!group) return;
-
-    // 기존 메쉬 제거
-    markerMeshesRef.current.forEach((mesh) => {
-      group.remove(mesh);
-      mesh.geometry.dispose();
-      if (Array.isArray(mesh.material)) {
-        mesh.material.forEach((m) => m.dispose());
-      } else {
-        mesh.material.dispose();
-      }
-    });
-    markerMeshesRef.current = [];
-
-    // 새로운 마커 생성
-    markers.forEach((marker) => {
-      const texture = textureCacheRef.current.get(marker.imageUrl);
-      const material = new THREE.MeshLambertMaterial({
-        map: texture,
-        color: texture ? undefined : 0xdddddd,
+    markers.forEach((m) => {
+      const tex = textureCache.current.get(m.imageUrl) || null;
+      const mat = new THREE.MeshLambertMaterial({
+        map: tex,
+        color: tex ? undefined : 0x888888,
       });
-
       const cube = new THREE.Mesh(
         new RoundedBoxGeometry(60, 60, 60, 10, 5),
-        material,
+        mat,
       );
-      cube.rotation.x = THREE.MathUtils.degToRad(25);
-      cube.rotation.y = THREE.MathUtils.degToRad(-30);
+      cube.name = m.id.toString();
+      cube.rotation.set(Math.PI / 7, -Math.PI / 6, 0);
 
       const cone = new THREE.Mesh(
         new THREE.ConeGeometry(30, 40, 16),
@@ -95,147 +138,116 @@ export default function ThreeJsMarker({ markers, map }: ThreeJsMarkerProps) {
       cube.add(cone);
 
       group.add(cube);
-      markerMeshesRef.current.push(cube);
+      meshMap.current.set(m.id, cube);
     });
 
     updatePositions();
   };
 
-  const buildScene = () => {
-    const container = containerRef.current;
-    if (!container || !map) return;
+  // 3) 좌표 → 화면 위치 변환하여 mesh position 업데이트
+  const updatePositions = () => {
+    if (!map) return;
+    const proj = map.getProjection();
+    if (!proj) return;
+    const center = map.getCenter();
+    const cp = proj.containerPointFromCoords(center);
 
-    const width = container.clientWidth;
-    const height = container.clientHeight;
+    meshMap.current.forEach((mesh, id) => {
+      const mk = markers.find((x) => x.id === id)!;
+      if (!mk) return;
+      const p = proj.containerPointFromCoords(
+        new kakao.maps.LatLng(mk.lat, mk.lng),
+      );
+      mesh.position.set(p.x - cp.x, cp.y - p.y, 50);
+    });
 
-    const scene = new THREE.Scene();
-    sceneRef.current = scene;
-
-    const camera = new THREE.OrthographicCamera(
-      -width / 2,
-      width / 2,
-      height / 2,
-      -height / 2,
-      0.1,
-      2000,
-    );
-    camera.position.set(0, 0, 1000);
-    camera.lookAt(0, 0, 0);
-    cameraRef.current = camera;
-
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setSize(width, height);
-    renderer.domElement.style.position = 'absolute';
-    renderer.domElement.style.top = '0';
-    renderer.domElement.style.left = '0';
-    renderer.domElement.style.pointerEvents = 'none';
-    renderer.domElement.style.zIndex = '10';
-    container.appendChild(renderer.domElement);
-    rendererRef.current = renderer;
-
-    scene.add(new THREE.AmbientLight(0xffffff, 1));
-    const light = new THREE.DirectionalLight(0xffffff, 2);
-    light.position.set(0, 0, 1000);
-    scene.add(light);
-
-    const group = new THREE.Group();
-    scene.add(group);
-    groupRef.current = group;
+    rendererRef.current?.render(sceneRef.current!, cameraRef.current!);
   };
 
-  // 최초 1회: 씬 및 렌더러 구성 + 텍스처 로딩
+  // 4) 텍스처 로드 & 메쉬 빌드
   useEffect(() => {
     if (!map) return;
-
     const loader = new THREE.TextureLoader();
-    const promises = markers.map((marker) => {
-      return new Promise<void>((resolve) => {
-        if (textureCacheRef.current.has(marker.imageUrl)) {
-          resolve();
-        } else {
-          loader.load(marker.imageUrl, (texture) => {
-            texture.colorSpace = THREE.SRGBColorSpace;
-            texture.minFilter = THREE.LinearMipMapLinearFilter;
-            texture.magFilter = THREE.LinearFilter;
-            texture.anisotropy =
-              rendererRef.current?.capabilities.getMaxAnisotropy() ?? 1;
-            texture.needsUpdate = true;
-            textureCacheRef.current.set(marker.imageUrl, texture);
-            resolve();
-          });
-        }
+    Promise.all(
+      markers.map(
+        (m) =>
+          new Promise<void>((res) => {
+            if (textureCache.current.has(m.imageUrl)) return res();
+            loader.load(m.imageUrl, (tex) => {
+              textureCache.current.set(m.imageUrl, tex);
+              res();
+            });
+          }),
+      ),
+    ).then(buildOrUpdateMeshes);
+  }, [map, markers]);
+
+  // 5) hover 상태 변화 시 CustomOverlay 생성/삭제
+  useEffect(() => {
+    // 기존 오버레이 삭제
+    overlayRef.current?.setMap(null);
+    overlayRef.current = null;
+
+    if (hoveredMarkerId != null) {
+      // markers 배열에서 id가 일치하는 마커를 찾되, 없으면 그냥 빠져나오기
+      const mk = markers.find((x) => x.id === hoveredMarkerId);
+      if (!mk) return; // mk가 undefined면 그냥 종료
+
+      const ov = new kakao.maps.CustomOverlay({
+        map,
+        position: new kakao.maps.LatLng(mk.lat, mk.lng),
+        content: `
+          <div style="
+            background:white;
+            padding:6px 10px;
+            border-radius:8px;
+            box-shadow:0 2px 8px rgba(0,0,0,0.3);
+            font-size:22px;
+            white-space:nowrap;
+            
+          ">
+            📍 3D마커 ID: ${mk.id}
+          </div>`,
+        yAnchor: 2.2,
       });
-    });
+      overlayRef.current = ov;
+    }
+  }, [hoveredMarkerId, markers, map]);
 
-    Promise.all(promises).then(() => {
-      buildScene();
-      updateMarkers();
-    });
-  }, [map]);
+  const last3DHoverRef = useRef<number | null>(null);
 
-  // markers 변경 시 마커만 갱신
+  // 6) 부모 container에만 mousemove 이벤트 등록 (지도의 드래그 보존)
   useEffect(() => {
-    if (!map || !groupRef.current) return;
-    updateMarkers();
-  }, [markers]);
+    const onMouseMove = (e: MouseEvent) => {
+      const rect = container.getBoundingClientRect();
+      mouse.current.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.current.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
 
-  // resize + idle 이벤트 처리
-  useEffect(() => {
-    if (!map) return;
+      raycaster.current.setFromCamera(mouse.current, cameraRef.current!);
+      const hits = raycaster.current.intersectObjects(
+        Array.from(meshMap.current.values()),
+      );
 
-    const handleResize = () => {
-      const container = containerRef.current;
-      const camera = cameraRef.current;
-      const renderer = rendererRef.current;
-      if (!container || !camera || !renderer) return;
-
-      const width = container.clientWidth;
-      const height = container.clientHeight;
-
-      camera.left = -width / 2;
-      camera.right = width / 2;
-      camera.top = height / 2;
-      camera.bottom = -height / 2;
-      camera.updateProjectionMatrix();
-
-      renderer.setSize(width, height);
-      updatePositions();
-    };
-
-    window.addEventListener('resize', handleResize);
-    window.kakao.maps.event.addListener(map, 'idle', updatePositions);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      window.kakao.maps.event.removeListener(map, 'idle', updatePositions);
-    };
-  }, [map]);
-
-  // 언마운트 시 리소스 정리
-  useEffect(() => {
-    return () => {
-      rendererRef.current?.dispose();
-      markerMeshesRef.current.forEach((mesh) => {
-        mesh.geometry.dispose();
-        if (Array.isArray(mesh.material)) {
-          mesh.material.forEach((m) => m.dispose());
-        } else {
-          mesh.material.dispose();
+      if (hits.length) {
+        // 3D 마커 위 호버 감지
+        const id = Number(hits[0].object.name);
+        last3DHoverRef.current = id;
+        setHoveredMarkerId(id);
+      } else {
+        // 3D에서는 호버하지 않을 때만 해제
+        if (last3DHoverRef.current !== null) {
+          last3DHoverRef.current = null;
+          setHoveredMarkerId(null);
         }
-      });
+        // (2D 마커 위에 있을 때는 last3DHoverRef.current===null 이므로 아무 것도 안 함)
+      }
     };
-  }, []);
 
-  return (
-    <div
-      ref={containerRef}
-      style={{
-        width: '100%',
-        height: '100%',
-        position: 'absolute',
-        top: 0,
-        left: 0,
-      }}
-    />
-  );
+    container.addEventListener('mousemove', onMouseMove);
+    return () => {
+      container.removeEventListener('mousemove', onMouseMove);
+    };
+  }, [container, markers]);
+
+  return null;
 }

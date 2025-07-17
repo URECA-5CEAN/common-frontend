@@ -1,6 +1,10 @@
-import { Map, MapMarker, useKakaoLoader } from 'react-kakao-maps-sdk';
-import ThreeJsMarker from './ThreeJsMarker';
-import { useEffect, useMemo, useState } from 'react';
+import {
+  CustomOverlayMap,
+  Map,
+  MapMarker,
+  useKakaoLoader,
+} from 'react-kakao-maps-sdk';
+import React, { useEffect, useMemo, useState } from 'react';
 import rankingIcon from '@/assets/icons/ranking_icon.png';
 import missionsIcon from '@/assets/icons/missions_icon.png';
 
@@ -23,6 +27,8 @@ interface KakaoMapContainerProps {
   onMapCreate?: (map: kakao.maps.Map) => void;
   onNearbyMarkersChange?: (markers: MarkerProps[]) => void;
   onCenterChanged?: (center: LatLng) => void;
+  hoveredMarkerId?: number | null;
+  setHoveredMarkerId?: (id: number | null) => void;
 }
 
 const markerList: MarkerProps[] = [
@@ -42,13 +48,13 @@ const markerList: MarkerProps[] = [
     id: 3,
     lat: 37.455001,
     lng: 126.75669,
-    imageUrl: rankingIcon,
+    imageUrl: missionsIcon,
   },
   {
     id: 4,
     lat: 37.455005,
     lng: 126.68069,
-    imageUrl: rankingIcon,
+    imageUrl: missionsIcon,
   },
 ];
 
@@ -71,14 +77,14 @@ const KakaoMapContainer = ({
   onMapCreate,
   onNearbyMarkersChange,
   onCenterChanged,
+  hoveredMarkerId,
+  setHoveredMarkerId,
 }: KakaoMapContainerProps) => {
   const [loading, error] = useKakaoLoader({
     appkey: '8d8c95c000044686b1c98de7e08ae5c1',
   });
-
   const [map, setMap] = useState<kakao.maps.Map | null>(null);
   const [center, setCenter] = useState<LatLng>({ lat, lng });
-
   const radiusKm = 3;
   const [nearbyMarkers, farMarkers] = useMemo(() => {
     const near: MarkerProps[] = [];
@@ -101,41 +107,66 @@ const KakaoMapContainer = ({
   if (error) return '지도를 불러올 수 없습니다.';
 
   return (
-    <Map
-      center={center}
-      level={Level}
-      onCreate={(map) => {
-        setMap(map);
-        onMapCreate?.(map);
-      }}
-      onCenterChanged={(map) => {
-        const newCenter = map.getCenter();
-        const latLng = {
-          lat: newCenter.getLat(),
-          lng: newCenter.getLng(),
-        };
-        setCenter(latLng);
-        onCenterChanged?.(latLng);
-      }}
-      style={{ width: '100%', height: '100%' }}
-    >
-      <MapMarker position={center}>
-        <div style={{ padding: '5px' }}>내위치</div>
-      </MapMarker>
+    <>
+      <Map
+        center={center}
+        level={Level}
+        onCreate={(map) => {
+          setMap(map);
+          onMapCreate?.(map);
+        }}
+        onCenterChanged={(map) => {
+          const newCenter = map.getCenter();
+          const latLng = {
+            lat: newCenter.getLat(),
+            lng: newCenter.getLng(),
+          };
+          setCenter(latLng);
+          onCenterChanged?.(latLng);
+        }}
+        style={{ width: '100%', height: '100%' }}
+      >
+        <MapMarker position={center}></MapMarker>
 
-      {farMarkers.map((m) => (
-        <MapMarker
-          key={m.id}
-          position={{ lat: m.lat, lng: m.lng }}
-          image={{
-            src: m.imageUrl,
-            size: { width: 40, height: 40 },
-            options: { offset: { x: 20, y: 40 } },
-          }}
-          zIndex={1}
-        />
-      ))}
-    </Map>
+        {farMarkers.map((m) => (
+          <React.Fragment key={m.id}>
+            <MapMarker
+              position={{ lat: m.lat, lng: m.lng }}
+              image={{
+                src: m.imageUrl,
+                size: { width: 40, height: 40 },
+                options: { offset: { x: 20, y: 40 } },
+              }}
+              zIndex={1}
+              onMouseOver={() => setHoveredMarkerId?.(m.id)}
+              onMouseOut={() => setHoveredMarkerId?.(null)}
+            />
+            {hoveredMarkerId === m.id && (
+              <CustomOverlayMap
+                position={{ lat: m.lat, lng: m.lng }}
+                yAnchor={0.91}
+              >
+                <div
+                  key={m.id}
+                  style={{
+                    background: 'white',
+                    padding: '6px 10px',
+                    borderRadius: '8px',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                    fontSize: '12px',
+                    whiteSpace: 'nowrap',
+                    position: 'relative',
+                    top: '-50px',
+                  }}
+                >
+                  📍 마커 ID: {m.id}
+                </div>
+              </CustomOverlayMap>
+            )}
+          </React.Fragment>
+        ))}
+      </Map>
+    </>
   );
 };
 
