@@ -10,7 +10,7 @@
 
 @theme {
   --color-primaryGreen: #6fc3d1;
-  --color-primaryGreen-40: #a3e0ea;
+  --color-primaryGreen-40: #cdedf3;
   --color-primaryGreen-60: #73d6e6;
   --color-primaryGreen-80: #158c9f;
   --color-backGround: #f9f9f9;
@@ -25,4 +25,32 @@
   --color-gray-300: #a5a8af;
   --color-gray-200: #ebebeb;
   --color-gray-100: #f9f9f9;
+}
+
+@keyframes iceShimmer {
+  0% {
+    background-position: -150% -150%;
+    box-shadow: 0 0 20px rgba(173, 216, 230, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(173, 216, 230, 0.8);
+  }
+  100% {
+    background-position: 150% 150%;
+    box-shadow: 0 0 20px rgba(173, 216, 230, 0.5);
+  }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    #d5e1f5 0%,
+    #bfd2f0 25%,
+    #abcbff 50%,
+    #bfd2f0 75%,
+    #d5e1f5 100%
+  );
+  background-size: 150% 100%;
+  animation: iceShimmer 1.5s linear infinite;
+  box-shadow: 0 0 20px rgba(173, 216, 230, 0.5);
 }
