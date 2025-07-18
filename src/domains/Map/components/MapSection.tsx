@@ -1,10 +1,13 @@
 import { Search } from 'lucide-react';
 import StoreCard from './StoreCard';
+import type { StoreInfo } from '../MockStore';
 
 interface MapSectionProps {
-  openDetail: (item: string) => void;
+  stores: StoreInfo[];
+  openDetail: (store: StoreInfo) => void;
 }
-export default function MapSection({ openDetail }: MapSectionProps) {
+
+export default function MapSection({ stores, openDetail }: MapSectionProps) {
   return (
     <div className="px-2 py-3 space-y-3 min-h-dvh">
       {/* 검색바 */}
@@ -18,8 +21,8 @@ export default function MapSection({ openDetail }: MapSectionProps) {
       </div>
 
       {/* 리스트 아이템 반복 */}
-      {['할리스', '할리스', '할리스', '할리스'].map((i, idx) => (
-        <StoreCard item={i} key={idx} openDetail={openDetail} />
+      {stores.map((store) => (
+        <StoreCard key={store.id} store={store} openDetail={openDetail} />
       ))}
     </div>
   );

@@ -2,13 +2,13 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three-stdlib';
-import type { MarkerProps } from './KakaoMapContainer';
+import type { MarkerProps } from '../KakaoMapContainer';
 
 interface ThreeJsMarkerProps {
   markers: MarkerProps[];
   map: kakao.maps.Map;
   setHoveredMarkerId: (id: number | null) => void;
-  container: HTMLDivElement;
+  container: HTMLDivElement; // 3D마커 부착할 컨테이너
 }
 
 export default function ThreeJsMarker({
@@ -17,18 +17,22 @@ export default function ThreeJsMarker({
   setHoveredMarkerId,
   container,
 }: ThreeJsMarkerProps) {
+  // Raycaster와 마우스 좌표, Three.js 컴포넌트(렌더러, 카메라, 씬) 참조
   const raycaster = useRef(new THREE.Raycaster());
   const mouse = useRef(new THREE.Vector2());
-  const rendererRef = useRef<THREE.WebGLRenderer>();
-  const cameraRef = useRef<THREE.OrthographicCamera>();
-  const sceneRef = useRef<THREE.Scene>();
-  const groupRef = useRef<THREE.Group>();
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  const cameraRef = useRef<THREE.OrthographicCamera | null>(null);
+  const sceneRef = useRef<THREE.Scene | null>(null);
+  const groupRef = useRef<THREE.Group | null>(null);
+  // 텍스처 캐시 및 마커 ID ↔ Mesh 맵핑
   const textureCache = useRef<Map<string, THREE.Texture>>(new Map());
   const meshMap = useRef<Map<number, THREE.Mesh>>(new Map());
+
+  // 호버 해제 지연을 위한 타이머 및 마지막 호버 ID
   const hoverOutTimeout = useRef<number | null>(null);
   const lastHoverRef = useRef<number | null>(null);
 
-  // 1) 씬/카메라/렌더러 초기화
+  // 씬/카메라/렌더러 초기화
   useEffect(() => {
     if (!container || !map) return;
     const w = container.clientWidth,
@@ -51,15 +55,18 @@ export default function ThreeJsMarker({
       position: 'absolute',
       top: '0',
       left: '0',
-      pointerEvents: 'none',
+      pointerEvents: 'none', // 마우스 이벤트는 캔버스가 아니라 지도에 전달
       zIndex: '10',
     });
     container.appendChild(renderer.domElement);
     rendererRef.current = renderer;
+    // 조명
     scene.add(new THREE.AmbientLight(0xffffff, 1));
     const light = new THREE.DirectionalLight(0xffffff, 2);
     light.position.set(0, 0, 1000);
     scene.add(light);
+
+    // 마커 Mesh들을 보관할 그룹
     const group = new THREE.Group();
     scene.add(group);
     groupRef.current = group;
@@ -87,10 +94,11 @@ export default function ThreeJsMarker({
     };
   }, [container, map]);
 
-  // 2) 텍스처 로드 및 메쉬 빌드
+  // 텍스처 로드 및 메쉬 빌드 markers 배열 변경 시마다 실행
   useEffect(() => {
     if (!map) return;
     const loader = new THREE.TextureLoader();
+    //모든 이미지 로딩 완료 대기
     Promise.all(
       markers.map(
         (m) =>
@@ -116,15 +124,18 @@ export default function ThreeJsMarker({
     });
     meshMap.current.clear();
 
+    // 새로운 마커마다 Mesh 생성
     markers.forEach((m) => {
       const texture = textureCache.current.get(m.imageUrl) || null;
       const material = new THREE.MeshLambertMaterial({ map: texture });
+      //큐브 생성
       const cube = new THREE.Mesh(
         new RoundedBoxGeometry(60, 60, 60, 10, 5),
         material,
       );
       cube.name = m.id.toString();
       cube.rotation.set(Math.PI / 7, -Math.PI / 6, 0);
+      // 포인터(핀) 생성
       const cone = new THREE.Mesh(
         new THREE.ConeGeometry(30, 40, 16),
         new THREE.MeshLambertMaterial({
@@ -144,7 +155,7 @@ export default function ThreeJsMarker({
     updatePositions();
   };
 
-  // 3) 메쉬 위치 업데이트
+  // 카메라 프로젝션을 사용해 위도/경도 → 화면 픽셀 위치로 변환
   const updatePositions = () => {
     if (!map) return;
     const proj = map.getProjection();
@@ -156,12 +167,13 @@ export default function ThreeJsMarker({
       const pt = proj.containerPointFromCoords(
         new kakao.maps.LatLng(m.lat, m.lng),
       );
+      // 화면 중심 대비 오프셋으로 위치 설정
       mesh.position.set(pt.x - cp.x, cp.y - pt.y, 50);
     });
     rendererRef.current?.render(sceneRef.current!, cameraRef.current!);
   };
 
-  // 4) Raycaster hover 감지 (해제는 300ms 지연)
+  // 마우스 무브 이벤트로 Raycaster 충돌 검사
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       const rect = container.getBoundingClientRect();
@@ -179,7 +191,7 @@ export default function ThreeJsMarker({
         lastHoverRef.current = id;
         setHoveredMarkerId(id);
       } else if (lastHoverRef.current != null) {
-        // 마커 밖 이탈: 300ms 후 해제
+        // 마커 밖 이탈: 200ms 후 해제
         if (hoverOutTimeout.current) clearTimeout(hoverOutTimeout.current);
         hoverOutTimeout.current = window.setTimeout(() => {
           lastHoverRef.current = null;
@@ -190,6 +202,6 @@ export default function ThreeJsMarker({
     container.addEventListener('mousemove', handler);
     return () => container.removeEventListener('mousemove', handler);
   }, [container, markers, setHoveredMarkerId]);
-
+  // 해당 컴포넌트는 화면에 직접 출력하는 DOM이 없으므로 null 반환
   return null;
 }

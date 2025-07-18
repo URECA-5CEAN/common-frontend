@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { MapMarker, CustomOverlayMap } from 'react-kakao-maps-sdk';
 import StoreOverlay from './StoreOverlay';
-import type { MarkerProps } from './KakaoMapContainer';
+import type { MarkerProps } from '../KakaoMapContainer';
 
 interface Props {
   nearbyMarkers: MarkerProps[];
