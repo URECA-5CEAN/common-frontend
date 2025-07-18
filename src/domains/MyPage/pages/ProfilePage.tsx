@@ -1,10 +1,10 @@
 import BadgeModal from '@/domains/MyPage/components/profile/BadgeModal';
-import UsageHistory from '@/domains/MyPage/components/profile/UsageHistory';
 import UserProfile from '@/domains/MyPage/components/profile/UserProfile';
 import { BADGES, USAGE_HISTORY } from '@/domains/MyPage/constants/profile';
 import type { UserInfo } from '@/domains/MyPage/types/profile';
 import { useState } from 'react';
 import outstandingIcon from '@/assets/icons/outstanding_icon.png';
+import UsageHistory from '@/domains/MyPage/components/profile/UsageHistory';
 
 const Breadcrumb: React.FC = () => (
   <div className="flex">
