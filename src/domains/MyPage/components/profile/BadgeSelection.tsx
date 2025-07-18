@@ -1,0 +1,66 @@
+import type { Badge } from '@/domains/MyPage/types/profile';
+
+interface RadioButtonProps {
+  isSelected: boolean;
+}
+
+const RadioButton: React.FC<RadioButtonProps> = ({ isSelected }) => (
+  <div
+    className={`w-5 h-5 bg-gray-100 rounded-full flex justify-center items-center 
+                ${isSelected ? 'border-2 border-primaryGreen' : 'border border-gray-200'}`}
+  >
+    {isSelected && <div className="w-3 h-3 bg-primaryGreen rounded-full"></div>}
+  </div>
+);
+
+interface BadgeOptionProps {
+  badge: Badge;
+  isSelected: boolean;
+  onClick: () => void;
+}
+
+const BadgeOption: React.FC<BadgeOptionProps> = ({
+  badge,
+  isSelected,
+  onClick,
+}) => (
+  <div
+    onClick={onClick}
+    className={`px-4 py-4 w-[150px] flex flex-col items-center justify-between 
+                gap-2 rounded-xl text-center cursor-pointer 
+                ${
+                  isSelected
+                    ? 'bg-primaryGreen-40 outline-2 outline-primaryGreen'
+                    : 'outline-1 outline-gray-200'
+                }`}
+  >
+    <p>{badge.name}</p>
+    <p className="text-xs">{badge.description}</p>
+    <RadioButton isSelected={isSelected} />
+  </div>
+);
+
+interface BadgeSelectionProps {
+  badges: Badge[];
+  tempBadge: string;
+  setTempBadge: (badgeId: string) => void;
+}
+
+const BadgeSelection: React.FC<BadgeSelectionProps> = ({
+  badges,
+  tempBadge,
+  setTempBadge,
+}) => (
+  <div className="flex gap-4">
+    {badges.map((badge) => (
+      <BadgeOption
+        key={badge.id}
+        badge={badge}
+        isSelected={tempBadge === badge.id}
+        onClick={() => setTempBadge(badge.id)}
+      />
+    ))}
+  </div>
+);
+
+export default BadgeSelection;
