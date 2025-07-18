@@ -72,7 +72,7 @@ export default function MapPage() {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
 
   // 1) 페이지 마운트, center 변경 시 매장 목록 호출
-  useEffect(() => {
+  /*useEffect(() => {
     async function loadStores() {
       try {
         console.log(center);
@@ -94,7 +94,7 @@ export default function MapPage() {
       }
     }
     loadStores();
-  }, [center]);
+  }, [center]);*/
 
   // 2) Geolocation API로 내 위치 가져오기
   useEffect(() => {
