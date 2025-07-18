@@ -1,9 +1,10 @@
 import BadgeModal from '@/domains/MyPage/components/profile/BadgeModal';
 import UserProfile from '@/domains/MyPage/components/profile/UserProfile';
-import { BADGES } from '@/domains/MyPage/constants/profile';
+import { BADGES, USAGE_HISTORY } from '@/domains/MyPage/constants/profile';
 import type { UserInfo } from '@/domains/MyPage/types/profile';
 import { useState } from 'react';
 import outstandingIcon from '@/assets/icons/outstanding_icon.png';
+import UsageHistory from '@/domains/MyPage/components/profile/UsageHistory';
 
 const Breadcrumb: React.FC = () => (
   <div className="flex">
@@ -63,6 +64,8 @@ const ProfilePage: React.FC = () => {
             profileImageSrc={outstandingIcon}
           />
         </div>
+        
+        <UsageHistory items={USAGE_HISTORY} />
       </div>
 
       <BadgeModal
