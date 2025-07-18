@@ -1,6 +1,7 @@
 import type { StoreInfo, Benefit, RankingItem } from '../MockStore';
-import { Star, Share2, MapPin, Clock, Webcam } from 'lucide-react';
+import { Star, Share2, Webcam } from 'lucide-react';
 import StartEndBtn from './StartEndBtn';
+import IconActionGroup from './IconActionGroup';
 
 interface DetailSectionProps {
   store: StoreInfo;
@@ -24,20 +25,13 @@ export default function DetailSection({ store }: DetailSectionProps) {
       <p className="text-gray-700">{store.description}</p>
 
       <div className="flex justify-between ">
-        <div className="flex space-x-2">
-          <button className="flex items-center justify-center p-1.5  border border-gray-200 rounded-full hover:bg-gray-200">
-            {/* 별 아이콘 */}
-            <Star />
-          </button>
-          <button className="flex items-center justify-center p-1.5  border border-gray-200 rounded-full hover:bg-gray-200">
-            {/* 로드뷰 아이콘 */}
-            <Webcam />
-          </button>
-          <button className="flex items-center justify-center p-1.5 border border-gray-200 rounded-full hover:bg-gray-200">
-            {/* 공유 아이콘 */}
-            <Share2 />
-          </button>
-        </div>
+        <IconActionGroup
+          actions={[
+            { icon: <Star />, label: '즐겨찾기' },
+            { icon: <Webcam />, label: '로드뷰' },
+            { icon: <Share2 />, label: '공유' },
+          ]}
+        />
         {/* 출발/도착 버튼 */}
         <StartEndBtn />
       </div>

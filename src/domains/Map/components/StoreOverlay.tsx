@@ -3,6 +3,7 @@ import { useState } from 'react';
 import type { LatLng } from '../KakaoMapContainer';
 import KakaoRoadview from '../KakaoRoadView';
 import StartEndBtn from './StartEndBtn';
+import IconActionGroup from './IconActionGroup';
 
 const StoreOverlay = ({ lat, lng }: LatLng) => {
   const [isRoad, setIsRoad] = useState<boolean>(false);
@@ -26,23 +27,13 @@ const StoreOverlay = ({ lat, lng }: LatLng) => {
       </div>
       {/* 버튼  영역 */}
       <div className="flex justify-between ">
-        <div className="flex space-x-2">
-          <button className="flex items-center justify-center p-1.5  border border-gray-200 rounded-full hover:bg-gray-200">
-            {/* 별 아이콘 */}
-            <Star />
-          </button>
-          <button
-            className="flex items-center justify-center p-1.5  border border-gray-200 rounded-full hover:bg-gray-200"
-            onClick={() => setIsRoad(true)}
-          >
-            {/* 로드뷰 아이콘 */}
-            <Webcam />
-          </button>
-          <button className="flex items-center justify-center p-1.5 border border-gray-200 rounded-full hover:bg-gray-200">
-            {/* 공유 아이콘 */}
-            <Share2 />
-          </button>
-        </div>
+        <IconActionGroup
+          actions={[
+            { icon: <Star />, label: '즐겨찾기' },
+            { icon: <Webcam />, label: '로드뷰' },
+            { icon: <Share2 />, label: '공유' },
+          ]}
+        />
         {/* 출발/도착 버튼 */}
         <StartEndBtn />
       </div>
