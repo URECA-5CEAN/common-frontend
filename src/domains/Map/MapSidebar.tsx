@@ -6,6 +6,8 @@ import roadImage from '@/assets/image/roadImage.svg';
 import benefitImage from '@/assets/image/BenefitImage.svg';
 import MapSection from './MapSection';
 import UserSection from './UserSection';
+import { ChevronLeft } from 'lucide-react';
+import { div } from 'framer-motion/client';
 // Button 컴포넌트
 interface ButtonProps {
   children: ReactNode;
@@ -23,7 +25,7 @@ function Button({
 }: ButtonProps) {
   const base = 'px-3 py-1.5 border rounded-md focus:outline-none';
   const variants = {
-    default: 'bg-white text-black border-gray-300',
+    default: 'bg-white text-black border-gray-200',
     secondary: 'bg-[#DDF4FF] text-white border-primaryGreen-60',
     ghost: 'bg-transparent text-gray-700 border-transparent',
   };
@@ -107,9 +109,9 @@ export default function MapSidebar() {
   };
 
   const slideVariants = {
-    hidden: (dir: number) => ({ x: dir * 300, opacity: 0 }),
+    hidden: { x: -332, opacity: 0 },
     visible: { x: 0, opacity: 1 },
-    exit: (dir: number) => ({ x: dir * 300, opacity: 0 }),
+    exit: { x: -332, opacity: 0 },
   };
 
   const baseLeft = 64;
@@ -139,43 +141,45 @@ export default function MapSidebar() {
 
       <AnimatePresence initial={false} custom={1}>
         {panels.map((panel, idx) => {
-          const dir = panel.type === 'detail' ? -1 : idx === 0 ? -1 : 1;
-          const left = baseLeft + idx * 256;
+          const left = baseLeft + idx * 345;
           return (
             <motion.div
               key={idx}
-              custom={dir}
               initial="hidden"
               animate="visible"
               exit="exit"
               variants={slideVariants}
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              className="absolute -top-2 bottom-0 w-[332px] bg-white z-10 ml-6"
+              className="absolute -top-2 bottom-0 w-[332px] rounded-2xl bg-white z-10 ml-6 shadow-2xl"
               style={{ left }}
             >
               <CardContent>
-                <UserSection
-                  username="김민석"
-                  level={1}
-                  currentExp={5}
-                  nextLevelExp={20}
-                />
+                {idx === 0 && (
+                  <UserSection
+                    username="김민석"
+                    level={1}
+                    currentExp={5}
+                    nextLevelExp={20}
+                  />
+                )}
                 {panel.type === 'menu' && panel.menu === '지도' && (
-                  <MapSection />
+                  <MapSection openDetail={openDetail} />
                 )}
               </CardContent>
-              <Button size="sm" onClick={() => closePanel(idx)}>
-                ✕
+              <Button
+                size="sm"
+                onClick={() => closePanel(idx)}
+                className="absolute right-0 transform translate-x-10  w-10 h-12 bottom-[55%]"
+              >
+                <ChevronLeft
+                  className="transform -translate-x-1.5 text-gray-300"
+                  strokeWidth={3}
+                />
               </Button>
             </motion.div>
           );
         })}
       </AnimatePresence>
-
-      {/* 메인 콘텐츠 */}
-      <div className="flex-1 ml-16 p-8">
-        <h1 className="text-2xl font-bold">메인 컨텐츠</h1>
-      </div>
     </div>
   );
 }
