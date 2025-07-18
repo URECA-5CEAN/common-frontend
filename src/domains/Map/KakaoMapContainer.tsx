@@ -31,7 +31,9 @@ export default function KakaoMapContainer({
   // Kakao Maps SDK 비동기 로딩 훅
   const [loading, error] = useKakaoLoader({
     appkey: '8d8c95c000044686b1c98de7e08ae5c1',
+    libraries: ['services'],
   });
+
   if (loading) return <div>지도를 불러오는 중...</div>;
   if (error) return <div>지도를 불러올 수 없습니다.</div>;
 

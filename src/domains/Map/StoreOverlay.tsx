@@ -1,6 +1,10 @@
 import { Share2, Star, Webcam } from 'lucide-react';
+import { useState } from 'react';
+import type { LatLng } from './KakaoMapContainer';
+import KakaoRoadview from './KakaoRoadView';
 
-const StoreOverlay = () => {
+const StoreOverlay = ({ lat, lng }: LatLng) => {
+  const [isRoad, setIsRoad] = useState<boolean>(false);
   return (
     <div className=" bg-white rounded-2xl shadow-lg w-[360px] p-4 space-y-3 z-10">
       {/* 헤더 */}
@@ -23,11 +27,14 @@ const StoreOverlay = () => {
       <div className="flex justify-between ">
         <div className="flex space-x-2">
           <button className="flex items-center justify-center px-1.5  border border-gray-200 rounded-full hover:bg-gray-200">
-            {/* 스타 아이콘 */}
+            {/* 별 아이콘 */}
             <Star />
           </button>
-          <button className="flex items-center justify-center px-1.5  border border-gray-200 rounded-full hover:bg-gray-200">
-            {/* 사람 아이콘 */}
+          <button
+            className="flex items-center justify-center px-1.5  border border-gray-200 rounded-full hover:bg-gray-200"
+            onClick={() => setIsRoad(true)}
+          >
+            {/* 로드뷰 아이콘 */}
             <Webcam />
           </button>
           <button className="flex items-center justify-center px-1.5 border border-gray-200 rounded-full hover:bg-gray-200">
@@ -46,6 +53,7 @@ const StoreOverlay = () => {
           </button>
         </div>
       </div>
+      {isRoad && <KakaoRoadview position={{ lat, lng }} />}
     </div>
   );
 };

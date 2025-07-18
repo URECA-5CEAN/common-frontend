@@ -7,6 +7,7 @@ import { getDistance } from '../getDistance';
 import rankingIcon from '@/assets/icons/ranking_icon.png';
 import missionsIcon from '@/assets/icons/missions_icon.png';
 import FilterMarker from '../FilterMarker';
+import MapSidebar from '../MapSidebar';
 
 const markerList: MarkerProps[] = [
   { id: 1, lat: 38.450702, lng: 127.70668, imageUrl: rankingIcon },
@@ -63,44 +64,49 @@ export default function MapPage() {
   };
 
   return (
-    <div className="h-dvh pt-[62px] md:pt-[86px] relative">
-      <div ref={containerRef} className="absolute inset-0">
-        {/*맵 로딩 */}
-        <KakaoMapContainer
-          center={center}
-          level={3}
-          onMapCreate={setMap}
-          onCenterChanged={setCenter}
-        >
-          {/* 2D 마커 + 오버레이 */}
-          <FilterMarker
-            nearbyMarkers={nearbyMarkers}
-            farMarkers={farMarkers}
-            hoveredMarkerId={hoveredId}
-            setHoveredMarkerId={setHoveredId}
-          />
-
-          {/* 3D 마커 */}
-          {map && (
-            <ThreeJsMarker
-              markers={nearbyMarkers}
-              map={map}
-              setHoveredMarkerId={setHoveredId}
-              container={containerRef.current!}
-            />
-          )}
-
-          {/* 내 위치 버튼 */}
-          {map && myLocation && (
-            <button
-              onClick={goToMyLocation}
-              className="absolute bottom-12 right-12 bg-white p-2 rounded-full shadow-lg hover:bg-gray-100 z-20"
-            >
-              <LocateFixed size={30} />
-            </button>
-          )}
-        </KakaoMapContainer>
+    <>
+      <div className="fixed top-[62px] md:top-[86px] left-0 bottom-0 w-16 z-20">
+        <MapSidebar />
       </div>
-    </div>
+      <div className="h-dvh pt-[62px] md:pt-[86px] relative">
+        <div ref={containerRef} className="absolute inset-0">
+          {/*맵 로딩 */}
+          <KakaoMapContainer
+            center={center}
+            level={3}
+            onMapCreate={setMap}
+            onCenterChanged={setCenter}
+          >
+            {/* 2D 마커 + 오버레이 */}
+            <FilterMarker
+              nearbyMarkers={nearbyMarkers}
+              farMarkers={farMarkers}
+              hoveredMarkerId={hoveredId}
+              setHoveredMarkerId={setHoveredId}
+            />
+
+            {/* 3D 마커 */}
+            {map && (
+              <ThreeJsMarker
+                markers={nearbyMarkers}
+                map={map}
+                setHoveredMarkerId={setHoveredId}
+                container={containerRef.current!}
+              />
+            )}
+
+            {/* 내 위치 버튼 */}
+            {map && myLocation && (
+              <button
+                onClick={goToMyLocation}
+                className="absolute bottom-12 right-12 bg-white p-2 rounded-full shadow-lg hover:bg-gray-100 z-20"
+              >
+                <LocateFixed size={30} />
+              </button>
+            )}
+          </KakaoMapContainer>
+        </div>
+      </div>
+    </>
   );
 }

@@ -55,29 +55,31 @@ export default function FilterMarker({
               if (!mk) return null;
 
               return (
-                <CustomOverlayMap
-                  position={{ lat: mk.lat, lng: mk.lng }}
-                  yAnchor={1.2}
-                >
-                  <div
-                    className="pointer-events-auto"
-                    onMouseEnter={() => {
-                      if (hoverOutRef.current)
-                        clearTimeout(hoverOutRef.current);
-                      setHoveredMarkerId?.(mk.id);
-                    }}
-                    onMouseLeave={() => {
-                      if (hoverOutRef.current)
-                        clearTimeout(hoverOutRef.current);
-                      hoverOutRef.current = window.setTimeout(
-                        () => setHoveredMarkerId?.(null),
-                        200,
-                      );
-                    }}
+                <>
+                  <CustomOverlayMap
+                    position={{ lat: mk.lat, lng: mk.lng }}
+                    yAnchor={1.2}
                   >
-                    <StoreOverlay />
-                  </div>
-                </CustomOverlayMap>
+                    <div
+                      className="pointer-events-auto"
+                      onMouseEnter={() => {
+                        if (hoverOutRef.current)
+                          clearTimeout(hoverOutRef.current);
+                        setHoveredMarkerId?.(mk.id);
+                      }}
+                      onMouseLeave={() => {
+                        if (hoverOutRef.current)
+                          clearTimeout(hoverOutRef.current);
+                        hoverOutRef.current = window.setTimeout(
+                          () => setHoveredMarkerId?.(null),
+                          200,
+                        );
+                      }}
+                    >
+                      <StoreOverlay lat={mk.lat} lng={mk.lng} />
+                    </div>
+                  </CustomOverlayMap>
+                </>
               );
             })()}
         </React.Fragment>
