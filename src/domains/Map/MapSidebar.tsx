@@ -4,6 +4,8 @@ import mapImage from '@/assets/image/MapImage.svg';
 import starImage from '@/assets/image/StarImage.svg';
 import roadImage from '@/assets/image/roadImage.svg';
 import benefitImage from '@/assets/image/BenefitImage.svg';
+import MapSection from './MapSection';
+import UserSection from './UserSection';
 // Button 컴포넌트
 interface ButtonProps {
   children: ReactNode;
@@ -148,34 +150,23 @@ export default function MapSidebar() {
               exit="exit"
               variants={slideVariants}
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              className="absolute -top-2 bottom-0 w-64  bg-white z-10 ml-6"
+              className="absolute -top-2 bottom-0 w-[332px] bg-white z-10 ml-6"
               style={{ left }}
             >
               <CardContent>
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-bold">
-                    {panel.type === 'menu' && panel.menu}
-                    {panel.type === 'detail' && `${panel.item} 상세`}
-                    {panel.type === 'more' && '추가 정보'}
-                  </h2>
-                  <Button size="sm" onClick={() => closePanel(idx)}>
-                    ✕
-                  </Button>
-                </div>
-                {panel.type === 'menu' && panel.menu && (
-                  <ScrollArea>
-                    {contentMap[panel.menu].map((i) => (
-                      <Button
-                        key={i}
-                        className="w-full text-left mb-2"
-                        onClick={() => openDetail(i)}
-                      >
-                        {i}
-                      </Button>
-                    ))}
-                  </ScrollArea>
+                <UserSection
+                  username="김민석"
+                  level={1}
+                  currentExp={5}
+                  nextLevelExp={20}
+                />
+                {panel.type === 'menu' && panel.menu === '지도' && (
+                  <MapSection />
                 )}
               </CardContent>
+              <Button size="sm" onClick={() => closePanel(idx)}>
+                ✕
+              </Button>
             </motion.div>
           );
         })}
