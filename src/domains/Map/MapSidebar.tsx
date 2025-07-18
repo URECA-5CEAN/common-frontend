@@ -165,6 +165,7 @@ export default function MapSidebar() {
                 {panel.type === 'menu' && panel.menu === '지도' && (
                   <MapSection openDetail={openDetail} />
                 )}
+                {panel.type === 'detail' && panel.item && <div>detail</div>}
               </CardContent>
               <Button
                 size="sm"
