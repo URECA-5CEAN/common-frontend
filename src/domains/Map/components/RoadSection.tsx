@@ -6,6 +6,7 @@ import {
   ArrowUpDown,
   ChevronRight,
 } from 'lucide-react';
+import type { StoreInfo } from '../api/store';
 
 interface RouteItem {
   id: number;

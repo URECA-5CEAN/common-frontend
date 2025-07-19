@@ -7,6 +7,7 @@ import StarSection from './StarSection';
 import DetailSection from './DetailSection';
 import { ChevronLeft } from 'lucide-react';
 import RoadSection from './RoadSection';
+import { useState } from 'react';
 
 interface SidebarPanelProps {
   index: number;
@@ -23,9 +24,37 @@ export default function SidebarPanel({
   openDetail,
   onClose,
 }: SidebarPanelProps) {
+  const [startValue, setStartValue] = useState('');
+  const [endValue, setEndValue] = useState('');
+
+  const onStartChange = (v: string) => setStartValue(v);
+  const onEndChange = (v: string) => setEndValue(v);
+
+  const onSwap = () => {
+    // 출발/도착 교환
+    setStartValue((prev) => {
+      setEndValue(prev);
+      return endValue;
+    });
+  };
+
+  const onReset = () => {
+    setStartValue('');
+    setEndValue('');
+  };
+
   const left = 64 + index * 345;
   const isDetail = panel.type === 'detail';
 
+  const onStar = () => {
+    // 즐겨찾기 동작 (예: API 호출 또는 상태 업데이트)
+    console.log('즐겨찾기:', { from: startValue, to: endValue });
+  };
+
+  const onNavigate = () => {
+    // 길찾기 동작 (예: 지도로 포커스 이동)
+    console.log('길찾기 실행:', { from: startValue, to: endValue });
+  };
   return (
     <motion.div
       key={index}
@@ -58,7 +87,17 @@ export default function SidebarPanel({
           <StarSection openDetail={openDetail} stores={stores} />
         )}
         {panel.type === 'menu' && panel.menu === '길찾기' && (
-          <RoadSection openDetail={openDetail} stores={stores} />
+          <RoadSection
+            startValue={startValue}
+            endValue={endValue}
+            onStartChange={onStartChange}
+            onEndChange={onEndChange}
+            onSwap={onSwap}
+            onReset={onReset}
+            onStar={onStar}
+            onNavigate={onNavigate}
+            openDetail={openDetail}
+          />
         )}
         {panel.type === 'detail' && panel.item && (
           <DetailSection store={panel.item} />
