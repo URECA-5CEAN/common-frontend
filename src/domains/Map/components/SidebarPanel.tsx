@@ -1,6 +1,4 @@
-// SidebarPanel.tsx
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import clsx from 'clsx';
 import type { MenuType, StoreInfo } from './types';
 import UserSection from './UserSection';
@@ -8,6 +6,7 @@ import MapSection from './MapSection';
 import StarSection from './StarSection';
 import DetailSection from './DetailSection';
 import { ChevronLeft } from 'lucide-react';
+import RoadSection from './RoadSection';
 
 interface SidebarPanelProps {
   index: number;
@@ -57,6 +56,9 @@ export default function SidebarPanel({
         )}
         {panel.type === 'menu' && panel.menu === '즐겨찾기' && (
           <StarSection openDetail={openDetail} stores={stores} />
+        )}
+        {panel.type === 'menu' && panel.menu === '길찾기' && (
+          <RoadSection openDetail={openDetail} stores={stores} />
         )}
         {panel.type === 'detail' && panel.item && (
           <DetailSection store={panel.item} />

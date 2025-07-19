@@ -1,4 +1,4 @@
-import type { LatLng } from './KakaoMapContainer';
+import type { LatLng } from '../KakaoMapContainer';
 
 export const getDistance = (from: LatLng, to: LatLng): number => {
   const R = 6371; // 지구 반지름

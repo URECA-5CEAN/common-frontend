@@ -10,11 +10,11 @@ export interface StoreInfo {
   name: string;
   address: string;
   category?: string;
+  keyword?: string;
   latitude: number;
   longitude: number;
   brandName: string;
   brandImageUrl?: string;
-  // 필요한 추가 필드...
 }
 
 /**
@@ -41,7 +41,6 @@ export interface FetchStoresParams {
   lngMax: number;
   centerLat: number;
   centerLng: number;
-  zoomLevel?: number;
 }
 
 /**
@@ -54,7 +53,7 @@ export interface FetchBrandsParams {
 
 // axios 인스턴스 설정
 const apiClient: AxiosInstance = axios.create({
-  baseURL: 'http://15.164.81.45/api/store',
+  baseURL: 'http://15.164.81.45/api/map',
   headers: { 'Content-Type': 'application/json' },
 });
 
@@ -62,11 +61,12 @@ const apiClient: AxiosInstance = axios.create({
  * 매장 목록을 조회합니다.
  * @param params 검색 및 필터링 파라미터
  */
+
 export async function fetchStores(
   params: FetchStoresParams,
 ): Promise<StoreInfo[]> {
   try {
-    const response = await apiClient.get<StoreInfo[]>('/', {
+    const response = await apiClient.get<StoreInfo[]>('/store', {
       params: {
         keyword: params.keyword ?? '',
         category: params.category ?? '',
@@ -78,6 +78,7 @@ export async function fetchStores(
         centerLng: params.centerLng,
       },
     });
+    console.log(response.data);
     return response.data;
   } catch (error: any) {
     const message =

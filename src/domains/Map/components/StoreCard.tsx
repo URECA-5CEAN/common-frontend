@@ -1,5 +1,4 @@
 import { Star } from 'lucide-react';
-
 import type { StoreInfo } from '../MockStore';
 import StartEndBtn from './StartEndBtn';
 

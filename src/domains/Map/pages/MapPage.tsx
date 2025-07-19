@@ -1,4 +1,3 @@
-// src/pages/MapPage.tsx
 import React, { useRef, useState, useEffect, useMemo } from 'react';
 import KakaoMapContainer from '../KakaoMapContainer';
 import ThreeJsMarker from '../components/ThreeJsMarker';
@@ -72,10 +71,9 @@ export default function MapPage() {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
 
   // 1) 페이지 마운트, center 변경 시 매장 목록 호출
-  /*useEffect(() => {
-    async function loadStores() {
+  useEffect(() => {
+    const loadStores = async () => {
       try {
-        console.log(center);
         const data = await fetchStores({
           keyword: '',
           category: '',
@@ -85,16 +83,15 @@ export default function MapPage() {
           lngMax: 127.0,
           centerLat: 37.5,
           centerLng: 126.8,
-          zoomLevel: map?.getLevel(),
         });
         console.log(data);
         setStores(data);
       } catch (err) {
         console.error('매장 호출 실패', err);
       }
-    }
+    };
     loadStores();
-  }, [center]);*/
+  }, [center]);
 
   // 2) Geolocation API로 내 위치 가져오기
   useEffect(() => {

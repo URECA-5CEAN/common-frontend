@@ -1,4 +1,3 @@
-// src/components/KakaoRoadview.tsx
 import { CustomOverlayMap, Roadview } from 'react-kakao-maps-sdk';
 import type { LatLng } from './KakaoMapContainer';
 

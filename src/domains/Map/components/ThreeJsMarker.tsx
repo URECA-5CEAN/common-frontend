@@ -1,4 +1,3 @@
-// src/components/ThreeJsMarker.tsx
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three-stdlib';

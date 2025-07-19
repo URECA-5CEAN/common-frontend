@@ -1,4 +1,3 @@
-// src/data/mockStores.ts
 import benefitImage from '@/assets/image/BenefitImage.svg';
 export interface Benefit {
   id: string;
