@@ -7,6 +7,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import type { StoreInfo } from '../api/store';
+import clsx from 'clsx';
 
 interface RouteItem {
   id: number;
@@ -47,9 +48,9 @@ export default function RoadSection({
     { id: 13, from: '할리스 OO점', to: '할리스 OO점' },
   ]);
 
-  const clearInput = () => {
-    /* 입력 초기화 로직 */
-  };
+  const inputStyle = 'w-full px-4 py-2 text-sm focus:outline-none';
+  const btnStyle =
+    'flex items-center justify-center px-2 py-1.5 text-sm  text-gray-700 rounded-lg ';
 
   return (
     <div className="max-w-md mx-auto  space-y-6 bg-white min-h-dvh">
@@ -65,7 +66,7 @@ export default function RoadSection({
               value={startValue}
               onChange={(e) => onStartChange(e.target.value)}
               placeholder="출발지를 입력하세요"
-              className="w-full px-4 py-2 text-sm focus:outline-none"
+              className={inputStyle}
             />
             {/* 구분선 */}
             <div className="h-px bg-gray-200"></div>
@@ -75,7 +76,7 @@ export default function RoadSection({
               value={endValue}
               onChange={(e) => onEndChange(e.target.value)}
               placeholder="도착지를 입력하세요"
-              className="w-full px-4 py-2 text-sm focus:outline-none"
+              className={inputStyle}
             />
           </div>
 
@@ -97,7 +98,13 @@ export default function RoadSection({
           {/* 다시입력 */}
           <button
             onClick={onReset}
-            className=" flex items-center justify-center px-2 py-1.5 text-sm  text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-100 focus:outline-none"
+            className={clsx(
+              btnStyle,
+              'bg-white',
+              'border border-gray-200',
+              'hover:bg-gray-100',
+              'focus:outline-none',
+            )}
           >
             <RefreshCcw size={16} className="mr-1 text-primaryGreen" />
             <p className="w-11 text-xs">다시입력</p>
@@ -105,7 +112,13 @@ export default function RoadSection({
           {/* 즐겨찾기 */}
           <button
             onClick={onStar}
-            className=" flex items-center justify-center px-2 py-1.5 text-sm  text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-100 focus:outline-none"
+            className={clsx(
+              btnStyle,
+              'bg-white',
+              'border border-gray-200',
+              'hover:bg-gray-100',
+              'focus:outline-none',
+            )}
           >
             <Star size={16} className="mr-1 text-yellow-400 fill-current" />
             <p className="w-11 text-xs">즐겨찾기</p>
@@ -113,7 +126,15 @@ export default function RoadSection({
           {/* 길찾기 */}
           <button
             onClick={onNavigate}
-            className=" flex items-center justify-center px-2 ml-4 py-1.5 text-sm text-white bg-primaryGreen rounded-xl hover:brightness-110 focus:outline-none"
+            className={clsx(
+              btnStyle,
+              'bg-primaryGreen',
+              'text-white',
+              'ml-4',
+              'border border-gray-200',
+              'hover:brightness-110',
+              'focus:outline-none',
+            )}
           >
             <p className="w-9 text-xs">길찾기</p>
             <ChevronRight size={16} className="ml-1" />
@@ -123,7 +144,7 @@ export default function RoadSection({
 
       {/* 저장한 경로 */}
       <div className="space-y-2 px-4">
-        <h2 className="text-sm font-semibold text-gray-600">저장한 경로</h2>
+        <p className="text-xl font-semibold text-gray-600">저장한 경로</p>
         <ul className="space-y-1">
           {savedRoutes.map((r) => (
             <li
@@ -147,7 +168,7 @@ export default function RoadSection({
       {/* 최근 경로 토글 */}
       <div className="space-y-2 px-4  ">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-gray-600">최근 경로</h2>
+          <p className="text-xl font-semibold text-gray-600">최근 경로</p>
 
           <div className="inline-flex items-center bg-backGround rounded-full p-1">
             {/* ON 버튼 */}
@@ -155,8 +176,8 @@ export default function RoadSection({
               onClick={() => setShowRecent(true)}
               className={`px-3 py-1 text-xs rounded-full transition-colors ${
                 showRecent
-                  ? 'bg-primaryGreen text-white' // 활성화 상태
-                  : 'text-gray-200 hover:bg-white' // 비활성화 상태
+                  ? 'bg-primaryGreen text-white'
+                  : 'text-gray-200 hover:bg-white'
               }`}
             >
               ON
