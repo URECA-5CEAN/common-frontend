@@ -9,7 +9,7 @@ interface Props {
 }
 
 export interface MarkerProps {
-  id: number;
+  id: string;
   lat: number;
   lng: number;
   imageUrl: string;

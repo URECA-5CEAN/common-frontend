@@ -1,4 +1,10 @@
-import React, { useRef, useState, useEffect, useMemo } from 'react';
+import React, {
+  useRef,
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+} from 'react';
 import KakaoMapContainer from '../KakaoMapContainer';
 import ThreeJsMarker from '../components/ThreeJsMarker';
 import FilterMarker from '../components/FilterMarker';
@@ -7,51 +13,7 @@ import DetailSection from '../components/DetailSection';
 import { LocateFixed } from 'lucide-react';
 import type { MarkerProps, LatLng } from '../KakaoMapContainer';
 import { getDistance } from '../utils/getDistance';
-import { fetchStores } from '../api/store';
-
-export interface MockInfo {
-  id: number;
-  name: string;
-  lat: number;
-  lng: number;
-  logoUrl: string;
-  address: string;
-}
-
-export const mockStores: MockInfo[] = [
-  {
-    id: 1,
-    name: '달콤 카페',
-    lat: 37.4512,
-    lng: 126.6953,
-    logoUrl: 'https://via.placeholder.com/60?text=CAFE',
-    address: '서울특별시 서초구 서초동 123-4',
-  },
-  {
-    id: 2,
-    name: '참외 빵집',
-    lat: 37.4556,
-    lng: 126.7021,
-    logoUrl: 'https://via.placeholder.com/60?text=BREAD',
-    address: '서울특별시 서초구 반포동 56-7',
-  },
-  {
-    id: 3,
-    name: '포장마차 곱창',
-    lat: 37.4478,
-    lng: 126.7105,
-    logoUrl: 'https://via.placeholder.com/60?text=FOOD',
-    address: '서울특별시 서초구 잠원동 88-22',
-  },
-  {
-    id: 4,
-    name: '별빛 술집',
-    lat: 37.46,
-    lng: 126.69,
-    logoUrl: 'https://via.placeholder.com/60?text=BAR',
-    address: '서울특별시 서초구 반포동 12-3',
-  },
-];
+import { fetchStores, type StoreInfo } from '../api/store';
 
 export default function MapPage() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -84,14 +46,14 @@ export default function MapPage() {
           centerLat: 37.5,
           centerLng: 126.8,
         });
-        console.log(data);
-        setStores(data);
+        console.log(data.data);
+        setStores(data.data);
       } catch (err) {
         console.error('매장 호출 실패', err);
       }
     };
     loadStores();
-  }, [center]);
+  }, []);
 
   // 2) Geolocation API로 내 위치 가져오기
   useEffect(() => {
@@ -115,49 +77,54 @@ export default function MapPage() {
     }
   }, [map, myLocation]);
 
+  // 5) ‘내 위치’ 버튼 핸들러
+  const goToMyLocation = useCallback(() => {
+    if (!map || !myLocation) return;
+    const ll = new kakao.maps.LatLng(myLocation.lat, myLocation.lng);
+    map.panTo(ll);
+    setCenter(myLocation);
+  }, [map, myLocation, setCenter]);
+
   // 4) 매장 데이터를 MarkerProps 형태로 변환 & 반경 내/외 분리
   const RADIUS_KM = 3;
   const [nearbyMarkers, farMarkers] = useMemo(() => {
     const near: MarkerProps[] = [];
     const far: MarkerProps[] = [];
-    mockStores.forEach((store) => {
-      const d = getDistance(center, { lat: store.lat, lng: store.lng });
+    stores.forEach((store) => {
+      const d = getDistance(center, {
+        lat: store.latitude,
+        lng: store.longitude,
+      });
       const marker: MarkerProps = {
         id: store.id,
-        lat: store.lat,
-        lng: store.lng,
-        imageUrl: store.logoUrl ?? '',
+        lat: store.latitude,
+        lng: store.longitude,
+        imageUrl: store.brandImageUrl ?? '',
       };
       if (d <= RADIUS_KM) near.push(marker);
       else far.push(marker);
     });
     return [near, far];
-  }, [mockStores, center]);
+  }, [stores, center]);
 
-  // 5) ‘내 위치’ 버튼 핸들러
-  const goToMyLocation = () => {
-    if (map && myLocation) {
-      const ll = new kakao.maps.LatLng(myLocation.lat, myLocation.lng);
-      map.panTo(ll);
-      setCenter(myLocation);
-    }
-  };
+  // 5) 맵 생성 핸들러
+  const handleMapCreate = useCallback((mapInstance: kakao.maps.Map) => {
+    setMap(mapInstance);
+  }, []);
 
   // 6) 사이드바에서 매장 선택
-  const openDetail = (store: StoreInfo) => {
+  const openDetail = useCallback((store: StoreInfo) => {
     setSelectedStore(store);
-  };
+  }, []);
 
   // 7) 상세 닫기
-  const closeDetail = () => {
-    setSelectedStore(null);
-  };
+  const closeDetail = useCallback(() => setSelectedStore(null), []);
 
   return (
     <>
       {/* 사이드바 */}
       <div className="fixed top-[62px] md:top-[86px] left-0 bottom-0 w-64 z-20">
-        <MapSidebar stores={mockStores} openDetail={openDetail} />
+        <MapSidebar stores={stores} onStoreSelect={openDetail} />
       </div>
 
       {/* 지도 영역 */}
@@ -166,7 +133,7 @@ export default function MapPage() {
           <KakaoMapContainer
             center={center}
             level={3}
-            onMapCreate={setMap}
+            onMapCreate={handleMapCreate}
             onCenterChanged={setCenter}
           >
             {/* 2D 마커/오버레이 */}

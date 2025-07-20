@@ -5,17 +5,21 @@ import starImage from '@/assets/image/StarImage.svg';
 import roadImage from '@/assets/image/roadImage.svg';
 import benefitImage from '@/assets/image/BenefitImage.svg';
 
-import { mockStores, type StoreInfo } from '../MockStore';
-
 import SidebarPanel from './SidebarPanel';
 import SidebarMenu from './SidebarMenu';
+import type { StoreInfo } from '../api/store';
+
+interface sideBarProps {
+  stores: StoreInfo[];
+  onStoreSelect: (store: StoreInfo) => void;
+}
 
 //메뉴 타입 및 매핑된 아이콘 배열
 export type MenuType = '지도' | '즐겨찾기' | '길찾기' | '혜택인증';
 const menus: MenuType[] = ['지도', '즐겨찾기', '길찾기', '혜택인증'];
 const menuIcons = [mapImage, starImage, roadImage, benefitImage];
 
-export default function MapSidebar() {
+export default function MapSidebar({ stores, onStoreSelect }: sideBarProps) {
   // 열린 패널 스택: ['menu' 혹은 'detail', 메뉴 타입, 상세 아이템]
   const [panels, setPanels] = useState<
     {
@@ -24,7 +28,6 @@ export default function MapSidebar() {
       item?: StoreInfo;
     }[]
   >([]);
-  const stores = mockStores; // 샘플 매장 데이터
 
   // 메뉴 버튼 클릭: 가장 상위 패널을 메뉴 타입으로 초기화
   const openMenu = (menu: MenuType) => setPanels([{ type: 'menu', menu }]);
@@ -37,6 +40,8 @@ export default function MapSidebar() {
       { type: 'menu', menu: currentMenu }, // 메뉴 패널 유지
       { type: 'detail', menu: currentMenu, item: store }, // 상세 패널 추가
     ]);
+
+    onStoreSelect(store);
   };
   ///패널 닫기: 해당 인덱스 이후 패널 제거
   const closePanel = (index: number) =>
