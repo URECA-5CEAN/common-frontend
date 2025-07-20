@@ -8,7 +8,7 @@ import IconActionGroup from './IconActionGroup';
 const StoreOverlay = ({ lat, lng }: LatLng) => {
   const [isRoad, setIsRoad] = useState<boolean>(false);
   return (
-    <div className=" bg-white rounded-2xl shadow-lg w-[360px] p-4 space-y-3 z-10">
+    <div className=" bg-white rounded-2xl  w-[360px] p-4 space-y-3 z-10">
       {/* 헤더 */}
       <div className="flex justify-between items-start">
         <div>

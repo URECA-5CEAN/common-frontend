@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three-stdlib';
 import type { MarkerProps } from '../KakaoMapContainer';
@@ -25,7 +25,7 @@ export default function ThreeJsMarker({
   const groupRef = useRef<THREE.Group | null>(null);
   // 텍스처 캐시 및 마커 ID ↔ Mesh 맵핑
   const textureCache = useRef<Map<string, THREE.Texture>>(new Map());
-  const meshMap = useRef<Map<number, THREE.Mesh>>(new Map());
+  const meshMap = useRef<Map<string, THREE.Mesh>>(new Map());
 
   // 호버 해제 지연을 위한 타이머 및 마지막 호버 ID
   const hoverOutTimeout = useRef<number | null>(null);
@@ -112,29 +112,37 @@ export default function ThreeJsMarker({
     ).then(buildOrUpdateMeshes);
   }, [map, markers]);
 
-  const buildOrUpdateMeshes = () => {
+  // 3) diff 기반 메쉬 추가/제거
+  const buildOrUpdateMeshes = useCallback(() => {
     const group = groupRef.current!;
-    meshMap.current.forEach((mesh) => {
-      group.remove(mesh);
-      mesh.geometry.dispose();
-      if (Array.isArray(mesh.material))
-        mesh.material.forEach((mat) => mat.dispose());
-      else mesh.material.dispose();
-    });
-    meshMap.current.clear();
+    const newIds = new Set(markers.map((m) => m.id));
 
-    // 새로운 마커마다 Mesh 생성
+    // a) 제거할 메쉬
+    meshMap.current.forEach((mesh, id) => {
+      if (!newIds.has(id)) {
+        group.remove(mesh);
+        mesh.geometry.dispose();
+        if (Array.isArray(mesh.material)) {
+          mesh.material.forEach((mat) => mat.dispose());
+        } else {
+          mesh.material.dispose();
+        }
+        meshMap.current.delete(id);
+      }
+    });
+
+    // b) 추가할 메쉬
     markers.forEach((m) => {
-      const texture = textureCache.current.get(m.imageUrl) || null;
-      const material = new THREE.MeshLambertMaterial({ map: texture });
-      //큐브 생성
+      if (meshMap.current.has(m.id)) return; // 이미 있으면 재사용
+      const tex = textureCache.current.get(m.imageUrl)!;
+      const material = new THREE.MeshLambertMaterial({ map: tex });
       const cube = new THREE.Mesh(
         new RoundedBoxGeometry(60, 60, 60, 10, 5),
         material,
       );
       cube.name = m.id.toString();
       cube.rotation.set(Math.PI / 7, -Math.PI / 6, 0);
-      // 포인터(핀) 생성
+      // Pin
       const cone = new THREE.Mesh(
         new THREE.ConeGeometry(30, 40, 16),
         new THREE.MeshLambertMaterial({
@@ -147,12 +155,13 @@ export default function ThreeJsMarker({
       cone.rotation.x = Math.PI;
       cone.position.set(0, -55, 0);
       cube.add(cone);
+
       group.add(cube);
       meshMap.current.set(m.id, cube);
     });
 
     updatePositions();
-  };
+  }, [markers]);
 
   // 카메라 프로젝션을 사용해 위도/경도 → 화면 픽셀 위치로 변환
   const updatePositions = () => {

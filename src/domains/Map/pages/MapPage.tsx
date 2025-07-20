@@ -27,6 +27,8 @@ export default function MapPage() {
 
   // API로 불러온 매장 리스트
   const [stores, setStores] = useState<StoreInfo[]>([]);
+  // 화면 내 매장
+  const [filteredStores, setFilteredStores] = useState<StoreInfo[]>([]);
   // 사이드바에서 선택한 매장 (상세보기)
   const [selectedStore, setSelectedStore] = useState<StoreInfo | null>(null);
 
@@ -39,12 +41,12 @@ export default function MapPage() {
         const data = await fetchStores({
           keyword: '',
           category: '',
-          latMin: 37.0,
-          latMax: 38.0,
-          lngMin: 126.0,
-          lngMax: 127.0,
-          centerLat: 37.5,
-          centerLng: 126.8,
+          latMin: center.lat - 0.1,
+          latMax: center.lat + 0.1,
+          lngMin: center.lng - 0.1,
+          lngMax: center.lng + 0.1,
+          centerLat: center.lat,
+          centerLng: center.lng,
         });
         console.log(data.data);
         setStores(data.data);
@@ -53,7 +55,42 @@ export default function MapPage() {
       }
     };
     loadStores();
-  }, []);
+  }, [center]);
+
+  // 2) 화면 내 매장 필터링
+  const filterStoresInView = useCallback(() => {
+    if (!map) return;
+    const bounds = map.getBounds();
+    // pa: north, qa: south, oa: east, ha: west
+    const north = bounds.pa;
+    const south = bounds.qa;
+    const east = bounds.oa;
+    const west = bounds.ha;
+
+    const inView = stores.filter((store) => {
+      const { latitude: lat, longitude: lng } = store;
+      return lat <= north && lat >= south && lng <= east && lng >= west;
+    });
+    setFilteredStores(inView);
+  }, [map, stores]);
+
+  // 3) bounds 변경 시마다 필터링
+  useEffect(() => {
+    if (!map) return;
+    // 처음 렌더링 시
+    filterStoresInView();
+
+    // 바운드 변경 이벤트 등록
+    kakao.maps.event.addListener(map, 'bounds_changed', filterStoresInView);
+    // clean up
+    return () => {
+      kakao.maps.event.removeListener(
+        map,
+        'bounds_changed',
+        filterStoresInView,
+      );
+    };
+  }, [map, filterStoresInView]);
 
   // 2) Geolocation API로 내 위치 가져오기
   useEffect(() => {
@@ -90,7 +127,7 @@ export default function MapPage() {
   const [nearbyMarkers, farMarkers] = useMemo(() => {
     const near: MarkerProps[] = [];
     const far: MarkerProps[] = [];
-    stores.forEach((store) => {
+    filteredStores.forEach((store) => {
       const d = getDistance(center, {
         lat: store.latitude,
         lng: store.longitude,
@@ -105,7 +142,7 @@ export default function MapPage() {
       else far.push(marker);
     });
     return [near, far];
-  }, [stores, center]);
+  }, [filteredStores, center]);
 
   // 5) 맵 생성 핸들러
   const handleMapCreate = useCallback((mapInstance: kakao.maps.Map) => {
@@ -124,7 +161,7 @@ export default function MapPage() {
     <>
       {/* 사이드바 */}
       <div className="fixed top-[62px] md:top-[86px] left-0 bottom-0 w-64 z-20">
-        <MapSidebar stores={stores} onStoreSelect={openDetail} />
+        <MapSidebar stores={filteredStores} onStoreSelect={openDetail} />
       </div>
 
       {/* 지도 영역 */}
