@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import type { StoreInfo } from '../api/store';
 import clsx from 'clsx';
+import OnOffBtn from './OnOffBtn';
 
 interface RouteItem {
   id: number;
@@ -169,32 +170,7 @@ export default function RoadSection({
       <div className="space-y-2 px-4  ">
         <div className="flex items-center justify-between">
           <p className="text-xl font-semibold text-gray-600">최근 경로</p>
-
-          <div className="inline-flex items-center bg-backGround rounded-full p-1">
-            {/* ON 버튼 */}
-            <button
-              onClick={() => setShowRecent(true)}
-              className={`px-3 py-1 text-xs rounded-full transition-colors ${
-                showRecent
-                  ? 'bg-primaryGreen text-white'
-                  : 'text-gray-200 hover:bg-white'
-              }`}
-            >
-              ON
-            </button>
-
-            {/* OFF 버튼 */}
-            <button
-              onClick={() => setShowRecent(false)}
-              className={`px-3 py-1 text-xs rounded-full transition-colors ml-1 ${
-                !showRecent
-                  ? 'bg-primaryGreen text-white'
-                  : 'text-gray-200 hover:bg-white'
-              }`}
-            >
-              OFF
-            </button>
-          </div>
+          <OnOffBtn setShowRecent={setShowRecent} showRecent={showRecent} />
         </div>
         {showRecent && (
           <ul className="space-y-1">
