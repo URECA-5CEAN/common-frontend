@@ -1,44 +1,103 @@
-import { useCallback, useEffect, useRef } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three-stdlib';
-import type { MarkerProps } from '../KakaoMapContainer';
 import { RepeatWrapping } from 'three';
+import type { MarkerProps } from '../KakaoMapContainer';
+import type { StoreInfo } from '../api/store';
+
 interface ThreeJsMarkerProps {
   markers: MarkerProps[];
   map: kakao.maps.Map;
+  stores: StoreInfo[];
   setHoveredMarkerId: (id: string | null) => void;
-  container: HTMLDivElement; // 3D마커 부착할 컨테이너
+  container: HTMLDivElement;
+  openDetail: (store: StoreInfo) => void;
 }
 
 export default function ThreeJsMarker({
   markers,
   map,
+  stores,
   setHoveredMarkerId,
   container,
+  openDetail,
 }: ThreeJsMarkerProps) {
-  // Raycaster와 마우스 좌표, Three.js 컴포넌트(렌더러, 카메라, 씬) 참조
   const raycaster = useRef(new THREE.Raycaster());
   const mouse = useRef(new THREE.Vector2());
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const cameraRef = useRef<THREE.OrthographicCamera | null>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const groupRef = useRef<THREE.Group | null>(null);
-  // 텍스처 캐시 및 마커 ID ↔ Mesh 맵핑
   const textureCache = useRef<Map<string, THREE.Texture>>(new Map());
   const meshMap = useRef<Map<string, THREE.Mesh>>(new Map());
-
-  // 호버 해제 지연을 위한 타이머 및 마지막 호버 ID
   const hoverOutTimeout = useRef<number | null>(null);
   const lastHoverRef = useRef<string | null>(null);
-
   const imageTimestamp = useRef(Date.now()).current;
 
-  // 텍스처 로드 부분 수정
+  // Build or update meshes when markers change
+  const buildOrUpdateMeshes = useCallback(() => {
+    const group = groupRef.current!;
+    const newIds = new Set(markers.map((m) => m.id));
+
+    // Remove old meshes
+    meshMap.current.forEach((mesh, id) => {
+      if (!newIds.has(id)) {
+        group.remove(mesh);
+        mesh.geometry.dispose();
+        if (Array.isArray(mesh.material)) {
+          mesh.material.forEach((mat) => mat.dispose());
+        } else {
+          mesh.material.dispose();
+        }
+        meshMap.current.delete(id);
+      }
+    });
+
+    // Add new meshes
+    markers.forEach((m) => {
+      if (meshMap.current.has(m.id)) return;
+      const url = /^data:image/.test(m.imageUrl)
+        ? m.imageUrl
+        : `${m.imageUrl}?ts=${imageTimestamp}`;
+      const tex = textureCache.current.get(url)!;
+      tex.wrapS = RepeatWrapping;
+      tex.wrapT = RepeatWrapping;
+
+      const material = new THREE.MeshLambertMaterial({
+        map: tex,
+        depthTest: false,
+      });
+      const cube = new THREE.Mesh(
+        new RoundedBoxGeometry(40, 40, 40, 10, 5),
+        material,
+      );
+      cube.name = m.id;
+      cube.rotation.set(Math.PI / 7, -Math.PI / 6, 0);
+
+      const cone = new THREE.Mesh(
+        new THREE.ConeGeometry(25, 40, 20),
+        new THREE.MeshLambertMaterial({
+          color: 'red',
+          transparent: true,
+          opacity: 0.4,
+          depthWrite: false,
+        }),
+      );
+      cone.rotation.x = Math.PI;
+      cone.position.set(0, -35, 0);
+      cube.add(cone);
+      group.add(cube);
+      meshMap.current.set(m.id, cube);
+    });
+
+    updatePositions();
+  }, [markers, imageTimestamp]);
+
+  // Load textures
   useEffect(() => {
     if (!map) return;
     const loader = new THREE.TextureLoader();
     loader.setCrossOrigin('anonymous');
-
     Promise.all(
       markers.map(
         (m) =>
@@ -54,15 +113,16 @@ export default function ThreeJsMarker({
           }),
       ),
     ).then(buildOrUpdateMeshes);
-  }, [map, markers, imageTimestamp]);
+  }, [map, markers, imageTimestamp, buildOrUpdateMeshes]);
 
-  // 씬/카메라/렌더러 초기화
+  // Initialize scene, camera, renderer
   useEffect(() => {
     if (!container || !map) return;
-    const w = container.clientWidth,
-      h = container.clientHeight;
+    const w = container.clientWidth;
+    const h = container.clientHeight;
     const scene = new THREE.Scene();
     sceneRef.current = scene;
+
     const camera = new THREE.OrthographicCamera(
       -w / 2,
       w / 2,
@@ -73,32 +133,31 @@ export default function ThreeJsMarker({
     );
     camera.position.set(0, 0, 1000);
     cameraRef.current = camera;
+
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setSize(w, h);
     Object.assign(renderer.domElement.style, {
       position: 'absolute',
       top: '0',
       left: '0',
-      pointerEvents: 'none', // 마우스 이벤트는 캔버스가 아니라 지도에 전달
+      pointerEvents: 'none',
       zIndex: '2',
     });
-    // container 맨 앞에 넣어서, 나중에 렌더되는 오버레이가 위로 쌓이게
     container.insertBefore(renderer.domElement, container.firstChild);
     rendererRef.current = renderer;
-    // 조명
+
     scene.add(new THREE.AmbientLight(0xffffff, 1));
     const light = new THREE.DirectionalLight(0xffffff, 2);
     light.position.set(0, 0, 1000);
     scene.add(light);
 
-    // 마커 Mesh들을 보관할 그룹
     const group = new THREE.Group();
     scene.add(group);
     groupRef.current = group;
 
     const handleResize = () => {
-      const W = container.clientWidth,
-        H = container.clientHeight;
+      const W = container.clientWidth;
+      const H = container.clientHeight;
       camera.left = -W / 2;
       camera.right = W / 2;
       camera.top = H / 2;
@@ -112,97 +171,32 @@ export default function ThreeJsMarker({
     return () => {
       window.removeEventListener('resize', handleResize);
       kakao.maps.event.removeListener(map, 'idle', handleResize);
-      if (renderer.domElement.parentNode === container) {
+      if (renderer.domElement.parentNode === container)
         container.removeChild(renderer.domElement);
-      }
       renderer.dispose();
     };
   }, [container, map]);
 
-  // 3) diff 기반 메쉬 추가/제거
-  const buildOrUpdateMeshes = useCallback(() => {
-    const group = groupRef.current!;
-    const newIds = new Set(markers.map((m) => m.id));
-
-    // a) 제거할 메쉬
-    meshMap.current.forEach((mesh, id) => {
-      if (!newIds.has(id)) {
-        group.remove(mesh);
-        mesh.geometry.dispose();
-        if (Array.isArray(mesh.material)) {
-          mesh.material.forEach((mat) => mat.dispose());
-        } else {
-          mesh.material.dispose();
-        }
-        meshMap.current.delete(id);
-      }
-    });
-
-    // b) 추가할 메쉬
-    markers.forEach((m) => {
-      if (meshMap.current.has(m.id)) return; // 이미 있으면 재사용
-      const url = /^data:image/.test(m.imageUrl)
-        ? m.imageUrl
-        : `${m.imageUrl}?ts=${imageTimestamp}`;
-      const tex = textureCache.current.get(url)!;
-      // 1) 래핑 모드 설정
-      tex.wrapS = RepeatWrapping;
-      tex.wrapT = RepeatWrapping;
-
-      const material = new THREE.MeshLambertMaterial({
-        map: tex,
-        depthTest: false,
-      });
-      const cube = new THREE.Mesh(
-        new RoundedBoxGeometry(40, 40, 40, 10, 5),
-        material,
-      );
-
-      cube.name = m.id.toString();
-      cube.rotation.set(Math.PI / 7, -Math.PI / 6, 0);
-      // Pin
-      const cone = new THREE.Mesh(
-        new THREE.ConeGeometry(25, 40, 20),
-        new THREE.MeshLambertMaterial({
-          color: 'red',
-          transparent: true,
-          opacity: 0.4,
-          depthWrite: false,
-        }),
-      );
-      cone.rotation.x = Math.PI;
-
-      cone.position.set(0, -35, 0);
-      cube.add(cone);
-      group.add(cube);
-      meshMap.current.set(m.id, cube);
-      group.position.set(0, 40, 0);
-    });
-
-    updatePositions();
-  }, [markers]);
-
-  // 카메라 프로젝션을 사용해 위도/경도 → 화면 픽셀 위치로 변환
+  // Update mesh positions
   const updatePositions = () => {
     if (!map) return;
     const proj = map.getProjection();
     if (!proj) return;
-    const cp = proj.containerPointFromCoords(map.getCenter());
+    const centerPt = proj.containerPointFromCoords(map.getCenter());
     meshMap.current.forEach((mesh, id) => {
       const m = markers.find((x) => x.id === id);
       if (!m) return;
       const pt = proj.containerPointFromCoords(
         new kakao.maps.LatLng(m.lat, m.lng),
       );
-      // 화면 중심 대비 오프셋으로 위치 설정
-      mesh.position.set(pt.x - cp.x, cp.y - pt.y, 50);
+      mesh.position.set(pt.x - centerPt.x, centerPt.y - pt.y, 50);
     });
     rendererRef.current?.render(sceneRef.current!, cameraRef.current!);
   };
 
-  // 마우스 무브 이벤트로 Raycaster 충돌 검사
+  // Raycaster hover
   useEffect(() => {
-    const handler = (e: MouseEvent) => {
+    const handleMove = (e: MouseEvent) => {
       const rect = container.getBoundingClientRect();
       mouse.current.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       mouse.current.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
@@ -210,15 +204,12 @@ export default function ThreeJsMarker({
       const hits = raycaster.current.intersectObjects(
         Array.from(meshMap.current.values()),
       );
-
       if (hits.length) {
-        // 마커 위 진입: 지연 해제 타이머 취소
         if (hoverOutTimeout.current) clearTimeout(hoverOutTimeout.current);
         const id = hits[0].object.name;
         lastHoverRef.current = id;
         setHoveredMarkerId(id);
-      } else if (lastHoverRef.current != null) {
-        // 마커 밖 이탈: 200ms 후 해제
+      } else if (lastHoverRef.current) {
         if (hoverOutTimeout.current) clearTimeout(hoverOutTimeout.current);
         hoverOutTimeout.current = window.setTimeout(() => {
           lastHoverRef.current = null;
@@ -226,9 +217,29 @@ export default function ThreeJsMarker({
         }, 200);
       }
     };
-    container.addEventListener('mousemove', handler);
-    return () => container.removeEventListener('mousemove', handler);
+    container.addEventListener('mousemove', handleMove);
+    return () => container.removeEventListener('mousemove', handleMove);
   }, [container, markers, setHoveredMarkerId]);
-  // 해당 컴포넌트는 화면에 직접 출력하는 DOM이 없으므로 null 반환
+
+  // Raycaster click
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      const rect = container.getBoundingClientRect();
+      mouse.current.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.current.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.current.setFromCamera(mouse.current, cameraRef.current!);
+      const hits = raycaster.current.intersectObjects(
+        Array.from(meshMap.current.values()),
+      );
+      if (hits.length) {
+        const hitId = hits[0].object.name;
+        const store = stores.find((s) => s.id === hitId);
+        if (store) openDetail(store);
+      }
+    };
+    container.addEventListener('click', handleClick);
+    return () => container.removeEventListener('click', handleClick);
+  }, [container, stores, openDetail]);
+
   return null;
 }

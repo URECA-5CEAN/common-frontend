@@ -2,9 +2,6 @@
 import axios from 'axios';
 import type { AxiosInstance, AxiosResponse } from 'axios';
 
-/**
- * 매장 정보 타입
- */
 export interface StoreInfo {
   id: string;
   name: string;
@@ -17,9 +14,6 @@ export interface StoreInfo {
   brandImageUrl?: string;
 }
 
-/**
- * 브랜드 정보 타입
- */
 export interface BrandInfo {
   id: string;
   name: string;
@@ -29,9 +23,6 @@ export interface BrandInfo {
 
 export type SortOrder = 'asc' | 'desc';
 
-/**
- * 매장 조회 파라미터
- */
 export interface FetchStoresParams {
   keyword?: string;
   category?: string;
@@ -43,9 +34,6 @@ export interface FetchStoresParams {
   centerLng: number;
 }
 
-/**
- * 브랜드 조회 파라미터
- */
 export interface FetchBrandsParams {
   keyword?: string;
   sortBy?: SortOrder;
@@ -57,17 +45,13 @@ const apiClient: AxiosInstance = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-/**
- * 매장 목록을 조회합니다.
- * @param params 검색 및 필터링 파라미터
- */
-
 interface FetchStoresResponse {
   statusCode: number;
   message: string;
   data: StoreInfo[];
 }
 
+//제휴처 목록 조회
 export const fetchStores = async (
   params: FetchStoresParams,
 ): Promise<StoreInfo[]> => {
@@ -98,9 +82,7 @@ export const fetchStores = async (
   }
 };
 
-/**
- * 브랜드 목록을 조회합니다.
- */
+//브랜드 목록 조회
 export const fetchStoreBrands = async (
   params: FetchBrandsParams = {},
 ): Promise<BrandInfo[]> => {

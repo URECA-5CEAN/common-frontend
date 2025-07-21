@@ -12,6 +12,7 @@ interface Props {
   stores: StoreInfo[];
   map?: kakao.maps.Map | null;
   containerRef?: React.RefObject<HTMLDivElement | null>;
+  openDetail: (store: StoreInfo) => void;
 }
 
 export default function FilterMarker({
@@ -22,6 +23,7 @@ export default function FilterMarker({
   stores,
   map,
   containerRef,
+  openDetail,
 }: Props) {
   const hoverOutRef = useRef<number | null>(null);
   const [overlay, setOverlay] = useState<{
@@ -66,6 +68,7 @@ export default function FilterMarker({
     map,
     containerRef,
   ]);
+
   const shouldCluster = farMarkers.length > 20;
   return (
     <>
@@ -73,28 +76,64 @@ export default function FilterMarker({
         <MarkerClusterer
           averageCenter={true}
           minLevel={5} // 줌 레벨 5 이상에서만 풀림
-          gridSize={60} // 클러스터 반경(px)
+          gridSize={50} // 클러스터 반경(px)
           styles={[
             {
               width: '53px',
               height: '52px',
               color: '#ffffff',
               backgroundColor: '#6FC3D1',
-              border: '3px solid #ffffff',
+              border: '2px solid #ffffff',
               borderRadius: '50%',
               textAlign: 'center',
               lineHeight: '52px',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+              boxShadow: '0 2px 2px rgba(12, 16, 233, 0.329)',
               zIndex: 10,
             },
           ]}
         >
-          {farMarkers.map((m) => (
+          {farMarkers.map((m) => {
+            const store = stores.find((s) => s.id === m.id);
+            if (!store) return null;
+            return (
+              <MapMarker
+                key={m.id}
+                position={{ lat: m.lat, lng: m.lng }}
+                onClick={() => openDetail(store)}
+                image={{
+                  src: `/s3-bucket/${m.imageUrl.split('/').pop()!}`,
+                  size: { width: 40, height: 40 },
+                  options: { offset: { x: 20, y: 40 } },
+                }}
+                zIndex={1}
+                onMouseOver={() => {
+                  if (hoverOutRef.current) clearTimeout(hoverOutRef.current);
+                  setHoveredMarkerId(m.id);
+                }}
+                onMouseOut={() => {
+                  if (hoverOutRef.current) clearTimeout(hoverOutRef.current);
+                  hoverOutRef.current = window.setTimeout(
+                    () => setHoveredMarkerId(null),
+                    300,
+                  );
+                }}
+              />
+            );
+          })}
+        </MarkerClusterer>
+      ) : (
+        farMarkers.map((m) => {
+          const store = stores.find((s) => s.id === m.id);
+          if (!store) return null;
+          return (
             <MapMarker
               key={m.id}
               position={{ lat: m.lat, lng: m.lng }}
+              onClick={() => openDetail(store)}
               image={{
-                src: `/s3-bucket/${m.imageUrl.split('/').pop()!}`,
+                src: shouldCluster
+                  ? `/s3-bucket/${m.imageUrl.split('/').pop()!}`
+                  : m.imageUrl,
                 size: { width: 40, height: 40 },
                 options: { offset: { x: 20, y: 40 } },
               }}
@@ -111,32 +150,8 @@ export default function FilterMarker({
                 );
               }}
             />
-          ))}
-        </MarkerClusterer>
-      ) : (
-        farMarkers.map((m) => (
-          <MapMarker
-            key={m.id}
-            position={{ lat: m.lat, lng: m.lng }}
-            image={{
-              src: m.imageUrl,
-              size: { width: 40, height: 40 },
-              options: { offset: { x: 20, y: 40 } },
-            }}
-            zIndex={1}
-            onMouseOver={() => {
-              if (hoverOutRef.current) clearTimeout(hoverOutRef.current);
-              setHoveredMarkerId(m.id);
-            }}
-            onMouseOut={() => {
-              if (hoverOutRef.current) clearTimeout(hoverOutRef.current);
-              hoverOutRef.current = window.setTimeout(
-                () => setHoveredMarkerId(null),
-                300,
-              );
-            }}
-          />
-        ))
+          );
+        })
       )}
       {overlay && (
         <div
@@ -144,7 +159,7 @@ export default function FilterMarker({
             position: 'absolute',
             left: overlay.x,
             top: overlay.y,
-            transform: 'translate(-50%, -100%)',
+            transform: 'translate(-50%, -120%)',
             pointerEvents: 'auto',
             zIndex: 9999,
           }}

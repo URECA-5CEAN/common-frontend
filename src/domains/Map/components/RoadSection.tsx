@@ -61,11 +61,11 @@ export default function RoadSection({
   return (
     <div className="max-w-md mx-auto  space-y-6 bg-white min-h-dvh">
       {/* 입력창 + 액션 버튼 */}
-      <div className="space-y-3 p-4 bg-white ">
+      <div className="space-y-3 py-4 px-2 bg-white ">
         {/* 입력창 영역 */}
         <div className="relative w-full max-w-md mx-auto">
           {/*인풋 컨테이너 */}
-          <div className="border border-gray-300 rounded-md overflow-hidden">
+          <div className="border border-gray-300 rounded-xl overflow-hidden">
             {/* 출발지 */}
             <input
               type="text"
@@ -90,7 +90,7 @@ export default function RoadSection({
           <button
             onClick={onSwap}
             aria-label="출발/도착 교환"
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 w-8 h-
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 w-6 h-6
             bg-white border border-gray-300  
             rounded-full flex items-center justify-center 
             shadow-sm  hover:bg-gray-50 focus:outline-none"
@@ -100,7 +100,7 @@ export default function RoadSection({
         </div>
 
         {/* 액션 버튼 그룹 */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 ">
           {/* 다시입력 */}
           <button
             onClick={onReset}
@@ -136,7 +136,7 @@ export default function RoadSection({
               btnStyle,
               'bg-primaryGreen',
               'text-white',
-              'ml-4',
+              'ml-8',
               'border border-gray-200',
               'hover:brightness-110',
               'focus:outline-none',
@@ -149,7 +149,7 @@ export default function RoadSection({
       </div>
 
       {isShowStar ? (
-        <div className="space-y-2 px-4">
+        <div className="space-y-2 px-2">
           <div className=" flex justify-between">
             <p className="text-xl font-bold text-gray-600">즐겨찾기</p>
             <p className="text-sm flex ">
@@ -167,7 +167,7 @@ export default function RoadSection({
       ) : (
         <>
           {/* 저장한 경로 */}
-          <div className="space-y-2 px-4">
+          <div className="space-y-2 px-2">
             <p className="text-xl font-semibold text-gray-600">저장한 경로</p>
             <ul className="space-y-1">
               {savedRoutes.map((r) => (
@@ -189,7 +189,7 @@ export default function RoadSection({
             </ul>
           </div>
           {/* 최근 경로 토글 */}
-          <div className="space-y-2 px-4  ">
+          <div className="space-y-2 px-2">
             <div className="flex items-center justify-between">
               <p className="text-xl font-semibold text-gray-600">최근 경로</p>
               <OnOffBtn setShowRecent={setShowRecent} showRecent={showRecent} />

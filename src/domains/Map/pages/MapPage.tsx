@@ -9,7 +9,10 @@ import React, {
 import KakaoMapContainer from '../KakaoMapContainer';
 import ThreeJsMarker from '../components/ThreeJsMarker';
 import FilterMarker from '../components/FilterMarker';
-import MapSidebar from '../components/MapSidebar';
+import MapSidebar, {
+  type MenuType,
+  type Panel,
+} from '../components/MapSidebar';
 import DetailSection from '../components/DetailSection';
 import { LocateFixed } from 'lucide-react';
 import type { MarkerProps, LatLng } from '../KakaoMapContainer';
@@ -17,6 +20,7 @@ import { getDistance } from '../utils/getDistance';
 import { fetchStores, type StoreInfo } from '../api/store';
 
 export default function MapPage() {
+  //도 + 3D 캔버스 감쌀 div
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Kakao Map 인스턴스
@@ -41,19 +45,19 @@ export default function MapPage() {
   // 디바운스 키워드(한글 검색 시 자꾸 바로 검색 => 에러)
   const [debouncedKeyword, setDebouncedKeyword] = useState<string>(keyword);
 
-  // 1) keyword가 바뀔 때마다 디바운스 타이머 재설정
-  useEffect(() => {
-    const handler = window.setTimeout(() => {
-      setDebouncedKeyword(keyword);
-    }, 300);
+  // 사이드바 menu 현재 상태
+  const [panel, setPanel] = useState<Panel>({ type: 'menu', menu: '지도' });
 
-    return () => {
-      clearTimeout(handler);
-    };
+  //검색 디바운스
+  useEffect(() => {
+    const handler = window.setTimeout(() => setDebouncedKeyword(keyword), 300);
+    return () => clearTimeout(handler);
   }, [keyword]);
+
+  // 줌 레벨
   const level = map?.getLevel();
 
-  // 1) 페이지 마운트, center,keyword 변경 시 매장 목록 호출
+  // 제휴처 목록 조회 함수
   useEffect(() => {
     if (!level) return;
     const loadStores = async () => {
@@ -77,31 +81,24 @@ export default function MapPage() {
     loadStores();
   }, [debouncedKeyword, level, center]);
 
-  // 2) 화면 내 매장 필터링
+  //화면 내 매장만 filter해 sidebar 및 marker적용
   const filterStoresInView = useCallback(() => {
     if (!map) return;
-    const bounds = map.getBounds();
-    if (!bounds) return;
-    // pa: north, qa: south, oa: east, ha: west
     const b = map.getBounds() as any;
-    const north = b.pa;
-    const south = b.qa;
-    const east = b.oa;
-    const west = b.ha;
-    const inView = stores.filter((store) => {
-      const { latitude: lat, longitude: lng } = store;
-      return lat <= north && lat >= south && lng <= east && lng >= west;
+    // pa: north, qa: south, oa: east, ha: west
+    const inView = stores.filter((s) => {
+      const { latitude: lat, longitude: lng } = s;
+      return lat <= b.pa && lat >= b.qa && lng <= b.oa && lng >= b.ha;
     });
     setFilteredStores(inView);
   }, [map, stores]);
 
-  // 3) bounds 변경 시마다 필터링
+  // bounds 변경 시마다 필터링
   useEffect(() => {
     if (!map) return;
+
     // 처음 렌더링 시
     filterStoresInView();
-
-    // 바운드 변경 이벤트 등록
     kakao.maps.event.addListener(map, 'bounds_changed', filterStoresInView);
     // clean up
     return () => {
@@ -113,7 +110,7 @@ export default function MapPage() {
     };
   }, [map, filterStoresInView]);
 
-  // 2) Geolocation API로 내 위치 가져오기
+  // Geolocation API로 내 위치 가져오기
   useEffect(() => {
     navigator.geolocation?.getCurrentPosition(
       (pos) =>
@@ -126,30 +123,31 @@ export default function MapPage() {
     );
   }, []);
 
-  // 3) 내 위치가 생기면 지도 중심으로 이동
+  // 내 위치가 생기면 지도 중심으로 이동
   useEffect(() => {
     if (map && myLocation) {
-      const ll = new kakao.maps.LatLng(myLocation.lat, myLocation.lng);
-      map.panTo(ll);
+      const mylocate = new kakao.maps.LatLng(myLocation.lat, myLocation.lng);
+      map.panTo(mylocate);
       setCenter(myLocation);
     }
   }, [map, myLocation]);
 
-  // 5) ‘내 위치’ 버튼 핸들러
+  // 내 위치로 돌아가는 함수
   const goToMyLocation = useCallback(() => {
     if (!map || !myLocation) return;
-    const ll = new kakao.maps.LatLng(myLocation.lat, myLocation.lng);
-    map.panTo(ll);
+    const mylocate = new kakao.maps.LatLng(myLocation.lat, myLocation.lng);
+    map.panTo(mylocate);
     setCenter(myLocation);
   }, [map, myLocation, setCenter]);
 
-  // 4) 매장 데이터를 MarkerProps 형태로 변환 & 반경 내/외 분리
+  // 거리 기준으로 2D / 3D 마커 분리 RADIUS_JN = 거리
   const RADIUS_KM = 1;
   const [nearbyMarkers, farMarkers] = useMemo(() => {
     const near: MarkerProps[] = [];
     const far: MarkerProps[] = [];
     filteredStores.forEach((store) => {
-      const d = getDistance(center, {
+      //중심과 제휴처 거리
+      const distance = getDistance(center, {
         lat: store.latitude,
         lng: store.longitude,
       });
@@ -159,19 +157,27 @@ export default function MapPage() {
         lng: store.longitude,
         imageUrl: store.brandImageUrl ?? '',
       };
-      if (d <= RADIUS_KM) near.push(marker);
+      //설정 거리기준 가까운 제휴처 먼 제휴처 나눔
+      if (distance <= RADIUS_KM) near.push(marker);
       else far.push(marker);
     });
     return [near, far];
   }, [filteredStores, center]);
 
-  // 6) 사이드바에서 매장 선택
+  // 사이드바 메뉴 Open
+  const openMenu = (menu: MenuType) => {
+    setPanel({ type: 'menu', menu });
+  };
+
+  //매장 선택 시 상세열기
   const openDetail = useCallback((store: StoreInfo) => {
-    setSelectedStore(store);
+    setPanel({ type: 'detail', menu: '지도', item: store });
   }, []);
 
-  // 7) 상세 닫기
-  const closeDetail = useCallback(() => setSelectedStore(null), []);
+  //상세 닫기
+  const closePanel = useCallback(() => {
+    setPanel({ type: 'menu', menu: '지도' });
+  }, []);
 
   //keyword 변경
   const changeKeyword = (e: ChangeEvent<HTMLInputElement>) => {
@@ -184,7 +190,10 @@ export default function MapPage() {
       <div className="fixed top-[62px] md:top-[86px] left-0 bottom-0 w-20 z-20">
         <MapSidebar
           stores={filteredStores}
-          onStoreSelect={openDetail}
+          panel={panel}
+          openMenu={openMenu}
+          openDetail={openDetail}
+          onClose={closePanel}
           changeKeyword={changeKeyword}
           keyword={keyword}
         />
@@ -208,6 +217,7 @@ export default function MapPage() {
               map={map}
               containerRef={containerRef}
               stores={filteredStores}
+              openDetail={openDetail}
             />
 
             {/* 3D 마커 */}
@@ -217,6 +227,8 @@ export default function MapPage() {
                 map={map}
                 setHoveredMarkerId={setHoveredId}
                 container={containerRef.current!}
+                openDetail={openDetail}
+                stores={filteredStores}
               />
             )}
 
@@ -234,9 +246,7 @@ export default function MapPage() {
       </div>
 
       {/* 상세 패널 */}
-      {selectedStore && (
-        <DetailSection store={selectedStore} onClose={closeDetail} />
-      )}
+      {selectedStore && <DetailSection store={selectedStore} />}
     </>
   );
 }

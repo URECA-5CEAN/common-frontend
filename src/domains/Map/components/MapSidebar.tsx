@@ -1,80 +1,84 @@
-import React, { ReactNode, useState, type ChangeEventHandler } from 'react';
+// src/components/MapSidebar.tsx
+
+import React, { type ChangeEventHandler } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import mapImage from '@/assets/image/MapImage.svg';
 import starImage from '@/assets/image/StarImage.svg';
 import roadImage from '@/assets/image/roadImage.svg';
 import benefitImage from '@/assets/image/BenefitImage.svg';
 
-import SidebarPanel from './SidebarPanel';
 import SidebarMenu from './SidebarMenu';
+import SidebarPanel from './SidebarPanel';
 import type { StoreInfo } from '../api/store';
 
-interface sideBarProps {
+// 메뉴 타입
+export type MenuType = '지도' | '즐겨찾기' | '길찾기' | '혜택인증';
+export const menus: MenuType[] = ['지도', '즐겨찾기', '길찾기', '혜택인증'];
+export const menuIcons = [mapImage, starImage, roadImage, benefitImage];
+
+// Panel 타입 (MapPage에서 관리)
+export type Panel = {
+  type: 'menu' | 'detail';
+  menu: MenuType;
+  item?: StoreInfo;
+};
+
+interface SideBarProps {
   stores: StoreInfo[];
-  onStoreSelect: (store: StoreInfo) => void;
+  panel: Panel; // <- MapPage에서 내려받는 현재 panel
+  openMenu: (menu: MenuType) => void; // <- 메뉴 변경 콜백
+  openDetail: (store: StoreInfo) => void; // <- 상세 열기 콜백
+  onClose: (index: number) => void; // <- 패널 닫기 콜백
   changeKeyword?: ChangeEventHandler<HTMLInputElement>;
   keyword?: string;
 }
 
-//메뉴 타입 및 매핑된 아이콘 배열
-export type MenuType = '지도' | '즐겨찾기' | '길찾기' | '혜택인증';
-const menus: MenuType[] = ['지도', '즐겨찾기', '길찾기', '혜택인증'];
-const menuIcons = [mapImage, starImage, roadImage, benefitImage];
-
 export default function MapSidebar({
   stores,
-  onStoreSelect,
+  panel,
+  openMenu,
+  openDetail,
+  onClose,
   changeKeyword,
   keyword,
-}: sideBarProps) {
-  // 열린 패널 스택: ['menu' 혹은 'detail', 메뉴 타입, 상세 아이템]
-  const [panels, setPanels] = useState<
-    {
-      type: 'menu' | 'detail';
-      menu: MenuType;
-      item?: StoreInfo;
-    }[]
-  >([]);
-
-  // 메뉴 버튼 클릭: 가장 상위 패널을 메뉴 타입으로 초기화
-  const openMenu = (menu: MenuType) => setPanels([{ type: 'menu', menu }]);
-
-  //매장 클릭: 상세 패널 추가
-  const openDetail = (store: StoreInfo) => {
-    const currentMenu = panels[0]?.menu;
-    if (!currentMenu) return; // 메뉴가 없으면 동작 중지
-    setPanels([
-      { type: 'menu', menu: currentMenu }, // 메뉴 패널 유지
-      { type: 'detail', menu: currentMenu, item: store }, // 상세 패널 추가
-    ]);
-
-    onStoreSelect(store);
-  };
-  ///패널 닫기: 해당 인덱스 이후 패널 제거
-  const closePanel = (index: number) =>
-    setPanels((prev) => prev.slice(0, index));
-
+}: SideBarProps) {
   return (
     <>
+      {/* 최상단 메뉴 */}
       <SidebarMenu
         menus={menus}
         icons={menuIcons}
-        activeMenu={panels[0]?.menu}
+        activeMenu={panel.menu}
         onSelect={openMenu}
       />
-      <AnimatePresence>
-        {panels.map((panel, idx) => (
+
+      {/* 패널 애니메이션 */}
+      <AnimatePresence initial={false}>
+        {/* 메뉴 패널 (always render) */}
+        <SidebarPanel
+          key="menu"
+          index={0}
+          panel={{ type: 'menu', menu: panel.menu }}
+          stores={stores}
+          openDetail={openDetail}
+          onClose={onClose}
+          changeKeyword={changeKeyword}
+          keyword={keyword}
+        />
+
+        {/* 상세 패널 (panel.type이 'detail'일 때만) */}
+        {panel.type === 'detail' && panel.item && (
           <SidebarPanel
-            key={idx}
-            index={idx}
+            key="detail"
+            index={1}
             panel={panel}
-            stores={stores} // 매장 리스트 전달
-            openDetail={openDetail} // 상세 콜백 전달
-            onClose={closePanel}
+            stores={stores}
+            openDetail={openDetail}
+            onClose={onClose}
             changeKeyword={changeKeyword}
             keyword={keyword}
           />
-        ))}
+        )}
       </AnimatePresence>
     </>
   );

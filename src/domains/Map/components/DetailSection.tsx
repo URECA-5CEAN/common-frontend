@@ -1,7 +1,7 @@
-import type { StoreInfo, Benefit, RankingItem } from '../MockStore';
 import { Star, Share2, Webcam } from 'lucide-react';
 import StartEndBtn from './StartEndBtn';
 import IconActionGroup from './IconActionGroup';
+import type { StoreInfo } from '../api/store';
 
 interface DetailSectionProps {
   store: StoreInfo;
@@ -24,7 +24,7 @@ export default function DetailSection({ store }: DetailSectionProps) {
       </div>
 
       {/* 간단 설명 */}
-      <p className="text-gray-700">{store.description}</p>
+      <p className="text-gray-700">{store.address}</p>
 
       <div className="flex justify-between ">
         <IconActionGroup
