@@ -13,17 +13,17 @@ const RankingPodium = ({ podiumRanks }: PodiumProps) => {
       style={{ backgroundImage: `url(${podiumImage})` }}
     >
       {first && (
-        <div className="absolute -top-[9%] left-1/2 -translate-x-1/2 font-bold">
+        <div className="absolute -top-[9%] left-1/2 -translate-x-1/2 font-bold truncate overflow-hidden whitespace-nowrap max-w-32 text-center">
           {first}
         </div>
       )}
       {second && (
-        <div className="absolute top-[11%] left-[16%] -translate-x-1/2 font-bold">
+        <div className="absolute top-[11%] left-[16%] -translate-x-1/2 font-bold truncate overflow-hidden whitespace-nowrap max-w-32 text-center">
           {second}
         </div>
       )}
       {third && (
-        <div className="absolute top-[14%] right-[16%] translate-x-1/2 text-center font-bold">
+        <div className="absolute top-[14%] right-[16%] translate-x-1/2 font-bold truncate overflow-hidden whitespace-nowrap max-w-32 text-center">
           {third}
         </div>
       )}
