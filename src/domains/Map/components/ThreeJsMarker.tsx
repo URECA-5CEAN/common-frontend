@@ -80,7 +80,7 @@ export default function ThreeJsMarker({
       top: '0',
       left: '0',
       pointerEvents: 'none', // 마우스 이벤트는 캔버스가 아니라 지도에 전달
-      zIndex: '0',
+      zIndex: '2',
     });
     // container 맨 앞에 넣어서, 나중에 렌더되는 오버레이가 위로 쌓이게
     container.insertBefore(renderer.domElement, container.firstChild);

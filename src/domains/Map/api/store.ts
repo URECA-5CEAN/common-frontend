@@ -87,7 +87,7 @@ export const fetchStores = async (
         },
       },
     );
-    
+
     return response.data.data;
   } catch (error: any) {
     const message =

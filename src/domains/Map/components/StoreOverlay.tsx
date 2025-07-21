@@ -18,14 +18,14 @@ const StoreOverlay = ({ lat, lng, store }: OverlayProps) => {
       {/* 헤더 */}
       <div className="flex justify-between items-start">
         <div>
-          <p className="text-lg font-bold text-gray-900">{store.name}</p>
+          <p className="text-lg font-bold text-gray-900 ">{store.name}</p>
         </div>
-        <span className="text-sm font-semibold text-primaryGreen-80 ml-2 mt-2">
-          영업중
-        </span>
-        <button className="text-m text-primaryGreen  ">혜택 사용 가능</button>
-      </div>
 
+        <button className="text-m text-primaryGreen">혜택 사용 가능</button>
+      </div>
+      <span className="text-sm font-semibold text-primaryGreen-80 float-right">
+        영업중
+      </span>
       {/* 혜택안내 영역 */}
       <div>
         <p className="text-lg   mb-1">받을 수 있는 혜택</p>

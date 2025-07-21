@@ -16,6 +16,7 @@ interface SidebarPanelProps {
   openDetail: (store: StoreInfo) => void;
   onClose: (idx: number) => void;
   changeKeyword?: ChangeEventHandler<HTMLInputElement>;
+  keyword?: keyword;
 }
 
 export default function SidebarPanel({
@@ -25,9 +26,11 @@ export default function SidebarPanel({
   openDetail,
   onClose,
   changeKeyword,
+  keyword,
 }: SidebarPanelProps) {
   const [startValue, setStartValue] = useState('');
   const [endValue, setEndValue] = useState('');
+  const [isShowStar, IsSetShowStar] = useState<boolean>(false);
 
   const onStartChange = (v: string) => setStartValue(v);
   const onEndChange = (v: string) => setEndValue(v);
@@ -50,7 +53,7 @@ export default function SidebarPanel({
 
   const onStar = () => {
     // 즐겨찾기 동작 (예: API 호출 또는 상태 업데이트)
-    console.log('즐겨찾기:', { from: startValue, to: endValue });
+    IsSetShowStar((prev) => !prev);
   };
 
   const onNavigate = () => {
@@ -87,6 +90,7 @@ export default function SidebarPanel({
             openDetail={openDetail}
             stores={stores}
             changeKeyword={changeKeyword}
+            keyword={keyword}
           />
         )}
         {panel.type === 'menu' && panel.menu === '즐겨찾기' && (
@@ -103,6 +107,7 @@ export default function SidebarPanel({
             onStar={onStar}
             onNavigate={onNavigate}
             openDetail={openDetail}
+            isShowStar={isShowStar}
           />
         )}
         {panel.type === 'detail' && panel.item && (

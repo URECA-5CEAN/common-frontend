@@ -31,7 +31,7 @@ export default function KakaoMapContainer({
   // Kakao Maps SDK 비동기 로딩 훅
   const [loading, error] = useKakaoLoader({
     appkey: '8d8c95c000044686b1c98de7e08ae5c1',
-    libraries: ['services'],
+    libraries: ['services', 'clusterer'],
   });
 
   if (loading) return <div>지도를 불러오는 중...</div>;
@@ -42,7 +42,7 @@ export default function KakaoMapContainer({
       center={center}
       level={level} //
       style={{ width: '100%', height: '100%' }}
-      onCreate={(map) => onMapCreate(map)} //맵 생성 인스턴스 콜백
+      onCreate={onMapCreate} //맵 생성 인스턴스 콜백
       onCenterChanged={(m) => {
         // 사용자가 드래그/줌으로 중심 변경 시 중심좌표 변경
         const c = {

@@ -45,24 +45,26 @@ export default function MapPage() {
   useEffect(() => {
     const handler = window.setTimeout(() => {
       setDebouncedKeyword(keyword);
-    }, 500);
+    }, 300);
 
     return () => {
       clearTimeout(handler);
     };
   }, [keyword]);
+  const level = map?.getLevel();
 
   // 1) 페이지 마운트, center,keyword 변경 시 매장 목록 호출
   useEffect(() => {
+    if (!level) return;
     const loadStores = async () => {
       try {
         const data = await fetchStores({
-          keyword: debouncedKeyword,
+          keyword: debouncedKeyword || '',
           category: '',
-          latMin: center.lat - 0.05,
-          latMax: center.lat + 0.05,
-          lngMin: center.lng - 0.05,
-          lngMax: center.lng + 0.05,
+          latMin: center.lat - 0.01 * level,
+          latMax: center.lat + 0.01 * level,
+          lngMin: center.lng - 0.01 * level,
+          lngMax: center.lng + 0.01 * level,
           centerLat: center.lat,
           centerLng: center.lng,
         });
@@ -73,7 +75,7 @@ export default function MapPage() {
       }
     };
     loadStores();
-  }, [center, debouncedKeyword]);
+  }, [debouncedKeyword, level, center]);
 
   // 2) 화면 내 매장 필터링
   const filterStoresInView = useCallback(() => {
@@ -163,11 +165,6 @@ export default function MapPage() {
     return [near, far];
   }, [filteredStores, center]);
 
-  // 5) 맵 생성 핸들러
-  const handleMapCreate = useCallback((mapInstance: kakao.maps.Map) => {
-    setMap(mapInstance);
-  }, []);
-
   // 6) 사이드바에서 매장 선택
   const openDetail = useCallback((store: StoreInfo) => {
     setSelectedStore(store);
@@ -184,11 +181,12 @@ export default function MapPage() {
   return (
     <>
       {/* 사이드바 */}
-      <div className="fixed top-[62px] md:top-[86px] left-0 bottom-0 w-64 z-20">
+      <div className="fixed top-[62px] md:top-[86px] left-0 bottom-0 w-20 z-20">
         <MapSidebar
           stores={filteredStores}
           onStoreSelect={openDetail}
           changeKeyword={changeKeyword}
+          keyword={keyword}
         />
       </div>
 
@@ -207,6 +205,8 @@ export default function MapPage() {
               farMarkers={farMarkers}
               hoveredMarkerId={hoveredId}
               setHoveredMarkerId={setHoveredId}
+              map={map}
+              containerRef={containerRef}
               stores={filteredStores}
             />
 

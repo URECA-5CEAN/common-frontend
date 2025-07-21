@@ -13,6 +13,7 @@ interface sideBarProps {
   stores: StoreInfo[];
   onStoreSelect: (store: StoreInfo) => void;
   changeKeyword?: ChangeEventHandler<HTMLInputElement>;
+  keyword?: string;
 }
 
 //메뉴 타입 및 매핑된 아이콘 배열
@@ -24,6 +25,7 @@ export default function MapSidebar({
   stores,
   onStoreSelect,
   changeKeyword,
+  keyword,
 }: sideBarProps) {
   // 열린 패널 스택: ['menu' 혹은 'detail', 메뉴 타입, 상세 아이템]
   const [panels, setPanels] = useState<
@@ -70,6 +72,7 @@ export default function MapSidebar({
             openDetail={openDetail} // 상세 콜백 전달
             onClose={closePanel}
             changeKeyword={changeKeyword}
+            keyword={keyword}
           />
         ))}
       </AnimatePresence>
