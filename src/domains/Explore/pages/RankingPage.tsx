@@ -16,7 +16,7 @@ const RankingPage = () => {
   const [activeTab, setActiveTab] = useState(0);
 
   return (
-    <div className="h-[1500px] w-full max-w-[1050px]">
+    <div className="h-[1500px] w-full max-w-[1050px] px-6 sm:px-0">
       {/* 탭 버튼 */}
       <div>
         {tabs.map((item, i) => (
@@ -28,7 +28,7 @@ const RankingPage = () => {
             {item.title} 순위
             <span className="absolute bottom-0 left-0 h-[1px] w-full bg-gray-300" />
             <span
-              className={`absolute bottom-0 h-[2px] transition-all duration-300 bg-[#1CB0F7] ${activeTab === i ? 'left-0 w-full translate-x-0' : 'left-1/2 w-0 -translate-x-1/2'}`}
+              className={`absolute bottom-0 h-0.5 transition-all duration-400 bg-[#1CB0F7] ${activeTab === i ? 'left-0 w-full translate-x-0' : 'left-1/2 w-0 -translate-x-1/2'}`}
             />
           </button>
         ))}
