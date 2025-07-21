@@ -1,13 +1,19 @@
 import { Search } from 'lucide-react';
 import StoreCard from './StoreCard';
-import type { StoreInfo } from '../MockStore';
+import type { StoreInfo } from '../api/store';
+import type { ChangeEventHandler } from 'react';
 
 interface MapSectionProps {
   stores: StoreInfo[];
   openDetail: (store: StoreInfo) => void;
+  changeKeyword?: ChangeEventHandler<HTMLInputElement>;
 }
 
-export default function MapSection({ stores, openDetail }: MapSectionProps) {
+export default function MapSection({
+  stores,
+  openDetail,
+  changeKeyword,
+}: MapSectionProps) {
   return (
     <div className="px-2 py-3 space-y-3 min-h-dvh">
       {/* 검색바 */}
@@ -16,6 +22,7 @@ export default function MapSection({ stores, openDetail }: MapSectionProps) {
           type="text"
           placeholder="검색"
           className="flex-1 bg-transparent outline-none ml-2 text-sm"
+          onChange={changeKeyword}
         />
         <Search />
       </div>

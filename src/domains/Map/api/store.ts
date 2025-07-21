@@ -62,23 +62,33 @@ const apiClient: AxiosInstance = axios.create({
  * @param params 검색 및 필터링 파라미터
  */
 
+interface FetchStoresResponse {
+  statusCode: number;
+  message: string;
+  data: StoreInfo[];
+}
+
 export const fetchStores = async (
   params: FetchStoresParams,
 ): Promise<StoreInfo[]> => {
   try {
-    const { data }: AxiosResponse<StoreInfo[]> = await apiClient.get('/store', {
-      params: {
-        keyword: params.keyword ?? '',
-        category: params.category ?? '',
-        latMin: params.latMin,
-        latMax: params.latMax,
-        lngMin: params.lngMin,
-        lngMax: params.lngMax,
-        centerLat: params.centerLat,
-        centerLng: params.centerLng,
+    const response: AxiosResponse<FetchStoresResponse> = await apiClient.get(
+      '/store',
+      {
+        params: {
+          keyword: params.keyword ?? '',
+          category: params.category ?? '',
+          latMin: params.latMin,
+          latMax: params.latMax,
+          lngMin: params.lngMin,
+          lngMax: params.lngMax,
+          centerLat: params.centerLat,
+          centerLng: params.centerLng,
+        },
       },
-    });
-    return data;
+    );
+    
+    return response.data.data;
   } catch (error: any) {
     const message =
       error.response?.data?.message ??

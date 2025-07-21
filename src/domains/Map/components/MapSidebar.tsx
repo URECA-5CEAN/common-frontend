@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useState, type ChangeEventHandler } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import mapImage from '@/assets/image/MapImage.svg';
 import starImage from '@/assets/image/StarImage.svg';
@@ -12,6 +12,7 @@ import type { StoreInfo } from '../api/store';
 interface sideBarProps {
   stores: StoreInfo[];
   onStoreSelect: (store: StoreInfo) => void;
+  changeKeyword?: ChangeEventHandler<HTMLInputElement>;
 }
 
 //메뉴 타입 및 매핑된 아이콘 배열
@@ -19,7 +20,11 @@ export type MenuType = '지도' | '즐겨찾기' | '길찾기' | '혜택인증';
 const menus: MenuType[] = ['지도', '즐겨찾기', '길찾기', '혜택인증'];
 const menuIcons = [mapImage, starImage, roadImage, benefitImage];
 
-export default function MapSidebar({ stores, onStoreSelect }: sideBarProps) {
+export default function MapSidebar({
+  stores,
+  onStoreSelect,
+  changeKeyword,
+}: sideBarProps) {
   // 열린 패널 스택: ['menu' 혹은 'detail', 메뉴 타입, 상세 아이템]
   const [panels, setPanels] = useState<
     {
@@ -64,6 +69,7 @@ export default function MapSidebar({ stores, onStoreSelect }: sideBarProps) {
             stores={stores} // 매장 리스트 전달
             openDetail={openDetail} // 상세 콜백 전달
             onClose={closePanel}
+            changeKeyword={changeKeyword}
           />
         ))}
       </AnimatePresence>

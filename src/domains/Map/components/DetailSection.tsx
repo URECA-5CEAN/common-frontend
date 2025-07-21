@@ -8,17 +8,19 @@ interface DetailSectionProps {
 }
 
 export default function DetailSection({ store }: DetailSectionProps) {
+  console.log(store);
   return (
     <div className="p-4 space-y-4 min-h-[800px]">
       {/* 헤더 */}
       <div className="flex items-center justify-between">
-        <p className="text-2xl font-bold">{store.name}</p>
+        <p className="text-xl font-bold">{store.name}</p>
+        <span className="text-gray-500 text-sm">{store.category}</span>
       </div>
 
       {/* 위치 & 영업시간 */}
       <div className="flex flex-col  text-gray-600">
         <p>영업시간</p>
-        <span>{store.openHours}</span>
+        <p>09:00~21:00</p>
       </div>
 
       {/* 간단 설명 */}
@@ -36,7 +38,7 @@ export default function DetailSection({ store }: DetailSectionProps) {
         <StartEndBtn />
       </div>
       {/* 주요 혜택 */}
-      <section>
+      {/*<section>
         <h3 className="text-lg font-semibold mb-2">주요 혜택</h3>
         <ul className="space-y-2">
           {store.benefits.map((b: Benefit) => (
@@ -54,9 +56,9 @@ export default function DetailSection({ store }: DetailSectionProps) {
           ))}
         </ul>
       </section>
-
+        */}
       {/* 내 도감 현황 */}
-      <section>
+      {/*<section>
         <h3 className="text-lg font-semibold mb-2">내 도감 현황</h3>
         <ul className="flex space-x-2">
           {store.history.map(({ benefitId, usedCount }) => (
@@ -70,8 +72,9 @@ export default function DetailSection({ store }: DetailSectionProps) {
         </ul>
         <button className="float-right">더보기</button>
       </section>
-
+        */}
       {/* 혜택 순위 */}
+      {/*
       <section>
         <h3 className="text-lg font-semibold mb-2">혜택 순위</h3>
         <ul className="space-y-1">
@@ -89,6 +92,7 @@ export default function DetailSection({ store }: DetailSectionProps) {
         </ul>
         <button className="float-right">더보기</button>
       </section>
+        */}
     </div>
   );
 }

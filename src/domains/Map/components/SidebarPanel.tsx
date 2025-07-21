@@ -7,7 +7,7 @@ import StarSection from './StarSection';
 import DetailSection from './DetailSection';
 import { ChevronLeft } from 'lucide-react';
 import RoadSection from './RoadSection';
-import { useState } from 'react';
+import { useState, type ChangeEventHandler } from 'react';
 
 interface SidebarPanelProps {
   index: number;
@@ -15,6 +15,7 @@ interface SidebarPanelProps {
   stores: StoreInfo[];
   openDetail: (store: StoreInfo) => void;
   onClose: (idx: number) => void;
+  changeKeyword?: ChangeEventHandler<HTMLInputElement>;
 }
 
 export default function SidebarPanel({
@@ -23,6 +24,7 @@ export default function SidebarPanel({
   stores,
   openDetail,
   onClose,
+  changeKeyword,
 }: SidebarPanelProps) {
   const [startValue, setStartValue] = useState('');
   const [endValue, setEndValue] = useState('');
@@ -81,7 +83,11 @@ export default function SidebarPanel({
 
         {/* 메뉴 및 상세 분기 렌더링 */}
         {panel.type === 'menu' && panel.menu === '지도' && (
-          <MapSection openDetail={openDetail} stores={stores} />
+          <MapSection
+            openDetail={openDetail}
+            stores={stores}
+            changeKeyword={changeKeyword}
+          />
         )}
         {panel.type === 'menu' && panel.menu === '즐겨찾기' && (
           <StarSection openDetail={openDetail} stores={stores} />

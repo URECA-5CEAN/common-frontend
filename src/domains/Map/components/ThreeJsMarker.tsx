@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three-stdlib';
 import type { MarkerProps } from '../KakaoMapContainer';
-
+import { RepeatWrapping } from 'three';
 interface ThreeJsMarkerProps {
   markers: MarkerProps[];
   map: kakao.maps.Map;
@@ -30,6 +30,31 @@ export default function ThreeJsMarker({
   // 호버 해제 지연을 위한 타이머 및 마지막 호버 ID
   const hoverOutTimeout = useRef<number | null>(null);
   const lastHoverRef = useRef<string | null>(null);
+
+  const imageTimestamp = useRef(Date.now()).current;
+
+  // 텍스처 로드 부분 수정
+  useEffect(() => {
+    if (!map) return;
+    const loader = new THREE.TextureLoader();
+    loader.setCrossOrigin('anonymous');
+
+    Promise.all(
+      markers.map(
+        (m) =>
+          new Promise<void>((res) => {
+            const url = /^data:image/.test(m.imageUrl)
+              ? m.imageUrl
+              : `${m.imageUrl}?ts=${imageTimestamp}`;
+            if (textureCache.current.has(url)) return res();
+            loader.load(url, (tex) => {
+              textureCache.current.set(url, tex);
+              res();
+            });
+          }),
+      ),
+    ).then(buildOrUpdateMeshes);
+  }, [map, markers, imageTimestamp]);
 
   // 씬/카메라/렌더러 초기화
   useEffect(() => {
@@ -93,25 +118,6 @@ export default function ThreeJsMarker({
     };
   }, [container, map]);
 
-  // 텍스처 로드 및 메쉬 빌드 markers 배열 변경 시마다 실행
-  useEffect(() => {
-    if (!map) return;
-    const loader = new THREE.TextureLoader();
-    //모든 이미지 로딩 완료 대기
-    Promise.all(
-      markers.map(
-        (m) =>
-          new Promise<void>((res) => {
-            if (textureCache.current.has(m.imageUrl)) return res();
-            loader.load(m.imageUrl, (tex) => {
-              textureCache.current.set(m.imageUrl, tex);
-              res();
-            });
-          }),
-      ),
-    ).then(buildOrUpdateMeshes);
-  }, [map, markers]);
-
   // 3) diff 기반 메쉬 추가/제거
   const buildOrUpdateMeshes = useCallback(() => {
     const group = groupRef.current!;
@@ -134,17 +140,28 @@ export default function ThreeJsMarker({
     // b) 추가할 메쉬
     markers.forEach((m) => {
       if (meshMap.current.has(m.id)) return; // 이미 있으면 재사용
-      const tex = textureCache.current.get(m.imageUrl)!;
-      const material = new THREE.MeshLambertMaterial({ map: tex });
+      const url = /^data:image/.test(m.imageUrl)
+        ? m.imageUrl
+        : `${m.imageUrl}?ts=${imageTimestamp}`;
+      const tex = textureCache.current.get(url)!;
+      // 1) 래핑 모드 설정
+      tex.wrapS = RepeatWrapping;
+      tex.wrapT = RepeatWrapping;
+
+      const material = new THREE.MeshLambertMaterial({
+        map: tex,
+        depthTest: false,
+      });
       const cube = new THREE.Mesh(
-        new RoundedBoxGeometry(60, 60, 60, 10, 5),
+        new RoundedBoxGeometry(40, 40, 40, 10, 5),
         material,
       );
+
       cube.name = m.id.toString();
       cube.rotation.set(Math.PI / 7, -Math.PI / 6, 0);
       // Pin
       const cone = new THREE.Mesh(
-        new THREE.ConeGeometry(30, 40, 16),
+        new THREE.ConeGeometry(25, 40, 10),
         new THREE.MeshLambertMaterial({
           color: 'red',
           transparent: true,
@@ -153,7 +170,7 @@ export default function ThreeJsMarker({
         }),
       );
       cone.rotation.x = Math.PI;
-      cone.position.set(0, -55, 0);
+      cone.position.set(0, -35, 0);
       cube.add(cone);
 
       group.add(cube);
