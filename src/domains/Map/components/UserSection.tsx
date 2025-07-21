@@ -17,7 +17,7 @@ export default function UserSection({
   const percent = Math.min(100, Math.floor((currentExp / nextLevelExp) * 100));
 
   return (
-    <div className="flex items-center space-x-4 bg-white p-4 pt-2 ">
+    <div className="flex items-center space-x-4 bg-white p-2 pt-2 ">
       {/* 등급 이미지 */}
       <img src={VipImage} alt="vip" className="w-20 h-20" />
 

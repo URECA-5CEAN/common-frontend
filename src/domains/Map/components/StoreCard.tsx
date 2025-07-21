@@ -19,9 +19,9 @@ export default function StoreCard({ store, openDetail }: StoreCardProps) {
         className="w-[100px] h-[100px] rounded-md mr-3"
       />
       {/* 텍스트 영역 */}
-      <div className="flex flex-1 mt-2 flex-col justify-between space-y-2 h-full ">
-        <p className="text-lg font-semibold ">{store.name}</p>
-        <p className=" text-xs text-gray-500 line-clamp-2 w-44 ">
+      <div className="flex flex-1 mt-2 flex-col justify-between space-y-2 h-full  ">
+        <p className="text-lg font-semibold truncate w-[170px]">{store.name}</p>
+        <p className=" text-xs text-gray-500 line-clamp-2 w-40">
           {store.address}
         </p>
         <div className="flex justify-between">
