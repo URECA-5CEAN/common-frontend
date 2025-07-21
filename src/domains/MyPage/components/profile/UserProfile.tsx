@@ -51,7 +51,6 @@ const UserProfile: React.FC<UserProfileProps> = ({
       <div className="flex gap-4 items-center w-full">
         <ProfileImage src={iconSrc} alt="우수아이콘" />
         <UserInfo
-          userInfo={userInfo}
           selectedBadgeName={selectedBadgeName}
           onBadgeClick={onBadgeClick}
           userInfoApi={userInfoApi}

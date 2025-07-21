@@ -14,12 +14,6 @@ export interface UsageHistoryItem {
 }
 
 export interface UserInfo {
-  nickname: string;
-  level: number;
-  currentExp: number;
-  maxExp: number;
-  location: string;
-  grade: string;
   collectionCount: number;
   totalCollection: number;
   missionCount: number;

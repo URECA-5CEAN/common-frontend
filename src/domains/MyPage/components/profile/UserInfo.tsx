@@ -1,8 +1,5 @@
 import { ProgressBar } from '@/domains/MyPage/components/ProgressBar';
-import type {
-  UserInfoApi,
-  UserInfo as UserInfoType,
-} from '@/domains/MyPage/types/profile';
+import type { UserInfoApi } from '@/domains/MyPage/types/profile';
 
 interface BadgeButtonProps {
   name: string;
@@ -44,14 +41,12 @@ const UserLocation: React.FC<UserLocationProps> = ({ location, grade }) => (
 );
 
 interface UserInfoProps {
-  userInfo: UserInfoType;
   selectedBadgeName: string;
   onBadgeClick: () => void;
   userInfoApi?: UserInfoApi;
 }
 
 const UserInfo: React.FC<UserInfoProps> = ({
-  userInfo,
   selectedBadgeName,
   onBadgeClick,
   userInfoApi,

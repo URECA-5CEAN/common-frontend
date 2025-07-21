@@ -33,12 +33,6 @@ const ProfilePage: React.FC = () => {
 
   // 실제로는 API에서 받아올 데이터
   const userInfo: UserInfo = {
-    nickname: '닉네임',
-    level: 6,
-    currentExp: 5,
-    maxExp: 20,
-    location: '서울특별시 강남구',
-    grade: '우수',
     collectionCount: 3,
     totalCollection: 105,
     missionCount: 0,
