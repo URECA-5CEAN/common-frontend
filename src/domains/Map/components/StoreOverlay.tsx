@@ -14,11 +14,11 @@ interface OverlayProps {
 const StoreOverlay = ({ lat, lng, store }: OverlayProps) => {
   const [isRoad, setIsRoad] = useState<boolean>(false);
   return (
-    <div className=" bg-white rounded-2xl  w-[360px] p-4 space-y-3 z-10">
+    <div className=" bg-white rounded-2xl  w-[360px] p-4 space-y-3 z-50">
       {/* 헤더 */}
       <div className="flex justify-between items-start">
         <div>
-          <p   className="text-lg font-bold text-gray-900">{store.name}</p>
+          <p className="text-lg font-bold text-gray-900">{store.name}</p>
         </div>
         <span className="text-sm font-semibold text-primaryGreen-80 ml-2 mt-2">
           영업중

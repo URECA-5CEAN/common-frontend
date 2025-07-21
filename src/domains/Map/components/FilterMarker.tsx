@@ -21,79 +21,74 @@ export default function FilterMarker({
 }: Props) {
   const hoverOutRef = useRef<number | null>(null);
 
-  // 2D 마커 렌더링 + hover 처리
+  // 1) 2D 마커만 렌더
+  const allMarkers = [...nearbyMarkers, ...farMarkers];
+  const render2DMarkers = farMarkers.map((m) => {
+    const imageName = m.imageUrl.split('/').pop()!;
+    const markerSrc = `/s3-bucket/${imageName}`;
+    return (
+      <MapMarker
+        key={m.id}
+        position={{ lat: m.lat, lng: m.lng }}
+        image={{
+          src: markerSrc,
+          size: { width: 40, height: 40 },
+          options: { offset: { x: 20, y: 40 } },
+        }}
+        zIndex={1}
+        onMouseOver={() => {
+          if (hoverOutRef.current) clearTimeout(hoverOutRef.current);
+          setHoveredMarkerId?.(m.id);
+        }}
+        onMouseOut={() => {
+          if (hoverOutRef.current) clearTimeout(hoverOutRef.current);
+          hoverOutRef.current = window.setTimeout(
+            () => setHoveredMarkerId?.(null),
+            300,
+          );
+        }}
+      />
+    );
+  });
+
+  // 2) hoveredMarkerId에 대응하는 오버레이
+  const hoverOverlay = (() => {
+    if (!hoveredMarkerId) return null;
+    const mk = allMarkers.find((x) => x.id === hoveredMarkerId);
+    const store = stores.find((s) => s.id === hoveredMarkerId);
+    if (!mk || !store) return null;
+
+    return (
+      <CustomOverlayMap
+        key={mk.id}
+        position={{ lat: mk.lat, lng: mk.lng }}
+        yAnchor={1.3}
+        zIndex={999}
+      >
+        <div
+          className="pointer-events-auto z-50"
+          onMouseEnter={() => {
+            if (hoverOutRef.current) clearTimeout(hoverOutRef.current);
+            setHoveredMarkerId?.(mk.id);
+          }}
+          onMouseLeave={() => {
+            if (hoverOutRef.current) clearTimeout(hoverOutRef.current);
+            hoverOutRef.current = window.setTimeout(
+              () => setHoveredMarkerId?.(null),
+              200,
+            );
+          }}
+        >
+          <StoreOverlay lat={mk.lat} lng={mk.lng} store={store} />
+        </div>
+      </CustomOverlayMap>
+    );
+  })();
+
   return (
     <>
-      {/* 반경 외 마커만 2D마커로 */}
-      {farMarkers.map((m) => {
-        const imageName = m.imageUrl.split('/').pop()!;
-        const markerSrc = `/s3-bucket/${imageName}`;
-        return (
-          <React.Fragment key={m.id}>
-            <MapMarker
-              position={{ lat: m.lat, lng: m.lng }}
-              image={{
-                src: markerSrc,
-                size: { width: 40, height: 40 },
-                options: { offset: { x: 20, y: 40 } },
-              }}
-              zIndex={1}
-              onMouseOver={() => {
-                // hover 상태 진입 시 기존 타이머 취소하고 ID 설정
-                if (hoverOutRef.current) clearTimeout(hoverOutRef.current);
-                setHoveredMarkerId?.(m.id);
-              }}
-              onMouseOut={() => {
-                // hover 벗어나면 300ms 후 오버레이 안보이게
-                if (hoverOutRef.current) clearTimeout(hoverOutRef.current);
-                hoverOutRef.current = window.setTimeout(() => {
-                  setHoveredMarkerId?.(null);
-                }, 300);
-              }}
-            />
-            {/* hover 중인 마커에 대해 오버레이 표시 */}
-            {hoveredMarkerId != null &&
-              (() => {
-                // hoveredMarkerId 에 대응하는 마커 찾기
-                const mk = [...nearbyMarkers, ...farMarkers].find(
-                  (x) => x.id === hoveredMarkerId,
-                );
-                if (!mk) return null;
-
-                // StoreInfo 배열에서 같은 id 가진 객체 찾기
-                const store = stores.find((s) => s.id === hoveredMarkerId);
-                if (!store) return null;
-                return (
-                  <>
-                    <CustomOverlayMap
-                      position={{ lat: mk.lat, lng: mk.lng }}
-                      yAnchor={1.2}
-                    >
-                      <div
-                        className="pointer-events-auto"
-                        onMouseEnter={() => {
-                          if (hoverOutRef.current)
-                            clearTimeout(hoverOutRef.current);
-                          setHoveredMarkerId?.(mk.id);
-                        }}
-                        onMouseLeave={() => {
-                          if (hoverOutRef.current)
-                            clearTimeout(hoverOutRef.current);
-                          hoverOutRef.current = window.setTimeout(
-                            () => setHoveredMarkerId?.(null),
-                            200,
-                          );
-                        }}
-                      >
-                        <StoreOverlay lat={mk.lat} lng={mk.lng} store={store} />
-                      </div>
-                    </CustomOverlayMap>
-                  </>
-                );
-              })()}
-          </React.Fragment>
-        );
-      })}
+      {render2DMarkers}
+      {hoverOverlay}
     </>
   );
 }

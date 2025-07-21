@@ -80,9 +80,10 @@ export default function ThreeJsMarker({
       top: '0',
       left: '0',
       pointerEvents: 'none', // 마우스 이벤트는 캔버스가 아니라 지도에 전달
-      zIndex: '10',
+      zIndex: '0',
     });
-    container.appendChild(renderer.domElement);
+    // container 맨 앞에 넣어서, 나중에 렌더되는 오버레이가 위로 쌓이게
+    container.insertBefore(renderer.domElement, container.firstChild);
     rendererRef.current = renderer;
     // 조명
     scene.add(new THREE.AmbientLight(0xffffff, 1));
@@ -161,7 +162,7 @@ export default function ThreeJsMarker({
       cube.rotation.set(Math.PI / 7, -Math.PI / 6, 0);
       // Pin
       const cone = new THREE.Mesh(
-        new THREE.ConeGeometry(25, 40, 10),
+        new THREE.ConeGeometry(25, 40, 20),
         new THREE.MeshLambertMaterial({
           color: 'red',
           transparent: true,
@@ -170,11 +171,12 @@ export default function ThreeJsMarker({
         }),
       );
       cone.rotation.x = Math.PI;
+
       cone.position.set(0, -35, 0);
       cube.add(cone);
-
       group.add(cube);
       meshMap.current.set(m.id, cube);
+      group.position.set(0, 40, 0);
     });
 
     updatePositions();
