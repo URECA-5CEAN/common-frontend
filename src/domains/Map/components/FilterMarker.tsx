@@ -2,12 +2,14 @@ import React, { useRef } from 'react';
 import { MapMarker, CustomOverlayMap } from 'react-kakao-maps-sdk';
 import StoreOverlay from './StoreOverlay';
 import type { MarkerProps } from '../KakaoMapContainer';
+import type { StoreInfo } from '../api/store';
 
 interface Props {
   nearbyMarkers: MarkerProps[];
   farMarkers: MarkerProps[];
-  hoveredMarkerId?: number | null;
-  setHoveredMarkerId?: (id: number | null) => void;
+  hoveredMarkerId?: string | null;
+  setHoveredMarkerId?: (id: string | null) => void;
+  stores: StoreInfo[];
 }
 
 export default function FilterMarker({
@@ -15,6 +17,7 @@ export default function FilterMarker({
   farMarkers,
   hoveredMarkerId,
   setHoveredMarkerId,
+  stores,
 }: Props) {
   const hoverOutRef = useRef<number | null>(null);
 
@@ -54,6 +57,9 @@ export default function FilterMarker({
               );
               if (!mk) return null;
 
+              // StoreInfo 배열에서 같은 id 가진 객체 찾기
+              const store = stores.find((s) => s.id === hoveredMarkerId);
+              if (!store) return null;
               return (
                 <>
                   <CustomOverlayMap
@@ -76,7 +82,7 @@ export default function FilterMarker({
                         );
                       }}
                     >
-                      <StoreOverlay lat={mk.lat} lng={mk.lng} />
+                      <StoreOverlay lat={mk.lat} lng={mk.lng} store={store} />
                     </div>
                   </CustomOverlayMap>
                 </>

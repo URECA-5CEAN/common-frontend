@@ -6,7 +6,7 @@ import type { MarkerProps } from '../KakaoMapContainer';
 interface ThreeJsMarkerProps {
   markers: MarkerProps[];
   map: kakao.maps.Map;
-  setHoveredMarkerId: (id: number | null) => void;
+  setHoveredMarkerId: (id: string | null) => void;
   container: HTMLDivElement; // 3D마커 부착할 컨테이너
 }
 
@@ -29,7 +29,7 @@ export default function ThreeJsMarker({
 
   // 호버 해제 지연을 위한 타이머 및 마지막 호버 ID
   const hoverOutTimeout = useRef<number | null>(null);
-  const lastHoverRef = useRef<number | null>(null);
+  const lastHoverRef = useRef<string | null>(null);
 
   // 씬/카메라/렌더러 초기화
   useEffect(() => {
@@ -195,7 +195,7 @@ export default function ThreeJsMarker({
       if (hits.length) {
         // 마커 위 진입: 지연 해제 타이머 취소
         if (hoverOutTimeout.current) clearTimeout(hoverOutTimeout.current);
-        const id = Number(hits[0].object.name);
+        const id = hits[0].object.name;
         lastHoverRef.current = id;
         setHoveredMarkerId(id);
       } else if (lastHoverRef.current != null) {

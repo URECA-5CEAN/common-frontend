@@ -32,7 +32,7 @@ export default function MapPage() {
   // 사이드바에서 선택한 매장 (상세보기)
   const [selectedStore, setSelectedStore] = useState<StoreInfo | null>(null);
 
-  const [hoveredId, setHoveredId] = useState<number | null>(null);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   // 1) 페이지 마운트, center 변경 시 매장 목록 호출
   useEffect(() => {
@@ -41,14 +41,13 @@ export default function MapPage() {
         const data = await fetchStores({
           keyword: '',
           category: '',
-          latMin: center.lat - 0.1,
-          latMax: center.lat + 0.1,
-          lngMin: center.lng - 0.1,
-          lngMax: center.lng + 0.1,
+          latMin: center.lat - 0.05,
+          latMax: center.lat + 0.05,
+          lngMin: center.lng - 0.05,
+          lngMax: center.lng + 0.05,
           centerLat: center.lat,
           centerLng: center.lng,
         });
-        console.log(data.data);
         setStores(data.data);
       } catch (err) {
         console.error('매장 호출 실패', err);
@@ -179,6 +178,7 @@ export default function MapPage() {
               farMarkers={farMarkers}
               hoveredMarkerId={hoveredId}
               setHoveredMarkerId={setHoveredId}
+              stores={filteredStores}
             />
 
             {/* 3D 마커 */}
