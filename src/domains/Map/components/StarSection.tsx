@@ -1,6 +1,6 @@
 import { Search } from 'lucide-react';
 import StoreCard from './StoreCard';
-import type { StoreInfo } from '../MockStore';
+import type { StoreInfo } from '../api/store';
 
 interface MapSectionProps {
   stores: StoreInfo[];

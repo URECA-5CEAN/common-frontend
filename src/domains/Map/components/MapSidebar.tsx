@@ -1,6 +1,6 @@
 // src/components/MapSidebar.tsx
 
-import React, { type ChangeEventHandler } from 'react';
+import { type ChangeEventHandler } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import mapImage from '@/assets/image/MapImage.svg';
 import starImage from '@/assets/image/StarImage.svg';
@@ -17,15 +17,13 @@ export const menus: MenuType[] = ['지도', '즐겨찾기', '길찾기', '혜택
 export const menuIcons = [mapImage, starImage, roadImage, benefitImage];
 
 // Panel 타입 (MapPage에서 관리)
-export type Panel = {
-  type: 'menu' | 'detail';
-  menu: MenuType;
-  item?: StoreInfo;
-};
+export type Panel =
+  | { type: 'menu'; menu: MenuType }
+  | { type: 'detail'; menu: MenuType; item: StoreInfo };
 
 interface SideBarProps {
   stores: StoreInfo[];
-  panel: Panel; // <- MapPage에서 내려받는 현재 panel
+  panel: Panel; // <- MapPage에서 내려받는 현재 메뉴
   openMenu: (menu: MenuType) => void; // <- 메뉴 변경 콜백
   openDetail: (store: StoreInfo) => void; // <- 상세 열기 콜백
   onClose: (index: number) => void; // <- 패널 닫기 콜백
@@ -42,13 +40,14 @@ export default function MapSidebar({
   changeKeyword,
   keyword,
 }: SideBarProps) {
+  if (!panel) return;
   return (
     <>
       {/* 최상단 메뉴 */}
       <SidebarMenu
         menus={menus}
         icons={menuIcons}
-        activeMenu={panel.menu}
+        activeMenu={panel?.menu}
         onSelect={openMenu}
       />
 
@@ -58,7 +57,7 @@ export default function MapSidebar({
         <SidebarPanel
           key="menu"
           index={0}
-          panel={{ type: 'menu', menu: panel.menu }}
+          panel={panel}
           stores={stores}
           openDetail={openDetail}
           onClose={onClose}
@@ -67,7 +66,7 @@ export default function MapSidebar({
         />
 
         {/* 상세 패널 (panel.type이 'detail'일 때만) */}
-        {panel.type === 'detail' && panel.item && (
+        {panel?.type === 'detail' && panel.item && (
           <SidebarPanel
             key="detail"
             index={1}

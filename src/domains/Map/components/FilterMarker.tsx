@@ -5,14 +5,14 @@ import type { MarkerProps } from '../KakaoMapContainer';
 import type { StoreInfo } from '../api/store';
 import { MarkerClusterer } from 'react-kakao-maps-sdk';
 interface Props {
-  nearbyMarkers: MarkerProps[];
-  farMarkers: MarkerProps[];
+  nearbyMarkers: MarkerProps[]; //3d마커
+  farMarkers: MarkerProps[]; //2D마커
   hoveredMarkerId?: string | null;
   setHoveredMarkerId: (id: string | null) => void;
-  stores: StoreInfo[];
+  stores: StoreInfo[]; //제휴처
   map?: kakao.maps.Map | null;
-  containerRef?: React.RefObject<HTMLDivElement | null>;
-  openDetail: (store: StoreInfo) => void;
+  containerRef?: React.RefObject<HTMLDivElement | null>; // 지도+캔버스 컨테이너
+  openDetail: (store: StoreInfo) => void; //click시 상세보기 open
 }
 
 export default function FilterMarker({
@@ -25,25 +25,28 @@ export default function FilterMarker({
   containerRef,
   openDetail,
 }: Props) {
+  // hover 해제 지연용 타이머 ID 저장
   const hoverOutRef = useRef<number | null>(null);
+  //오버레이에 전해줄 값
   const [overlay, setOverlay] = useState<{
     x: number;
     y: number;
     store: StoreInfo;
   } | null>(null);
 
-  // allMarkers를 useMemo로 묶어서, nearbyMarkers/farMarkers가 바뀔 때만 재계산
+  // allMarkers를 useMemo로 묶어 nearbyMarkers/farMarkers가 바뀔 때만 재계산
   const allMarkers = useMemo(
     () => [...nearbyMarkers, ...farMarkers],
     [nearbyMarkers, farMarkers],
   );
 
-  // hoveredMarkerId가 바뀔 때만 실행
+  // hoveredMarkerId가 바뀔 때마다 overlay 위치 계산
   useEffect(() => {
     if (!hoveredMarkerId || !map) {
       setOverlay(null);
       return;
     }
+    //마커와 제휴처 찾기
     const m = allMarkers.find((x) => x.id === hoveredMarkerId);
     const store = stores.find((s) => s.id === hoveredMarkerId);
     const container = containerRef?.current;
@@ -51,31 +54,28 @@ export default function FilterMarker({
       setOverlay(null);
       return;
     }
+    //위도,경도 → 화면 픽셀로 변환
     const proj = map.getProjection();
     const pt = proj.containerPointFromCoords(
       new kakao.maps.LatLng(m.lat, m.lng),
     );
     const rect = container.getBoundingClientRect();
+    // overlay에 위도경도와 제휴처 정보 저장
     setOverlay({
       x: pt.x + rect.left,
       y: pt.y + rect.top,
       store,
     });
-  }, [
-    hoveredMarkerId,
-    allMarkers, // stable thanks to useMemo
-    stores, // 실제 stores가 바뀔 때만
-    map,
-    containerRef,
-  ]);
+  }, [hoveredMarkerId, allMarkers, stores, map, containerRef]);
 
+  // farMarkers 개수에 따라 클러스터링 여부 결정
   const shouldCluster = farMarkers.length > 20;
   return (
     <>
       {shouldCluster ? (
         <MarkerClusterer
           averageCenter={true}
-          minLevel={5} // 줌 레벨 5 이상에서만 풀림
+          minLevel={5} // 줌 레벨 5 이상에서 클러스터 해체
           gridSize={50} // 클러스터 반경(px)
           styles={[
             {
@@ -93,6 +93,7 @@ export default function FilterMarker({
           ]}
         >
           {farMarkers.map((m) => {
+            //마커에 해당하는 제휴처 찾기
             const store = stores.find((s) => s.id === m.id);
             if (!store) return null;
             return (
@@ -101,7 +102,7 @@ export default function FilterMarker({
                 position={{ lat: m.lat, lng: m.lng }}
                 onClick={() => openDetail(store)}
                 image={{
-                  src: `/s3-bucket/${m.imageUrl.split('/').pop()!}`,
+                  src: `/s3-bucket/${m.imageUrl.split('/').pop()!}`, //클러스팅
                   size: { width: 40, height: 40 },
                   options: { offset: { x: 20, y: 40 } },
                 }}
@@ -131,9 +132,7 @@ export default function FilterMarker({
               position={{ lat: m.lat, lng: m.lng }}
               onClick={() => openDetail(store)}
               image={{
-                src: shouldCluster
-                  ? `/s3-bucket/${m.imageUrl.split('/').pop()!}`
-                  : m.imageUrl,
+                src: m.imageUrl,
                 size: { width: 40, height: 40 },
                 options: { offset: { x: 20, y: 40 } },
               }}
@@ -160,7 +159,7 @@ export default function FilterMarker({
             left: overlay.x,
             top: overlay.y,
             transform: 'translate(-50%, -120%)',
-            pointerEvents: 'auto',
+            pointerEvents: 'auto', // overlay 상호작용 허용
             zIndex: 9999,
           }}
           onMouseEnter={() => {

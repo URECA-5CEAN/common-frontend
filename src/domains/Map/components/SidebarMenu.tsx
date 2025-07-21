@@ -4,8 +4,8 @@ import type { MenuType } from './MapSidebar';
 interface SidebarMenuProps {
   menus: MenuType[];
   icons: string[];
-  activeMenu?: MenuType;
-  onSelect: (menu: MenuType) => void;
+  activeMenu?: MenuType; //선택된 메뉴 애니메이션 위해
+  onSelect: (menu: MenuType) => void; //메뉴선택
 }
 
 export default function SidebarMenu({

@@ -1,5 +1,5 @@
 import { Share2, Star, Webcam } from 'lucide-react';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import KakaoRoadview from '../KakaoRoadView';
 import StartEndBtn from './StartEndBtn';
 import IconActionGroup from './IconActionGroup';
@@ -13,6 +13,11 @@ interface OverlayProps {
 
 const StoreOverlay = ({ lat, lng, store }: OverlayProps) => {
   const [isRoad, setIsRoad] = useState<boolean>(false);
+
+  // 로드뷰 토글 함수
+  const changeLoadView = useCallback(() => {
+    setIsRoad((prev) => !prev);
+  }, []);
   return (
     <div className=" bg-white rounded-2xl  w-[360px] p-4 space-y-3 z-50">
       {/* 헤더 */}
@@ -36,7 +41,7 @@ const StoreOverlay = ({ lat, lng, store }: OverlayProps) => {
         <IconActionGroup
           actions={[
             { icon: <Star />, label: '즐겨찾기' },
-            { icon: <Webcam />, label: '로드뷰' },
+            { icon: <Webcam />, label: '로드뷰', onClick: changeLoadView },
             { icon: <Share2 />, label: '공유' },
           ]}
         />

@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
 import clsx from 'clsx';
-import type { MenuType, StoreInfo } from './types';
 import UserSection from './UserSection';
 import MapSection from './MapSection';
 import StarSection from './StarSection';
@@ -8,15 +7,19 @@ import DetailSection from './DetailSection';
 import { ChevronLeft } from 'lucide-react';
 import RoadSection from './RoadSection';
 import { useState, type ChangeEventHandler } from 'react';
+import type { StoreInfo } from '../api/store';
+import type { MenuType } from './MapSidebar';
 
 interface SidebarPanelProps {
-  index: number;
-  panel: { type: 'menu' | 'detail'; menu: MenuType; item?: StoreInfo };
+  index: number; // 0 = 메뉴, 1 = 상세
+  panel: { type: 'menu' | 'detail'; menu: MenuType; item?: StoreInfo }; //현재 보여줄 메뉴
   stores: StoreInfo[];
   openDetail: (store: StoreInfo) => void;
   onClose: (idx: number) => void;
+  //제휴처 검색
   changeKeyword?: ChangeEventHandler<HTMLInputElement>;
-  keyword?: keyword;
+  //키워드
+  keyword?: string;
 }
 
 export default function SidebarPanel({
@@ -30,7 +33,7 @@ export default function SidebarPanel({
 }: SidebarPanelProps) {
   const [startValue, setStartValue] = useState('');
   const [endValue, setEndValue] = useState('');
-  const [isShowStar, IsSetShowStar] = useState<boolean>(false);
+  const [ShowStar, SetShowStar] = useState<boolean>(false);
 
   const onStartChange = (v: string) => setStartValue(v);
   const onEndChange = (v: string) => setEndValue(v);
@@ -52,12 +55,11 @@ export default function SidebarPanel({
   const isDetail = panel.type === 'detail';
 
   const onStar = () => {
-    // 즐겨찾기 동작 (예: API 호출 또는 상태 업데이트)
-    IsSetShowStar((prev) => !prev);
+    // 즐겨찾기 토글
+    SetShowStar((prev) => !prev);
   };
 
   const onNavigate = () => {
-    // 길찾기 동작 (예: 지도로 포커스 이동)
     console.log('길찾기 실행:', { from: startValue, to: endValue });
   };
   return (
@@ -107,7 +109,7 @@ export default function SidebarPanel({
             onStar={onStar}
             onNavigate={onNavigate}
             openDetail={openDetail}
-            isShowStar={isShowStar}
+            isShowStar={ShowStar}
           />
         )}
         {panel.type === 'detail' && panel.item && (
@@ -116,15 +118,17 @@ export default function SidebarPanel({
       </div>
 
       {/* 패널 닫기 버튼 */}
-      <button
-        onClick={() => onClose(index)}
-        className="absolute right-0 translate-x-10 w-10 h-12 bottom-[55%] focus:outline-none bg-white border-2 rounded-lg border-gray-200"
-      >
-        <ChevronLeft
-          className="translate-x-1.5 text-gray-300"
-          strokeWidth={3}
-        />
-      </button>
+      {isDetail && (
+        <button
+          onClick={() => onClose(index)}
+          className="absolute right-0 translate-x-10 w-10 h-12 bottom-[55%] focus:outline-none bg-white border-2 rounded-lg border-gray-200"
+        >
+          <ChevronLeft
+            className="translate-x-1.5 text-gray-300"
+            strokeWidth={3}
+          />
+        </button>
+      )}
     </motion.div>
   );
 }

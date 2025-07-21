@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Star,
   Trash2,
@@ -6,12 +6,10 @@ import {
   ArrowUpDown,
   ChevronRight,
   ChevronDown,
-  Map,
 } from 'lucide-react';
 import type { StoreInfo } from '../api/store';
 import clsx from 'clsx';
 import OnOffBtn from './OnOffBtn';
-import { div } from 'framer-motion/client';
 import StarListItem from './StarListItem';
 
 interface RouteItem {
