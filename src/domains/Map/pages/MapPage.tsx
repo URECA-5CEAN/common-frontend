@@ -1,4 +1,4 @@
-import React, {
+import {
   useRef,
   useState,
   useEffect,
@@ -13,11 +13,18 @@ import MapSidebar, {
   type MenuType,
   type Panel,
 } from '../components/MapSidebar';
-import DetailSection from '../components/DetailSection';
 import { LocateFixed } from 'lucide-react';
 import type { MarkerProps, LatLng } from '../KakaoMapContainer';
 import { getDistance } from '../utils/getDistance';
 import { fetchStores, type StoreInfo } from '../api/store';
+
+//bounds 타입에러 방지
+interface InternalBounds extends kakao.maps.LatLngBounds {
+  pa: number;
+  qa: number;
+  oa: number;
+  ha: number;
+}
 
 export default function MapPage() {
   //도 + 3D 캔버스 감쌀 div
@@ -35,7 +42,7 @@ export default function MapPage() {
   // 화면 내 매장
   const [filteredStores, setFilteredStores] = useState<StoreInfo[]>([]);
   // 사이드바에서 선택한 매장 (상세보기)
-  const [selectedStore, setSelectedStore] = useState<StoreInfo | null>(null);
+  //const [selectedStore, setSelectedStore] = useState<StoreInfo | null>(null);
   // 호버 오버레이 할 ID
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
@@ -48,6 +55,8 @@ export default function MapPage() {
   // 사이드바 menu 현재 상태
   const [panel, setPanel] = useState<Panel>({ type: 'menu', menu: '지도' });
 
+  // MarkerClusterer 참조
+  const clustererRef = useRef<kakao.maps.MarkerClusterer | null>(null);
   //검색 디바운스
   useEffect(() => {
     const handler = window.setTimeout(() => setDebouncedKeyword(keyword), 300);
@@ -84,7 +93,8 @@ export default function MapPage() {
   //화면 내 매장만 filter해 sidebar 및 marker적용
   const filterStoresInView = useCallback(() => {
     if (!map) return;
-    const b = map.getBounds() as any;
+    const b = map.getBounds() as InternalBounds;
+    if (!b) return;
     // pa: north, qa: south, oa: east, ha: west
     const inView = stores.filter((s) => {
       const { latitude: lat, longitude: lng } = s;
@@ -163,6 +173,50 @@ export default function MapPage() {
     });
     return [near, far];
   }, [filteredStores, center]);
+
+  useEffect(() => {
+    if (!map) return;
+    clustererRef.current = new kakao.maps.MarkerClusterer({
+      map,
+      averageCenter: true,
+      gridSize: 50,
+      minLevel: 3,
+      styles: [
+        {
+          width: '53px',
+          height: '52px',
+          color: '#fff',
+          backgroundColor: '#0ef81a',
+          border: '2px solid #fff',
+          borderRadius: '50%',
+          textAlign: 'center',
+          lineHeight: '52px',
+          boxShadow: '0 2px 2px rgba(0,0,0,0.2)',
+        },
+      ],
+    });
+    return () => clustererRef.current?.remove();
+  }, [map]);
+
+  // → 3) farMarkers 바뀔 때마다 클러스터러에 할당
+  useEffect(() => {
+    if (!clustererRef.current) return;
+    clustererRef.current.clear();
+
+    const kakaoMarkers = nearbyMarkers.map(
+      (m) =>
+        new kakao.maps.Marker({
+          position: new kakao.maps.LatLng(m.lat, m.lng),
+          image: new kakao.maps.MarkerImage(
+            m.imageUrl,
+            new kakao.maps.Size(40, 40),
+            { offset: new kakao.maps.Point(20, 40) },
+          ),
+        }),
+    );
+
+    clustererRef.current.addMarkers(kakaoMarkers);
+  }, [nearbyMarkers]);
 
   // 사이드바 메뉴 Open
   const openMenu = (menu: MenuType) => {
@@ -244,9 +298,6 @@ export default function MapPage() {
           </KakaoMapContainer>
         </div>
       </div>
-
-      {/* 상세 패널 */}
-      {selectedStore && <DetailSection store={selectedStore} />}
     </>
   );
 }
