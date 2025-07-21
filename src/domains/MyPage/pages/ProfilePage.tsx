@@ -66,6 +66,7 @@ const ProfilePage: React.FC = () => {
     <>
       <div className="w-full max-w-[1050px]">
         <Breadcrumb title="내 정보" />
+        <Breadcrumb title="내 정보" />
 
         <div>
           <div className="text-[32px]">내 정보</div>

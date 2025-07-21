@@ -31,29 +31,6 @@ const UserLevel: React.FC<UserLevelProps> = ({ nickname, level }) => (
   </div>
 );
 
-interface ProgressBarProps {
-  current: number;
-  max: number;
-}
-
-const ProgressBar: React.FC<ProgressBarProps> = ({ current, max }) => {
-  const progressPercentage = (current / max) * 100;
-
-  return (
-    <div className="relative bg-gray-300 rounded-full h-4 text-xs w-50">
-      <div
-        className="absolute top-0 bg-[#96E0ED] h-full rounded-full 
-                   after:content-[''] after:block after:h-[2px] after:absolute 
-                   after:top-1 after:bg-white/30 after:rounded-full after:left-1 after:right-1"
-        style={{ width: `${progressPercentage}%` }}
-      />
-      <p className="relative z-1 flex justify-center items-center font-bold text-gray-600">
-        {current}/{max}
-      </p>
-    </div>
-  );
-};
-
 interface UserLocationProps {
   location: string;
   grade: string;
