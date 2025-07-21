@@ -1,6 +1,6 @@
 interface FilterButtonProps {
   text: string;
-  onClick?: () => void;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
 }
 
 export const FilterButton: React.FC<FilterButtonProps> = ({

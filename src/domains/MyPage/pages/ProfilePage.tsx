@@ -64,7 +64,7 @@ const ProfilePage: React.FC = () => {
             profileImageSrc={outstandingIcon}
           />
         </div>
-        
+
         <UsageHistory items={USAGE_HISTORY} />
       </div>
 

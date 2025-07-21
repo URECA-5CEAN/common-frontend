@@ -11,7 +11,7 @@ const StatCard: React.FC<StatCardProps> = ({ to, title, value }) => (
   <Link
     to={to}
     className="flex flex-col justify-between items-center border border-gray-200 
-               rounded-2xl w-[144px] px-5 py-7 transition-[background-color] 
+               rounded-2xl w-full md:w-[144px] px-5 py-7 transition-[background-color] 
                duration-300 cursor-pointer hover:bg-gray-100"
   >
     <p>{title}</p>
@@ -24,7 +24,7 @@ interface UserStatsProps {
 }
 
 const UserStats: React.FC<UserStatsProps> = ({ userInfo }) => (
-  <div className="flex justify-center items-center gap-5">
+  <div className="flex justify-center items-center gap-5 w-full md:w-fit">
     <StatCard
       to="/mypage/collection"
       title="도감"

@@ -26,7 +26,7 @@ const BadgeOption: React.FC<BadgeOptionProps> = ({
 }) => (
   <div
     onClick={onClick}
-    className={`px-4 py-4 w-[150px] flex flex-col items-center justify-between 
+    className={`px-4 py-4 w-full md:w-[150px] flex flex-col items-center justify-between 
                 gap-2 rounded-xl text-center cursor-pointer 
                 ${
                   isSelected

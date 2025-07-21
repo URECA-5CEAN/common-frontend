@@ -72,12 +72,9 @@ const DateFilter: React.FC<DateFilterProps> = ({ selectedRange, onChange }) => {
     selectedRange.type !== '직접 설정' ? selectedRange.type : '직접 설정';
 
   return (
-    <div
-      className="flex items-center gap-2 justify-end mb-3"
-      onClick={(e) => e.stopPropagation()}
-    >
+    <div className="flex md:flex-row flex-col md:items-center items-end gap-2 justify-end mb-3">
       {/* 빠른 필터 드롭다운 */}
-      <div className="relative">
+      <div className="relative" onClick={(e) => e.stopPropagation()}>
         <FilterButton text={displayRangeText} onClick={handleDropdownToggle} />
         {openDropdown && (
           <RangeDropdown
@@ -88,22 +85,25 @@ const DateFilter: React.FC<DateFilterProps> = ({ selectedRange, onChange }) => {
       </div>
 
       {/* 날짜 범위 직접 설정 */}
-      <div
-        className="relative flex items-center gap-2"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="md:relative flex items-center gap-2">
         <span className="text-gray-700 font-medium">기간</span>
 
         <FilterButton
           text={formatDate(selectedRange.startDate)}
-          onClick={() => handleCalendarToggle('시작일')}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleCalendarToggle('시작일');
+          }}
         />
 
         <span className="text-gray-500">~</span>
 
         <FilterButton
           text={formatDate(selectedRange.endDate)}
-          onClick={() => handleCalendarToggle('종료일')}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleCalendarToggle('종료일');
+          }}
         />
 
         {openCalendarType && (

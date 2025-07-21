@@ -1,3 +1,5 @@
+import Calendar from 'react-calendar';
+
 interface RangeCalendarProps {
   type: '시작일' | '종료일';
   selectedDate?: Date;
@@ -18,18 +20,30 @@ export const RangeCalendar: React.FC<RangeCalendarProps> = ({
     : '';
 
   return (
-    <div
-      className="absolute right-0 top-[42px] bg-white w-fit border border-gray-300 
-                    rounded-2xl p-6 z-50 shadow-lg"
-    >
-      <p className="mb-2 font-semibold text-gray-700">{type} 선택하기</p>
-      <input
-        type="date"
-        className="border border-gray-300 px-3 py-2 rounded-lg focus:outline-none 
-                   focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        value={defaultValue}
-        onChange={(e) => onSelectDate(new Date(e.target.value))}
-      />
-    </div>
+    <>
+      <div
+        className="z-10001 absolute left-0 md:left-auto top-1/2 -translate-y-1/2 md:-translate-y-0 md:right-0 md:top-[42px] m-5 md:m-0 bg-white w-fit border border-gray-300 
+                    rounded-2xl px-3 py-6 md:p-6 shadow-lg"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <p className="mb-2 text-gray-700 text-xl w-full flex justify-center">
+          {type} 선택하기
+        </p>
+        <Calendar
+          value={defaultValue}
+          onChange={(value) => {
+            if (value instanceof Date) {
+              onSelectDate(value);
+            }
+          }}
+          calendarType="gregory"
+          prev2Label={null}
+          next2Label={null}
+          showNeighboringMonth={false}
+          formatDay={(_, date) => date.getDate().toString()}
+        />
+      </div>
+      <div className="md:hidden fixed inset-0 z-10000 flex items-center justify-center bg-black/30"></div>
+    </>
   );
 };
