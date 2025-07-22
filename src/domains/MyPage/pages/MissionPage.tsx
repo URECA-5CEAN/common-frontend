@@ -4,13 +4,10 @@ import Calendar from 'react-calendar';
 import presentIcon from '@/assets/icons/present_icon.png';
 import dolphinImg from '@/assets/image/mission_dolphin.png';
 import { useEffect, useState } from 'react';
-import {
-  checkInAttendance,
-  getUserAttendance,
-} from '@/domains/MyPage/api/mission';
+import { checkInAttendance } from '@/domains/MyPage/api/mission';
+import { useAttendanceQuery } from '@/domains/MyPage/api/queries/useAttendanceQuery';
 
 type CalendarValue = Date | null;
-type AttendanceSet = Set<string>;
 
 const CALENDAR_CONFIG = {
   type: 'gregory' as const,
@@ -38,31 +35,32 @@ const STYLES = {
 } as const;
 
 const MissionPage = () => {
-  const [attendedDates, setAttendedDates] = useState<AttendanceSet>(
-    new Set([]),
-  );
   const [calendarValue, setCalendarValue] = useState<CalendarValue>(null);
   const [activeDate, setActiveDate] = useState<Date>(new Date());
   const [loading, setLoading] = useState(false);
+  const [attendedDates, setAttendedDates] = useState<Set<string>>(new Set());
+
+  const year = activeDate.getFullYear();
+  const month = activeDate.getMonth() + 1;
+  const { data, refetch } = useAttendanceQuery(year, month);
+
+  useEffect(() => {
+    if (!data?.data.attendance) return;
+
+    setAttendedDates((prev) => {
+      const next = new Set(prev);
+      data.data.attendance.forEach((dateStr: string) => {
+        next.add(dateStr);
+      });
+      return next;
+    });
+  }, [data]);
 
   const formatDate = (date: Date): string => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
-  };
-
-  const fetchAttendanceData = async (date: Date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-
-    try {
-      const userAttendanceData = await getUserAttendance(year, month);
-      const attendanceSet = new Set<string>(userAttendanceData.data.attendance);
-      setAttendedDates(attendanceSet);
-    } catch (error) {
-      console.error('출석 데이터 불러오기 실패:', error);
-    }
   };
 
   const StatusDot = ({ isPresent }: { isPresent: boolean }) => {
@@ -104,8 +102,7 @@ const MissionPage = () => {
     setLoading(true);
     try {
       await checkInAttendance();
-      setAttendedDates((prev) => new Set(prev).add(todayStr));
-      setActiveDate(today);
+      await refetch();
     } catch (error) {
       alert('출석 처리에 실패했습니다. ' + error);
     } finally {
@@ -135,10 +132,6 @@ const MissionPage = () => {
     if (isTodayPresent) return '출석 완료';
     return '출석 체크';
   };
-
-  useEffect(() => {
-    fetchAttendanceData(activeDate);
-  }, [activeDate]);
 
   return (
     <div className={STYLES.container}>
