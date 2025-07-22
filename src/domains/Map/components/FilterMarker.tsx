@@ -4,6 +4,7 @@ import StoreOverlay from './StoreOverlay';
 import type { MarkerProps } from '../KakaoMapContainer';
 import type { StoreInfo } from '../api/store';
 import { MarkerClusterer } from 'react-kakao-maps-sdk';
+import { getBucketUrl } from './getBucketUrl';
 interface Props {
   nearbyMarkers: MarkerProps[]; //3d마커
   farMarkers: MarkerProps[]; //2D마커
@@ -16,16 +17,6 @@ interface Props {
   onStartChange: (v: string) => void;
   onEndChange: (v: string) => void;
 }
-
-const getBucketSrc = (url: string) => {
-  try {
-    const { pathname } = new URL(url);
-    return `https://s3-ureca-final-project.s3.ap-northeast-2.amazonaws.com/${pathname.split('/').pop()}`;
-  } catch {
-    const p = url.split('/').pop();
-    return `https://s3-ureca-final-project.s3.ap-northeast-2.amazonaws.com/${p}`;
-  }
-};
 
 export default function FilterMarker({
   nearbyMarkers,
@@ -116,7 +107,7 @@ export default function FilterMarker({
                 position={{ lat: m.lat, lng: m.lng }}
                 onClick={() => openDetail(store)}
                 image={{
-                  src: getBucketSrc(m.imageUrl), //클러스팅
+                  src: getBucketUrl(m.imageUrl), //클러스팅
                   size: { width: 40, height: 40 },
                   options: { offset: { x: 20, y: 40 } },
                 }}
@@ -146,7 +137,7 @@ export default function FilterMarker({
               position={{ lat: m.lat, lng: m.lng }}
               onClick={() => openDetail(store)}
               image={{
-                src: getBucketSrc(m.imageUrl),
+                src: getBucketUrl(m.imageUrl),
                 size: { width: 40, height: 40 },
                 options: { offset: { x: 20, y: 40 } },
               }}
@@ -169,7 +160,7 @@ export default function FilterMarker({
       {overlay && (
         <div
           style={{
-            position: 'absolute',
+            position: 'fixed',
             left: overlay.x,
             top: overlay.y,
             transform: 'translate(-50%, -120%)',

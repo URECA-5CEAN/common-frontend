@@ -388,7 +388,7 @@ export default function MapPage() {
               ))}
             </div>
             {/* 이 위치에서 검색 버튼 */}
-            <div className="absolute bottom-8 left-[53%]">
+            <div className="absolute bottom-8 left-[43%]">
               {map && myLocation && (
                 <Button
                   onClick={searchHere}
