@@ -287,6 +287,7 @@ export default function MapPage() {
   const changeCategory = (category: string) => {
     SetIsCategory(category);
     SetKeyword(category);
+    openMenu('지도');
   };
 
   // 출발 도착 change
@@ -318,6 +319,7 @@ export default function MapPage() {
     console.log('길찾기 실행:', { from: startValue, to: endValue });
   };
 
+  console.log(stores);
   return (
     <>
       {/* 사이드바 */}
@@ -374,7 +376,7 @@ export default function MapPage() {
                 stores={filteredStores}
               />
             )}
-            <div className=" fixed left-96 ml-16 top-24 z-20 flex justify-start space-x-2">
+            <div className=" fixed left-96 ml-16 top-24 z-2 flex justify-start space-x-2">
               {Category.map((cate) => (
                 <Button
                   variant="ghost"
@@ -394,7 +396,7 @@ export default function MapPage() {
                   onClick={searchHere}
                   variant="primary"
                   size="md"
-                  className="flex justify-center self-center"
+                  className="flex justify-center self-center hover:bg-primaryGreen-80"
                 >
                   <RotateCcw size={16} className="mt-[3px]" />
                   <p className="ml-1">이 위치에서 검색</p>

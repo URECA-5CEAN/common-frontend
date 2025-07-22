@@ -1,7 +1,14 @@
 // src/api/store.ts
 import axios from 'axios';
-import type { AxiosInstance, AxiosResponse } from 'axios';
+import type { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 
+// axios 인스턴스 설정
+const apiClient: AxiosInstance = axios.create({
+  baseURL: import.meta.env.VITE_API_URL + '/api/map',
+  headers: { 'Content-Type': 'application/json' },
+});
+
+const token = import.meta.env.VITE_USER_TOKEN;
 export interface StoreInfo {
   id: string;
   name: string;
@@ -25,18 +32,17 @@ export interface FetchStoresParams {
   centerLng: number;
 }
 
-// axios 인스턴스 설정
-const apiClient: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL + '/api/map',
-  headers: { 'Content-Type': 'application/json' },
-});
-
 interface FetchStoresResponse {
   statusCode: number;
   message: string;
   data: StoreInfo[];
 }
 
+interface CreateDeleteStoresResponse {
+  statusCode: number;
+  message: string;
+  data: string;
+}
 //제휴처 목록 조회
 export const fetchStores = async (
   params: FetchStoresParams,
@@ -59,11 +65,80 @@ export const fetchStores = async (
     );
 
     return response.data.data;
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const axiosErr = error as AxiosError<{ message: string }>;
     const message =
-      error.response?.data?.message ??
-      error.message ??
-      '매장 조회 중 알 수 없는 오류가 발생했습니다.';
-    throw new Error(`매장 조회 실패: ${message}`);
+      axiosErr.response?.data?.message ??
+      axiosErr.message ??
+      '제휴처 목록 조회 중 알 수 없는 오류가 발생했습니다.';
+    throw new Error(`제휴처 목록 조회 실패: ${message}`);
   }
 };
+
+//즐겨찾기 조회
+export async function fetchBookmark(category?: string): Promise<StoreInfo[]> {
+  try {
+    const response: AxiosResponse<FetchStoresResponse> = await apiClient.get(
+      '/bookmark',
+      {
+        headers: {
+          Authorization: token,
+        },
+        params: {
+          ...(category ? { category } : {}),
+        },
+      },
+    );
+
+    return response.data.data;
+  } catch (error: unknown) {
+    const axiosErr = error as AxiosError<{ message: string }>;
+    const message =
+      axiosErr.response?.data?.message ??
+      axiosErr.message ??
+      '즐겨찾기 목록 조회 중 알 수 없는 오류가 발생했습니다.';
+    throw new Error(`즐겨찾기 조회 실패: ${message}`);
+  }
+}
+
+/** 즐겨찾기 등록 */
+export async function createBookmark(storeId: string): Promise<string> {
+  try {
+    const response: AxiosResponse<CreateDeleteStoresResponse> =
+      await apiClient.post('/api/map/bookmark', {
+        headers: {
+          Authorization: token,
+        },
+        storeId,
+      });
+    return response.data.data;
+  } catch (error: unknown) {
+    const axiosErr = error as AxiosError<{ message: string }>;
+    const message =
+      axiosErr.response?.data?.message ??
+      axiosErr.message ??
+      '즐겨찾기 등록 중 알 수 없는 오류가 발생했습니다.';
+    throw new Error(`즐겨찾기 등록 실패: ${message}`);
+  }
+}
+
+/** 즐겨찾기 삭제 */
+export async function deleteBookmark(storeId: string): Promise<string> {
+  try {
+    const response: AxiosResponse<CreateDeleteStoresResponse> =
+      await apiClient.delete('/bookmark', {
+        headers: {
+          Authorization: token,
+        },
+        data: { storeId }, //delete 시 body에 담아 보내려면 data 필드로 보내야함!..
+      });
+    return response.data.data;
+  } catch (error: unknown) {
+    const axiosErr = error as AxiosError<{ message: string }>;
+    const message =
+      axiosErr.response?.data?.message ??
+      axiosErr.message ??
+      '즐겨찾기 삭제 중 알 수 없는 오류가 발생했습니다.';
+    throw new Error(`즐겨찾기 삭제 실패: ${message}`);
+  }
+}
