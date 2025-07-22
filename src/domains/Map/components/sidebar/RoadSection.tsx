@@ -45,6 +45,7 @@ export default function RoadSection({
   isShowStar,
   bookmarks,
   goToStore,
+  openDetail,
 }: RouteInputProps) {
   const [savedRoutes, setSavedRoutes] = useState<RouteItem[]>([
     { id: 1, from: '할리스 OO점', to: '할리스 OO점' },
@@ -161,6 +162,7 @@ export default function RoadSection({
               bookmark={bookmark}
               key={bookmark.id}
               onCenter={() => goToStore(bookmark)}
+              openDetail={() => openDetail(bookmark)}
             />
           ))}
         </div>

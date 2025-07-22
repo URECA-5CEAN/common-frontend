@@ -171,7 +171,8 @@ export default function MapPage() {
       map.panTo(mylocate);
       setCenter(myLocation);
     }
-  }, [map, myLocation]);
+    searchHere();
+  }, [map, myLocation, searchHere]);
 
   // 내 위치로 돌아가는 함수
   const goToMyLocation = useCallback(() => {
@@ -189,6 +190,7 @@ export default function MapPage() {
       map.panTo(loc);
       setCenter({ lat: store.latitude, lng: store.longitude });
       openMenu('지도');
+      searchHere();
     },
     [map],
   );
