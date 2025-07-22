@@ -9,6 +9,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   fullWidth?: boolean;
   width?: string | number;
   height?: string | number;
+  loading?: boolean;
 }
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -53,6 +54,7 @@ export const Button: React.FC<ButtonProps> = ({
   height,
   className = '',
   disabled,
+  loading,
   ...rest
 }) => {
   const inlineStyle = {
@@ -75,10 +77,12 @@ export const Button: React.FC<ButtonProps> = ({
     .join(' ');
 
   const buttonClass = [
-    'relative z-10 rounded-xl transition-all top-0 cursor-pointer active:top-[3px] disabled:cursor-not-allowed disabled:active:top-0',
+    'relative z-10 rounded-xl transition-all cursor-pointer',
     sizeClasses[size],
     variantClasses[variant],
     className,
+    loading ? 'top-[3px]' : 'top-0 active:top-[3px]',
+    disabled && !loading && 'disabled:cursor-not-allowed disabled:active:top-0',
   ]
     .filter(Boolean)
     .join(' ');
