@@ -341,8 +341,8 @@ export default function MapPage() {
       </div>
 
       {/* 지도 영역 */}
-      <div className="h-dvh pt-[62px] md:pt-[86px] relative">
-        <div ref={containerRef} className="absolute inset-0">
+      <div className="h-screen pt-[62px] md:pt-[86px] ml-[24%] relative">
+        <div ref={containerRef} className="absolute inset-0 ">
           <KakaoMapContainer
             center={center}
             level={3}
@@ -374,7 +374,7 @@ export default function MapPage() {
                 stores={filteredStores}
               />
             )}
-            <div className="fixed left-[26%] top-24  z-2 space-x-2">
+            <div className=" fixed left-96 ml-16 top-24 z-20 flex justify-start space-x-2">
               {Category.map((cate) => (
                 <Button
                   variant="ghost"
