@@ -82,7 +82,7 @@ export default function MapPage() {
     const { pa: latMax, qa: latMin, oa: lngMax, ha: lngMin } = bpunds;
     try {
       const data = await fetchStores({
-        keyword: debouncedKeyword,
+        keyword: debouncedKeyword || isCategory,
         category: isCategory,
         latMin,
         latMax,
@@ -97,15 +97,24 @@ export default function MapPage() {
     }
   }, [map, debouncedKeyword, center, isCategory]);
 
+  useEffect(() => {
+    searchHere();
+  }, [searchHere]);
   //화면 내 매장만 filter해 sidebar 및 marker적용
   const filterStoresInView = useCallback(() => {
     if (!map) return;
-    const b = map.getBounds() as InternalBounds;
-    if (!b) return;
+    const bounds = map.getBounds() as InternalBounds;
+    if (!bounds) return;
+    const list = Array.isArray(stores) ? stores : []; //제휴처 있는지 확인 후 없으면 빈 배열 (filter부분 에러 해결)
     // pa: north, qa: south, oa: east, ha: west
-    const inView = stores.filter((s) => {
-      const { latitude: lat, longitude: lng } = s;
-      return lat <= b.pa && lat >= b.qa && lng <= b.oa && lng >= b.ha;
+    const inView = list.filter((store) => {
+      const { latitude: lat, longitude: lng } = store;
+      return (
+        lat <= bounds.pa &&
+        lat >= bounds.qa &&
+        lng <= bounds.oa &&
+        lng >= bounds.ha
+      );
     });
     setFilteredStores(inView);
   }, [map, stores]);
@@ -271,8 +280,9 @@ export default function MapPage() {
 
   const changeCategory = (category: string) => {
     SetIsCategory(category);
+    SetKeyword(category);
   };
-  console.log(isCategory);
+
   return (
     <>
       {/* 사이드바 */}
@@ -332,13 +342,14 @@ export default function MapPage() {
                 stores={filteredStores}
               />
             )}
-            <div className=" fixed left-[26%] top-28  z-2 space-x-2">
+            <div className="fixed left-[26%] top-24  z-2 space-x-2">
               {Category.map((cate) => (
                 <Button
                   variant="ghost"
                   size="sm"
                   className="px-6 text-xs hover:text-primaryGreen"
                   onClick={() => changeCategory(cate)}
+                  key={cate}
                 >
                   {cate}
                 </Button>
