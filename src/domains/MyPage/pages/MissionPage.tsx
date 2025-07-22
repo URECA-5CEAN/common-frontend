@@ -103,6 +103,7 @@ const MissionPage = () => {
     try {
       await checkInAttendance();
       await refetch();
+      setActiveDate(new Date());
     } catch (error) {
       alert('출석 처리에 실패했습니다. ' + error);
     } finally {
