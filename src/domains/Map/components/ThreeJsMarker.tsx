@@ -121,6 +121,7 @@ export default function ThreeJsMarker({
       // 그룹에 추가 및 맵핑 저장
       cube.add(cone);
       group.add(cube);
+      group.position.set(0, 40, 0);
       meshMap.current.set(m.id, cube);
     });
 

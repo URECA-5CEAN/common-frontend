@@ -13,7 +13,7 @@ import MapSidebar, {
   type MenuType,
   type Panel,
 } from '../components/MapSidebar';
-import { LocateFixed } from 'lucide-react';
+import { LocateFixed, RotateCcw } from 'lucide-react';
 import type { MarkerProps, LatLng } from '../KakaoMapContainer';
 import { getDistance } from '../utils/getDistance';
 import { fetchStores, type StoreInfo } from '../api/store';
@@ -63,32 +63,28 @@ export default function MapPage() {
     return () => clearTimeout(handler);
   }, [keyword]);
 
-  // 줌 레벨
-  const level = map?.getLevel();
-
   // 제휴처 목록 조회 함수
-  useEffect(() => {
-    if (!level) return;
-    const loadStores = async () => {
-      try {
-        const data = await fetchStores({
-          keyword: debouncedKeyword || '',
-          category: '',
-          latMin: center.lat - 0.01 * level * 0.8,
-          latMax: center.lat + 0.01 * level * 0.8,
-          lngMin: center.lng - 0.01 * level * 0.8,
-          lngMax: center.lng + 0.01 * level * 0.8,
-          centerLat: center.lat,
-          centerLng: center.lng,
-        });
-        setStores(data);
-      } catch (err) {
-        console.error('매장 호출 실패', err);
-        setStores([]);
-      }
-    };
-    loadStores();
-  }, [debouncedKeyword, level]);
+  const searchHere = useCallback(async () => {
+    if (!map) return;
+    const bpunds = map.getBounds() as InternalBounds;
+    if (!bpunds) return;
+    const { pa: latMax, qa: latMin, oa: lngMax, ha: lngMin } = bpunds;
+    try {
+      const data = await fetchStores({
+        keyword: debouncedKeyword,
+        category: '',
+        latMin,
+        latMax,
+        lngMin,
+        lngMax,
+        centerLat: center.lat,
+        centerLng: center.lng,
+      });
+      setStores(data);
+    } catch {
+      setStores([]);
+    }
+  }, [map, debouncedKeyword, center]);
 
   //화면 내 매장만 filter해 sidebar 및 marker적용
   const filterStoresInView = useCallback(() => {
@@ -146,7 +142,7 @@ export default function MapPage() {
   }, [map, myLocation, setCenter]);
 
   // 거리 기준으로 2D / 3D 마커 분리 RADIUS_JN = 거리
-  const RADIUS_KM = 1;
+  const RADIUS_KM = 0.5;
   const [nearbyMarkers, farMarkers] = useMemo(() => {
     const near: MarkerProps[] = [];
     const far: MarkerProps[] = [];
@@ -176,7 +172,7 @@ export default function MapPage() {
     const level = map.getLevel!(); // 카카오맵: 레벨 작을수록 확대
     let maxCount: number;
     if (level <= 2) {
-      maxCount = 50; // 아주 확대됐을 땐 최대 200개
+      maxCount = 30; // 아주 확대됐을 땐 최대 200개
     } else if (level <= 4) {
       maxCount = 20; // 중간 확대
     } else if (level <= 6) {
@@ -262,7 +258,6 @@ export default function MapPage() {
     SetKeyword(e.target.value);
   };
 
-  console.log(hoveredId);
   return (
     <>
       {/* 사이드바 */}
@@ -277,7 +272,14 @@ export default function MapPage() {
           keyword={keyword}
         />
       </div>
-
+      {map && myLocation && (
+        <div
+          onClick={searchHere}
+          className=" flex absolute bottom-8 justify-center items-center text-sm left-[55%] bg-primaryGreen hover:bg-primaryGreen-80 text-white px-4 py-3 rounded-lg shadow z-20"
+        >
+          <RotateCcw size={16} /> <p className="ml-2">이 위치에서 검색</p>
+        </div>
+      )}
       {/* 지도 영역 */}
       <div className="h-dvh pt-[62px] md:pt-[86px] relative">
         <div ref={containerRef} className="absolute inset-0">
@@ -315,7 +317,7 @@ export default function MapPage() {
             {map && myLocation && (
               <button
                 onClick={goToMyLocation}
-                className="absolute bottom-12 right-12 bg-white p-2 rounded-full shadow-lg hover:bg-gray-100 z-20"
+                className="absolute bottom-8 right-8 bg-white p-2 rounded-full shadow-lg hover:bg-gray-100 z-20"
               >
                 <LocateFixed size={30} />
               </button>
