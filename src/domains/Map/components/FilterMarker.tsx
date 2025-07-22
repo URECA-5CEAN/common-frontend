@@ -15,6 +15,16 @@ interface Props {
   openDetail: (store: StoreInfo) => void; //click시 상세보기 open
 }
 
+const getBucketSrc = (url: string) => {
+  try {
+    const { pathname } = new URL(url);
+    return `https://s3-ureca-final-project.s3.ap-northeast-2.amazonaws.com/${pathname.split('/').pop()}`;
+  } catch {
+    const p = url.split('/').pop();
+    return `https://s3-ureca-final-project.s3.ap-northeast-2.amazonaws.com/${p}`;
+  }
+};
+
 export default function FilterMarker({
   nearbyMarkers,
   farMarkers,
@@ -102,7 +112,7 @@ export default function FilterMarker({
                 position={{ lat: m.lat, lng: m.lng }}
                 onClick={() => openDetail(store)}
                 image={{
-                  src: `/s3-bucket/${m.imageUrl.split('/').pop()!}`, //클러스팅
+                  src: getBucketSrc(m.imageUrl), //클러스팅
                   size: { width: 40, height: 40 },
                   options: { offset: { x: 20, y: 40 } },
                 }}
@@ -132,7 +142,7 @@ export default function FilterMarker({
               position={{ lat: m.lat, lng: m.lng }}
               onClick={() => openDetail(store)}
               image={{
-                src: m.imageUrl,
+                src: getBucketSrc(m.imageUrl),
                 size: { width: 40, height: 40 },
                 options: { offset: { x: 20, y: 40 } },
               }}
@@ -159,7 +169,7 @@ export default function FilterMarker({
             left: overlay.x,
             top: overlay.y,
             transform: 'translate(-50%, -120%)',
-            pointerEvents: 'auto', // overlay 상호작용 허용
+            pointerEvents: 'auto',
             zIndex: 9999,
           }}
           onMouseEnter={() => {

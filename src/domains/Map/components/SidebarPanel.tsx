@@ -87,7 +87,7 @@ export default function SidebarPanel({
         )}
 
         {/* 메뉴 및 상세 분기 렌더링 */}
-        {panel.type === 'menu' && panel.menu === '지도' && (
+        {index === 0 && panel.menu === '지도' && (
           <MapSection
             openDetail={openDetail}
             stores={stores}
@@ -95,10 +95,10 @@ export default function SidebarPanel({
             keyword={keyword}
           />
         )}
-        {panel.type === 'menu' && panel.menu === '즐겨찾기' && (
+        {index === 0 && panel.menu === '즐겨찾기' && (
           <StarSection openDetail={openDetail} stores={stores} />
         )}
-        {panel.type === 'menu' && panel.menu === '길찾기' && (
+        {index === 0 && panel.menu === '길찾기' && (
           <RoadSection
             startValue={startValue}
             endValue={endValue}
@@ -112,7 +112,7 @@ export default function SidebarPanel({
             isShowStar={ShowStar}
           />
         )}
-        {panel.type === 'detail' && panel.item && (
+        {index === 1 && panel.type === 'detail' && panel.item && (
           <DetailSection store={panel.item} />
         )}
       </div>

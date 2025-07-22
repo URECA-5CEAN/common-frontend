@@ -74,10 +74,10 @@ export default function MapPage() {
         const data = await fetchStores({
           keyword: debouncedKeyword || '',
           category: '',
-          latMin: center.lat - 0.01 * level,
-          latMax: center.lat + 0.01 * level,
-          lngMin: center.lng - 0.01 * level,
-          lngMax: center.lng + 0.01 * level,
+          latMin: center.lat - 0.01 * level * 0.8,
+          latMax: center.lat + 0.01 * level * 0.8,
+          lngMin: center.lng - 0.01 * level * 0.8,
+          lngMax: center.lng + 0.01 * level * 0.8,
           centerLat: center.lat,
           centerLng: center.lng,
         });
@@ -88,7 +88,7 @@ export default function MapPage() {
       }
     };
     loadStores();
-  }, [debouncedKeyword, level, center]);
+  }, [debouncedKeyword, level]);
 
   //화면 내 매장만 filter해 sidebar 및 marker적용
   const filterStoresInView = useCallback(() => {
@@ -109,14 +109,9 @@ export default function MapPage() {
 
     // 처음 렌더링 시
     filterStoresInView();
-    kakao.maps.event.addListener(map, 'bounds_changed', filterStoresInView);
-    // clean up
+    kakao.maps.event.addListener(map, 'idle', filterStoresInView);
     return () => {
-      kakao.maps.event.removeListener(
-        map,
-        'bounds_changed',
-        filterStoresInView,
-      );
+      kakao.maps.event.removeListener(map, 'idle', filterStoresInView);
     };
   }, [map, filterStoresInView]);
 
@@ -174,6 +169,55 @@ export default function MapPage() {
     return [near, far];
   }, [filteredStores, center]);
 
+  // ★ LOD: 줌 레벨별로 3D 마커 개수 제한
+  const lod3DMarkers = useMemo(() => {
+    if (!map) return nearbyMarkers;
+
+    const level = map.getLevel!(); // 카카오맵: 레벨 작을수록 확대
+    let maxCount: number;
+    if (level <= 2) {
+      maxCount = 50; // 아주 확대됐을 땐 최대 200개
+    } else if (level <= 4) {
+      maxCount = 20; // 중간 확대
+    } else if (level <= 6) {
+      maxCount = 10; // 다소 축소
+    } else {
+      maxCount = 5; // 많이 축소됐을 땐 20개만
+    }
+    // 중요도 순(예: 거리 오름차순)으로 정렬한 뒤 slice
+    return nearbyMarkers
+      .sort((a, b) => {
+        const da = getDistance(center, { lat: a.lat, lng: a.lng });
+        const db = getDistance(center, { lat: b.lat, lng: b.lng });
+        return da - db;
+      })
+      .slice(0, maxCount);
+  }, [map, nearbyMarkers, center]);
+
+  const lod2DMarkers = useMemo(() => {
+    if (!map) return farMarkers;
+
+    const level = map.getLevel!();
+    let max2D: number;
+    if (level <= 2) {
+      max2D = 60; // 매우 확대: 100개
+    } else if (level <= 4) {
+      max2D = 40; // 중간 확대: 50개
+    } else if (level <= 6) {
+      max2D = 30; // 중간 축소: 20개
+    } else {
+      max2D = 5; // 많이 축소: 5개
+    }
+
+    // 거리에 따라 가까운 것 우선
+    return farMarkers
+      .sort((a, b) => {
+        const da = getDistance(center, { lat: a.lat, lng: a.lng });
+        const db = getDistance(center, { lat: b.lat, lng: b.lng });
+        return da - db;
+      })
+      .slice(0, max2D);
+  }, [map, farMarkers, center]);
   useEffect(() => {
     if (!map) return;
     clustererRef.current = new kakao.maps.MarkerClusterer({
@@ -197,26 +241,6 @@ export default function MapPage() {
     });
     return () => clustererRef.current?.remove();
   }, [map]);
-
-  // → 3) farMarkers 바뀔 때마다 클러스터러에 할당
-  useEffect(() => {
-    if (!clustererRef.current) return;
-    clustererRef.current.clear();
-
-    const kakaoMarkers = nearbyMarkers.map(
-      (m) =>
-        new kakao.maps.Marker({
-          position: new kakao.maps.LatLng(m.lat, m.lng),
-          image: new kakao.maps.MarkerImage(
-            m.imageUrl,
-            new kakao.maps.Size(40, 40),
-            { offset: new kakao.maps.Point(20, 40) },
-          ),
-        }),
-    );
-
-    clustererRef.current.addMarkers(kakaoMarkers);
-  }, [nearbyMarkers]);
 
   // 사이드바 메뉴 Open
   const openMenu = (menu: MenuType) => {
@@ -264,8 +288,8 @@ export default function MapPage() {
           >
             {/* 2D 마커/오버레이 */}
             <FilterMarker
-              nearbyMarkers={nearbyMarkers}
-              farMarkers={farMarkers}
+              nearbyMarkers={lod3DMarkers}
+              farMarkers={lod2DMarkers}
               hoveredMarkerId={hoveredId}
               setHoveredMarkerId={setHoveredId}
               map={map}
@@ -277,7 +301,7 @@ export default function MapPage() {
             {/* 3D 마커 */}
             {map && (
               <ThreeJsMarker
-                markers={nearbyMarkers}
+                markers={lod3DMarkers}
                 map={map}
                 setHoveredMarkerId={setHoveredId}
                 container={containerRef.current!}
