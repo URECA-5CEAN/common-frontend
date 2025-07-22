@@ -41,7 +41,7 @@ export interface FetchBrandsParams {
 
 // axios 인스턴스 설정
 const apiClient: AxiosInstance = axios.create({
-  baseURL: 'http://15.164.81.45/api/map',
+  baseURL: import.meta.env.VITE_API_URL + '/api/map',
   headers: { 'Content-Type': 'application/json' },
 });
 
