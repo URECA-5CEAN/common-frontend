@@ -17,6 +17,7 @@ import { LocateFixed, RotateCcw } from 'lucide-react';
 import type { MarkerProps, LatLng } from '../KakaoMapContainer';
 import { getDistance } from '../utils/getDistance';
 import { fetchStores, type StoreInfo } from '../api/store';
+import { Button } from '@/components/Button';
 
 //bounds 타입에러 방지
 interface InternalBounds extends kakao.maps.LatLngBounds {
@@ -26,6 +27,14 @@ interface InternalBounds extends kakao.maps.LatLngBounds {
   ha: number;
 }
 
+type CategoryType = '음식점' | '카페' | '편의점' | '대형마트' | '문화시설';
+const Category: CategoryType[] = [
+  '음식점',
+  '카페',
+  '편의점',
+  '대형마트',
+  '문화시설',
+];
 export default function MapPage() {
   //도 + 3D 캔버스 감쌀 div
   const containerRef = useRef<HTMLDivElement>(null);
@@ -58,6 +67,8 @@ export default function MapPage() {
   // MarkerClusterer 참조
   const clustererRef = useRef<kakao.maps.MarkerClusterer | null>(null);
   //검색 디바운스
+  const [isCategory, SetIsCategory] = useState<string>('');
+
   useEffect(() => {
     const handler = window.setTimeout(() => setDebouncedKeyword(keyword), 300);
     return () => clearTimeout(handler);
@@ -72,7 +83,7 @@ export default function MapPage() {
     try {
       const data = await fetchStores({
         keyword: debouncedKeyword,
-        category: '',
+        category: isCategory,
         latMin,
         latMax,
         lngMin,
@@ -84,7 +95,7 @@ export default function MapPage() {
     } catch {
       setStores([]);
     }
-  }, [map, debouncedKeyword, center]);
+  }, [map, debouncedKeyword, center, isCategory]);
 
   //화면 내 매장만 filter해 sidebar 및 marker적용
   const filterStoresInView = useCallback(() => {
@@ -258,6 +269,10 @@ export default function MapPage() {
     SetKeyword(e.target.value);
   };
 
+  const changeCategory = (category: string) => {
+    SetIsCategory(category);
+  };
+  console.log(isCategory);
   return (
     <>
       {/* 사이드바 */}
@@ -272,14 +287,19 @@ export default function MapPage() {
           keyword={keyword}
         />
       </div>
-      {map && myLocation && (
-        <div
-          onClick={searchHere}
-          className=" flex absolute bottom-8 justify-center items-center text-sm left-[55%] bg-primaryGreen hover:bg-primaryGreen-80 text-white px-4 py-3 rounded-lg shadow z-20"
-        >
-          <RotateCcw size={16} /> <p className="ml-2">이 위치에서 검색</p>
-        </div>
-      )}
+
+      <div className="fixed top-[62px] md:top-[86px] left-0 bottom-0 w-20 z-20">
+        <MapSidebar
+          stores={filteredStores}
+          panel={panel}
+          openMenu={openMenu}
+          openDetail={openDetail}
+          onClose={closePanel}
+          changeKeyword={changeKeyword}
+          keyword={keyword}
+        />
+      </div>
+
       {/* 지도 영역 */}
       <div className="h-dvh pt-[62px] md:pt-[86px] relative">
         <div ref={containerRef} className="absolute inset-0">
@@ -312,7 +332,27 @@ export default function MapPage() {
                 stores={filteredStores}
               />
             )}
-
+            <div className=" fixed left-[26%] top-28  z-2 space-x-2">
+              {Category.map((cate) => (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="px-6 text-xs hover:text-primaryGreen"
+                  onClick={() => changeCategory(cate)}
+                >
+                  {cate}
+                </Button>
+              ))}
+            </div>
+            {/* 이 위치에서 검색 버튼 */}
+            {map && myLocation && (
+              <div
+                onClick={searchHere}
+                className=" flex absolute bottom-8 justify-center items-center text-sm left-[55%] bg-primaryGreen hover:bg-primaryGreen-80 text-white px-4 py-3 rounded-lg shadow z-20"
+              >
+                <RotateCcw size={16} /> <p className="ml-2">이 위치에서 검색</p>
+              </div>
+            )}
             {/* 내 위치 버튼 */}
             {map && myLocation && (
               <button
