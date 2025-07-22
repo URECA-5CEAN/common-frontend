@@ -273,11 +273,12 @@ export default function MapPage() {
     setPanel({ type: 'menu', menu: '지도' });
   }, []);
 
-  //keyword 변경
+  //키워드 변경 시 카테고리 초기화
   const changeKeyword = (e: ChangeEvent<HTMLInputElement>) => {
     SetKeyword(e.target.value);
+    SetIsCategory('');
   };
-
+  //카테고리 변경 시 키워드 변경
   const changeCategory = (category: string) => {
     SetIsCategory(category);
     SetKeyword(category);
@@ -356,23 +357,33 @@ export default function MapPage() {
               ))}
             </div>
             {/* 이 위치에서 검색 버튼 */}
-            {map && myLocation && (
-              <div
-                onClick={searchHere}
-                className=" flex absolute bottom-8 justify-center items-center text-sm left-[55%] bg-primaryGreen hover:bg-primaryGreen-80 text-white px-4 py-3 rounded-lg shadow z-20"
-              >
-                <RotateCcw size={16} /> <p className="ml-2">이 위치에서 검색</p>
-              </div>
-            )}
+            <div className="absolute bottom-8 left-[53%]">
+              {map && myLocation && (
+                <Button
+                  onClick={searchHere}
+                  variant="primary"
+                  size="md"
+                  className="flex justify-center self-center"
+                >
+                  <RotateCcw size={16} className="mt-[3px]" />
+                  <p className="ml-1">이 위치에서 검색</p>
+                </Button>
+              )}
+            </div>
+
             {/* 내 위치 버튼 */}
-            {map && myLocation && (
-              <button
-                onClick={goToMyLocation}
-                className="absolute bottom-8 right-8 bg-white p-2 rounded-full shadow-lg hover:bg-gray-100 z-20"
-              >
-                <LocateFixed size={30} />
-              </button>
-            )}
+            <div className="absolute bottom-8 right-8">
+              {map && myLocation && (
+                <Button
+                  onClick={goToMyLocation}
+                  variant="ghost"
+                  size="sm"
+                  className="rounded-full"
+                >
+                  <LocateFixed size={30} />
+                </Button>
+              )}
+            </div>
           </KakaoMapContainer>
         </div>
       </div>
