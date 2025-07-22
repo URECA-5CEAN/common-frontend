@@ -1,13 +1,20 @@
 import { Search } from 'lucide-react';
-import StoreCard from './StoreCard';
-import type { StoreInfo } from '../api/store';
+import StoreCard from '../StoreCard';
+import type { StoreInfo } from '../../api/store';
 
 interface MapSectionProps {
   stores: StoreInfo[];
   openDetail: (store: StoreInfo) => void;
+  onStartChange: (v: string) => void;
+  onEndChange: (v: string) => void;
 }
 
-export default function StarSection({ stores, openDetail }: MapSectionProps) {
+export default function StarSection({
+  stores,
+  openDetail,
+  onStartChange,
+  onEndChange,
+}: MapSectionProps) {
   return (
     <div className="px-2 py-3 space-y-3 h-screen overflow-y-auto">
       {/* 검색바 */}
@@ -22,7 +29,13 @@ export default function StarSection({ stores, openDetail }: MapSectionProps) {
 
       {/* 리스트 아이템 반복 */}
       {stores.map((store) => (
-        <StoreCard key={store.id} store={store} openDetail={openDetail} />
+        <StoreCard
+          key={store.id}
+          store={store}
+          openDetail={openDetail}
+          onStartChange={onStartChange}
+          onEndChange={onEndChange}
+        />
       ))}
     </div>
   );

@@ -12,7 +12,7 @@ import FilterMarker from '../components/FilterMarker';
 import MapSidebar, {
   type MenuType,
   type Panel,
-} from '../components/MapSidebar';
+} from '../components/sidebar/MapSidebar';
 import { LocateFixed, RotateCcw } from 'lucide-react';
 import type { MarkerProps, LatLng } from '../KakaoMapContainer';
 import { getDistance } from '../utils/getDistance';

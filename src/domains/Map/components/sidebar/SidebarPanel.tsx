@@ -7,7 +7,7 @@ import DetailSection from './DetailSection';
 import { ChevronLeft } from 'lucide-react';
 import RoadSection from './RoadSection';
 import { useState, type ChangeEventHandler } from 'react';
-import type { StoreInfo } from '../api/store';
+import type { StoreInfo } from '../../api/store';
 import type { MenuType } from './MapSidebar';
 
 interface SidebarPanelProps {
@@ -91,7 +91,12 @@ export default function SidebarPanel({
           />
         )}
         {index === 0 && panel.menu === '즐겨찾기' && (
-          <StarSection openDetail={openDetail} stores={stores} />
+          <StarSection
+            openDetail={openDetail}
+            stores={stores}
+            onStartChange={onStartChange}
+            onEndChange={onEndChange}
+          />
         )}
         {index === 0 && panel.menu === '길찾기' && (
           <RoadSection

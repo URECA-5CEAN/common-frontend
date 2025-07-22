@@ -1,8 +1,8 @@
 import { Search } from 'lucide-react';
-import StoreCard from './StoreCard';
-import type { StoreInfo } from '../api/store';
+import StoreCard from '../StoreCard';
+import type { StoreInfo } from '../../api/store';
 import type { ChangeEventHandler } from 'react';
-import DebouncedInput from './DebouncedInput';
+import DebouncedInput from '../DebouncedInput';
 
 interface MapSectionProps {
   stores: StoreInfo[];

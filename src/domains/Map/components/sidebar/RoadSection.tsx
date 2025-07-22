@@ -8,9 +8,9 @@ import {
   ChevronDown,
   Route,
 } from 'lucide-react';
-import type { StoreInfo } from '../api/store';
-import OnOffBtn from './OnOffBtn';
-import StarListItem from './StarListItem';
+import type { StoreInfo } from '../../api/store';
+import OnOffBtn from '../OnOffBtn';
+import StarListItem from '../StarListItem';
 import { Button } from '@/components/Button';
 
 interface RouteItem {

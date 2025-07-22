@@ -9,7 +9,7 @@ import benefitImage from '@/assets/image/BenefitImage.svg';
 
 import SidebarMenu from './SidebarMenu';
 import SidebarPanel from './SidebarPanel';
-import type { StoreInfo } from '../api/store';
+import type { StoreInfo } from '../../api/store';
 
 // 메뉴 타입
 export type MenuType = '지도' | '즐겨찾기' | '길찾기' | '혜택인증';

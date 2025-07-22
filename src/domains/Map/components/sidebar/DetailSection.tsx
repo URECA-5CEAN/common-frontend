@@ -1,7 +1,7 @@
 import { Star, Share2, Webcam } from 'lucide-react';
-import StartEndBtn from './StartEndBtn';
-import IconActionGroup from './IconActionGroup';
-import type { StoreInfo } from '../api/store';
+import StartEndBtn from '../StartEndBtn';
+import IconActionGroup from '../IconActionGroup';
+import type { StoreInfo } from '../../api/store';
 
 interface DetailSectionProps {
   store: StoreInfo;
@@ -14,7 +14,6 @@ export default function DetailSection({
   onStartChange,
   onEndChange,
 }: DetailSectionProps) {
-  console.log(store);
   return (
     <div className="p-4 space-y-4 min-h-[800px]">
       {/* 헤더 */}
