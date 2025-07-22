@@ -1,10 +1,12 @@
+import { useNavigate } from 'react-router-dom';
 import SignUpForm from '../components/SignUpForm';
 
-interface SignUpPageProps {
-  onBackToLogin?: () => void;
-}
+const SignUpPage = () => {
+  const navigate = useNavigate();
 
-const SignUpPage = ({ onBackToLogin }: SignUpPageProps) => {
+  const handleBackToLogin = () => {
+    navigate('/login');
+  };
   return (
     <div className="min-h-screen pt-[62px] md:pt-[86px] bg-white relative overflow-hidden">
       {/* Side Wave 배경 - 화면 오른쪽에서 시작해서 절반을 채움 */}
@@ -71,9 +73,9 @@ const SignUpPage = ({ onBackToLogin }: SignUpPageProps) => {
       </div>
 
       {/* 회원가입 폼 - 파도 위에 표시 */}
-      <div className="relative z-10 pt-20 md:pt-48 px-4">
+      <div className="relative z-[5] pt-20 md:pt-48 px-4">
         <div className="w-full max-w-[300px] md:max-w-[500px] mx-auto">
-          <SignUpForm onBackToLogin={onBackToLogin} />
+          <SignUpForm onBackToLogin={handleBackToLogin} />
         </div>
       </div>
     </div>

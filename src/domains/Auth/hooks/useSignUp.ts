@@ -3,10 +3,10 @@ import axios from 'axios';
 
 interface SignUpFormData {
   name: string;
-  gender: 'male' | 'female';
-  email: string;
   nickname: string;
+  email: string;
   password: string;
+  gender: 'male' | 'female';
 }
 
 interface SignUpSuccessResponse {
@@ -38,7 +38,7 @@ export const useSignUp = () => {
       setLoading(true);
       const response = await axios.post('/api/user/signup', formData);
       return response.data as SignUpSuccessResponse;
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         const errorData = error.response?.data as SignUpErrorResponse;
         if (errorData?.data?.statusCode === 20002) {

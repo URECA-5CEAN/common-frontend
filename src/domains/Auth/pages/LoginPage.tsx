@@ -1,21 +1,12 @@
-import { useState } from 'react';
-import SignUpPage from './SignUpPage';
-import { Button } from '../../../components/Button';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/Button';
 
 const LoginPage = () => {
-  const [showSignUp, setShowSignUp] = useState(false);
+  const navigate = useNavigate();
 
   const handleSignUpClick = () => {
-    setShowSignUp(true);
+    navigate('/signup');
   };
-
-  const handleBackToLogin = () => {
-    setShowSignUp(false);
-  };
-
-  if (showSignUp) {
-    return <SignUpPage onBackToLogin={handleBackToLogin} />;
-  }
 
   return (
     <div className="h-[1500px] pt-[62px] md:pt-[86px] bg-primaryGreen">

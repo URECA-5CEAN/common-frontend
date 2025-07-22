@@ -4,7 +4,7 @@ import { validateEmail, validatePassword } from '../utils/validation';
 import { checkNicknameDuplicate } from '../api/signUpApi';
 import { useSignUp } from '../hooks/useSignUp';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '../../../components/Button';
+import { Button } from '@/components/Button';
 
 const SignUpForm = ({ onBackToLogin }: { onBackToLogin?: () => void }) => {
   //이름, 성별 정보 상태 관리
@@ -129,7 +129,24 @@ const SignUpForm = ({ onBackToLogin }: { onBackToLogin?: () => void }) => {
       setConfirmPasswordTouched(true);
     }
 
-    // 3. 최종 유효성 검사
+    // 3. 닉네임 중복 확인 (회원가입 시점에 최종 확인)
+    try {
+      const nicknameCheckResult = await checkNicknameDuplicate(nickname);
+      if (nicknameCheckResult.data === true) {
+        alert('이미 사용중인 닉네임입니다. 다른 닉네임을 입력해주세요.');
+        setIsNicknameDuplicate(true);
+        setNicknameTouched(true);
+        return;
+      }
+      // 중복이 아닌 경우 상태 업데이트
+      setIsNicknameDuplicate(false);
+    } catch (error: unknown) {
+      console.error('닉네임 중복 확인 오류:', error);
+      alert('닉네임 중복 확인 중 오류가 발생했습니다. 다시 시도해주세요.');
+      return;
+    }
+
+    // 4. 최종 유효성 검사
     if (
       !isEmailValid ||
       isNicknameDuplicate ||
@@ -140,7 +157,7 @@ const SignUpForm = ({ onBackToLogin }: { onBackToLogin?: () => void }) => {
       return;
     }
 
-    // 4. 회원가입 API 호출
+    // 5. 회원가입 API 호출
     try {
       await signUp({ name, gender, email, nickname, password });
       alert('회원가입이 완료되었습니다!');
@@ -149,8 +166,12 @@ const SignUpForm = ({ onBackToLogin }: { onBackToLogin?: () => void }) => {
       } else {
         navigate('/login');
       }
-    } catch (error: any) {
-      alert(error.message);
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : '회원가입 중 오류가 발생했습니다.';
+      alert(errorMessage);
     }
   };
 
