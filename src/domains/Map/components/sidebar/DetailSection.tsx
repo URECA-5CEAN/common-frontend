@@ -28,6 +28,9 @@ export default function DetailSection({
       <div className="flex items-center justify-between">
         <p className="text-xl font-bold">{store.name}</p>
         <span className="text-gray-500 text-sm">{store.category}</span>
+        <span className="text-primaryGreen-80 text-sm font-semibold mt-2">
+          영업중
+        </span>
       </div>
 
       {/* 위치 & 영업시간 */}
@@ -40,7 +43,7 @@ export default function DetailSection({
       <div className="flex justify-between items-center">
         <p className="text-gray-700">{store.address}</p>
         <Map
-          className="border rounded-full p-1 hover:bg-gray-200"
+          className="cursor-pointer text-gray-400 hover:text-black"
           size={28}
           onClick={() => goToStore(store)}
         />
