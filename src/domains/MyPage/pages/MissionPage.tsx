@@ -31,8 +31,7 @@ const STYLES = {
   statusDotAbsent:
     'w-full md:max-w-9 h-full md:max-h-9 bg-gray-200 rounded-full',
   tileContent: 'w-full max-w-9 aspect-square',
-  dolphinImg: 'absolute top-0 right-0 w-[870px] -z-1 hidden md:block',
-  dolphinImgWrapper: 'w-1/2 fixed top-20 right-0 -z-1',
+  dolphinImg: 'fixed top-20 right-0 w-[700px] -z-1 hidden md:block',
   spinner: 'w-full h-full flex justify-center items-center',
   spinnerDot:
     'w-5 h-5 border-3 border-gray-300 border-t-primaryGreen-80 rounded-full animate-spin',
@@ -175,13 +174,8 @@ const MissionPage = () => {
           </Button>
         </div>
       </div>
-      <div className={STYLES.dolphinImgWrapper}>
-        <img
-          src={dolphinImg}
-          alt="돌고래 캐릭터"
-          className={STYLES.dolphinImg}
-        />
-      </div>
+
+      <img src={dolphinImg} alt="돌고래 캐릭터" className={STYLES.dolphinImg} />
     </div>
   );
 };
