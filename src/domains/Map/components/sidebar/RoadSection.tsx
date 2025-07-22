@@ -29,6 +29,8 @@ interface RouteInputProps {
   onSwap?: () => void;
   onReset?: () => void;
   onNavigate?: () => void;
+  bookmarks?: StoreInfo[];
+  toggleBookmark?: (store: StoreInfo) => void;
 }
 
 export default function RoadSection({

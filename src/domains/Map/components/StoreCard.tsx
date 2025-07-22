@@ -7,6 +7,7 @@ interface StoreCardProps {
   openDetail: (store: StoreInfo) => void;
   onStartChange: (v: string) => void;
   onEndChange: (v: string) => void;
+  toggleBookmark: (store: StoreInfo) => void;
 }
 
 export default function StoreCard({
@@ -14,6 +15,7 @@ export default function StoreCard({
   openDetail,
   onStartChange,
   onEndChange,
+  toggleBookmark,
 }: StoreCardProps) {
   return (
     <div
@@ -38,7 +40,7 @@ export default function StoreCard({
             onStartChange={onStartChange}
             onEndChange={onEndChange}
           />
-          <Star />
+          <Star onClick={() => toggleBookmark(store)} />
         </div>
       </div>
     </div>

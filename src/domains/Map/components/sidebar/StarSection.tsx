@@ -3,14 +3,15 @@ import StoreCard from '../StoreCard';
 import type { StoreInfo } from '../../api/store';
 
 interface MapSectionProps {
-  stores: StoreInfo[];
+  bookmarks?: StoreInfo[];
   openDetail: (store: StoreInfo) => void;
   onStartChange: (v: string) => void;
   onEndChange: (v: string) => void;
+  toggleBookmark?: (store: StoreInfo) => void;
 }
 
 export default function StarSection({
-  stores,
+  bookmarks,
   openDetail,
   onStartChange,
   onEndChange,
@@ -28,10 +29,10 @@ export default function StarSection({
       </div>
 
       {/* 리스트 아이템 반복 */}
-      {stores.map((store) => (
+      {bookmarks.map((bookmark) => (
         <StoreCard
-          key={store.id}
-          store={store}
+          key={bookmark.id}
+          store={bookmark}
           openDetail={openDetail}
           onStartChange={onStartChange}
           onEndChange={onEndChange}

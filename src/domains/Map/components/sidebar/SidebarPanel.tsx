@@ -27,6 +27,8 @@ interface SidebarPanelProps {
   onSwap?: () => void;
   onReset?: () => void;
   onNavigate?: () => void;
+  bookmarks?: StoreInfo[];
+  toggleBookmark?: (store: StoreInfo) => void;
 }
 
 export default function SidebarPanel({
@@ -44,6 +46,8 @@ export default function SidebarPanel({
   onSwap,
   onReset,
   onNavigate,
+  bookmarks,
+  toggleBookmark,
 }: SidebarPanelProps) {
   const [ShowStar, SetShowStar] = useState<boolean>(false);
 
@@ -88,14 +92,16 @@ export default function SidebarPanel({
             keyword={keyword}
             onStartChange={onStartChange}
             onEndChange={onEndChange}
+            toggleBookmark={toggleBookmark}
           />
         )}
         {index === 0 && panel.menu === '즐겨찾기' && (
           <StarSection
             openDetail={openDetail}
-            stores={stores}
+            bookmarks={bookmarks}
             onStartChange={onStartChange}
             onEndChange={onEndChange}
+            toggleBookmark={toggleBookmark}
           />
         )}
         {index === 0 && panel.menu === '길찾기' && (
@@ -108,6 +114,7 @@ export default function SidebarPanel({
             onReset={onReset}
             onNavigate={onNavigate}
             onStar={onStar}
+            bookmarks={bookmarks}
             openDetail={openDetail}
             isShowStar={ShowStar}
           />

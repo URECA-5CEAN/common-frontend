@@ -16,7 +16,13 @@ import MapSidebar, {
 import { LocateFixed, RotateCcw } from 'lucide-react';
 import type { MarkerProps, LatLng } from '../KakaoMapContainer';
 import { getDistance } from '../utils/getDistance';
-import { fetchStores, type StoreInfo } from '../api/store';
+import {
+  createBookmark,
+  deleteBookmark,
+  fetchBookmark,
+  fetchStores,
+  type StoreInfo,
+} from '../api/store';
 import { Button } from '@/components/Button';
 
 //bounds 타입에러 방지
@@ -70,9 +76,11 @@ export default function MapPage() {
   const [isCategory, SetIsCategory] = useState<string>('');
 
   //출발지
-  const [startValue, setStartValue] = useState('');
+  const [startValue, setStartValue] = useState<string>('');
   //선택지
-  const [endValue, setEndValue] = useState('');
+  const [endValue, setEndValue] = useState<string>('');
+
+  const [bookmarks, setBookmarks] = useState<StoreInfo[]>([]);
 
   useEffect(() => {
     const handler = window.setTimeout(() => setDebouncedKeyword(keyword), 300);
@@ -100,7 +108,7 @@ export default function MapPage() {
     } catch {
       setStores([]);
     }
-  }, [map, debouncedKeyword, center, isCategory]);
+  }, [map, debouncedKeyword, isCategory]);
 
   useEffect(() => {
     searchHere();
@@ -318,8 +326,40 @@ export default function MapPage() {
   const onNavigate = () => {
     console.log('길찾기 실행:', { from: startValue, to: endValue });
   };
+  //마운트 시 즐겨찾기 조회
+  useEffect(() => {
+    let isMounted = true;
 
-  console.log(stores);
+    async function loadBookmarks() {
+      try {
+        const data = await fetchBookmark();
+        if (isMounted) setBookmarks(data);
+      } catch (err) {
+        console.error('즐겨찾기 불러오기 실패', err);
+      }
+    }
+    loadBookmarks();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const toggleBookmark = async (store: StoreInfo) => {
+    try {
+      if (bookmarks.some((bookmark) => bookmark.id === store.id)) {
+        await deleteBookmark(store.id);
+        setBookmarks((prev) =>
+          prev.filter((bookmark) => bookmark.id !== store.id),
+        );
+      } else {
+        await createBookmark(store.id);
+        setBookmarks((prev) => [...prev, store]);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   return (
     <>
       {/* 사이드바 */}
@@ -339,6 +379,8 @@ export default function MapPage() {
           onSwap={onSwap}
           onReset={onReset}
           onNavigate={onNavigate}
+          bookmarks={bookmarks}
+          toggleBookmark={toggleBookmark}
         />
       </div>
 

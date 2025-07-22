@@ -89,7 +89,7 @@ export async function fetchBookmark(category?: string): Promise<StoreInfo[]> {
         },
       },
     );
-
+    console.log(response);
     return response.data.data;
   } catch (error: unknown) {
     const axiosErr = error as AxiosError<{ message: string }>;
@@ -104,13 +104,14 @@ export async function fetchBookmark(category?: string): Promise<StoreInfo[]> {
 /** 즐겨찾기 등록 */
 export async function createBookmark(storeId: string): Promise<string> {
   try {
-    const response: AxiosResponse<CreateDeleteStoresResponse> =
-      await apiClient.post('/api/map/bookmark', {
-        headers: {
-          Authorization: token,
-        },
-        storeId,
-      });
+    const response = await apiClient.post<CreateDeleteStoresResponse>(
+      `/bookmark/${storeId}`, // URL에 storeId 추가
+      {}, // body가 필요 없으면 빈 객체
+      {
+        headers: { Authorization: token },
+      },
+    );
+
     return response.data.data;
   } catch (error: unknown) {
     const axiosErr = error as AxiosError<{ message: string }>;
@@ -125,13 +126,12 @@ export async function createBookmark(storeId: string): Promise<string> {
 /** 즐겨찾기 삭제 */
 export async function deleteBookmark(storeId: string): Promise<string> {
   try {
-    const response: AxiosResponse<CreateDeleteStoresResponse> =
-      await apiClient.delete('/bookmark', {
-        headers: {
-          Authorization: token,
-        },
-        data: { storeId }, //delete 시 body에 담아 보내려면 data 필드로 보내야함!..
-      });
+    const response = await apiClient.delete<CreateDeleteStoresResponse>(
+      `/bookmark/${storeId}`, // URL에 storeId 추가
+      {
+        headers: { Authorization: token },
+      },
+    );
     return response.data.data;
   } catch (error: unknown) {
     const axiosErr = error as AxiosError<{ message: string }>;
