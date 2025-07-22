@@ -5,9 +5,16 @@ import type { StoreInfo } from '../api/store';
 interface StoreCardProps {
   store: StoreInfo;
   openDetail: (store: StoreInfo) => void;
+  onStartChange: (v: string) => void;
+  onEndChange: (v: string) => void;
 }
 
-export default function StoreCard({ store, openDetail }: StoreCardProps) {
+export default function StoreCard({
+  store,
+  openDetail,
+  onStartChange,
+  onEndChange,
+}: StoreCardProps) {
   return (
     <div
       className="flex items-stretch bg-white "
@@ -25,7 +32,12 @@ export default function StoreCard({ store, openDetail }: StoreCardProps) {
           {store.address}
         </p>
         <div className="flex justify-between mr-1 items-center">
-          <StartEndBtn isSmall={true} />
+          <StartEndBtn
+            isSmall={true}
+            store={store}
+            onStartChange={onStartChange}
+            onEndChange={onEndChange}
+          />
           <Star />
         </div>
       </div>

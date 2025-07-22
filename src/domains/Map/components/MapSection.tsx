@@ -9,6 +9,8 @@ interface MapSectionProps {
   openDetail: (store: StoreInfo) => void;
   changeKeyword?: ChangeEventHandler<HTMLInputElement>;
   keyword?: string;
+  onStartChange: (v: string) => void;
+  onEndChange: (v: string) => void;
 }
 
 export default function MapSection({
@@ -16,6 +18,8 @@ export default function MapSection({
   openDetail,
   changeKeyword,
   keyword,
+  onStartChange,
+  onEndChange,
 }: MapSectionProps) {
   return (
     <div className="px-2 py-3 space-y-3 h-screen overflow-y-auto ">
@@ -32,7 +36,13 @@ export default function MapSection({
 
       {/* 리스트 아이템 반복 */}
       {stores.map((store) => (
-        <StoreCard key={store.id} store={store} openDetail={openDetail} />
+        <StoreCard
+          key={store.id}
+          store={store}
+          openDetail={openDetail}
+          onStartChange={onStartChange}
+          onEndChange={onEndChange}
+        />
       ))}
     </div>
   );

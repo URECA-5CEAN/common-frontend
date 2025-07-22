@@ -9,15 +9,24 @@ interface OverlayProps {
   lat: number;
   lng: number;
   store: StoreInfo;
+  onStartChange: (v: string) => void;
+  onEndChange: (v: string) => void;
 }
 
-const StoreOverlay = ({ lat, lng, store }: OverlayProps) => {
+const StoreOverlay = ({
+  lat,
+  lng,
+  store,
+  onStartChange,
+  onEndChange,
+}: OverlayProps) => {
   const [isRoad, setIsRoad] = useState<boolean>(false);
 
   // 로드뷰 토글 함수
   const changeLoadView = useCallback(() => {
     setIsRoad((prev) => !prev);
   }, []);
+
   return (
     <div className=" bg-white rounded-2xl  w-[360px] p-4 space-y-3 z-50">
       {/* 헤더 */}
@@ -46,7 +55,11 @@ const StoreOverlay = ({ lat, lng, store }: OverlayProps) => {
           ]}
         />
         {/* 출발/도착 버튼 */}
-        <StartEndBtn />
+        <StartEndBtn
+          onStartChange={onStartChange}
+          onEndChange={onEndChange}
+          store={store}
+        />
       </div>
       {isRoad && <KakaoRoadview position={{ lat, lng }} />}
     </div>

@@ -9,7 +9,6 @@ import {
   Route,
 } from 'lucide-react';
 import type { StoreInfo } from '../api/store';
-import clsx from 'clsx';
 import OnOffBtn from './OnOffBtn';
 import StarListItem from './StarListItem';
 import { Button } from '@/components/Button';
@@ -20,16 +19,16 @@ interface RouteItem {
   to: string;
 }
 interface RouteInputProps {
-  startValue: string;
-  endValue: string;
+  openDetail: (store: StoreInfo) => void;
+  onStar: () => void;
+  isShowStar: boolean;
+  startValue?: string;
+  endValue?: string;
   onStartChange: (v: string) => void;
   onEndChange: (v: string) => void;
-  openDetail: (store: StoreInfo) => void;
-  onSwap: () => void;
-  onReset: () => void;
-  onStar: () => void;
-  onNavigate: () => void;
-  isShowStar: boolean;
+  onSwap?: () => void;
+  onReset?: () => void;
+  onNavigate?: () => void;
 }
 
 export default function RoadSection({
@@ -55,8 +54,6 @@ export default function RoadSection({
     { id: 13, from: '할리스 OO점', to: '할리스 OO점' },
   ]);
   const inputStyle = 'w-full px-4 py-2 text-sm focus:outline-none';
-  const btnStyle =
-    'flex items-center justify-center px-2 py-1.5 text-sm  text-gray-700 rounded-lg ';
 
   return (
     <div className="max-w-md mx-auto  space-y-6 bg-white min-h-dvh">

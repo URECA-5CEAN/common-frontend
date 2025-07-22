@@ -29,6 +29,13 @@ interface SideBarProps {
   onClose: (index: number) => void; // <- 패널 닫기 콜백
   changeKeyword?: ChangeEventHandler<HTMLInputElement>;
   keyword?: string;
+  startValue: string;
+  endValue: string;
+  onStartChange: (v: string) => void;
+  onEndChange: (v: string) => void;
+  onSwap: () => void;
+  onReset: () => void;
+  onNavigate: () => void;
 }
 
 export default function MapSidebar({
@@ -39,6 +46,13 @@ export default function MapSidebar({
   onClose,
   changeKeyword,
   keyword,
+  startValue,
+  endValue,
+  onStartChange,
+  onEndChange,
+  onSwap,
+  onReset,
+  onNavigate,
 }: SideBarProps) {
   if (!panel) return;
   return (
@@ -63,6 +77,13 @@ export default function MapSidebar({
           onClose={onClose}
           changeKeyword={changeKeyword}
           keyword={keyword}
+          startValue={startValue}
+          endValue={endValue}
+          onStartChange={onStartChange}
+          onEndChange={onEndChange}
+          onSwap={onSwap}
+          onReset={onReset}
+          onNavigate={onNavigate}
         />
 
         {/* 상세 패널 (panel.type이 'detail'일 때만) */}
@@ -76,6 +97,8 @@ export default function MapSidebar({
             onClose={onClose}
             changeKeyword={changeKeyword}
             keyword={keyword}
+            onStartChange={onStartChange}
+            onEndChange={onEndChange}
           />
         )}
       </AnimatePresence>

@@ -69,6 +69,11 @@ export default function MapPage() {
   //검색 디바운스
   const [isCategory, SetIsCategory] = useState<string>('');
 
+  //출발지
+  const [startValue, setStartValue] = useState('');
+  //선택지
+  const [endValue, setEndValue] = useState('');
+
   useEffect(() => {
     const handler = window.setTimeout(() => setDebouncedKeyword(keyword), 300);
     return () => clearTimeout(handler);
@@ -284,6 +289,35 @@ export default function MapPage() {
     SetKeyword(category);
   };
 
+  // 출발 도착 change
+  const onStartChange = (v: string) => {
+    setStartValue(v);
+    openMenu('길찾기');
+  };
+
+  // 도착지 변경
+  const onEndChange = (v: string) => {
+    setEndValue(v);
+    openMenu('길찾기');
+  };
+
+  const onSwap = () => {
+    // 출발/도착 교환
+    setStartValue((prev) => {
+      setEndValue(prev);
+      return endValue;
+    });
+  };
+  // 출발지 도착지 리셋
+  const onReset = () => {
+    setStartValue('');
+    setEndValue('');
+  };
+  //길찾기
+  const onNavigate = () => {
+    console.log('길찾기 실행:', { from: startValue, to: endValue });
+  };
+
   return (
     <>
       {/* 사이드바 */}
@@ -296,18 +330,13 @@ export default function MapPage() {
           onClose={closePanel}
           changeKeyword={changeKeyword}
           keyword={keyword}
-        />
-      </div>
-
-      <div className="fixed top-[62px] md:top-[86px] left-0 bottom-0 w-20 z-20">
-        <MapSidebar
-          stores={filteredStores}
-          panel={panel}
-          openMenu={openMenu}
-          openDetail={openDetail}
-          onClose={closePanel}
-          changeKeyword={changeKeyword}
-          keyword={keyword}
+          startValue={startValue}
+          endValue={endValue}
+          onStartChange={onStartChange}
+          onEndChange={onEndChange}
+          onSwap={onSwap}
+          onReset={onReset}
+          onNavigate={onNavigate}
         />
       </div>
 
@@ -330,6 +359,8 @@ export default function MapPage() {
               containerRef={containerRef}
               stores={filteredStores}
               openDetail={openDetail}
+              onStartChange={onStartChange}
+              onEndChange={onEndChange}
             />
 
             {/* 3D 마커 */}

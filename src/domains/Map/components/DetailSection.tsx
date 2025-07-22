@@ -5,9 +5,15 @@ import type { StoreInfo } from '../api/store';
 
 interface DetailSectionProps {
   store: StoreInfo;
+  onStartChange: (v: string) => void;
+  onEndChange: (v: string) => void;
 }
 
-export default function DetailSection({ store }: DetailSectionProps) {
+export default function DetailSection({
+  store,
+  onStartChange,
+  onEndChange,
+}: DetailSectionProps) {
   console.log(store);
   return (
     <div className="p-4 space-y-4 min-h-[800px]">
@@ -35,7 +41,11 @@ export default function DetailSection({ store }: DetailSectionProps) {
           ]}
         />
         {/* 출발/도착 버튼 */}
-        <StartEndBtn />
+        <StartEndBtn
+          store={store}
+          onStartChange={onStartChange}
+          onEndChange={onEndChange}
+        />
       </div>
       {/* 주요 혜택 */}
       {/*<section>

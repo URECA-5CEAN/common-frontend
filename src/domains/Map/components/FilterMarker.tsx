@@ -13,6 +13,8 @@ interface Props {
   map?: kakao.maps.Map | null;
   containerRef?: React.RefObject<HTMLDivElement | null>; // 지도+캔버스 컨테이너
   openDetail: (store: StoreInfo) => void; //click시 상세보기 open
+  onStartChange: (v: string) => void;
+  onEndChange: (v: string) => void;
 }
 
 const getBucketSrc = (url: string) => {
@@ -34,6 +36,8 @@ export default function FilterMarker({
   map,
   containerRef,
   openDetail,
+  onStartChange,
+  onEndChange,
 }: Props) {
   // hover 해제 지연용 타이머 ID 저장
   const hoverOutRef = useRef<number | null>(null);
@@ -187,6 +191,8 @@ export default function FilterMarker({
             lat={overlay.store.latitude}
             lng={overlay.store.longitude}
             store={overlay.store}
+            onStartChange={onStartChange}
+            onEndChange={onEndChange}
           />
         </div>
       )}

@@ -20,6 +20,13 @@ interface SidebarPanelProps {
   changeKeyword?: ChangeEventHandler<HTMLInputElement>;
   //키워드
   keyword?: string;
+  startValue?: string;
+  endValue?: string;
+  onStartChange: (v: string) => void;
+  onEndChange: (v: string) => void;
+  onSwap?: () => void;
+  onReset?: () => void;
+  onNavigate?: () => void;
 }
 
 export default function SidebarPanel({
@@ -30,38 +37,24 @@ export default function SidebarPanel({
   onClose,
   changeKeyword,
   keyword,
+  startValue,
+  endValue,
+  onStartChange,
+  onEndChange,
+  onSwap,
+  onReset,
+  onNavigate,
 }: SidebarPanelProps) {
-  const [startValue, setStartValue] = useState('');
-  const [endValue, setEndValue] = useState('');
   const [ShowStar, SetShowStar] = useState<boolean>(false);
-
-  const onStartChange = (v: string) => setStartValue(v);
-  const onEndChange = (v: string) => setEndValue(v);
-
-  const onSwap = () => {
-    // 출발/도착 교환
-    setStartValue((prev) => {
-      setEndValue(prev);
-      return endValue;
-    });
-  };
-
-  const onReset = () => {
-    setStartValue('');
-    setEndValue('');
-  };
-
-  const left = 64 + index * 345;
-  const isDetail = panel.type === 'detail';
 
   const onStar = () => {
     // 즐겨찾기 토글
     SetShowStar((prev) => !prev);
   };
 
-  const onNavigate = () => {
-    console.log('길찾기 실행:', { from: startValue, to: endValue });
-  };
+  const left = 64 + index * 345;
+  const isDetail = panel.type === 'detail';
+
   return (
     <motion.div
       key={index}
@@ -93,6 +86,8 @@ export default function SidebarPanel({
             stores={stores}
             changeKeyword={changeKeyword}
             keyword={keyword}
+            onStartChange={onStartChange}
+            onEndChange={onEndChange}
           />
         )}
         {index === 0 && panel.menu === '즐겨찾기' && (
@@ -106,14 +101,18 @@ export default function SidebarPanel({
             onEndChange={onEndChange}
             onSwap={onSwap}
             onReset={onReset}
-            onStar={onStar}
             onNavigate={onNavigate}
+            onStar={onStar}
             openDetail={openDetail}
             isShowStar={ShowStar}
           />
         )}
         {index === 1 && panel.type === 'detail' && panel.item && (
-          <DetailSection store={panel.item} />
+          <DetailSection
+            store={panel.item}
+            onStartChange={onStartChange}
+            onEndChange={onEndChange}
+          />
         )}
       </div>
 
