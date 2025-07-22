@@ -1,10 +1,17 @@
-import React, { useRef, useState, useEffect, useMemo } from 'react';
+import React, {
+  useRef,
+  useState,
+  useEffect,
+  useMemo,
+  Suspense,
+  lazy,
+} from 'react';
 import { MapMarker } from 'react-kakao-maps-sdk';
-import StoreOverlay from './StoreOverlay';
 import type { MarkerProps } from '../KakaoMapContainer';
 import type { StoreInfo } from '../api/store';
 import { MarkerClusterer } from 'react-kakao-maps-sdk';
 import { getBucketUrl } from './getBucketUrl';
+const StoreOverlay = lazy(() => import('./StoreOverlay'));
 interface Props {
   nearbyMarkers: MarkerProps[]; //3d마커
   farMarkers: MarkerProps[]; //2D마커
@@ -162,36 +169,54 @@ export default function FilterMarker({
         })
       )}
       {overlay && (
-        <div
-          style={{
-            position: 'fixed',
-            left: overlay.x,
-            top: overlay.y,
-            transform: 'translate(-50%, -120%)',
-            pointerEvents: 'auto',
-            zIndex: 9999,
-          }}
-          onMouseEnter={() => {
-            if (hoverOutRef.current) clearTimeout(hoverOutRef.current);
-          }}
-          onMouseLeave={() => {
-            if (hoverOutRef.current) clearTimeout(hoverOutRef.current);
-            hoverOutRef.current = window.setTimeout(
-              () => setHoveredMarkerId(null),
-              200,
-            );
-          }}
+        <Suspense
+          fallback={
+            <div
+              style={{
+                position: 'fixed',
+                left: overlay.x,
+                top: overlay.y,
+                transform: 'translate(-50%, -120%)',
+                pointerEvents: 'none',
+                zIndex: 9999,
+              }}
+            >
+              {/* 로딩 스피너나 투명 박스 */}
+              <div className="w-24 h-16 bg-white rounded shadow animate-pulse" />
+            </div>
+          }
         >
-          <StoreOverlay
-            lat={overlay.store.latitude}
-            lng={overlay.store.longitude}
-            store={overlay.store}
-            onStartChange={onStartChange}
-            onEndChange={onEndChange}
-            toggleBookmark={toggleBookmark}
-            isBookmark={bookmarkIds.has(overlay.store.id)}
-          />
-        </div>
+          <div
+            style={{
+              position: 'fixed',
+              left: overlay.x,
+              top: overlay.y,
+              transform: 'translate(-50%, -120%)',
+              pointerEvents: 'auto',
+              zIndex: 9999,
+            }}
+            onMouseEnter={() => {
+              if (hoverOutRef.current) clearTimeout(hoverOutRef.current);
+            }}
+            onMouseLeave={() => {
+              if (hoverOutRef.current) clearTimeout(hoverOutRef.current);
+              hoverOutRef.current = window.setTimeout(
+                () => setHoveredMarkerId(null),
+                200,
+              );
+            }}
+          >
+            <StoreOverlay
+              lat={overlay.store.latitude}
+              lng={overlay.store.longitude}
+              store={overlay.store}
+              onStartChange={onStartChange}
+              onEndChange={onEndChange}
+              toggleBookmark={toggleBookmark}
+              isBookmark={bookmarkIds.has(overlay.store.id)}
+            />
+          </div>
+        </Suspense>
       )}
     </>
   );

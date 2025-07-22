@@ -29,6 +29,7 @@ export default function StoreCard({
         src={store.brandImageUrl}
         alt={store.name}
         className="w-[100px] h-[100px] rounded-md mr-3"
+        loading="lazy"
       />
       {/* 텍스트 영역 */}
       <div className="flex flex-1 mt-2 flex-col justify-between space-y-2 h-full  ">

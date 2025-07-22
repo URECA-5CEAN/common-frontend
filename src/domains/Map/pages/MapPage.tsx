@@ -5,9 +5,10 @@ import {
   useMemo,
   useCallback,
   type ChangeEvent,
+  Suspense,
+  lazy,
 } from 'react';
 import KakaoMapContainer from '../KakaoMapContainer';
-import ThreeJsMarker from '../components/ThreeJsMarker';
 import FilterMarker from '../components/FilterMarker';
 import MapSidebar, {
   type MenuType,
@@ -24,7 +25,7 @@ import {
   type StoreInfo,
 } from '../api/store';
 import { Button } from '@/components/Button';
-
+const ThreeJsMarker = lazy(() => import('../components/ThreeJsMarker'));
 //bounds 타입에러 방지
 interface InternalBounds extends kakao.maps.LatLngBounds {
   pa: number;
@@ -430,15 +431,18 @@ export default function MapPage() {
 
             {/* 3D 마커 */}
             {map && (
-              <ThreeJsMarker
-                markers={lod3DMarkers}
-                map={map}
-                setHoveredMarkerId={setHoveredId}
-                container={containerRef.current!}
-                openDetail={openDetail}
-                stores={filteredStores}
-              />
+              <Suspense fallback={null}>
+                <ThreeJsMarker
+                  markers={lod3DMarkers}
+                  map={map}
+                  setHoveredMarkerId={setHoveredId}
+                  container={containerRef.current!}
+                  openDetail={openDetail}
+                  stores={filteredStores}
+                />
+              </Suspense>
             )}
+
             <div className=" fixed left-96 ml-16 top-24 z-2 flex justify-start space-x-2">
               {Category.map((cate) => (
                 <Button
