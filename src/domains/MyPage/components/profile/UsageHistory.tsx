@@ -1,4 +1,3 @@
-//UsageHistory.tsx
 import DateFilter from '@/domains/MyPage/components/profile/DateFilter';
 import HistoryList from '@/domains/MyPage/components/profile/HistoryList';
 import type { UsageHistoryItem } from '@/domains/MyPage/types/profile';

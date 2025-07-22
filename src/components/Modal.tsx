@@ -58,7 +58,7 @@ export const Modal: React.FC<ModalProps> = ({
       role="dialog"
       aria-modal="true"
     >
-      <div className="relative w-fit rounded-2xl bg-white p-5 shadow-xl flex flex-col gap-5">
+      <div className="relative w-[90%] md:w-fit rounded-2xl bg-white p-5 shadow-xl flex flex-col gap-5">
         {img && <>{img}</>}
 
         {title && <h2 className="text-2xl text-center">{title}</h2>}
