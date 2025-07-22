@@ -22,7 +22,7 @@ export default function IconActionGroup({ actions }: IconActionGroupProps) {
           className={clsx(
             'flex items-center justify-center p-1.5',
             'border border-gray-200 rounded-full hover:bg-gray-200',
-            'focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer',
+            'focus:outline-none  cursor-pointer',
           )}
         >
           {icon}
