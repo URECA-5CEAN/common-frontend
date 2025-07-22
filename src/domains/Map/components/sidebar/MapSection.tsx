@@ -11,7 +11,8 @@ interface MapSectionProps {
   keyword?: string;
   onStartChange: (v: string) => void;
   onEndChange: (v: string) => void;
-  toggleBookmark?: (store: StoreInfo) => void;
+  toggleBookmark: (store: StoreInfo) => void;
+  bookmarkIds: Set<string>;
 }
 
 export default function MapSection({
@@ -22,6 +23,7 @@ export default function MapSection({
   onStartChange,
   onEndChange,
   toggleBookmark,
+  bookmarkIds,
 }: MapSectionProps) {
   return (
     <div className="px-2 py-3 space-y-3 h-screen overflow-y-auto ">
@@ -45,6 +47,7 @@ export default function MapSection({
           onStartChange={onStartChange}
           onEndChange={onEndChange}
           toggleBookmark={toggleBookmark}
+          isBookmark={bookmarkIds.has(store.id)}
         />
       ))}
     </div>

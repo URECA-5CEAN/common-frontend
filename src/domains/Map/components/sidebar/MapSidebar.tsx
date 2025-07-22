@@ -38,6 +38,8 @@ interface SideBarProps {
   onNavigate: () => void;
   bookmarks: StoreInfo[];
   toggleBookmark: (store: StoreInfo) => void;
+  bookmarkIds: Set<string>;
+  goToStore: (store: StoreInfo) => void;
 }
 
 export default function MapSidebar({
@@ -57,6 +59,8 @@ export default function MapSidebar({
   onNavigate,
   bookmarks,
   toggleBookmark,
+  bookmarkIds,
+  goToStore,
 }: SideBarProps) {
   if (!panel) return;
   return (
@@ -90,6 +94,8 @@ export default function MapSidebar({
           onNavigate={onNavigate}
           bookmarks={bookmarks}
           toggleBookmark={toggleBookmark}
+          bookmarkIds={bookmarkIds}
+          goToStore={goToStore}
         />
 
         {/* 상세 패널 (panel.type이 'detail'일 때만) */}
@@ -106,6 +112,8 @@ export default function MapSidebar({
             onStartChange={onStartChange}
             onEndChange={onEndChange}
             toggleBookmark={toggleBookmark}
+            bookmarkIds={bookmarkIds}
+            goToStore={goToStore}
           />
         )}
       </AnimatePresence>

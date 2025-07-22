@@ -29,8 +29,8 @@ interface RouteInputProps {
   onSwap?: () => void;
   onReset?: () => void;
   onNavigate?: () => void;
-  bookmarks?: StoreInfo[];
-  toggleBookmark?: (store: StoreInfo) => void;
+  bookmarks: StoreInfo[];
+  goToStore: (store: StoreInfo) => void;
 }
 
 export default function RoadSection({
@@ -43,6 +43,8 @@ export default function RoadSection({
   onStar,
   onNavigate,
   isShowStar,
+  bookmarks,
+  goToStore,
 }: RouteInputProps) {
   const [savedRoutes, setSavedRoutes] = useState<RouteItem[]>([
     { id: 1, from: '할리스 OO점', to: '할리스 OO점' },
@@ -154,13 +156,13 @@ export default function RoadSection({
               <p>추천순</p> <ChevronDown className="inline" />
             </p>
           </div>
-          <StarListItem />
-          <StarListItem />
-          <StarListItem />
-          <StarListItem />
-          <StarListItem />
-          <StarListItem />
-          <StarListItem />
+          {bookmarks.map((bookmark) => (
+            <StarListItem
+              bookmark={bookmark}
+              key={bookmark.id}
+              onCenter={() => goToStore(bookmark)}
+            />
+          ))}
         </div>
       ) : (
         <>

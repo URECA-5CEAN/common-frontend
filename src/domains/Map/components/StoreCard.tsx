@@ -8,6 +8,7 @@ interface StoreCardProps {
   onStartChange: (v: string) => void;
   onEndChange: (v: string) => void;
   toggleBookmark: (store: StoreInfo) => void;
+  isBookmark: boolean;
 }
 
 export default function StoreCard({
@@ -16,7 +17,9 @@ export default function StoreCard({
   onStartChange,
   onEndChange,
   toggleBookmark,
+  isBookmark,
 }: StoreCardProps) {
+  //const isBookmark =
   return (
     <div
       className="flex items-stretch bg-white "
@@ -40,7 +43,15 @@ export default function StoreCard({
             onStartChange={onStartChange}
             onEndChange={onEndChange}
           />
-          <Star onClick={() => toggleBookmark(store)} />
+          <Star
+            className={
+              isBookmark ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
+            }
+            onClick={(e) => {
+              e.stopPropagation(); // 카드 클릭과 겹치지 않도록
+              toggleBookmark(store);
+            }}
+          />
         </div>
       </div>
     </div>

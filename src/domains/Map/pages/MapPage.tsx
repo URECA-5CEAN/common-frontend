@@ -174,6 +174,18 @@ export default function MapPage() {
     setCenter(myLocation);
   }, [map, myLocation, setCenter]);
 
+  //해당 매장 위치로 이동
+  const goToStore = useCallback(
+    (store: StoreInfo) => {
+      if (!map) return;
+      const loc = new kakao.maps.LatLng(store.latitude, store.longitude);
+      map.panTo(loc);
+      setCenter({ lat: store.latitude, lng: store.longitude });
+      openMenu('지도');
+    },
+    [map],
+  );
+
   // 거리 기준으로 2D / 3D 마커 분리 RADIUS_JN = 거리
   const RADIUS_KM = 0.5;
   const [nearbyMarkers, farMarkers] = useMemo(() => {
@@ -360,6 +372,11 @@ export default function MapPage() {
     }
   };
 
+  const bookmarkIds: Set<string> = useMemo(
+    () => new Set(bookmarks.map((b) => b.id)),
+    [bookmarks],
+  );
+
   return (
     <>
       {/* 사이드바 */}
@@ -381,6 +398,8 @@ export default function MapPage() {
           onNavigate={onNavigate}
           bookmarks={bookmarks}
           toggleBookmark={toggleBookmark}
+          bookmarkIds={bookmarkIds}
+          goToStore={goToStore}
         />
       </div>
 

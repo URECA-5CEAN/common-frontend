@@ -1,19 +1,27 @@
-import { Star, Share2, Webcam } from 'lucide-react';
+import { Star, Share2, Webcam, Map } from 'lucide-react';
 import StartEndBtn from '../StartEndBtn';
 import IconActionGroup from '../IconActionGroup';
 import type { StoreInfo } from '../../api/store';
+import clsx from 'clsx';
 
 interface DetailSectionProps {
   store: StoreInfo;
   onStartChange: (v: string) => void;
   onEndChange: (v: string) => void;
+  bookmarkIds: Set<string>;
+  goToStore: (store: StoreInfo) => void;
+  toggleBookmark: (store: StoreInfo) => void;
 }
 
 export default function DetailSection({
   store,
   onStartChange,
   onEndChange,
+  bookmarkIds,
+  goToStore,
+  toggleBookmark,
 }: DetailSectionProps) {
+  const isBookmark = bookmarkIds.has(store.id);
   return (
     <div className="p-4 space-y-4 min-h-[800px]">
       {/* 헤더 */}
@@ -29,12 +37,32 @@ export default function DetailSection({
       </div>
 
       {/* 간단 설명 */}
-      <p className="text-gray-700">{store.address}</p>
+      <div className="flex justify-between items-center">
+        <p className="text-gray-700">{store.address}</p>
+        <Map
+          className="border rounded-full p-1 hover:bg-gray-200"
+          size={28}
+          onClick={() => goToStore(store)}
+        />
+      </div>
 
       <div className="flex justify-between ">
         <IconActionGroup
           actions={[
-            { icon: <Star />, label: '즐겨찾기' },
+            {
+              icon: (
+                <Star
+                  className={clsx(
+                    'cursor-pointer',
+                    isBookmark
+                      ? 'text-yellow-400 fill-yellow-400'
+                      : 'text-gray-300',
+                  )}
+                />
+              ),
+              label: '즐겨찾기',
+              onClick: () => toggleBookmark(store),
+            },
             { icon: <Webcam />, label: '로드뷰' },
             { icon: <Share2 />, label: '공유' },
           ]}
