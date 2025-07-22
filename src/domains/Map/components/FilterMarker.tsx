@@ -85,14 +85,14 @@ export default function FilterMarker({
   }, [hoveredMarkerId, allMarkers, stores, map, containerRef]);
 
   // farMarkers 개수에 따라 클러스터링 여부 결정
-  const shouldCluster = farMarkers.length > 20;
+  const shouldCluster = farMarkers.length > 10;
   return (
     <>
       {shouldCluster ? (
         <MarkerClusterer
           averageCenter={true}
           minLevel={5} // 줌 레벨 5 이상에서 클러스터 해체
-          gridSize={50} // 클러스터 반경(px)
+          gridSize={100} // 클러스터 반경(px)
           styles={[
             {
               width: '53px',

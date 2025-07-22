@@ -81,7 +81,13 @@ export default function MapPage() {
   //선택지
   const [endValue, setEndValue] = useState<string>('');
 
+  //즐겨찾기
   const [bookmarks, setBookmarks] = useState<StoreInfo[]>([]);
+
+  //3d마커
+  const [lod3DMarkers, setLod3DMarkers] = useState<MarkerProps[]>([]);
+  //2d마커
+  const [lod2DMarkers, setLod2DMarkers] = useState<MarkerProps[]>([]);
 
   useEffect(() => {
     const handler = window.setTimeout(() => setDebouncedKeyword(keyword), 300);
@@ -105,6 +111,7 @@ export default function MapPage() {
         centerLat: center.lat,
         centerLng: center.lng,
       });
+      console.log(data);
       setStores(data);
     } catch {
       setStores([]);
@@ -136,7 +143,6 @@ export default function MapPage() {
   // bounds 변경 시마다 필터링
   useEffect(() => {
     if (!map) return;
-
     // 처음 렌더링 시
     filterStoresInView();
     kakao.maps.event.addListener(map, 'idle', filterStoresInView);
@@ -211,55 +217,46 @@ export default function MapPage() {
     return [near, far];
   }, [filteredStores, center]);
 
-  // ★ LOD: 줌 레벨별로 3D 마커 개수 제한
-  const lod3DMarkers = useMemo(() => {
-    if (!map) return nearbyMarkers;
+  useEffect(() => {
+    if (!map) return;
+    // idle 콜백 함수 정의
+    const handleIdle = () => {
+      const level = map.getLevel!();
+      const max3D = level <= 2 ? 30 : level <= 4 ? 20 : level <= 6 ? 10 : 5;
 
-    const level = map.getLevel!(); // 카카오맵: 레벨 작을수록 확대
-    let maxCount: number;
-    if (level <= 2) {
-      maxCount = 30; // 아주 확대됐을 땐 최대 200개
-    } else if (level <= 4) {
-      maxCount = 20; // 중간 확대
-    } else if (level <= 6) {
-      maxCount = 10; // 다소 축소
-    } else {
-      maxCount = 5; // 많이 축소됐을 땐 20개만
-    }
-    // 중요도 순(예: 거리 오름차순)으로 정렬한 뒤 slice
-    return nearbyMarkers
-      .sort((a, b) => {
-        const da = getDistance(center, { lat: a.lat, lng: a.lng });
-        const db = getDistance(center, { lat: b.lat, lng: b.lng });
-        return da - db;
-      })
-      .slice(0, maxCount);
-  }, [map, nearbyMarkers, center]);
+      const enriched = nearbyMarkers
+        .map((m) => ({
+          marker: m,
+          distance: getDistance(center, m as LatLng),
+        }))
+        .sort((a, b) => a.distance - b.distance)
+        .slice(0, max3D)
+        .map((item) => item.marker); // marker만 추출
 
-  const lod2DMarkers = useMemo(() => {
-    if (!map) return farMarkers;
+      setLod3DMarkers(enriched);
 
-    const level = map.getLevel!();
-    let max2D: number;
-    if (level <= 2) {
-      max2D = 60; // 매우 확대: 100개
-    } else if (level <= 4) {
-      max2D = 40; // 중간 확대: 50개
-    } else if (level <= 6) {
-      max2D = 30; // 중간 축소: 20개
-    } else {
-      max2D = 5; // 많이 축소: 5개
-    }
+      // 2D 마커도 동일
+      const max2D = level <= 2 ? 40 : level <= 4 ? 30 : level <= 6 ? 20 : 10;
+      const enriched2D = farMarkers
+        .map((m) => ({
+          marker: m,
+          distance: getDistance(center, m as LatLng),
+        }))
+        .sort((a, b) => a.distance - b.distance)
+        .slice(0, max2D)
+        .map((item) => item.marker);
 
-    // 거리에 따라 가까운 것 우선
-    return farMarkers
-      .sort((a, b) => {
-        const da = getDistance(center, { lat: a.lat, lng: a.lng });
-        const db = getDistance(center, { lat: b.lat, lng: b.lng });
-        return da - db;
-      })
-      .slice(0, max2D);
-  }, [map, farMarkers, center]);
+      setLod2DMarkers(enriched2D);
+    };
+
+    // idle 이벤트 등록
+    kakao.maps.event.addListener(map, 'idle', handleIdle);
+    handleIdle();
+    // 클린업
+    return () => {
+      kakao.maps.event.removeListener(map, 'idle', handleIdle);
+    };
+  }, [map, nearbyMarkers, farMarkers, center]);
   useEffect(() => {
     if (!map) return;
     clustererRef.current = new kakao.maps.MarkerClusterer({
@@ -408,8 +405,8 @@ export default function MapPage() {
       <div className="h-screen pt-[62px] md:pt-[86px] ml-[24%] relative">
         <div ref={containerRef} className="absolute inset-0 ">
           <KakaoMapContainer
-            center={center}
-            level={3}
+            center={myLocation ?? center}
+            level={5}
             onMapCreate={setMap}
             onCenterChanged={setCenter}
           >
