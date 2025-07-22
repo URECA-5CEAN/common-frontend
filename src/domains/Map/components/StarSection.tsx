@@ -9,7 +9,7 @@ interface MapSectionProps {
 
 export default function StarSection({ stores, openDetail }: MapSectionProps) {
   return (
-    <div className="px-2 py-3 space-y-3 min-h-dvh">
+    <div className="px-2 py-3 space-y-3 h-dvh overflow-y-scroll">
       {/* 검색바 */}
       <div className="flex items-center border border-gray-200 rounded-2xl px-2 py-2 mb-4">
         <input

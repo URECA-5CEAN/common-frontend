@@ -18,9 +18,9 @@ export default function MapSection({
   keyword,
 }: MapSectionProps) {
   return (
-    <div className="px-2 py-3 space-y-3 min-h-dvh">
+    <div className="px-2 py-3 space-y-3 h-screen overflow-y-auto ">
       {/* 검색바 */}
-      <div className="flex items-center border border-gray-200 rounded-2xl px-2 py-2 mb-4">
+      <div className="flex items-center border border-gray-200 rounded-2xl px-2 py-2 mb-4  ">
         <DebouncedInput
           value={keyword}
           onChange={changeKeyword}

@@ -6,11 +6,13 @@ import {
   ArrowUpDown,
   ChevronRight,
   ChevronDown,
+  Route,
 } from 'lucide-react';
 import type { StoreInfo } from '../api/store';
 import clsx from 'clsx';
 import OnOffBtn from './OnOffBtn';
 import StarListItem from './StarListItem';
+import { Button } from '@/components/Button';
 
 interface RouteItem {
   id: number;
@@ -100,49 +102,48 @@ export default function RoadSection({
         {/* 액션 버튼 그룹 */}
         <div className="flex items-center space-x-2 ">
           {/* 다시입력 */}
-          <button
+          <Button
             onClick={onReset}
-            className={clsx(
-              btnStyle,
-              'bg-white',
-              'border border-gray-200',
-              'hover:bg-gray-100',
-              'focus:outline-none',
-            )}
+            variant="ghost"
+            size="sm"
+            className=" hover:bg-gray-100 focus:outline-none flex"
           >
             <RefreshCcw size={16} className="mr-1 text-primaryGreen" />
             <p className="w-11 text-xs">다시입력</p>
-          </button>
-          {/* 즐겨찾기 */}
-          <button
-            onClick={onStar}
-            className={clsx(
-              btnStyle,
-              'bg-white',
-              'border border-gray-200',
-              'hover:bg-gray-100',
-              'focus:outline-none',
-            )}
-          >
-            <Star size={16} className="mr-1 text-yellow-400 fill-current" />
-            <p className="w-11 text-xs">즐겨찾기</p>
-          </button>
-          {/* 길찾기 */}
-          <button
+          </Button>
+
+          {/* 즐겨찾기 혹은 경로목록*/}
+          {!isShowStar ? (
+            <Button
+              onClick={onStar}
+              variant="ghost"
+              size="sm"
+              className=" hover:bg-gray-100 focus:outline-none flex"
+            >
+              <Star size={16} className="mr-1 text-yellow-400 fill-current" />
+              <p className="w-11 text-xs">즐겨찾기</p>
+            </Button>
+          ) : (
+            <Button
+              onClick={onStar}
+              variant="ghost"
+              size="sm"
+              className=" hover:bg-gray-100 focus:outline-none flex"
+            >
+              <Route size={16} className="mr-1" />
+              <p className="w-11 text-xs">경로목록</p>
+            </Button>
+          )}
+
+          <Button
             onClick={onNavigate}
-            className={clsx(
-              btnStyle,
-              'bg-primaryGreen',
-              'text-white',
-              'ml-8',
-              'border border-gray-200',
-              'hover:brightness-110',
-              'focus:outline-none',
-            )}
+            variant="primary"
+            size="sm"
+            className="flex hover:brightness-110 focus:outline-none"
           >
-            <p className="w-9 text-xs">길찾기</p>
-            <ChevronRight size={16} className="ml-1" />
-          </button>
+            <p className="w-11 text-xs">길찾기</p>
+            <ChevronRight size={16} />
+          </Button>
         </div>
       </div>
 

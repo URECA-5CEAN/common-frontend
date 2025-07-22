@@ -10,7 +10,7 @@ interface StoreCardProps {
 export default function StoreCard({ store, openDetail }: StoreCardProps) {
   return (
     <div
-      className="flex items-stretch bg-white"
+      className="flex items-stretch bg-white "
       onClick={() => openDetail(store)}
     >
       <img
@@ -24,7 +24,7 @@ export default function StoreCard({ store, openDetail }: StoreCardProps) {
         <p className=" text-xs text-gray-500 line-clamp-2 w-40">
           {store.address}
         </p>
-        <div className="flex justify-between">
+        <div className="flex justify-between mr-1 items-center">
           <StartEndBtn isSmall={true} />
           <Star />
         </div>
