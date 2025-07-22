@@ -1,68 +1,56 @@
+@import 'tailwindcss';
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-family: 'NanumSquareRound';
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+* {
+  box-sizing: border-box;
 }
 
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+@theme {
+  --color-primaryGreen: #6fc3d1;
+  --color-primaryGreen-40: #cdedf3;
+  --color-primaryGreen-60: #73d6e6;
+  --color-primaryGreen-80: #158c9f;
+  --color-backGround: #f9f9f9;
+  --color-backGround-40: #ffffff;
+  --color-backGround-80: #eeeeee;
+  --color-alertYellow: #ff6d48;
+  --color-dangerRed: #e94e4e;
+  --color-gray-700: #1e1e1e;
+  --color-gray-600: #3a3a3a;
+  --color-gray-500: #717379;
+  --color-gray-400: #9a9da4;
+  --color-gray-300: #a5a8af;
+  --color-gray-200: #ebebeb;
+  --color-gray-100: #f9f9f9;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+@keyframes iceShimmer {
+  0% {
+    background-position: -150% -150%;
+    box-shadow: 0 0 20px rgba(173, 216, 230, 0.5);
   }
-  a:hover {
-    color: #747bff;
+  50% {
+    box-shadow: 0 0 30px rgba(173, 216, 230, 0.8);
   }
-  button {
-    background-color: #f9f9f9;
+  100% {
+    background-position: 150% 150%;
+    box-shadow: 0 0 20px rgba(173, 216, 230, 0.5);
   }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    #d5e1f5 0%,
+    #bfd2f0 25%,
+    #abcbff 50%,
+    #bfd2f0 75%,
+    #d5e1f5 100%
+  );
+  background-size: 150% 100%;
+  animation: iceShimmer 1.5s linear infinite;
+  box-shadow: 0 0 20px rgba(173, 216, 230, 0.5);
 }
