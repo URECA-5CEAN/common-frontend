@@ -424,6 +424,8 @@ export default function MapPage() {
               openDetail={openDetail}
               onStartChange={onStartChange}
               onEndChange={onEndChange}
+              toggleBookmark={toggleBookmark}
+              bookmarkIds={bookmarkIds}
             />
 
             {/* 3D 마커 */}

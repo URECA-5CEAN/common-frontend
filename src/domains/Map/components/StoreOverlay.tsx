@@ -4,6 +4,7 @@ import KakaoRoadview from '../KakaoRoadView';
 import StartEndBtn from './StartEndBtn';
 import IconActionGroup from './IconActionGroup';
 import type { StoreInfo } from '../api/store';
+import clsx from 'clsx';
 
 interface OverlayProps {
   lat: number;
@@ -11,6 +12,8 @@ interface OverlayProps {
   store: StoreInfo;
   onStartChange: (v: string) => void;
   onEndChange: (v: string) => void;
+  toggleBookmark: (store: StoreInfo) => void;
+  isBookmark: boolean;
 }
 
 const StoreOverlay = ({
@@ -19,6 +22,8 @@ const StoreOverlay = ({
   store,
   onStartChange,
   onEndChange,
+  toggleBookmark,
+  isBookmark,
 }: OverlayProps) => {
   const [isRoad, setIsRoad] = useState<boolean>(false);
 
@@ -49,7 +54,20 @@ const StoreOverlay = ({
       <div className="flex justify-between ">
         <IconActionGroup
           actions={[
-            { icon: <Star />, label: '즐겨찾기' },
+            {
+              icon: (
+                <Star
+                  className={clsx(
+                    'cursor-pointer',
+                    isBookmark
+                      ? 'text-yellow-400 fill-yellow-400'
+                      : 'text-gray-300',
+                  )}
+                />
+              ),
+              label: '즐겨찾기',
+              onClick: () => toggleBookmark(store),
+            },
             { icon: <Webcam />, label: '로드뷰', onClick: changeLoadView },
             { icon: <Share2 />, label: '공유' },
           ]}

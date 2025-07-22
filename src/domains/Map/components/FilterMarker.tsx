@@ -16,6 +16,8 @@ interface Props {
   openDetail: (store: StoreInfo) => void; //click시 상세보기 open
   onStartChange: (v: string) => void;
   onEndChange: (v: string) => void;
+  toggleBookmark: (store: StoreInfo) => void;
+  bookmarkIds: Set<string>;
 }
 
 export default function FilterMarker({
@@ -29,6 +31,8 @@ export default function FilterMarker({
   openDetail,
   onStartChange,
   onEndChange,
+  toggleBookmark,
+  bookmarkIds,
 }: Props) {
   // hover 해제 지연용 타이머 ID 저장
   const hoverOutRef = useRef<number | null>(null);
@@ -184,6 +188,8 @@ export default function FilterMarker({
             store={overlay.store}
             onStartChange={onStartChange}
             onEndChange={onEndChange}
+            toggleBookmark={toggleBookmark}
+            isBookmark={bookmarkIds.has(overlay.store.id)}
           />
         </div>
       )}

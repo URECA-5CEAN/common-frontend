@@ -89,7 +89,7 @@ export async function fetchBookmark(category?: string): Promise<StoreInfo[]> {
         },
       },
     );
-    console.log(response);
+
     return response.data.data;
   } catch (error: unknown) {
     const axiosErr = error as AxiosError<{ message: string }>;
