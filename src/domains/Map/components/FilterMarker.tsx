@@ -116,7 +116,7 @@ export default function FilterMarker({
                   size: { width: 40, height: 40 },
                   options: { offset: { x: 20, y: 40 } },
                 }}
-                zIndex={1}
+                zIndex={2}
                 onMouseOver={() => {
                   if (hoverOutRef.current) clearTimeout(hoverOutRef.current);
                   setHoveredMarkerId(m.id);
@@ -146,7 +146,7 @@ export default function FilterMarker({
                 size: { width: 40, height: 40 },
                 options: { offset: { x: 20, y: 40 } },
               }}
-              zIndex={1}
+              zIndex={2}
               onMouseOver={() => {
                 if (hoverOutRef.current) clearTimeout(hoverOutRef.current);
                 setHoveredMarkerId(m.id);

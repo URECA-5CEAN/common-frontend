@@ -1,7 +1,6 @@
 import { useRef, useEffect, useCallback } from 'react';
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three-stdlib';
-import { RepeatWrapping } from 'three';
 import type { MarkerProps } from '../KakaoMapContainer';
 import type { StoreInfo } from '../api/store';
 
@@ -68,20 +67,40 @@ export default function ThreeJsMarker({
         ? m.imageUrl
         : `${m.imageUrl}?ts=${imageTimestamp}`;
       const tex = textureCache.current.get(url)!;
-      tex.wrapS = RepeatWrapping;
-      tex.wrapT = RepeatWrapping;
 
-      // 큐브 생성 (이미지 넣기)
-      const material = new THREE.MeshLambertMaterial({
-        map: tex,
-        depthTest: false,
-      });
       const cube = new THREE.Mesh(
         new RoundedBoxGeometry(40, 40, 40, 10, 5),
-        material,
+        new THREE.MeshPhongMaterial({
+          color: '#f8f8f8',
+          shininess: 10,
+          depthTest: false,
+          transparent: true,
+        }),
       );
-      cube.name = m.id; //Raycast 식별할 때 사용
       cube.rotation.set(Math.PI / 7, -Math.PI / 6, 0);
+      cube.name = m.id;
+      // 2) 플레이트 (Plane) — 텍스처 온전하게 보이게
+      const plateSize = 30; // 면보다 약간 작게
+      const plateGeo = new THREE.PlaneGeometry(plateSize, plateSize);
+      const plateMat = new THREE.MeshPhongMaterial({
+        map: tex,
+        shininess: 50,
+        specular: 0xaaaaaa,
+        transparent: true,
+        depthTest: false,
+      });
+      const plate = new THREE.Mesh(plateGeo, plateMat);
+
+      // 큐브 앞면 중앙(플레이트가 큐브 반면보다 살짝 앞에 있게)
+      plate.position.set(0, 0, 20.5);
+      cube.add(plate);
+
+      const rightPlate = new THREE.Mesh(plateGeo, plateMat.clone());
+      // X축 양(+) 방향으로 회전: Plane 기본은 XY평면 → X 면에 붙이려면 YZ평면으로 회전
+      rightPlate.rotation.set(0, Math.PI / 2, 0);
+      // X축 양 방향, 큐브 반폭(half-width=20)보다 살짝 바깥
+      rightPlate.position.set(20.5, 0, 0);
+      cube.add(rightPlate);
 
       //핀(cone) 생성
       const cone = new THREE.Mesh(
@@ -93,6 +112,9 @@ export default function ThreeJsMarker({
           depthWrite: false,
         }),
       );
+      plate.name = m.id;
+      rightPlate.name = m.id;
+      cone.name = m.id;
       cone.rotation.x = Math.PI;
       cone.position.set(0, -35, 0);
 
@@ -186,6 +208,7 @@ export default function ThreeJsMarker({
     return () => {
       window.removeEventListener('resize', handleResize);
       kakao.maps.event.removeListener(map, 'idle', handleResize);
+
       if (renderer.domElement.parentNode === container)
         container.removeChild(renderer.domElement);
       renderer.dispose();

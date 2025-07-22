@@ -262,6 +262,7 @@ export default function MapPage() {
     SetKeyword(e.target.value);
   };
 
+  console.log(hoveredId);
   return (
     <>
       {/* 사이드바 */}
