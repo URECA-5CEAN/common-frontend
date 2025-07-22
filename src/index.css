@@ -29,14 +29,14 @@
 
 @keyframes iceShimmer {
   0% {
-    background-position: -150% -150%;
+    background-position: 150% 150%;
     box-shadow: 0 0 20px rgba(173, 216, 230, 0.5);
   }
   50% {
     box-shadow: 0 0 30px rgba(173, 216, 230, 0.8);
   }
   100% {
-    background-position: 150% 150%;
+    background-position: -150% -150%;
     box-shadow: 0 0 20px rgba(173, 216, 230, 0.5);
   }
 }
