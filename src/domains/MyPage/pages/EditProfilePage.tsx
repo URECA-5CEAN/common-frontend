@@ -1,6 +1,6 @@
 import { Button } from '@/components/Button';
 import { editUserInfo, getUserInfo } from '@/domains/MyPage/api/profile';
-import { Breadcrumb } from '@/domains/MyPage/components/Breadcrumb';
+import { Breadcrumb } from '@/components/Breadcrumb';
 import type { UserInfoApi } from '@/domains/MyPage/types/profile';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -58,8 +58,8 @@ const EditProfilePage = () => {
   } as const;
 
   return (
-    <div className="w-full max-w-[1050px]">
-      <Breadcrumb title="내 정보" />
+    <div className="w-full max-w-[1050px] m-6">
+      <Breadcrumb title="마이페이지" subtitle="내 정보" />
       <div className="text-[32px]">내 정보</div>
       <div className="text-2xl">내 정보 수정</div>
       <div className="flex flex-col gap-3">
