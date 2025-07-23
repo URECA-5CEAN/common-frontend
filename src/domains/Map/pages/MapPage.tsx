@@ -399,9 +399,9 @@ export default function MapPage() {
   };
 
   return (
-    <div className="flex h-screen flex-col md:flex-row">
+    <div className="flex h-screen flex-col-reverse md:flex-row overflow-y-hidden ">
       {/* 사이드바 */}
-      <aside className="relative top-[62px] md:top-[86px] left-0 bottom-0 sm:w-[420px] z-20 flex-shrink-0">
+      <aside className="relative top-[62px] md:top-[86px]  left-0 bottom-0 sm:w-[420px] z-20 flex-shrink-0">
         <MapSidebar
           stores={displayedStores}
           panel={panel}
@@ -480,7 +480,7 @@ export default function MapPage() {
               ))}
             </div>
             {/* 이 위치에서 검색 버튼 */}
-            <div className="absolute bottom-8 left-[43%] ">
+            <div className="absolute bottom-8 left-[40%] ">
               {map && myLocation && (
                 <Button
                   onClick={searchHere}

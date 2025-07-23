@@ -15,7 +15,7 @@ export default function SidebarMenu({
   onSelect,
 }: SidebarMenuProps) {
   return (
-    <div className="fixed  top-16 right-6.5 sm:left-0 bottom-0 sm:w-[90px] sm:bg-gray-50 shadow text-center space-y-2 py-10 z-20">
+    <div className="fixed top-16 right-6.5 sm:left-0  sm:bottom-0 sm:w-[90px] sm:bg-gray-50 sm:shadow text-center space-y-2 pt-10 z-0 sm:z-20">
       {menus.map((menu, idx) => (
         <button
           key={menu}
