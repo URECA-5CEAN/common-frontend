@@ -4,6 +4,7 @@ import MapPage from './domains/Map/pages/MapPage';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import LoginPage from './domains/Auth/pages/LoginPage';
+import SignUpPage from './domains/Auth/pages/SignUpPage';
 import RankingPage from './domains/Explore/pages/RankingPage';
 import SharePage from './domains/Explore/pages/SharePage';
 import MembershipPage from './domains/Explore/pages/MembershipPage';
@@ -12,6 +13,7 @@ import CollectionPage from './domains/MyPage/pages/CollectionPage';
 import MissionPage from './domains/MyPage/pages/MissionPage';
 import StatisticsPage from './domains/MyPage/pages/StatisticsPage';
 import FavoritesPage from './domains/MyPage/pages/FavoritesPage';
+import EditProfilePage from '@/domains/MyPage/pages/EditProfilePage';
 
 const AppLayout = () => {
   return (
@@ -42,13 +44,15 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/map" element={<MapPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignUpPage />} />
 
-          {/* 사이드바 레이아웃 포함 */}  
+          {/* 사이드바 레이아웃 포함 */}
           <Route element={<SidebarLayout />}>
             <Route path="/explore/rankings" element={<RankingPage />} />
             <Route path="/explore/share" element={<SharePage />} />
             <Route path="/explore/membership" element={<MembershipPage />} />
             <Route path="/mypage/profile" element={<ProfilePage />} />
+            <Route path="/mypage/edit" element={<EditProfilePage />} />
             <Route path="/mypage/collection" element={<CollectionPage />} />
             <Route path="/mypage/missions" element={<MissionPage />} />
             <Route path="/mypage/statistics" element={<StatisticsPage />} />

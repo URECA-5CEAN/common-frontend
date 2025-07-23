@@ -72,7 +72,7 @@ const DateFilter: React.FC<DateFilterProps> = ({ selectedRange, onChange }) => {
     selectedRange.type !== '직접 설정' ? selectedRange.type : '직접 설정';
 
   return (
-    <div className="flex md:flex-row flex-col md:items-center items-end gap-2 justify-end mb-3">
+    <div className="flex md:flex-row flex-col md:items-center items-end gap-2 justify-end mb-2">
       {/* 빠른 필터 드롭다운 */}
       <div className="relative" onClick={(e) => e.stopPropagation()}>
         <FilterButton text={displayRangeText} onClick={handleDropdownToggle} />

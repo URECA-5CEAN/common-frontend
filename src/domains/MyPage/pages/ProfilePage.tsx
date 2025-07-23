@@ -5,13 +5,17 @@ import type { UserInfo, UserInfoApi } from '@/domains/MyPage/types/profile';
 import { useEffect, useState } from 'react';
 import UsageHistory from '@/domains/MyPage/components/profile/UsageHistory';
 import { getUserInfo, getUserStat } from '@/domains/MyPage/api/profile';
-import { Breadcrumb } from '@/domains/MyPage/components/Breadcrumb';
+import { Breadcrumb } from '@/components/Breadcrumb';
+import { Button } from '@/components/Button';
+import { useNavigate } from 'react-router-dom';
 
 const ProfilePage: React.FC = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [selectedBadge, setSelectedBadge] = useState<string>('earlybird');
   const [tempBadge, setTempBadge] = useState<string>(selectedBadge);
   const [userInfoApi, setUserInfoApi] = useState<UserInfoApi>();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchData() {
@@ -28,8 +32,6 @@ const ProfilePage: React.FC = () => {
 
     fetchData();
   }, []);
-
-  console.log(userInfoApi);
 
   // 실제로는 API에서 받아올 데이터
   const userInfo: UserInfo = {
@@ -58,12 +60,23 @@ const ProfilePage: React.FC = () => {
 
   return (
     <>
-      <div className="w-full max-w-[1050px]">
-        <Breadcrumb title="내 정보" />
+      <div className="w-full max-w-[1050px] m-6">
+        <Breadcrumb title="마이페이지" subtitle="내 정보" />
 
-        <div>
-          <div className="text-[32px]">내 정보</div>
-          <div className="text-2xl">{userInfoApi?.nickname}님 반갑습니다</div>
+        <div className="flex flex-col">
+          <div className="flex gap-3 items-center">
+            <div className="text-[32px] mt-3 mb-2 font-bold">내 정보</div>
+            <Button
+              variant="secondary"
+              height="30px"
+              onClick={() => navigate('/mypage/edit')}
+            >
+              내 정보 수정
+            </Button>
+          </div>
+          <div className="text-2xl mb-1">
+            {userInfoApi?.nickname}님 반갑습니다
+          </div>
 
           <UserProfile
             userInfo={userInfo}

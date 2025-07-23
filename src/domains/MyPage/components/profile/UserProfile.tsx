@@ -47,7 +47,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
     : excellentIcon;
 
   return (
-    <div className="w-full border border-gray-200 rounded-2xl flex md:flex-row flex-col gap-5 p-5 md:justify-between items-center">
+    <div className="w-full border border-gray-200 rounded-2xl flex lg:flex-row flex-col gap-5 p-5 md:justify-between items-center">
       <div className="flex gap-4 items-center w-full">
         <ProfileImage src={iconSrc} alt="우수아이콘" />
         <UserInfo
