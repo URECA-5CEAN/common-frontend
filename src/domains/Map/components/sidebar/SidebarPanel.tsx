@@ -71,7 +71,7 @@ export default function SidebarPanel({
       exit={{ x: -332, opacity: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       className={clsx(
-        'absolute -top-2 w-[332px]  bg-white rounded-2xl shadow-2xl z-10 ml-6',
+        'absolute  -top-2 md:w-[332px] w-72 bg-white rounded-2xl shadow-2xl z-10 -ml-16 sm:ml-6',
         isDetail ? 'max-h-[800px] translate-y-4' : 'bottom-0',
       )}
       style={{ left }}

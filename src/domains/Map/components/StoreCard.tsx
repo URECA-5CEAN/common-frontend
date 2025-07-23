@@ -22,7 +22,7 @@ export default function StoreCard({
   //const isBookmark =
   return (
     <div
-      className="flex items-stretch bg-white cursor-pointer"
+      className="flex items-stretch bg-white cursor-pointer  "
       onClick={() => openDetail(store)}
     >
       <img

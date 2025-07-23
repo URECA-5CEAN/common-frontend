@@ -399,9 +399,9 @@ export default function MapPage() {
   };
 
   return (
-    <>
+    <div className="flex h-screen flex-col md:flex-row">
       {/* 사이드바 */}
-      <div className="fixed top-[62px] md:top-[86px] left-0 bottom-0 w-20 z-20">
+      <aside className="relative top-[62px] md:top-[86px] left-0 bottom-0 sm:w-[420px] z-20 flex-shrink-0">
         <MapSidebar
           stores={displayedStores}
           panel={panel}
@@ -422,10 +422,10 @@ export default function MapPage() {
           bookmarkIds={bookmarkIds}
           goToStore={goToStore}
         />
-      </div>
+      </aside>
 
       {/* 지도 영역 */}
-      <div className="h-screen pt-[62px] md:pt-[86px] ml-[22%] relative">
+      <div className="flex-1 relative ">
         <div ref={containerRef} className="absolute inset-0 ">
           <KakaoMapContainer
             center={myLocation ?? center}
@@ -517,6 +517,6 @@ export default function MapPage() {
           </KakaoMapContainer>
         </div>
       </div>
-    </>
+    </div>
   );
 }
