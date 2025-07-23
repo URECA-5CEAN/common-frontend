@@ -14,7 +14,7 @@ import MapSidebar, {
   type MenuType,
   type Panel,
 } from '../components/sidebar/MapSidebar';
-import { LocateFixed, RotateCcw } from 'lucide-react';
+import { LocateFixed, Plus, RotateCcw } from 'lucide-react';
 import type { MarkerProps, LatLng } from '../KakaoMapContainer';
 import { getDistance } from '../utils/getDistance';
 import {
@@ -25,6 +25,8 @@ import {
   type StoreInfo,
 } from '../api/store';
 import { Button } from '@/components/Button';
+import { Modal } from '@/components/Modal';
+import BenefitModal from '../components/BenefitModal';
 const ThreeJsMarker = lazy(() => import('../components/ThreeJsMarker'));
 //bounds 타입에러 방지
 interface InternalBounds extends kakao.maps.LatLngBounds {
@@ -88,6 +90,9 @@ export default function MapPage() {
   const [lod3DMarkers, setLod3DMarkers] = useState<MarkerProps[]>([]);
   //2d마커
   const [lod2DMarkers, setLod2DMarkers] = useState<MarkerProps[]>([]);
+
+  //혜택인증 파일
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   useEffect(() => {
     const handler = window.setTimeout(() => setDebouncedKeyword(keyword), 300);
@@ -385,6 +390,10 @@ export default function MapPage() {
     [bookmarks],
   );
 
+  const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null;
+    setSelectedFile(file);
+  };
   return (
     <>
       {/* 사이드바 */}
@@ -491,6 +500,13 @@ export default function MapPage() {
                 </Button>
               )}
             </div>
+            <BenefitModal
+              panel={panel}
+              openmenu={openMenu}
+              handleFileSelect={handleFileSelect}
+              selectedFile={selectedFile}
+              setSelectedFile={setSelectedFile}
+            />
           </KakaoMapContainer>
         </div>
       </div>
