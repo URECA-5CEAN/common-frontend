@@ -1,13 +1,4 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/Button';
-import { createChatRoom } from '../api/share';
-
-interface Post {
-  id: string;
-  title: string;
-  writerId: string;
-}
 
 const ShareDetailPage = () => {
   const { postId } = useParams();
