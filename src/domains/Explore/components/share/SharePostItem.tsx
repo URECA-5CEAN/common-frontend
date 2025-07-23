@@ -2,16 +2,18 @@ import type { Post } from '@/domains/Explore/types/share';
 import { Calendar } from 'lucide-react';
 import { MapPin } from 'lucide-react';
 import { Heart } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface SharePostItemProps {
   post: Post;
 }
 
 const SharePostItem = ({ post }: SharePostItemProps) => {
-  const handleClick = () => {
-    // 상세페이지 이동
-  };
+  const navigate = useNavigate();
 
+  const handleClick = () => {
+    navigate(`/explore/share/${post.id}`);
+  };
   return (
     <li
       onClick={handleClick}
