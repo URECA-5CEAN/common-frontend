@@ -7,6 +7,8 @@ import LoginPage from './domains/Auth/pages/LoginPage';
 import SignUpPage from './domains/Auth/pages/SignUpPage';
 import RankingPage from './domains/Explore/pages/RankingPage';
 import SharePage from './domains/Explore/pages/SharePage';
+import ShareWritePage from './domains/Explore/pages/ShareWritePage';
+import ShareDetailPage from './domains/Explore/pages/ShareDetailPage';
 import MembershipPage from './domains/Explore/pages/MembershipPage';
 import ProfilePage from './domains/MyPage/pages/ProfilePage';
 import CollectionPage from './domains/MyPage/pages/CollectionPage';
@@ -50,6 +52,11 @@ function App() {
           <Route element={<SidebarLayout />}>
             <Route path="/explore/rankings" element={<RankingPage />} />
             <Route path="/explore/share" element={<SharePage />} />
+            <Route path="/explore/share/write" element={<ShareWritePage />} />
+            <Route
+              path="/explore/share/:postId"
+              element={<ShareDetailPage />}
+            />
             <Route path="/explore/membership" element={<MembershipPage />} />
             <Route path="/mypage/profile" element={<ProfilePage />} />
             <Route path="/mypage/edit" element={<EditProfilePage />} />
