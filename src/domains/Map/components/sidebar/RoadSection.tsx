@@ -95,7 +95,7 @@ export default function RoadSection({
             className="absolute right-2 top-1/2 transform -translate-y-1/2 w-6 h-6
             bg-white border border-gray-300  
             rounded-full flex items-center justify-center 
-            shadow-sm  hover:bg-gray-50 focus:outline-none"
+            shadow-sm  hover:bg-gray-50 focus:outline-none cursor-pointer"
           >
             <ArrowUpDown size={16} />
           </button>
@@ -184,7 +184,7 @@ export default function RoadSection({
                     }
                     className="p-1 text-gray-400 hover:text-red-500"
                   >
-                    <Trash2 size={16} />
+                    <Trash2 size={16} className="cursor-pointer" />
                   </button>
                 </li>
               ))}
@@ -205,7 +205,7 @@ export default function RoadSection({
                   >
                     <span className="text-sm">{`${r.from} → ${r.to}`}</span>
                     <button className="p-1 text-gray-400 hover:text-red-500">
-                      <Trash2 size={16} />
+                      <Trash2 size={16} className="cursor-pointer" />
                     </button>
                   </li>
                 ))}

@@ -192,15 +192,20 @@ export default function MapPage() {
       openMenu('지도');
       searchHere();
     },
-    [map],
+    [map, searchHere],
   );
+
+  //즐겨찾기 사이드바 클릭 시 즐겨찾기만 보이도록
+  const displayedStores = useMemo<StoreInfo[]>(() => {
+    return panel.menu === '즐겨찾기' ? bookmarks : filteredStores;
+  }, [panel.menu, bookmarks, filteredStores]);
 
   // 거리 기준으로 2D / 3D 마커 분리 RADIUS_JN = 거리
   const RADIUS_KM = 0.5;
   const [nearbyMarkers, farMarkers] = useMemo(() => {
     const near: MarkerProps[] = [];
     const far: MarkerProps[] = [];
-    filteredStores.forEach((store) => {
+    displayedStores.forEach((store) => {
       //중심과 제휴처 거리
       const distance = getDistance(center, {
         lat: store.latitude,
@@ -217,15 +222,15 @@ export default function MapPage() {
       else far.push(marker);
     });
     return [near, far];
-  }, [filteredStores, center]);
+  }, [displayedStores, center]);
 
   useEffect(() => {
     if (!map) return;
     // idle 콜백 함수 정의
     const handleIdle = () => {
       const level = map.getLevel!();
+      //3d마커 개수 제한
       const max3D = level <= 2 ? 30 : level <= 4 ? 20 : level <= 6 ? 10 : 5;
-
       const enriched = nearbyMarkers
         .map((m) => ({
           marker: m,
@@ -237,7 +242,7 @@ export default function MapPage() {
 
       setLod3DMarkers(enriched);
 
-      // 2D 마커도 동일
+      // 2D마커 개수 제한
       const max2D = level <= 2 ? 40 : level <= 4 ? 30 : level <= 6 ? 20 : 10;
       const enriched2D = farMarkers
         .map((m) => ({
@@ -259,6 +264,8 @@ export default function MapPage() {
       kakao.maps.event.removeListener(map, 'idle', handleIdle);
     };
   }, [map, nearbyMarkers, farMarkers, center]);
+
+  // 3d 클러스터
   useEffect(() => {
     if (!map) return;
     clustererRef.current = new kakao.maps.MarkerClusterer({
@@ -372,6 +379,7 @@ export default function MapPage() {
     }
   };
 
+  //즐겨찾기 구분
   const bookmarkIds: Set<string> = useMemo(
     () => new Set(bookmarks.map((b) => b.id)),
     [bookmarks],
@@ -382,7 +390,7 @@ export default function MapPage() {
       {/* 사이드바 */}
       <div className="fixed top-[62px] md:top-[86px] left-0 bottom-0 w-20 z-20">
         <MapSidebar
-          stores={filteredStores}
+          stores={displayedStores}
           panel={panel}
           openMenu={openMenu}
           openDetail={openDetail}
@@ -420,7 +428,7 @@ export default function MapPage() {
               setHoveredMarkerId={setHoveredId}
               map={map}
               containerRef={containerRef}
-              stores={filteredStores}
+              stores={displayedStores}
               openDetail={openDetail}
               onStartChange={onStartChange}
               onEndChange={onEndChange}
@@ -437,7 +445,7 @@ export default function MapPage() {
                   setHoveredMarkerId={setHoveredId}
                   container={containerRef.current!}
                   openDetail={openDetail}
-                  stores={filteredStores}
+                  stores={displayedStores}
                 />
               </Suspense>
             )}
