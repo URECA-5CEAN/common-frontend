@@ -15,10 +15,13 @@ const SharePostItem = ({ post }: SharePostItemProps) => {
   return (
     <li
       onClick={handleClick}
-      className={`border rounded-xl p-4 border-gray-200 cursor-pointer flex justify-between`}
+      className="relative border rounded-xl p-4 border-gray-200 cursor-pointer flex flex-col sm:flex-row justify-between gap-4"
     >
-      <div className="flex gap-4">
-        <div className="relative w-16 h-16 sm:w-32 sm:h-32 flex items-center justify-center">
+      <button className="absolute right-4 top-4 text-gray-400 ">
+        <Heart />
+      </button>
+      <div className="flex gap-2 sm:gap-4">
+        <div className="relative w-16 h-16 sm:w-32 sm:h-32 flex items-center justify-center flex-shrink-0">
           {/* <img /> */}
           <div
             className={`bg-gray-400 w-full h-full rounded-2xl ${
@@ -33,9 +36,10 @@ const SharePostItem = ({ post }: SharePostItemProps) => {
         </div>
 
         <div className="flex flex-col gap-2">
-          <h3 className="text-lg font-bold">{post.title}</h3>
-
-          <p className="text-gray-600 truncate">{post.content}</p>
+          <h3 className="text-lg font-bold break-words  pr-10 min-w-0">
+            {post.title}
+          </h3>
+          <p className="text-gray-600 text-sm line-clamp-1">{post.content}</p>
           <div className="text-sm flex flex-wrap gap-2">
             <span className="bg-yellow-400 px-3.5 py-1 rounded-2xl">
               {post.category}
@@ -47,17 +51,23 @@ const SharePostItem = ({ post }: SharePostItemProps) => {
               {post.type}
             </span>
           </div>
+          <div className="flex flex-wrap sm:hidden text-gray-400 gap-x-1 text-sm">
+            <div className="flex gap-1">
+              <Calendar size={16} /> {post.date}
+            </div>
+            <span>·</span>
+            <div className="flex gap-1">
+              <MapPin size={16} /> {post.place}
+            </div>
+          </div>
         </div>
       </div>
-      <div className="text-gray-400 flex flex-col items-end justify-between h-full">
-        <Heart />
-        <div className="flex flex-col items-end gap-2">
-          <div className="flex items-center gap-2">
-            <Calendar size={20} /> {post.date}
-          </div>
-          <div className="flex items-center gap-2">
-            <MapPin size={20} /> {post.place}
-          </div>
+      <div className="sm:flex hidden sm:flex-col items-end gap-2 justify-end text-gray-400">
+        <div className="flex items-center gap-2">
+          <Calendar size={20} /> {post.date}
+        </div>
+        <div className="flex items-center gap-2">
+          <MapPin size={20} /> {post.place}
         </div>
       </div>
     </li>

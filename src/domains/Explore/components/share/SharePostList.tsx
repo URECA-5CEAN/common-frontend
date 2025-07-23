@@ -11,7 +11,7 @@ const SharePostList = ({ posts }: SharePostListProps) => {
   }
 
   return (
-    <ul className="grid gap-4 mt-6">
+    <ul className="flex flex-col gap-4 mt-6 ">
       {posts.map((post) => (
         <SharePostItem key={post.id} post={post} />
       ))}
