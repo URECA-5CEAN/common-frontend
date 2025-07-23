@@ -26,16 +26,16 @@ export default function MapSection({
   bookmarkIds,
 }: MapSectionProps) {
   return (
-    <div className="px-2 py-3 space-y-3 h-screen overflow-y-auto ">
+    <div className="px-2 py-3 space-y-3 h-screen ">
       {/* 검색바 */}
-      <div className="flex items-center border border-gray-200 rounded-2xl px-2 py-2 mb-4  ">
+      <div className="flex items-center border border-gray-200 rounded-2xl px-2 py-2 mb-4">
+        <Search />
         <DebouncedInput
           value={keyword}
           onChange={changeKeyword}
           debounceTime={300}
           placeholder="검색"
         />
-        <Search />
       </div>
 
       {/* 리스트 아이템 반복 */}

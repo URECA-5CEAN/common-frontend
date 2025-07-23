@@ -178,7 +178,7 @@ export default function FilterMarker({
                 top: overlay.y,
                 transform: 'translate(-50%, -120%)',
                 pointerEvents: 'none',
-                zIndex: 9999,
+                zIndex: 10,
               }}
             >
               {/* 로딩 스피너나 투명 박스 */}
@@ -193,7 +193,7 @@ export default function FilterMarker({
               top: overlay.y,
               transform: 'translate(-50%, -120%)',
               pointerEvents: 'auto',
-              zIndex: 9999,
+              zIndex: 10,
             }}
             onMouseEnter={() => {
               if (hoverOutRef.current) clearTimeout(hoverOutRef.current);

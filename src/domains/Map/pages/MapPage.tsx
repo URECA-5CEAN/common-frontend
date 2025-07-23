@@ -14,7 +14,7 @@ import MapSidebar, {
   type MenuType,
   type Panel,
 } from '../components/sidebar/MapSidebar';
-import { LocateFixed, Plus, RotateCcw } from 'lucide-react';
+import { LocateFixed, RotateCcw } from 'lucide-react';
 import type { MarkerProps, LatLng } from '../KakaoMapContainer';
 import { getDistance } from '../utils/getDistance';
 import {
@@ -25,8 +25,8 @@ import {
   type StoreInfo,
 } from '../api/store';
 import { Button } from '@/components/Button';
-import { Modal } from '@/components/Modal';
 import BenefitModal from '../components/BenefitModal';
+import clsx from 'clsx';
 const ThreeJsMarker = lazy(() => import('../components/ThreeJsMarker'));
 //bounds 타입에러 방지
 interface InternalBounds extends kakao.maps.LatLngBounds {
@@ -116,7 +116,7 @@ export default function MapPage() {
         centerLat: center.lat,
         centerLng: center.lng,
       });
-      console.log(data);
+
       setStores(data);
     } catch {
       setStores([]);
@@ -176,8 +176,7 @@ export default function MapPage() {
       map.panTo(mylocate);
       setCenter(myLocation);
     }
-    searchHere();
-  }, [map, myLocation, searchHere]);
+  }, [map, myLocation]);
 
   // 내 위치로 돌아가는 함수
   const goToMyLocation = useCallback(() => {
@@ -273,7 +272,7 @@ export default function MapPage() {
   // 3d 클러스터
   useEffect(() => {
     if (!map) return;
-    clustererRef.current = new kakao.maps.MarkerClusterer({
+    const clusterer = new kakao.maps.MarkerClusterer({
       map,
       averageCenter: true,
       gridSize: 50,
@@ -292,7 +291,11 @@ export default function MapPage() {
         },
       ],
     });
-    return () => clustererRef.current?.remove();
+    clustererRef.current = clusterer;
+    return () => {
+      clusterer.setMap(null); // 클러스터러 제거
+      clusterer.clear(); // 내부 마커 모두 해제
+    };
   }, [map]);
 
   // 사이드바 메뉴 Open
@@ -394,6 +397,8 @@ export default function MapPage() {
     const file = e.target.files?.[0] ?? null;
     setSelectedFile(file);
   };
+
+  console.log(isCategory);
   return (
     <>
       {/* 사이드바 */}
@@ -421,7 +426,7 @@ export default function MapPage() {
       </div>
 
       {/* 지도 영역 */}
-      <div className="h-screen pt-[62px] md:pt-[86px] ml-[24%] relative">
+      <div className="h-screen pt-[62px] md:pt-[86px] ml-[22%] relative">
         <div ref={containerRef} className="absolute inset-0 ">
           <KakaoMapContainer
             center={myLocation ?? center}
@@ -461,15 +466,18 @@ export default function MapPage() {
 
             <div className=" fixed left-96 ml-16 top-24 z-2 flex justify-start space-x-2">
               {Category.map((cate) => (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="px-6 text-xs hover:text-primaryGreen"
+                <button
+                  className={clsx(
+                    'px-6 text-xs cursor-pointer hover:text-primaryGreen py-1.5 rounded-2xl border-2  border-gray-200',
+                    isCategory === cate
+                      ? 'text-primaryGreen bg-white '
+                      : ' bg-white',
+                  )}
                   onClick={() => changeCategory(cate)}
                   key={cate}
                 >
                   {cate}
-                </Button>
+                </button>
               ))}
             </div>
             {/* 이 위치에서 검색 버튼 */}
@@ -479,7 +487,7 @@ export default function MapPage() {
                   onClick={searchHere}
                   variant="primary"
                   size="md"
-                  className="flex justify-center self-center hover:bg-primaryGreen-80"
+                  className="flex justify-center shadow self-center hover:bg-primaryGreen-80"
                 >
                   <RotateCcw size={16} className="mt-[3px]" />
                   <p className="ml-1">이 위치에서 검색</p>

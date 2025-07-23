@@ -4,11 +4,11 @@ import type { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 
 // axios 인스턴스 설정
 const apiClient: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL + '/api/map',
+  baseURL: import.meta.env.VITE_API_URL + '/map',
   headers: { 'Content-Type': 'application/json' },
 });
 
-const token = import.meta.env.VITE_USER_TOKEN;
+const token = import.meta.env.VITE_AUTH_TOKEN;
 export interface StoreInfo {
   id: string;
   name: string;

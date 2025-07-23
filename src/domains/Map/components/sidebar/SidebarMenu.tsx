@@ -15,13 +15,13 @@ export default function SidebarMenu({
   onSelect,
 }: SidebarMenuProps) {
   return (
-    <div className="fixed top-16 left-0 bottom-0 w-[90px] bg-gray-50 border-r text-center space-y-2 py-10 z-20">
+    <div className="fixed top-16 left-0 bottom-0 w-[90px] bg-gray-50 shadow text-center space-y-2 py-10 z-20">
       {menus.map((menu, idx) => (
         <button
           key={menu}
           onClick={() => onSelect(menu)}
           className={clsx(
-            'w-20 flex flex-col items-center focus:outline-none cursor-pointer hover:bg-[#DDF4FF]',
+            'w-20 flex flex-col ml-[5px] items-center focus:outline-none cursor-pointer hover:bg-[#DDF4FF]',
             activeMenu === menu && 'bg-[#DDF4FF]',
           )}
         >

@@ -32,9 +32,9 @@ export default function UserSection({
             className="absolute top-0 left-0 h-full bg-[#96E0ED]"
             style={{ width: `${percent}%` }}
           />
-        </div>
-        <div className="text-xs text-gray-500 mt-1 absolute top-20 left-[200px]">
-          {currentExp} / {nextLevelExp}
+          <div className="text-xs text-gray-500 left-[42%] absolute  ">
+            {currentExp} / {nextLevelExp}
+          </div>
         </div>
       </div>
     </div>
