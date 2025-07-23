@@ -1,13 +1,23 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import LoginForm from '../components/LoginForm';
+import SignUpForm from '../components/SignUpForm';
+import SignUpAgreementForm from '../components/SignUpAgreementForm';
 
-const LoginPage = () => {
+const SignUpPage = () => {
   const navigate = useNavigate();
+  const [step, setStep] = useState<'agreement' | 'signup'>('agreement');
 
-  const handleSignUpClick = () => {
-    navigate('/signup');
+  const handleBackToLogin = () => {
+    navigate('/login');
   };
 
+  const handleAgreementComplete = () => {
+    setStep('signup');
+  };
+
+  const handleBackToAgreement = () => {
+    setStep('agreement');
+  };
   return (
     <div className="min-h-screen pt-[62px] md:pt-[86px] bg-white relative overflow-hidden">
       {/* Side Wave 배경 - 화면 오른쪽에서 시작해서 절반을 채움 */}
@@ -45,42 +55,49 @@ const LoginPage = () => {
         {/* 데스크톱 버전 - Side Wave 배경 */}
         <div className="hidden md:block">
           {/* Side Wave 1 - 첫 번째 레이어 */}
-          <div className="absolute left-0 top-0 w-3/5 h-screen">
+          <div className="absolute right-0 top-0 w-3/5 h-screen">
             <img
               src="/src/assets/image/side-wave1.svg"
               alt="Side Wave 1"
-              className="w-full h-full object-cover object-right transform scale-x"
+              className="w-full h-full object-cover object-right transform scale-x-[-1]"
             />
           </div>
 
           {/* Side Wave 2 - 두 번째 레이어 */}
-          <div className="absolute left-0 top-0 w-2/5 h-screen">
+          <div className="absolute right-0 top-0 w-2/5 h-screen">
             <img
               src="/src/assets/image/side-wave2.svg"
               alt="Side Wave 2"
-              className="w-full h-full object-cover object-right transform scale-x"
+              className="w-full h-full object-cover object-right transform scale-x-[-1]"
             />
           </div>
 
           {/* Side Wave 3 - 세 번째 레이어 */}
-          <div className="absolute left-0 top-0 w-1/5 h-screen">
+          <div className="absolute right-0 top-0 w-1/5 h-screen">
             <img
               src="/src/assets/image/side-wave3.svg"
               alt="Side Wave 3"
-              className="w-full h-full object-cover object-right transform scale-x"
+              className="w-full h-full object-cover object-right transform scale-x-[-1]"
             />
           </div>
         </div>
       </div>
 
-      {/* 로그인 폼 - 파도 위에 표시 */}
-      <div className="relative z-[5] pt-28 md:pt-56 px-4">
+      {/* 폼 - 파도 위에 표시 */}
+      <div className="relative z-[5] pt-20 md:pt-48 px-4">
         <div className="w-full max-w-[300px] md:max-w-[500px] mx-auto">
-          <LoginForm onSignUpClick={handleSignUpClick} />
+          {step === 'agreement' ? (
+            <SignUpAgreementForm onNext={handleAgreementComplete} />
+          ) : (
+            <SignUpForm
+              onBackToLogin={handleBackToLogin}
+              onBack={handleBackToAgreement}
+            />
+          )}
         </div>
       </div>
     </div>
   );
 };
 
-export default LoginPage;
+export default SignUpPage;

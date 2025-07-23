@@ -4,6 +4,7 @@ import MapPage from './domains/Map/pages/MapPage';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import LoginPage from './domains/Auth/pages/LoginPage';
+import SignUpPage from './domains/Auth/pages/SignUpPage';
 import RankingPage from './domains/Explore/pages/RankingPage';
 import SharePage from './domains/Explore/pages/SharePage';
 import MembershipPage from './domains/Explore/pages/MembershipPage';
@@ -43,6 +44,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/map" element={<MapPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignUpPage />} />
 
           {/* 사이드바 레이아웃 포함 */}
           <Route element={<SidebarLayout />}>

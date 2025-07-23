@@ -64,13 +64,25 @@ const STYLES = {
 };
 
 // 하위 컴포넌트들
-const Logo = ({ onMenuClose }: { onMenuClose: () => void }) => (
-  <NavLink to="/" className={STYLES.logo} onClick={onMenuClose}>
+const Logo = ({
+  onMenuClose,
+  isSignUpPage,
+  isLoginPage,
+}: {
+  onMenuClose: () => void;
+  isSignUpPage: boolean;
+  isLoginPage: boolean;
+}) => (
+  <NavLink
+    to="/"
+    className={`${STYLES.logo} ${isSignUpPage ? 'text-primaryGreen' : ''} ${isLoginPage ? 'text-primaryGreen md:text-white' : ''}`}
+    onClick={onMenuClose}
+  >
     지중해
   </NavLink>
 );
 
-const DesktopNavigation = () => {
+const DesktopNavigation = ({ isSignUpPage }: { isSignUpPage: boolean }) => {
   const location = useLocation();
 
   return (
@@ -88,7 +100,7 @@ const DesktopNavigation = () => {
           <NavLink
             key={to}
             to={to}
-            className={`p-[0.625rem] z-1000 transition-[background-color] duration-300 hover:bg-black/5 rounded-xl ${isActive ? 'font-bold' : ''}`}
+            className={`p-[0.625rem] z-1000 transition-[background-color] duration-300 hover:bg-black/5 rounded-xl ${isActive ? 'font-bold' : ''} ${isSignUpPage ? 'text-primaryGreen' : ''}`}
           >
             {label}
           </NavLink>
@@ -98,11 +110,11 @@ const DesktopNavigation = () => {
   );
 };
 
-const DesktopLogin = () => (
+const DesktopLogin = ({ isLoginPage }: { isLoginPage: boolean }) => (
   <NavLink
     to="/login"
     className={({ isActive }) =>
-      `${STYLES.desktopLogin} ${isActive ? 'font-bold' : ''}`
+      `${STYLES.desktopLogin} ${isActive ? 'font-bold' : ''} ${isLoginPage ? 'text-primaryGreen' : ''}`
     }
   >
     로그인
@@ -112,16 +124,34 @@ const DesktopLogin = () => (
 const MobileMenuButton = ({
   isOpen,
   onClick,
+  isSignUpPage,
+  isLoginPage,
 }: {
   isOpen: boolean;
   onClick: () => void;
+  isSignUpPage: boolean;
+  isLoginPage: boolean;
 }) => (
   <button
     onClick={onClick}
-    className={STYLES.mobileMenuButton}
+    className={`${STYLES.mobileMenuButton} ${isSignUpPage || isLoginPage ? 'text-primaryGreen' : ''}`}
     aria-label={isOpen ? '메뉴 닫기' : '메뉴 열기'}
   >
-    <img src={menuIcon} alt="메뉴" />
+    <img
+      src={menuIcon}
+      alt="메뉴"
+      className={
+        isSignUpPage || isLoginPage ? 'filter brightness-0 saturate-100' : ''
+      }
+      style={
+        isSignUpPage || isLoginPage
+          ? {
+              filter:
+                'invert(39%) sepia(85%) saturate(380%) hue-rotate(159deg) brightness(96%) contrast(89%)',
+            }
+          : {}
+      }
+    />
   </button>
 );
 
@@ -263,10 +293,11 @@ const Header = () => {
 
   // 페이지별 스타일 결정
   const isLandingPage = location.pathname === '/';
-  const isAuthPage = location.pathname === '/login';
-  const shouldShowWave = !isAuthPage && !isLandingPage;
+  const isSignUpPage = location.pathname === '/signup';
+  const isLoginPage = location.pathname === '/login';
+  const shouldShowWave = !isLoginPage && !isSignUpPage && !isLandingPage;
   const bgClass =
-    isLandingPage || isAuthPage
+    isLandingPage || isLoginPage || isSignUpPage
       ? STYLES.header.transparent
       : STYLES.header.default;
 
@@ -282,15 +313,24 @@ const Header = () => {
       <header className={`${STYLES.header.base} ${bgClass}`}>
         {/* 왼쪽: 로고 + 데스크탑 메뉴 */}
         <div className="flex items-center absolute left-3 md:left-10 top-1 md:top-3 gap-2">
-          <Logo onMenuClose={handleMenuClose} />
-          <DesktopNavigation />
+          <Logo
+            onMenuClose={handleMenuClose}
+            isSignUpPage={isSignUpPage}
+            isLoginPage={isLoginPage}
+          />
+          <DesktopNavigation isSignUpPage={isSignUpPage} />
         </div>
 
         {/* 데스크탑 로그인 */}
-        <DesktopLogin />
+        <DesktopLogin isLoginPage={isLoginPage} />
 
         {/* 모바일 메뉴 버튼 */}
-        <MobileMenuButton isOpen={isMenuOpen} onClick={handleMenuToggle} />
+        <MobileMenuButton
+          isOpen={isMenuOpen}
+          onClick={handleMenuToggle}
+          isSignUpPage={isSignUpPage}
+          isLoginPage={isLoginPage}
+        />
 
         {/* 헤더 웨이브 이미지 */}
         {shouldShowWave && <HeaderWave />}
