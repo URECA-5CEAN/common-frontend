@@ -5,9 +5,10 @@ import {
   useMemo,
   useCallback,
   type ChangeEvent,
+  Suspense,
+  lazy,
 } from 'react';
 import KakaoMapContainer from '../KakaoMapContainer';
-import ThreeJsMarker from '../components/ThreeJsMarker';
 import FilterMarker from '../components/FilterMarker';
 import MapSidebar, {
   type MenuType,
@@ -16,9 +17,15 @@ import MapSidebar, {
 import { LocateFixed, RotateCcw } from 'lucide-react';
 import type { MarkerProps, LatLng } from '../KakaoMapContainer';
 import { getDistance } from '../utils/getDistance';
-import { fetchStores, type StoreInfo } from '../api/store';
+import {
+  createBookmark,
+  deleteBookmark,
+  fetchBookmark,
+  fetchStores,
+  type StoreInfo,
+} from '../api/store';
 import { Button } from '@/components/Button';
-
+const ThreeJsMarker = lazy(() => import('../components/ThreeJsMarker'));
 //bounds 타입에러 방지
 interface InternalBounds extends kakao.maps.LatLngBounds {
   pa: number;
@@ -70,9 +77,17 @@ export default function MapPage() {
   const [isCategory, SetIsCategory] = useState<string>('');
 
   //출발지
-  const [startValue, setStartValue] = useState('');
+  const [startValue, setStartValue] = useState<string>('');
   //선택지
-  const [endValue, setEndValue] = useState('');
+  const [endValue, setEndValue] = useState<string>('');
+
+  //즐겨찾기
+  const [bookmarks, setBookmarks] = useState<StoreInfo[]>([]);
+
+  //3d마커
+  const [lod3DMarkers, setLod3DMarkers] = useState<MarkerProps[]>([]);
+  //2d마커
+  const [lod2DMarkers, setLod2DMarkers] = useState<MarkerProps[]>([]);
 
   useEffect(() => {
     const handler = window.setTimeout(() => setDebouncedKeyword(keyword), 300);
@@ -96,11 +111,12 @@ export default function MapPage() {
         centerLat: center.lat,
         centerLng: center.lng,
       });
+      console.log(data);
       setStores(data);
     } catch {
       setStores([]);
     }
-  }, [map, debouncedKeyword, center, isCategory]);
+  }, [map, debouncedKeyword, isCategory]);
 
   useEffect(() => {
     searchHere();
@@ -127,7 +143,6 @@ export default function MapPage() {
   // bounds 변경 시마다 필터링
   useEffect(() => {
     if (!map) return;
-
     // 처음 렌더링 시
     filterStoresInView();
     kakao.maps.event.addListener(map, 'idle', filterStoresInView);
@@ -156,7 +171,8 @@ export default function MapPage() {
       map.panTo(mylocate);
       setCenter(myLocation);
     }
-  }, [map, myLocation]);
+    searchHere();
+  }, [map, myLocation, searchHere]);
 
   // 내 위치로 돌아가는 함수
   const goToMyLocation = useCallback(() => {
@@ -166,12 +182,30 @@ export default function MapPage() {
     setCenter(myLocation);
   }, [map, myLocation, setCenter]);
 
+  //해당 매장 위치로 이동
+  const goToStore = useCallback(
+    (store: StoreInfo) => {
+      if (!map) return;
+      const loc = new kakao.maps.LatLng(store.latitude, store.longitude);
+      map.panTo(loc);
+      setCenter({ lat: store.latitude, lng: store.longitude });
+      openMenu('지도');
+      searchHere();
+    },
+    [map, searchHere],
+  );
+
+  //즐겨찾기 사이드바 클릭 시 즐겨찾기만 보이도록
+  const displayedStores = useMemo<StoreInfo[]>(() => {
+    return panel.menu === '즐겨찾기' ? bookmarks : filteredStores;
+  }, [panel.menu, bookmarks, filteredStores]);
+
   // 거리 기준으로 2D / 3D 마커 분리 RADIUS_JN = 거리
   const RADIUS_KM = 0.5;
   const [nearbyMarkers, farMarkers] = useMemo(() => {
     const near: MarkerProps[] = [];
     const far: MarkerProps[] = [];
-    filteredStores.forEach((store) => {
+    displayedStores.forEach((store) => {
       //중심과 제휴처 거리
       const distance = getDistance(center, {
         lat: store.latitude,
@@ -188,57 +222,50 @@ export default function MapPage() {
       else far.push(marker);
     });
     return [near, far];
-  }, [filteredStores, center]);
+  }, [displayedStores, center]);
 
-  // ★ LOD: 줌 레벨별로 3D 마커 개수 제한
-  const lod3DMarkers = useMemo(() => {
-    if (!map) return nearbyMarkers;
+  useEffect(() => {
+    if (!map) return;
+    // idle 콜백 함수 정의
+    const handleIdle = () => {
+      const level = map.getLevel!();
+      //3d마커 개수 제한
+      const max3D = level <= 2 ? 30 : level <= 4 ? 20 : level <= 6 ? 10 : 5;
+      const enriched = nearbyMarkers
+        .map((m) => ({
+          marker: m,
+          distance: getDistance(center, m as LatLng),
+        }))
+        .sort((a, b) => a.distance - b.distance)
+        .slice(0, max3D)
+        .map((item) => item.marker); // marker만 추출
 
-    const level = map.getLevel!(); // 카카오맵: 레벨 작을수록 확대
-    let maxCount: number;
-    if (level <= 2) {
-      maxCount = 30; // 아주 확대됐을 땐 최대 200개
-    } else if (level <= 4) {
-      maxCount = 20; // 중간 확대
-    } else if (level <= 6) {
-      maxCount = 10; // 다소 축소
-    } else {
-      maxCount = 5; // 많이 축소됐을 땐 20개만
-    }
-    // 중요도 순(예: 거리 오름차순)으로 정렬한 뒤 slice
-    return nearbyMarkers
-      .sort((a, b) => {
-        const da = getDistance(center, { lat: a.lat, lng: a.lng });
-        const db = getDistance(center, { lat: b.lat, lng: b.lng });
-        return da - db;
-      })
-      .slice(0, maxCount);
-  }, [map, nearbyMarkers, center]);
+      setLod3DMarkers(enriched);
 
-  const lod2DMarkers = useMemo(() => {
-    if (!map) return farMarkers;
+      // 2D마커 개수 제한
+      const max2D = level <= 2 ? 40 : level <= 4 ? 30 : level <= 6 ? 20 : 10;
+      const enriched2D = farMarkers
+        .map((m) => ({
+          marker: m,
+          distance: getDistance(center, m as LatLng),
+        }))
+        .sort((a, b) => a.distance - b.distance)
+        .slice(0, max2D)
+        .map((item) => item.marker);
 
-    const level = map.getLevel!();
-    let max2D: number;
-    if (level <= 2) {
-      max2D = 60; // 매우 확대: 100개
-    } else if (level <= 4) {
-      max2D = 40; // 중간 확대: 50개
-    } else if (level <= 6) {
-      max2D = 30; // 중간 축소: 20개
-    } else {
-      max2D = 5; // 많이 축소: 5개
-    }
+      setLod2DMarkers(enriched2D);
+    };
 
-    // 거리에 따라 가까운 것 우선
-    return farMarkers
-      .sort((a, b) => {
-        const da = getDistance(center, { lat: a.lat, lng: a.lng });
-        const db = getDistance(center, { lat: b.lat, lng: b.lng });
-        return da - db;
-      })
-      .slice(0, max2D);
-  }, [map, farMarkers, center]);
+    // idle 이벤트 등록
+    kakao.maps.event.addListener(map, 'idle', handleIdle);
+    handleIdle();
+    // 클린업
+    return () => {
+      kakao.maps.event.removeListener(map, 'idle', handleIdle);
+    };
+  }, [map, nearbyMarkers, farMarkers, center]);
+
+  // 3d 클러스터
   useEffect(() => {
     if (!map) return;
     clustererRef.current = new kakao.maps.MarkerClusterer({
@@ -287,6 +314,7 @@ export default function MapPage() {
   const changeCategory = (category: string) => {
     SetIsCategory(category);
     SetKeyword(category);
+    openMenu('지도');
   };
 
   // 출발 도착 change
@@ -317,13 +345,52 @@ export default function MapPage() {
   const onNavigate = () => {
     console.log('길찾기 실행:', { from: startValue, to: endValue });
   };
+  //마운트 시 즐겨찾기 조회
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadBookmarks() {
+      try {
+        const data = await fetchBookmark();
+        if (isMounted) setBookmarks(data);
+      } catch (err) {
+        console.error('즐겨찾기 불러오기 실패', err);
+      }
+    }
+    loadBookmarks();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const toggleBookmark = async (store: StoreInfo) => {
+    try {
+      if (bookmarks.some((bookmark) => bookmark.id === store.id)) {
+        await deleteBookmark(store.id);
+        setBookmarks((prev) =>
+          prev.filter((bookmark) => bookmark.id !== store.id),
+        );
+      } else {
+        await createBookmark(store.id);
+        setBookmarks((prev) => [...prev, store]);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  //즐겨찾기 구분
+  const bookmarkIds: Set<string> = useMemo(
+    () => new Set(bookmarks.map((b) => b.id)),
+    [bookmarks],
+  );
 
   return (
     <>
       {/* 사이드바 */}
       <div className="fixed top-[62px] md:top-[86px] left-0 bottom-0 w-20 z-20">
         <MapSidebar
-          stores={filteredStores}
+          stores={displayedStores}
           panel={panel}
           openMenu={openMenu}
           openDetail={openDetail}
@@ -337,6 +404,10 @@ export default function MapPage() {
           onSwap={onSwap}
           onReset={onReset}
           onNavigate={onNavigate}
+          bookmarks={bookmarks}
+          toggleBookmark={toggleBookmark}
+          bookmarkIds={bookmarkIds}
+          goToStore={goToStore}
         />
       </div>
 
@@ -344,8 +415,8 @@ export default function MapPage() {
       <div className="h-screen pt-[62px] md:pt-[86px] ml-[24%] relative">
         <div ref={containerRef} className="absolute inset-0 ">
           <KakaoMapContainer
-            center={center}
-            level={3}
+            center={myLocation ?? center}
+            level={5}
             onMapCreate={setMap}
             onCenterChanged={setCenter}
           >
@@ -357,24 +428,29 @@ export default function MapPage() {
               setHoveredMarkerId={setHoveredId}
               map={map}
               containerRef={containerRef}
-              stores={filteredStores}
+              stores={displayedStores}
               openDetail={openDetail}
               onStartChange={onStartChange}
               onEndChange={onEndChange}
+              toggleBookmark={toggleBookmark}
+              bookmarkIds={bookmarkIds}
             />
 
             {/* 3D 마커 */}
             {map && (
-              <ThreeJsMarker
-                markers={lod3DMarkers}
-                map={map}
-                setHoveredMarkerId={setHoveredId}
-                container={containerRef.current!}
-                openDetail={openDetail}
-                stores={filteredStores}
-              />
+              <Suspense fallback={null}>
+                <ThreeJsMarker
+                  markers={lod3DMarkers}
+                  map={map}
+                  setHoveredMarkerId={setHoveredId}
+                  container={containerRef.current!}
+                  openDetail={openDetail}
+                  stores={displayedStores}
+                />
+              </Suspense>
             )}
-            <div className=" fixed left-96 ml-16 top-24 z-20 flex justify-start space-x-2">
+
+            <div className=" fixed left-96 ml-16 top-24 z-2 flex justify-start space-x-2">
               {Category.map((cate) => (
                 <Button
                   variant="ghost"
@@ -394,7 +470,7 @@ export default function MapPage() {
                   onClick={searchHere}
                   variant="primary"
                   size="md"
-                  className="flex justify-center self-center"
+                  className="flex justify-center self-center hover:bg-primaryGreen-80"
                 >
                   <RotateCcw size={16} className="mt-[3px]" />
                   <p className="ml-1">이 위치에서 검색</p>

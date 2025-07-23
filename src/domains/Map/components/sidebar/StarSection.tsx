@@ -3,17 +3,21 @@ import StoreCard from '../StoreCard';
 import type { StoreInfo } from '../../api/store';
 
 interface MapSectionProps {
-  stores: StoreInfo[];
+  bookmarks: StoreInfo[];
   openDetail: (store: StoreInfo) => void;
   onStartChange: (v: string) => void;
   onEndChange: (v: string) => void;
+  toggleBookmark: (store: StoreInfo) => void;
+  bookmarkIds: Set<string>;
 }
 
 export default function StarSection({
-  stores,
+  bookmarks,
   openDetail,
   onStartChange,
   onEndChange,
+  toggleBookmark,
+  bookmarkIds,
 }: MapSectionProps) {
   return (
     <div className="px-2 py-3 space-y-3 h-screen overflow-y-auto">
@@ -28,13 +32,15 @@ export default function StarSection({
       </div>
 
       {/* 리스트 아이템 반복 */}
-      {stores.map((store) => (
+      {bookmarks.map((bookmark) => (
         <StoreCard
-          key={store.id}
-          store={store}
+          key={bookmark.id}
+          store={bookmark}
           openDetail={openDetail}
           onStartChange={onStartChange}
           onEndChange={onEndChange}
+          toggleBookmark={toggleBookmark}
+          isBookmark={bookmarkIds.has(bookmark.id)}
         />
       ))}
     </div>

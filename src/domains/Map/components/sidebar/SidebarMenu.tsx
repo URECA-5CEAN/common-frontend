@@ -21,7 +21,7 @@ export default function SidebarMenu({
           key={menu}
           onClick={() => onSelect(menu)}
           className={clsx(
-            'w-20 flex flex-col items-center focus:outline-none',
+            'w-20 flex flex-col items-center focus:outline-none cursor-pointer hover:bg-[#DDF4FF]',
             activeMenu === menu && 'bg-[#DDF4FF]',
           )}
         >

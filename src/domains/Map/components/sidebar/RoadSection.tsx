@@ -29,6 +29,8 @@ interface RouteInputProps {
   onSwap?: () => void;
   onReset?: () => void;
   onNavigate?: () => void;
+  bookmarks: StoreInfo[];
+  goToStore: (store: StoreInfo) => void;
 }
 
 export default function RoadSection({
@@ -41,6 +43,9 @@ export default function RoadSection({
   onStar,
   onNavigate,
   isShowStar,
+  bookmarks,
+  goToStore,
+  openDetail,
 }: RouteInputProps) {
   const [savedRoutes, setSavedRoutes] = useState<RouteItem[]>([
     { id: 1, from: '할리스 OO점', to: '할리스 OO점' },
@@ -90,7 +95,7 @@ export default function RoadSection({
             className="absolute right-2 top-1/2 transform -translate-y-1/2 w-6 h-6
             bg-white border border-gray-300  
             rounded-full flex items-center justify-center 
-            shadow-sm  hover:bg-gray-50 focus:outline-none"
+            shadow-sm  hover:bg-gray-50 focus:outline-none cursor-pointer"
           >
             <ArrowUpDown size={16} />
           </button>
@@ -152,13 +157,14 @@ export default function RoadSection({
               <p>추천순</p> <ChevronDown className="inline" />
             </p>
           </div>
-          <StarListItem />
-          <StarListItem />
-          <StarListItem />
-          <StarListItem />
-          <StarListItem />
-          <StarListItem />
-          <StarListItem />
+          {bookmarks.map((bookmark) => (
+            <StarListItem
+              bookmark={bookmark}
+              key={bookmark.id}
+              onCenter={() => goToStore(bookmark)}
+              openDetail={() => openDetail(bookmark)}
+            />
+          ))}
         </div>
       ) : (
         <>
@@ -178,7 +184,7 @@ export default function RoadSection({
                     }
                     className="p-1 text-gray-400 hover:text-red-500"
                   >
-                    <Trash2 size={16} />
+                    <Trash2 size={16} className="cursor-pointer" />
                   </button>
                 </li>
               ))}
@@ -199,7 +205,7 @@ export default function RoadSection({
                   >
                     <span className="text-sm">{`${r.from} → ${r.to}`}</span>
                     <button className="p-1 text-gray-400 hover:text-red-500">
-                      <Trash2 size={16} />
+                      <Trash2 size={16} className="cursor-pointer" />
                     </button>
                   </li>
                 ))}

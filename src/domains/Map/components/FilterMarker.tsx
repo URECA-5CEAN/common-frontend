@@ -1,10 +1,17 @@
-import React, { useRef, useState, useEffect, useMemo } from 'react';
+import React, {
+  useRef,
+  useState,
+  useEffect,
+  useMemo,
+  Suspense,
+  lazy,
+} from 'react';
 import { MapMarker } from 'react-kakao-maps-sdk';
-import StoreOverlay from './StoreOverlay';
 import type { MarkerProps } from '../KakaoMapContainer';
 import type { StoreInfo } from '../api/store';
 import { MarkerClusterer } from 'react-kakao-maps-sdk';
 import { getBucketUrl } from './getBucketUrl';
+const StoreOverlay = lazy(() => import('./StoreOverlay'));
 interface Props {
   nearbyMarkers: MarkerProps[]; //3d마커
   farMarkers: MarkerProps[]; //2D마커
@@ -16,6 +23,8 @@ interface Props {
   openDetail: (store: StoreInfo) => void; //click시 상세보기 open
   onStartChange: (v: string) => void;
   onEndChange: (v: string) => void;
+  toggleBookmark: (store: StoreInfo) => void;
+  bookmarkIds: Set<string>;
 }
 
 export default function FilterMarker({
@@ -29,6 +38,8 @@ export default function FilterMarker({
   openDetail,
   onStartChange,
   onEndChange,
+  toggleBookmark,
+  bookmarkIds,
 }: Props) {
   // hover 해제 지연용 타이머 ID 저장
   const hoverOutRef = useRef<number | null>(null);
@@ -74,14 +85,14 @@ export default function FilterMarker({
   }, [hoveredMarkerId, allMarkers, stores, map, containerRef]);
 
   // farMarkers 개수에 따라 클러스터링 여부 결정
-  const shouldCluster = farMarkers.length > 20;
+  const shouldCluster = farMarkers.length > 10;
   return (
     <>
       {shouldCluster ? (
         <MarkerClusterer
           averageCenter={true}
           minLevel={5} // 줌 레벨 5 이상에서 클러스터 해체
-          gridSize={50} // 클러스터 반경(px)
+          gridSize={100} // 클러스터 반경(px)
           styles={[
             {
               width: '53px',
@@ -158,34 +169,54 @@ export default function FilterMarker({
         })
       )}
       {overlay && (
-        <div
-          style={{
-            position: 'fixed',
-            left: overlay.x,
-            top: overlay.y,
-            transform: 'translate(-50%, -120%)',
-            pointerEvents: 'auto',
-            zIndex: 9999,
-          }}
-          onMouseEnter={() => {
-            if (hoverOutRef.current) clearTimeout(hoverOutRef.current);
-          }}
-          onMouseLeave={() => {
-            if (hoverOutRef.current) clearTimeout(hoverOutRef.current);
-            hoverOutRef.current = window.setTimeout(
-              () => setHoveredMarkerId(null),
-              200,
-            );
-          }}
+        <Suspense
+          fallback={
+            <div
+              style={{
+                position: 'fixed',
+                left: overlay.x,
+                top: overlay.y,
+                transform: 'translate(-50%, -120%)',
+                pointerEvents: 'none',
+                zIndex: 9999,
+              }}
+            >
+              {/* 로딩 스피너나 투명 박스 */}
+              <div className="w-24 h-16 bg-white rounded shadow animate-pulse" />
+            </div>
+          }
         >
-          <StoreOverlay
-            lat={overlay.store.latitude}
-            lng={overlay.store.longitude}
-            store={overlay.store}
-            onStartChange={onStartChange}
-            onEndChange={onEndChange}
-          />
-        </div>
+          <div
+            style={{
+              position: 'fixed',
+              left: overlay.x,
+              top: overlay.y,
+              transform: 'translate(-50%, -120%)',
+              pointerEvents: 'auto',
+              zIndex: 9999,
+            }}
+            onMouseEnter={() => {
+              if (hoverOutRef.current) clearTimeout(hoverOutRef.current);
+            }}
+            onMouseLeave={() => {
+              if (hoverOutRef.current) clearTimeout(hoverOutRef.current);
+              hoverOutRef.current = window.setTimeout(
+                () => setHoveredMarkerId(null),
+                200,
+              );
+            }}
+          >
+            <StoreOverlay
+              lat={overlay.store.latitude}
+              lng={overlay.store.longitude}
+              store={overlay.store}
+              onStartChange={onStartChange}
+              onEndChange={onEndChange}
+              toggleBookmark={toggleBookmark}
+              isBookmark={bookmarkIds.has(overlay.store.id)}
+            />
+          </div>
+        </Suspense>
       )}
     </>
   );

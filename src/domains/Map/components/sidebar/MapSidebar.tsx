@@ -36,6 +36,10 @@ interface SideBarProps {
   onSwap: () => void;
   onReset: () => void;
   onNavigate: () => void;
+  bookmarks: StoreInfo[];
+  toggleBookmark: (store: StoreInfo) => void;
+  bookmarkIds: Set<string>;
+  goToStore: (store: StoreInfo) => void;
 }
 
 export default function MapSidebar({
@@ -53,6 +57,10 @@ export default function MapSidebar({
   onSwap,
   onReset,
   onNavigate,
+  bookmarks,
+  toggleBookmark,
+  bookmarkIds,
+  goToStore,
 }: SideBarProps) {
   if (!panel) return;
   return (
@@ -84,6 +92,10 @@ export default function MapSidebar({
           onSwap={onSwap}
           onReset={onReset}
           onNavigate={onNavigate}
+          bookmarks={bookmarks}
+          toggleBookmark={toggleBookmark}
+          bookmarkIds={bookmarkIds}
+          goToStore={goToStore}
         />
 
         {/* 상세 패널 (panel.type이 'detail'일 때만) */}
@@ -99,6 +111,9 @@ export default function MapSidebar({
             keyword={keyword}
             onStartChange={onStartChange}
             onEndChange={onEndChange}
+            toggleBookmark={toggleBookmark}
+            bookmarkIds={bookmarkIds}
+            goToStore={goToStore}
           />
         )}
       </AnimatePresence>
