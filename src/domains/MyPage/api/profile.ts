@@ -20,6 +20,24 @@ export const getUserInfo = async (): Promise<UserInfoResponse> => {
   return response.data;
 };
 
+export const editUserInfo = async (
+  nickname: string,
+  address: string,
+  password: string,
+) => {
+  const response = await axios.put(
+    `${baseURL}/user`,
+    { nickname, address, password },
+    {
+      headers: {
+        Authorization: token,
+      },
+    },
+  );
+
+  return response.data;
+};
+
 export const getUserStat = async (): Promise<UserStatResponse> => {
   const response = await axios.get<UserStatResponse>(`${baseURL}/user/stat`, {
     headers: {

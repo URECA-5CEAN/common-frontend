@@ -33,8 +33,8 @@ const UsageHistory: React.FC<UsageHistoryProps> = ({ items }) => {
   }, [items, selectedRange]);
 
   return (
-    <div>
-      <div className="text-[32px]">사용 내역</div>
+    <div className="mt-10">
+      <div className="text-[32px] mb-2 font-bold">사용 내역</div>
       <DateFilter selectedRange={selectedRange} onChange={setSelectedRange} />
       <HistoryList items={filteredItems} />
     </div>

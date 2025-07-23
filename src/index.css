@@ -235,4 +235,65 @@
     justify-content: center;
     align-items: center;
   }
+
+  .attendance-calendar .react-calendar__month-view__days button {
+    padding: 0;
+  }
+}
+
+/* 출석체크 달력 */
+.attendance-calendar .react-calendar__tile {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  flex-direction: column;
+}
+.attendance-calendar .react-calendar__tile abbr {
+  font-size: 0.75rem;
+}
+.attendance-calendar .react-calendar__tile:enabled:hover,
+.attendance-calendar .react-calendar__tile:enabled:focus {
+  background-color: white;
+  color: var(--color-gray-500);
+  cursor: default;
+}
+.attendance-calendar .react-calendar__tile--active {
+  background: white;
+  color: var(--color-gray-500);
+}
+.attendance-calendar .react-calendar__navigation__label__labelText--from {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+.attendance-calendar .react-calendar__month-view__weekdays,
+.attendance-calendar .react-calendar__month-view__days,
+.attendance-calendar .react-calendar__month-view__days__day--weekend {
+  color: var(--color-gray-500);
+}
+
+.attendance-calendar .react-calendar__tile {
+  height: 78px;
+}
+
+.attendance-calendar .react-calendar__year-view__months__month abbr {
+  font-size: 1.25rem;
+}
+.attendance-calendar .react-calendar__year-view__months__month {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.attendance-calendar .react-calendar__tile:disabled {
+  background-color: white;
+  color: var(--color-gray-500);
+}
+.attendance-calendar .react-calendar__year-view__months__month:enabled:hover {
+  background-color: var(--color-gray-200);
+  color: black;
+}
+
+.scrollbar-custom {
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-gray-300) transparent;
 }
