@@ -9,6 +9,7 @@ export const useAttendanceCalendar = () => {
   const [activeDate, setActiveDate] = useState<Date>(new Date());
   const [loading, setLoading] = useState(false);
   const [attendedDates, setAttendedDates] = useState<Set<string>>(new Set());
+  const [isTodayPresent, setIsTodayPresent] = useState(true);
 
   const year = activeDate.getFullYear();
   const month = activeDate.getMonth() + 1;
@@ -22,6 +23,9 @@ export const useAttendanceCalendar = () => {
       data.data.attendance.forEach((dateStr: string) => {
         next.add(dateStr);
       });
+      const todayStr = formatDate(new Date());
+      setIsTodayPresent(next.has(todayStr));
+
       return next;
     });
   }, [data]);
@@ -63,10 +67,6 @@ export const useAttendanceCalendar = () => {
       setLoading(false);
     }
   };
-
-  const today = new Date();
-  const todayStr = formatDate(today);
-  const isTodayPresent = attendedDates.has(todayStr);
 
   return {
     calendarValue,
