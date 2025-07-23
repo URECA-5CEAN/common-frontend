@@ -23,20 +23,22 @@ export default function DetailSection({
 }: DetailSectionProps) {
   const isBookmark = bookmarkIds.has(store.id);
   return (
-    <div className="p-4 space-y-4 min-h-[800px]">
+    <div className="p-4 space-y-4 min-h-[800px] z-10">
       {/* 헤더 */}
       <div className="flex items-center justify-between">
         <p className="text-xl font-bold">{store.name}</p>
         <span className="text-gray-500 text-sm">{store.category}</span>
-        <span className="text-primaryGreen-80 text-sm font-semibold mt-2">
-          영업중
-        </span>
       </div>
 
       {/* 위치 & 영업시간 */}
       <div className="flex flex-col  text-gray-600">
         <p>영업시간</p>
-        <p>09:00~21:00</p>
+        <div className="flex justify-between">
+          <p>09:00~21:00</p>
+          <span className="text-primaryGreen-80 text-sm font-semibold  ">
+            영업중
+          </span>
+        </div>
       </div>
 
       {/* 간단 설명 */}

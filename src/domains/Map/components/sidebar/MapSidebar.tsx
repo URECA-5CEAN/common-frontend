@@ -103,6 +103,7 @@ export default function MapSidebar({
           <SidebarPanel
             key="detail"
             index={1}
+            bookmarks={bookmarks}
             panel={panel}
             stores={stores}
             openDetail={openDetail}

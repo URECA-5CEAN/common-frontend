@@ -33,7 +33,7 @@ const StoreOverlay = ({
   }, []);
 
   return (
-    <div className=" bg-white rounded-2xl  w-[360px] p-4 space-y-3 z-50">
+    <div className=" bg-white rounded-2xl  w-[360px] p-4 space-y-3 z-1">
       {/* 헤더 */}
       <div className="flex justify-between items-start">
         <div>

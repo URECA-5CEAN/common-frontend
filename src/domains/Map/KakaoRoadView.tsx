@@ -2,7 +2,7 @@ import { CustomOverlayMap, Roadview } from 'react-kakao-maps-sdk';
 import type { LatLng } from './KakaoMapContainer';
 
 interface RoadviewProps {
-  position: LatLng;
+  position?: LatLng;
   radius?: number;
   yAnchor?: number;
 }
@@ -13,18 +13,15 @@ export default function KakaoRoadview({
   yAnchor = 1.2,
 }: RoadviewProps) {
   return (
-    <CustomOverlayMap
-      position={position}
-      yAnchor={yAnchor}
-      className="pointer-events-none"
-    >
-      <Roadview
-        position={position} // { lat, lng }
-        radius={radius} // 반경 (m)
-        style={{ width: 300, height: 200, borderRadius: 8, overflow: 'hidden' }}
-        panControl={true} // 옵션으로 컨트롤 켜기
-        zoomControl={true}
-      />
-    </CustomOverlayMap>
+    <Roadview
+      position={{
+        // 지도의 중심좌표
+        lat: 33.450701,
+        lng: 126.570667,
+        radius: 50,
+      }}
+      // 지도의 크기
+      style={{ width: '100%', height: '450px' }}
+    />
   );
 }
