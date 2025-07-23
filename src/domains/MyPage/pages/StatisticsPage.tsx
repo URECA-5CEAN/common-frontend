@@ -1,11 +1,11 @@
-import { Breadcrumb } from '@/domains/MyPage/components/Breadcrumb';
+import { Breadcrumb } from '@/components/Breadcrumb';
 import DateFilter from '@/domains/MyPage/components/profile/DateFilter';
 import type { DateRange } from '@/domains/MyPage/types/dateFilter';
 import { useState } from 'react';
 
 const STYLES = {
   container: 'w-full max-w-[1050px]',
-  title: 'text-[32px] font-bold',
+  title: 'text-[32px] font-bold my-3',
   subtitle: 'text-2xl font-bold',
 } as const;
 
@@ -17,11 +17,11 @@ const StatisticsPage = () => {
   });
 
   return (
-    <div className="h-[1500px] w-full max-w-[1050px]">
-      <Breadcrumb title="통계" />
+    <div className="w-full max-w-[1050px] m-6">
+      <Breadcrumb title="마이페이지" subtitle="통계" />
 
       <div className={STYLES.title}>통계</div>
-      <div className="border border-gray-200 rounded-[20px] px-[70px] py-[50px]">
+      <div className="border border-gray-200 rounded-[20px] px-5 lg:px-[70px] py-10 lg:py-[50px]">
         <div className="flex flex-col items-center justify-center gap-[52px]">
           <div className="w-fit">
             <DateFilter
@@ -38,14 +38,12 @@ const StatisticsPage = () => {
           </div>
 
           <div className="w-full flex flex-col gap-3">
-            <div className="flex w-full justify-center gap-3">
-              <div className="w-full max-w-[300px] h-8 flex justify-center">
+            <div className="flex w-full justify-center gap-3 text-center">
+              <div className="w-full max-w-[300px] flex justify-center">
                 전체 이용자 평균
               </div>
-              <div className="w-[96px]"></div>
-              <div className="w-full max-w-[300px] h-8 flex justify-center">
-                나
-              </div>
+              <div className="min-w-[96px]"></div>
+              <div className="w-full max-w-[300px] flex justify-center">나</div>
             </div>
 
             <div className="flex w-full justify-center gap-3">
@@ -53,7 +51,7 @@ const StatisticsPage = () => {
                 <div className="w-full h-8 bg-primaryGreen rounded-l-xl"></div>
                 <div className="text-xs text-gray-500">12회</div>
               </div>
-              <div className="w-[96px] h-[32px] flex justify-center items-center">
+              <div className="min-w-[96px] h-[32px] flex justify-center items-center">
                 혜택 사용 횟수
               </div>
               <div className="w-full max-w-[300px] flex flex-col items-start gap-1">
@@ -67,7 +65,7 @@ const StatisticsPage = () => {
                 <div className="w-1/2 h-8 bg-primaryGreen rounded-l-xl"></div>
                 <div className="text-xs text-gray-500">30,000원</div>
               </div>
-              <div className="w-[96px] h-[32px] flex justify-center items-center">
+              <div className="min-w-[96px] h-[32px] flex justify-center items-center">
                 절약한 금액
               </div>
               <div className="w-full max-w-[300px] flex flex-col items-start gap-1">
