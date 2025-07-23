@@ -398,7 +398,6 @@ export default function MapPage() {
     setSelectedFile(file);
   };
 
-  console.log(isCategory);
   return (
     <>
       {/* 사이드바 */}
@@ -464,7 +463,7 @@ export default function MapPage() {
               </Suspense>
             )}
 
-            <div className=" fixed left-96 ml-16 top-24 z-2 flex justify-start space-x-2">
+            <div className=" fixed left-96 ml-16 top-24 z-2 flex justify-start space-x-2 ">
               {Category.map((cate) => (
                 <button
                   className={clsx(
@@ -481,7 +480,7 @@ export default function MapPage() {
               ))}
             </div>
             {/* 이 위치에서 검색 버튼 */}
-            <div className="absolute bottom-8 left-[43%]">
+            <div className="absolute bottom-8 left-[43%] ">
               {map && myLocation && (
                 <Button
                   onClick={searchHere}
