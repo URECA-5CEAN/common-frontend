@@ -1,4 +1,4 @@
-import { Breadcrumb } from '@/domains/MyPage/components/Breadcrumb';
+import { Breadcrumb } from '@/components/Breadcrumb';
 import { ProgressBar } from '@/domains/MyPage/components/ProgressBar';
 import sampleImage from '@/assets/icons/vvip_icon.png';
 import bronzeMedal from '@/assets/image/bronze_medal.png';
@@ -57,7 +57,7 @@ const CollectionPage = () => {
   return (
     <>
       <div className="w-full max-w-[1050px]">
-        <Breadcrumb title="혜택 도감" />
+        <Breadcrumb title="마이페이지" subtitle="혜택 도감" />
         <div>
           <div className="text-[32px] font-bold">혜택 도감</div>
           <div className="text-2xl font-bold">도감 완성도</div>

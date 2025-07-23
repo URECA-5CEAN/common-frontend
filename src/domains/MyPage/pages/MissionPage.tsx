@@ -1,4 +1,4 @@
-import { Breadcrumb } from '@/domains/MyPage/components/Breadcrumb';
+import { Breadcrumb } from '@/components/Breadcrumb';
 import dolphinImg from '@/assets/image/mission_dolphin.png';
 import { useAttendanceCalendar } from '@/domains/MyPage/hooks/useAttendanceCalendar';
 import { AttendanceCalendar } from '@/domains/MyPage/components/attendance/AttendanceCalendar';
@@ -26,7 +26,7 @@ const MissionPage = () => {
 
   return (
     <div className={STYLES.container}>
-      <Breadcrumb title="미션" />
+      <Breadcrumb title="마이페이지" subtitle="미션" />
 
       <div className={STYLES.title}>미션</div>
       <div className={STYLES.subtitle}>출석체크</div>
