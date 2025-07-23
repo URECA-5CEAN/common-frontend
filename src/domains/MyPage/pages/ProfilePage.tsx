@@ -5,7 +5,7 @@ import type { UserInfo, UserInfoApi } from '@/domains/MyPage/types/profile';
 import { useEffect, useState } from 'react';
 import UsageHistory from '@/domains/MyPage/components/profile/UsageHistory';
 import { getUserInfo, getUserStat } from '@/domains/MyPage/api/profile';
-import { Breadcrumb } from '@/domains/MyPage/components/Breadcrumb';
+import { Breadcrumb } from '@/components/Breadcrumb';
 import { Button } from '@/components/Button';
 import { useNavigate } from 'react-router-dom';
 
@@ -61,7 +61,7 @@ const ProfilePage: React.FC = () => {
   return (
     <>
       <div className="w-full max-w-[1050px]">
-        <Breadcrumb title="내 정보" />
+        <Breadcrumb title="마이페이지" subtitle="내 정보" />
 
         <div>
           <div className="flex gap-3 items-center">
