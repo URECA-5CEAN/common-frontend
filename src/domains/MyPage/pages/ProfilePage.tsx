@@ -60,12 +60,12 @@ const ProfilePage: React.FC = () => {
 
   return (
     <>
-      <div className="w-full max-w-[1050px]">
+      <div className="w-full max-w-[1050px] m-6">
         <Breadcrumb title="마이페이지" subtitle="내 정보" />
 
-        <div>
+        <div className="flex flex-col">
           <div className="flex gap-3 items-center">
-            <div className="text-[32px]">내 정보</div>
+            <div className="text-[32px] mt-3 mb-2 font-bold">내 정보</div>
             <Button
               variant="secondary"
               height="30px"
@@ -74,7 +74,9 @@ const ProfilePage: React.FC = () => {
               내 정보 수정
             </Button>
           </div>
-          <div className="text-2xl">{userInfoApi?.nickname}님 반갑습니다</div>
+          <div className="text-2xl mb-1">
+            {userInfoApi?.nickname}님 반갑습니다
+          </div>
 
           <UserProfile
             userInfo={userInfo}
