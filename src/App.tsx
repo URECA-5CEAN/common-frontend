@@ -12,6 +12,7 @@ import CollectionPage from './domains/MyPage/pages/CollectionPage';
 import MissionPage from './domains/MyPage/pages/MissionPage';
 import StatisticsPage from './domains/MyPage/pages/StatisticsPage';
 import FavoritesPage from './domains/MyPage/pages/FavoritesPage';
+import EditProfilePage from '@/domains/MyPage/pages/EditProfilePage';
 
 const AppLayout = () => {
   return (
@@ -43,12 +44,13 @@ function App() {
           <Route path="/map" element={<MapPage />} />
           <Route path="/login" element={<LoginPage />} />
 
-          {/* 사이드바 레이아웃 포함 */}  
+          {/* 사이드바 레이아웃 포함 */}
           <Route element={<SidebarLayout />}>
             <Route path="/explore/rankings" element={<RankingPage />} />
             <Route path="/explore/share" element={<SharePage />} />
             <Route path="/explore/membership" element={<MembershipPage />} />
             <Route path="/mypage/profile" element={<ProfilePage />} />
+            <Route path="/mypage/edit" element={<EditProfilePage />} />
             <Route path="/mypage/collection" element={<CollectionPage />} />
             <Route path="/mypage/missions" element={<MissionPage />} />
             <Route path="/mypage/statistics" element={<StatisticsPage />} />
