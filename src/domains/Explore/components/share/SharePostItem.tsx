@@ -42,16 +42,8 @@ const SharePostItem = ({ post }: SharePostItemProps) => {
             {post.title}
           </h3>
           <p className="text-gray-600 text-sm line-clamp-1">{post.content}</p>
-          <div className="text-sm flex flex-wrap gap-2">
-            <span className="bg-yellow-400 px-3.5 py-1 rounded-2xl">
-              {post.category}
-            </span>
-            <span className="bg-red-400 px-3.5 py-1 rounded-2xl">
-              {post.brand}
-            </span>
-            <span className="bg-gray-400 px-3.5 py-1 rounded-2xl">
-              {post.type}
-            </span>
+          <div className="text-sm flex flex-wrap gap-1 text-gray-300">
+            {post.category} · {post.brand} · {post.type}
           </div>
           <div className="flex flex-wrap sm:hidden text-gray-400 gap-x-1 text-sm">
             <div className="flex gap-1">
