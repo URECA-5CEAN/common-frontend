@@ -2,6 +2,7 @@ import { Plus } from 'lucide-react';
 import { Button } from '@/components/Button';
 import type { Post } from '@/domains/Explore/types/share';
 import SharePostList from '@/domains/Explore/components/share/SharePostList';
+import { useNavigate } from 'react-router-dom';
 
 // 임의 데이터
 const postList: Post[] = [
@@ -173,6 +174,8 @@ const postList: Post[] = [
 ];
 
 const SharePage = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="w-full max-w-[1050px] mx-auto px-6 sm:px-0">
       <h2 className="text-[32px] font-bold mb-4">혜택 나누기</h2>
@@ -190,22 +193,17 @@ const SharePage = () => {
             placeholder="검색"
           />
         </div>
-        <div className="flex items-center">
+        <div className="fixed right-4 bottom-4 sm:static sm:right-auto sm:bottom-auto sm:flex sm:items-center z-10">
           <Button
             variant="primary"
             size="lg"
-            className="hidden sm:flex whitespace-nowrap px-4 py-2 rounded-md items-center gap-1"
+            className="sm:flex whitespace-nowrap px-4 py-2 rounded-md items-center gap-1"
+            onClick={() => navigate('/explore/share/write')}
           >
             <Plus size={18} />
             <span className="hidden sm:flex">글 작성</span>
           </Button>
         </div>
-      </div>
-
-      <div className="fixed right-4 bottom-4 sm:hidden">
-        <Button variant="primary">
-          <Plus size={25} />
-        </Button>
       </div>
 
       <SharePostList posts={postList} />
