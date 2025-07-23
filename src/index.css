@@ -291,3 +291,9 @@
   background-color: var(--color-gray-200);
   color: black;
 }
+
+.scrollbar-custom {
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-gray-300) transparent;
+}

@@ -76,7 +76,7 @@ export default function SidebarPanel({
       )}
       style={{ left }}
     >
-      <div className="p-4 pr-2 bg-white  shadow-lg rounded-lg max-h-[calc(100vh-78px)]  z-10 overflow-y-auto">
+      <div className="p-4 pr-2 bg-white  shadow-lg rounded-lg max-h-[calc(100vh-78px)]  scrollbar-custom z-10 overflow-y-auto">
         {/* 첫 번째 패널: 사용자 정보 */}
         {index === 0 && (
           <UserSection
