@@ -1,11 +1,22 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SignUpForm from '../components/SignUpForm';
+import SignUpAgreementForm from '../components/SignUpAgreementForm';
 
 const SignUpPage = () => {
   const navigate = useNavigate();
+  const [step, setStep] = useState<'agreement' | 'signup'>('agreement');
 
   const handleBackToLogin = () => {
     navigate('/login');
+  };
+
+  const handleAgreementComplete = () => {
+    setStep('signup');
+  };
+
+  const handleBackToAgreement = () => {
+    setStep('agreement');
   };
   return (
     <div className="min-h-screen pt-[62px] md:pt-[86px] bg-white relative overflow-hidden">
@@ -72,10 +83,17 @@ const SignUpPage = () => {
         </div>
       </div>
 
-      {/* 회원가입 폼 - 파도 위에 표시 */}
+      {/* 폼 - 파도 위에 표시 */}
       <div className="relative z-[5] pt-20 md:pt-48 px-4">
         <div className="w-full max-w-[300px] md:max-w-[500px] mx-auto">
-          <SignUpForm onBackToLogin={handleBackToLogin} />
+          {step === 'agreement' ? (
+            <SignUpAgreementForm onNext={handleAgreementComplete} />
+          ) : (
+            <SignUpForm
+              onBackToLogin={handleBackToLogin}
+              onBack={handleBackToAgreement}
+            />
+          )}
         </div>
       </div>
     </div>

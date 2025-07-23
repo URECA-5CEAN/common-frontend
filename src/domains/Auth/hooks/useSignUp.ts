@@ -32,11 +32,12 @@ interface SignUpErrorResponse {
 
 export const useSignUp = () => {
   const [loading, setLoading] = useState(false);
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const signUp = async (formData: SignUpFormData) => {
     try {
       setLoading(true);
-      const response = await axios.post('/api/user/signup', formData);
+      const response = await axios.post(`${API_URL}/user/signup`, formData);
       return response.data as SignUpSuccessResponse;
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {

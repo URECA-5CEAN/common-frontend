@@ -1,12 +1,18 @@
 import { useState } from 'react';
-import { CircleCheck, Eye, EyeClosed } from 'lucide-react';
+import { ArrowLeft, CircleCheck, Eye, EyeClosed } from 'lucide-react';
 import { validateEmail, validatePassword } from '../utils/validation';
 import { checkNicknameDuplicate } from '../api/signUpApi';
 import { useSignUp } from '../hooks/useSignUp';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/Button';
 
-const SignUpForm = ({ onBackToLogin }: { onBackToLogin?: () => void }) => {
+const SignUpForm = ({
+  onBackToLogin,
+  onBack,
+}: {
+  onBackToLogin?: () => void;
+  onBack?: () => void;
+}) => {
   //이름, 성별 정보 상태 관리
   const [name, setName] = useState('');
   const [gender, setGender] = useState<'male' | 'female' | null>(null);
@@ -366,19 +372,34 @@ const SignUpForm = ({ onBackToLogin }: { onBackToLogin?: () => void }) => {
         </form>
 
         {/* 로그인 페이지로 이동 링크 */}
-        <div className="text-center mt-4 md:mt-6">
-          <span className="text-gray-600 text-xs md:text-sm">
-            이미 회원이신가요?{' '}
-          </span>
-          <button
-            type="button"
-            onClick={() =>
-              onBackToLogin ? onBackToLogin() : navigate('/login')
-            }
-            className="text-[#64A8CD] underline text-xs md:text-sm bg-transparent border-none cursor-pointer"
-          >
-            로그인하기
-          </button>
+        <div className="flex items-center justify-center gap-8 mt-4 md:mt-6">
+          {/* 이용약관으로 돌아가기 버튼 */}
+          {onBack && (
+            <button
+              type="button"
+              onClick={onBack}
+              className="flex items-center gap-1 text-[#64A8CD] hover:text-[#5B9BC4] hover:bg-gray-200 transition-colors p-2 rounded-md"
+              title="이용약관으로 돌아가기"
+            >
+              <ArrowLeft size={16} className="md:w-5 md:h-5" />
+              <span className="text-xs md:text-sm">뒤로가기</span>
+            </button>
+          )}
+
+          <div className="text-center">
+            <span className="text-gray-600 text-xs md:text-sm">
+              이미 회원이신가요?{' '}
+            </span>
+            <button
+              type="button"
+              onClick={() =>
+                onBackToLogin ? onBackToLogin() : navigate('/login')
+              }
+              className="text-[#64A8CD] underline text-xs md:text-sm bg-transparent border-none cursor-pointer hover:bg-gray-200 transition-colors px-2 py-2 rounded-md"
+            >
+              로그인하기
+            </button>
+          </div>
         </div>
       </div>
     </div>

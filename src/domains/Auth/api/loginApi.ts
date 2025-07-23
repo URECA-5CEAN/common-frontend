@@ -17,8 +17,8 @@ export interface LoginResponse {
 
 export const login = async (loginData: LoginData): Promise<LoginResponse> => {
   try {
-    // TODO: 실제 API 엔드포인트로 교체
-    const response = await fetch('/api/auth/login', {
+    const API_URL = import.meta.env.VITE_API_URL;
+    const response = await fetch(`${API_URL}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -40,8 +40,8 @@ export const login = async (loginData: LoginData): Promise<LoginResponse> => {
 
 export const kakaoLogin = async (): Promise<LoginResponse> => {
   try {
-    // TODO: 카카오 로그인 API 엔드포인트로 교체
-    const response = await fetch('/api/auth/kakao-login', {
+    const API_URL = import.meta.env.VITE_API_URL;
+    const response = await fetch(`${API_URL}/auth/kakao-login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
