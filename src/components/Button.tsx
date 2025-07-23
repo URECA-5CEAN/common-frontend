@@ -77,7 +77,7 @@ export const Button: React.FC<ButtonProps> = ({
     .join(' ');
 
   const buttonClass = [
-    'relative z-10 rounded-xl transition-all cursor-pointer',
+    'relative z-10 rounded-xl transition-all cursor-pointer flex justify-center items-center',
     sizeClasses[size],
     variantClasses[variant],
     className,
