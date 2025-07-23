@@ -5,10 +5,10 @@ import { AttendanceCalendar } from '@/domains/MyPage/components/attendance/Atten
 import { MissionList } from '@/domains/MyPage/components/mission/MissionList';
 
 const STYLES = {
-  container: 'w-full max-w-[1050px]',
-  title: 'text-[32px] font-bold',
-  subtitle: 'text-2xl font-bold',
-  dolphinImg: 'fixed top-20 right-0 w-[700px] -z-1 hidden md:block',
+  container: 'w-full max-w-[1050px] m-6',
+  title: 'text-[32px] font-bold my-3',
+  subtitle: 'text-2xl font-bold mb-2',
+  dolphinImg: 'fixed top-20 right-0 w-[700px] -z-1 hidden lg:block',
 } as const;
 
 const MissionPage = () => {

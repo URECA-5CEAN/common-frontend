@@ -58,7 +58,7 @@ const EditProfilePage = () => {
   } as const;
 
   return (
-    <div className="w-full max-w-[1050px]">
+    <div className="w-full max-w-[1050px] m-6">
       <Breadcrumb title="마이페이지" subtitle="내 정보" />
       <div className="text-[32px]">내 정보</div>
       <div className="text-2xl">내 정보 수정</div>

@@ -56,23 +56,25 @@ const CollectionPage = () => {
 
   return (
     <>
-      <div className="w-full max-w-[1050px]">
+      <div className="w-full max-w-[1050px] m-6">
         <Breadcrumb title="마이페이지" subtitle="혜택 도감" />
         <div>
-          <div className="text-[32px] font-bold">혜택 도감</div>
+          <div className="text-[32px] font-bold my-3">혜택 도감</div>
           <div className="text-2xl font-bold">도감 완성도</div>
-          <div className="z-1 relative bg-gray-300 rounded-2xl h-10 text-xs w-full overflow-hidden mb-1">
-            <div
-              className="shimmer z-0 absolute top-0 bg-[#96E0ED] h-full rounded-2xl 
+          <div className="my-5">
+            <div className="z-1 relative bg-gray-300 rounded-2xl h-10 text-xs w-full overflow-hidden mb-1">
+              <div
+                className="shimmer z-0 absolute top-0 bg-[#96E0ED] h-full rounded-2xl 
                    after:content-[''] after:block after:h-1 after:absolute after:mx-2
                    after:top-2 after:bg-white/30 after:rounded-full after:left-1 after:right-1"
-              style={{ width: `${progressPercentage}%` }}
-            />
+                style={{ width: `${progressPercentage}%` }}
+              />
+            </div>
+            <p className="relative z-1 flex justify-end items-center text-xs text-gray-600">
+              {collectionInfo.collectionCount}/{collectionInfo.totalCollection}{' '}
+              ({progressPercentage}%)
+            </p>
           </div>
-          <p className="relative z-1 flex justify-end items-center text-xs text-gray-600">
-            {collectionInfo.collectionCount}/{collectionInfo.totalCollection} (
-            {progressPercentage}%)
-          </p>
           <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full">
             {collectionInfoList.map((info, index) => {
               const earnedMedalCount = getMedalCount(info.current);
