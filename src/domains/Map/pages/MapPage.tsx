@@ -29,6 +29,7 @@ import BenefitModal from '../components/BenefitModal';
 import clsx from 'clsx';
 import type { BottomSheetHandle } from '../components/sidebar/BottomSheet';
 import DebouncedInput from '../components/DebouncedInput';
+import { useDebounce } from 'react-use';
 const ThreeJmdarker = lazy(() => import('../components/ThreeJsMarker'));
 //bounds 타입에러 방지
 interface InternalBounds extends kakao.maps.LatLngBounds {
@@ -73,7 +74,10 @@ export default function MapPage() {
   const [debouncedKeyword, setDebouncedKeyword] = useState<string>(keyword);
 
   // 사이드바 menu 현재 상태
-  const [panel, setPanel] = useState<Panel>({ type: 'menu', menu: '지도' });
+  const [panel, setPanel] = useState<Panel>({
+    type: 'menu',
+    menu: '지도',
+  });
 
   // MarkerClusterer 참조
   const clustererRef = useRef<kakao.maps.MarkerClusterer | null>(null);
@@ -100,6 +104,7 @@ export default function MapPage() {
   const [sheetY, setSheetY] = useState<number>(0);
   //바텀시트 인스턴스
   const sheetRef = useRef<BottomSheetHandle | null>(null);
+  const sheetDetail = useRef<BottomSheetHandle | null>(null);
   //이 위치 검색버튼 상태
   const [showSearchBtn, setShowSearchBtn] = useState(false);
 
@@ -107,6 +112,8 @@ export default function MapPage() {
   const hideTimeoutRef = useRef<number>(0);
 
   const peekHeight = 30;
+
+  const [idleCount, setIdleCount] = useState(0);
 
   // 초기 바텀시트 위치 계산
   useEffect(() => {
@@ -166,29 +173,35 @@ export default function MapPage() {
   }, [map, stores]);
 
   // bounds 변경 시마다 필터링 + 검색 버튼 토글
-  useEffect(() => {
-    if (!map) return;
-    //줌 혹은 드래그 시: 필터링 + 버튼 보이기 + 5초 뒤 숨기기
-    const handleIdle = () => {
+  useDebounce(
+    () => {
+      // 3초동안 추가 idle 이벤트 없으면 여기가 실행
       filterStoresInView();
       setShowSearchBtn(true);
 
-      // 이전 타이머가 남아 있으면 지우고
-      window.clearTimeout(hideTimeoutRef.current);
-
-      // 5초 뒤에 버튼 숨기기
+      // 5초 뒤 버튼 숨기기
+      clearTimeout(hideTimeoutRef.current);
       hideTimeoutRef.current = window.setTimeout(() => {
         setShowSearchBtn(false);
       }, 5000);
-    };
+    },
+    300,
+    [idleCount], // 줌 드래그 할 시 값 변경
+  );
 
-    // 초기 렌더링 시 제휴처 가져옴
+  // idle 이벤트에서는 카운터만 올려 주기
+  useEffect(() => {
+    if (!map) return;
+    // 마운트 시 제휴처 보여줌
     filterStoresInView();
-    kakao.maps.event.addListener(map, 'idle', handleIdle);
 
+    const handleIdle = () => {
+      setIdleCount((c) => c + 1);
+    };
+    kakao.maps.event.addListener(map, 'idle', handleIdle);
     return () => {
       kakao.maps.event.removeListener(map, 'idle', handleIdle);
-      window.clearTimeout(hideTimeoutRef.current);
+      clearTimeout(hideTimeoutRef.current);
     };
   }, [map, filterStoresInView]);
 
@@ -458,7 +471,9 @@ export default function MapPage() {
           bookmarkIds={bookmarkIds}
           goToStore={goToStore}
           sheetRef={sheetRef}
+          sheetDetail={sheetDetail}
           onSheetPositionChange={(y) => setSheetY(y)}
+          onDetailSheetPositionChange={(y) => setSheetY(y)}
         />
         {/* 내 위치 버튼 */}
         {/* 모바일 */}

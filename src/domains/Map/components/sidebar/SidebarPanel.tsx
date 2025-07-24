@@ -143,7 +143,7 @@ export default function SidebarPanel({
       {index === 1 && isDetail && (
         <button
           onClick={() => onClose(index)}
-          className="absolute active:scale-95 active:opacity-80 z-10 left-2 md:right-2 top-2 w-10 h-10 md:bottom-[55%] cursor-pointer hover:bg-gray-100 focus:outline-none bg-white border-1  rounded-full border-gray-200"
+          className="absolute active:scale-95 active:opacity-80 z-10 left-2  md:left-[100%] top-2 w-10 md:h-12 md:border-l-0 h-10 md:top-[43%] cursor-pointer hover:bg-gray-100 focus:outline-none bg-white border-1  md:rounded-lg rounded-full border-gray-200"
         >
           <ChevronLeft
             className="translate-x-1.5 text-gray-300"

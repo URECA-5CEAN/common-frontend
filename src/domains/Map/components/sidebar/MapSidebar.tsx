@@ -43,6 +43,8 @@ interface SideBarProps {
   goToStore: (store: StoreInfo) => void;
   sheetRef: React.RefObject<BottomSheetHandle | null>;
   onSheetPositionChange: (y: number) => void;
+  sheetDetail: React.RefObject<BottomSheetHandle | null>;
+  onDetailSheetPositionChange: (y: number) => void;
 }
 
 export default function MapSidebar({

@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three-stdlib';
 import type { MarkerProps } from '../KakaoMapContainer';
 import type { StoreInfo } from '../api/store';
+import { useMedia } from 'react-use';
 
 interface ThreeJsMarkerProps {
   markers: MarkerProps[];
@@ -40,6 +41,8 @@ export default function ThreeJsMarker({
   // 이미지 브라우저 캐시 방지를 위한 timestamp(3D마커 생성 시 cors오류 방지)
   const imageTimestamp = useRef(Date.now()).current;
 
+  // 모바일
+
   // 메쉬 생성/삭제 로직
   const buildOrUpdateMeshes = useCallback(() => {
     const group = groupRef.current!;
@@ -69,7 +72,7 @@ export default function ThreeJsMarker({
       const tex = textureCache.current.get(url)!;
 
       const cube = new THREE.Mesh(
-        new RoundedBoxGeometry(40, 40, 40, 10, 5),
+        new RoundedBoxGeometry(40, 40, 40, 5, 4),
         new THREE.MeshPhongMaterial({
           color: '#f8f8f8',
           shininess: 10,
@@ -217,21 +220,22 @@ export default function ThreeJsMarker({
   }, [container, map]);
 
   // 3D 메쉬 위치를 지도 좌표에 맞춰 업데이트
-  const updatePositions = () => {
+  const updatePositions = useCallback(() => {
     if (!map) return;
     const proj = map.getProjection();
-    if (!proj) return;
-    const centerPt = proj.containerPointFromCoords(map.getCenter()); //화면 픽셀 좌표로 변환
+    const centerPt = proj.containerPointFromCoords(map.getCenter());
+
     meshMap.current.forEach((mesh, id) => {
       const m = markers.find((x) => x.id === id);
       if (!m) return;
       const pt = proj.containerPointFromCoords(
         new kakao.maps.LatLng(m.lat, m.lng),
       );
-      mesh.position.set(pt.x - centerPt.x, centerPt.y - pt.y, 50); // 화면 픽셀 좌표(pt)로 변환 z축을 50으로 고정해 카메라 앞쪽에 배치
+      mesh.position.set(pt.x - centerPt.x, centerPt.y - pt.y, 50);
     });
-    rendererRef.current?.render(sceneRef.current!, cameraRef.current!); // 렌더링 갱신
-  };
+
+    rendererRef.current?.render(sceneRef.current!, cameraRef.current!);
+  }, [map, markers]);
 
   // mousemove 이벤트로 3D 마커 hover 처리
   useEffect(() => {
