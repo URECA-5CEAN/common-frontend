@@ -362,6 +362,9 @@ export default function MapPage() {
     setPanel({ type: 'menu', menu: '지도' });
   }, []);
 
+  const closeMobileDetail = useCallback(() => {
+    sheetDetail.current?.snapTo('bottom');
+  }, []);
   //키워드 변경 시 카테고리 초기화
   const changeKeyword = (e: ChangeEvent<HTMLInputElement>) => {
     SetKeyword(e.target.value);
@@ -546,7 +549,7 @@ export default function MapPage() {
       </aside>
 
       {/* 지도 영역 */}
-      <div className="flex-1 relative ">
+      <div className="flex-1 relative overflow-x-hidden ">
         <div ref={containerRef} className="absolute inset-0 ">
           <KakaoMapContainer
             center={myLocation ?? center}
@@ -584,21 +587,23 @@ export default function MapPage() {
               </Suspense>
             )}
 
-            <div className=" absolute  left-[10%]  md:left-10 top-28 md:top-24 z-2 flex justify-start space-x-1 lg:space-x-2 ">
-              {Category.map((cate) => (
-                <button
-                  className={clsx(
-                    'md:px-2 text-xs cursor-pointer px-6 hover:text-primaryGreen py-1.5 rounded-2xl border-2  border-gray-200',
-                    isCategory === cate
-                      ? 'text-primaryGreen bg-white '
-                      : ' bg-white',
-                  )}
-                  onClick={() => changeCategory(cate)}
-                  key={cate}
-                >
-                  {cate}
-                </button>
-              ))}
+            <div className="absolute left-[10%] md:left-10 top-28 md:top-24 z-2">
+              <div className="flex justify-start space-x-2">
+                {Category.map((cate) => (
+                  <button
+                    key={cate}
+                    className={clsx(
+                      ' text-xs px-6 hover:text-primaryGreen py-1.5 w-24 cursor-pointer rounded-2xl border-2 border-gray-200',
+                      isCategory === cate
+                        ? 'text-primaryGreen bg-white'
+                        : 'bg-white',
+                    )}
+                    onClick={() => changeCategory(cate)}
+                  >
+                    {cate}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div className="flex md:hidden absolute top-[68px] w-[70%] max-w-[600px] left-[10%]  bg-white z-2 items-center border border-gray-200 rounded-xl px-2 py-1 ">

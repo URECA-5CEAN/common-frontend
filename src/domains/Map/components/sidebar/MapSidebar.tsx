@@ -68,6 +68,8 @@ export default function MapSidebar({
   goToStore,
   sheetRef,
   onSheetPositionChange,
+  sheetDetail,
+  onDetailSheetPositionChange,
 }: SideBarProps) {
   if (!panel) return;
 
@@ -75,6 +77,9 @@ export default function MapSidebar({
   const onMenuSelect = (menu: MenuType) => {
     openMenu(menu);
     sheetRef.current?.snapTo('middle');
+  };
+  const onCloseDetail = () => {
+    sheetDetail.current?.snapTo('bottom');
   };
 
   return (
@@ -176,10 +181,10 @@ export default function MapSidebar({
             <Suspense fallback={<div>로딩 중…</div>}>
               <BottomSheet
                 key="detail-mobile"
-                ref={sheetRef}
+                ref={sheetDetail}
                 isOpen={panel.type === 'detail'}
-                onClose={() => onClose(1)}
-                onPositionChange={onSheetPositionChange}
+                onClose={onCloseDetail}
+                onPositionChange={onDetailSheetPositionChange}
               >
                 <SidebarPanel
                   key="detail"
