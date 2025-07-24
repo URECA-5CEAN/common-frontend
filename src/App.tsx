@@ -16,6 +16,7 @@ import MissionPage from './domains/MyPage/pages/MissionPage';
 import StatisticsPage from './domains/MyPage/pages/StatisticsPage';
 import FavoritesPage from './domains/MyPage/pages/FavoritesPage';
 import EditProfilePage from '@/domains/MyPage/pages/EditProfilePage';
+import MySharingPage from '@/domains/MyPage/pages/MySharingPage';
 
 const AppLayout = () => {
   return (
@@ -64,6 +65,7 @@ function App() {
             <Route path="/mypage/missions" element={<MissionPage />} />
             <Route path="/mypage/statistics" element={<StatisticsPage />} />
             <Route path="/mypage/favorites" element={<FavoritesPage />} />
+            <Route path="/mypage/sharing" element={<MySharingPage />} />
           </Route>
         </Route>
       </Routes>
