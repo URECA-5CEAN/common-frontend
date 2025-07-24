@@ -158,7 +158,7 @@ const BottomSheet = forwardRef<BottomSheetHandle, BottomSheetProps>(
             dragElastic={0.2}
             dragMomentum={false}
             // ✨ initial 을 동적으로 설정
-            initial={{ y: isOpen ? middleY : bottomY }}
+            initial={{ y: isOpen ? bottomY : middleY }}
             animate={animation}
             exit={{
               y: sheetHeight,

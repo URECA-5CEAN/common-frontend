@@ -97,7 +97,7 @@ export default function MapPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   // 바텀시트 Y 위치
-  const [sheetY, setSheetY] = useState<number>(260);
+  const [sheetY, setSheetY] = useState<number>(0);
   //바텀시트 인스턴스
   const sheetRef = useRef<BottomSheetHandle | null>(null);
   //이 위치 검색버튼 상태
@@ -106,6 +106,13 @@ export default function MapPage() {
   // bounds 변경 시마다 시간 업데이트
   const hideTimeoutRef = useRef<number>(0);
 
+  const peekHeight = 30;
+
+  // 초기 바텀시트 위치 계산
+  useEffect(() => {
+    const sheetHeight = window.innerHeight * 0.75;
+    setSheetY(sheetHeight - peekHeight);
+  }, []);
   useEffect(() => {
     const handler = window.setTimeout(() => setDebouncedKeyword(keyword), 300);
     return () => clearTimeout(handler);
@@ -457,7 +464,7 @@ export default function MapPage() {
         {/* 모바일 */}
         <div
           className={clsx(
-            'fixed block sm:hidden left-2 z-20',
+            'fixed block sm:hidden left-2 z-1',
             sheetY === 0 ? 'hidden' : 'block',
           )}
           style={{ top: sheetY + 100 }}
@@ -475,7 +482,7 @@ export default function MapPage() {
         </div>
 
         {/* 데스크탑  */}
-        <div className="hidden sm:block fixed right-4 bottom-8 z-20">
+        <div className="hidden sm:block fixed right-4 bottom-8 z-2">
           {map && myLocation && (
             <Button
               onClick={goToMyLocation}
@@ -484,6 +491,37 @@ export default function MapPage() {
               className="rounded-full p-0 sm:px-4 sm:py-3 focus:border-none"
             >
               <LocateFixed size={30} className="w-5 h-7 sm:w-7 sm:h-8" />
+            </Button>
+          )}
+        </div>
+
+        {/* 모바일: 바텀시트 위에 붙이기 */}
+        <div
+          className="fixed block sm:hidden left-[50%] transform -translate-x-1/2 z-20"
+          style={{ top: sheetY + 110 }}
+        >
+          {map && myLocation && showSearchBtn && (
+            <Button
+              onClick={searchHere}
+              variant="primary"
+              size="sm"
+              className="shadow px-3 py-2"
+            >
+              <RotateCcw size={16} className="mr-1" />이 위치에서 검색
+            </Button>
+          )}
+        </div>
+
+        {/* 데스크탑: 화면 하단 중앙에 고정 */}
+        <div className="hidden sm:block fixed bottom-8 left-[55%] transform -translate-x-1/2 z-20">
+          {map && myLocation && showSearchBtn && (
+            <Button
+              onClick={searchHere}
+              variant="primary"
+              size="md"
+              className="shadow px-4 py-2"
+            >
+              <RotateCcw size={16} className="mr-1" />이 위치에서 검색
             </Button>
           )}
         </div>
@@ -544,33 +582,8 @@ export default function MapPage() {
                 </button>
               ))}
             </div>
-            {/* 이 위치에서 검색 버튼 */}
-            <div className="absolute sm:bottom-8 sm:left-[40%] bottom-[85%] left-[33%] ">
-              {map && myLocation && showSearchBtn && (
-                <>
-                  <Button
-                    onClick={searchHere}
-                    variant="primary"
-                    size="md"
-                    className="hidden sm:flex  justify-center px-4 py-2 text-base shadow self-center z-10  hover:bg-primaryGreen-80"
-                  >
-                    <RotateCcw size={16} className="sm:mt-[3px]" />
-                    <p className="ml-1">이 위치에서 검색</p>
-                  </Button>
 
-                  <Button
-                    onClick={searchHere}
-                    variant="primary"
-                    size="sm"
-                    className="flex sm:hidden justify-center shadow self-center z-10 hover:bg-primaryGreen-80"
-                  >
-                    <RotateCcw size={16} className="sm:mt-[3px]" />
-                    <p className="ml-1">이 위치에서 검색</p>
-                  </Button>
-                </>
-              )}
-            </div>
-            <div className="flex sm:hidden absolute top-16 w-[60%] left-[10%]  bg-white z-10 items-center border border-gray-200 rounded-xl px-2 py-1 ">
+            <div className="flex sm:hidden absolute top-16 w-[83%] left-[10%]  bg-white z-2 items-center border border-gray-200 rounded-xl px-2 py-1 ">
               <Search />
               <DebouncedInput
                 value={keyword}
