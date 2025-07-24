@@ -22,7 +22,7 @@ export const RangeDropdown: React.FC<RangeDropdownProps> = ({
           onClick={() => onSelect(range)}
           className={`w-full p-1.5 cursor-pointer hover:bg-gray-200 rounded-[10px] 
                      flex justify-center items-center transition-colors duration-100 
-                     ${selectedRange === range ? 'text-gray-400 bg-gray-100' : ''}`}
+                     ${selectedRange === range ? 'text-gray-400' : ''}`}
         >
           {range}
         </div>

@@ -47,3 +47,13 @@ export const getUserStat = async (): Promise<UserStatResponse> => {
 
   return response.data;
 };
+
+export const getUsageHistory = async () => {
+  const response = await axios.get(`${baseURL}/map/usage`, {
+    headers: {
+      Authorization: token,
+    },
+  });
+
+  return response.data;
+};
