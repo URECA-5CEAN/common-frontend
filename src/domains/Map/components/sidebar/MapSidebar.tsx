@@ -78,7 +78,7 @@ export default function MapSidebar({
     openMenu(menu);
     sheetRef.current?.snapTo('middle');
   };
-  const onCloseDetail = () => {
+  const onCloseSheet = () => {
     sheetDetail.current?.snapTo('bottom');
   };
 
@@ -149,7 +149,7 @@ export default function MapSidebar({
               key="menu-mobile"
               ref={sheetRef}
               isOpen={panel.type === 'menu'}
-              onClose={() => onClose(0)}
+              onClose={onCloseSheet}
               onPositionChange={onSheetPositionChange}
             >
               {/* 메뉴 패널 (always render) */}
@@ -183,7 +183,7 @@ export default function MapSidebar({
                 key="detail-mobile"
                 ref={sheetDetail}
                 isOpen={panel.type === 'detail'}
-                onClose={onCloseDetail}
+                onClose={onCloseSheet}
                 onPositionChange={onDetailSheetPositionChange}
               >
                 <SidebarPanel
