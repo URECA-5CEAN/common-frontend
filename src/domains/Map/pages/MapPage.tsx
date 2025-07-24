@@ -353,18 +353,18 @@ export default function MapPage() {
   };
 
   //매장 선택 시 상세열기
-  const openDetail = useCallback((store: StoreInfo) => {
-    setPanel({ type: 'detail', menu: '지도', item: store });
-  }, []);
+  const openDetail = useCallback(
+    (store: StoreInfo) => {
+      setPanel({ type: 'detail', menu: panel.menu, item: store });
+    },
+    [panel.menu],
+  );
 
   //상세 닫기
   const closePanel = useCallback(() => {
-    setPanel({ type: 'menu', menu: '지도' });
-  }, []);
+    setPanel({ type: 'menu', menu: panel.menu });
+  }, [panel.menu]);
 
-  const closeMobileDetail = useCallback(() => {
-    sheetDetail.current?.snapTo('bottom');
-  }, []);
   //키워드 변경 시 카테고리 초기화
   const changeKeyword = (e: ChangeEvent<HTMLInputElement>) => {
     SetKeyword(e.target.value);
