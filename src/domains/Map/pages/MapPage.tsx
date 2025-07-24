@@ -27,6 +27,7 @@ import {
 import { Button } from '@/components/Button';
 import BenefitModal from '../components/BenefitModal';
 import clsx from 'clsx';
+import type { BottomSheetHandle } from '../components/sidebar/BottomSheet';
 const ThreeJsMarker = lazy(() => import('../components/ThreeJsMarker'));
 //bounds 타입에러 방지
 interface InternalBounds extends kakao.maps.LatLngBounds {
@@ -487,7 +488,7 @@ export default function MapPage() {
                     onClick={searchHere}
                     variant="primary"
                     size="md"
-                    className="hidden sm:flex  justify-center s  px-4 py-2 text-base shadow self-center  hover:bg-primaryGreen-80"
+                    className="hidden sm:flex  justify-center px-4 py-2 text-base shadow self-center z-10  hover:bg-primaryGreen-80"
                   >
                     <RotateCcw size={16} className="sm:mt-[3px]" />
                     <p className="ml-1">이 위치에서 검색</p>
@@ -497,7 +498,7 @@ export default function MapPage() {
                     onClick={searchHere}
                     variant="primary"
                     size="sm"
-                    className="flex sm:hidden justify-center shadow self-center  hover:bg-primaryGreen-80"
+                    className="flex sm:hidden justify-center shadow self-center z-10 hover:bg-primaryGreen-80"
                   >
                     <RotateCcw size={16} className="sm:mt-[3px]" />
                     <p className="ml-1">이 위치에서 검색</p>
@@ -505,9 +506,8 @@ export default function MapPage() {
                 </>
               )}
             </div>
-
             {/* 내 위치 버튼 */}
-            <div className="absolute bottom-72  sm:bottom-8 right-7">
+            <div className="absolute  right-7 bottom-90  sm:bottom-8  z-10">
               {map && myLocation && (
                 <Button
                   onClick={goToMyLocation}

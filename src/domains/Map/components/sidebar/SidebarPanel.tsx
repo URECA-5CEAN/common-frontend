@@ -78,15 +78,16 @@ export default function SidebarPanel({
     >
       <div className="p-4 pr-2 bg-white relative shadow-lg rounded-lg overflow-y-auto   max-h-[calc(100vh-78px)] z-10 ">
         {/* 첫 번째 패널: 사용자 정보 */}
-        {index === 0 && (
-          <UserSection
-            username="김민석"
-            level={1}
-            currentExp={5}
-            nextLevelExp={20}
-          />
-        )}
-
+        <div className="hidden sm:block">
+          {index === 0 && (
+            <UserSection
+              username="김민석"
+              level={1}
+              currentExp={5}
+              nextLevelExp={20}
+            />
+          )}
+        </div>
         {/* 메뉴 및 상세 분기 렌더링 */}
         {index === 0 && panel.menu === '지도' && (
           <MapSection

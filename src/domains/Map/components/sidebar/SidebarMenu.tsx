@@ -21,9 +21,20 @@ export default function SidebarMenu({
           key={menu}
           onClick={() => onSelect(menu)}
           className={clsx(
-            'py-2 w-12 h-12 flex flex-col shadow sm:shadow-none bg-primaryGreen-40 ml-[5px] items-center focus:outline-none cursor-pointer hover:bg-[#DDF4FF]',
-            activeMenu === menu && 'bg-[#DDF4FF]',
-            'sm:bg-inherit rounded-full sm:rounded sm:w-20 sm:h-20 ',
+            'flex flex-col items-center justify-center',
+            'transition-transform duration-150 ease-out',
+            'focus:outline-none cursor-pointer',
+
+            // 모바일 전용
+            'w-12 h-12 bg-gray-50 rounded-full shadow-md',
+            'active:scale-95 active:opacity-80',
+            'hover:shadow-lg hover:bg-primaryGreen-50',
+            activeMenu === menu && 'bg-primaryGreen-60 shadow-lg ',
+
+            // 데스크탑(small 이상)
+            'sm:w-20 sm:h-20 sm:rounded-none sm:shadow-none sm:hover:shadow-none ml-1.5',
+            ' sm:hover:bg-[#DDF4FF] sm:active:scale-100 sm:active:opacity-100',
+            activeMenu === menu && 'sm:bg-[#DDF4FF] ',
           )}
         >
           <img
