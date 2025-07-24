@@ -11,6 +11,7 @@ import type { MarkerProps } from '../KakaoMapContainer';
 import type { StoreInfo } from '../api/store';
 import { MarkerClusterer } from 'react-kakao-maps-sdk';
 import { getBucketUrl } from './getBucketUrl';
+import { useMedia } from 'react-use';
 const StoreOverlay = lazy(() => import('./StoreOverlay'));
 interface Props {
   nearbyMarkers: MarkerProps[]; //3d마커
@@ -86,6 +87,9 @@ export default function FilterMarker({
 
   // farMarkers 개수에 따라 클러스터링 여부 결정
   const shouldCluster = farMarkers.length > 10;
+
+  const isDesktop = useMedia('(min-width: 640px)');
+
   return (
     <>
       {shouldCluster ? (
@@ -152,7 +156,7 @@ export default function FilterMarker({
                 size: { width: 40, height: 40 },
                 options: { offset: { x: 20, y: 40 } },
               }}
-              zIndex={2}
+              zIndex={3}
               onMouseOver={() => {
                 if (hoverOutRef.current) clearTimeout(hoverOutRef.current);
                 setHoveredMarkerId(m.id);
@@ -168,7 +172,7 @@ export default function FilterMarker({
           );
         })
       )}
-      {overlay && (
+      {overlay && isDesktop && (
         <Suspense
           fallback={
             <div

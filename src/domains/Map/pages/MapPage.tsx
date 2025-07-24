@@ -497,7 +497,10 @@ export default function MapPage() {
 
         {/* 모바일: 바텀시트 위에 붙이기 */}
         <div
-          className="fixed block sm:hidden left-[50%] transform -translate-x-1/2 z-20"
+          className={clsx(
+            'fixed block sm:hidden left-[50%] transform -translate-x-1/2 z-20',
+            sheetY === 0 ? 'hidden' : 'block',  
+          )}
           style={{ top: sheetY + 110 }}
         >
           {map && myLocation && showSearchBtn && (
@@ -566,11 +569,11 @@ export default function MapPage() {
               </Suspense>
             )}
 
-            <div className=" fixed left-96 ml-16 top-24 z-2 flex justify-start space-x-2 ">
+            <div className=" absolute  left-[10%]  md:left-10 top-28 md:top-24 z-2 flex justify-start space-x-1 lg:space-x-2 ">
               {Category.map((cate) => (
                 <button
                   className={clsx(
-                    'px-6 text-xs cursor-pointer hover:text-primaryGreen py-1.5 rounded-2xl border-2  border-gray-200',
+                    'md:px-2 text-xs cursor-pointer px-6 hover:text-primaryGreen py-1.5 rounded-2xl border-2  border-gray-200',
                     isCategory === cate
                       ? 'text-primaryGreen bg-white '
                       : ' bg-white',
@@ -583,7 +586,7 @@ export default function MapPage() {
               ))}
             </div>
 
-            <div className="flex sm:hidden absolute top-16 w-[83%] left-[10%]  bg-white z-2 items-center border border-gray-200 rounded-xl px-2 py-1 ">
+            <div className="flex sm:hidden absolute top-[68px] w-[83%] left-[10%]  bg-white z-2 items-center border border-gray-200 rounded-xl px-2 py-1 ">
               <Search />
               <DebouncedInput
                 value={keyword}

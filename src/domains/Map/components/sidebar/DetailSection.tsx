@@ -77,7 +77,7 @@ export default function DetailSection({
 
   if (isloading) return 'loading...';
   return (
-    <div className="space-y-2  min-h-[800px] z-10 ">
+    <div className="space-y-2  h-screen sm:min-h-[800px] z-10 ">
       {/* 헤더 */}
       <div className="flex items-center justify-between mt-10">
         <p className="text-xl font-bold">{store.name}</p>

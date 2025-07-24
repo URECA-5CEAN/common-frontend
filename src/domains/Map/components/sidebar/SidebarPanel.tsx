@@ -76,7 +76,7 @@ export default function SidebarPanel({
       )}
       style={{ left }}
     >
-      <div className="p-4 pr-2 bg-white relative shadow-lg rounded-lg overflow-y-auto   max-h-[calc(100vh-78px)] z-10 ">
+      <div className="p-4 pr-2 bg-white relative sm:shadow-lg rounded-lg overflow-y-auto   max-h-[calc(100vh-78px)] z-10 ">
         {/* 첫 번째 패널: 사용자 정보 */}
         <div className="hidden sm:block">
           {index === 0 && (
@@ -143,7 +143,7 @@ export default function SidebarPanel({
       {index === 1 && isDetail && (
         <button
           onClick={() => onClose(index)}
-          className="absolute z-10 right-2 top-2 w-10 h-10 bottom-[55%] cursor-pointer hover:bg-gray-100 focus:outline-none bg-white border-2  rounded-full border-gray-200"
+          className="absolute active:scale-95 active:opacity-80 z-10 left-2 sm:right-2 top-2 w-10 h-10 sm:bottom-[55%] cursor-pointer hover:bg-gray-100 focus:outline-none bg-white border-1  rounded-full border-gray-200"
         >
           <ChevronLeft
             className="translate-x-1.5 text-gray-300"
