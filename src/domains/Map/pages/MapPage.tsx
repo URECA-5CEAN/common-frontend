@@ -14,7 +14,7 @@ import MapSidebar, {
   type MenuType,
   type Panel,
 } from '../components/sidebar/MapSidebar';
-import { LocateFixed, RotateCcw } from 'lucide-react';
+import { LocateFixed, RotateCcw, Search } from 'lucide-react';
 import type { MarkerProps, LatLng } from '../KakaoMapContainer';
 import { getDistance } from '../utils/getDistance';
 import {
@@ -28,6 +28,7 @@ import { Button } from '@/components/Button';
 import BenefitModal from '../components/BenefitModal';
 import clsx from 'clsx';
 import type { BottomSheetHandle } from '../components/sidebar/BottomSheet';
+import DebouncedInput from '../components/DebouncedInput';
 const ThreeJsMarker = lazy(() => import('../components/ThreeJsMarker'));
 //bounds 타입에러 방지
 interface InternalBounds extends kakao.maps.LatLngBounds {
@@ -95,6 +96,16 @@ export default function MapPage() {
   //혜택인증 파일
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
+  // 바텀시트 Y 위치
+  const [sheetY, setSheetY] = useState<number>(260);
+  //바텀시트 인스턴스
+  const sheetRef = useRef<BottomSheetHandle | null>(null);
+  //이 위치 검색버튼 상태
+  const [showSearchBtn, setShowSearchBtn] = useState(false);
+
+  // bounds 변경 시마다 시간 업데이트
+  const hideTimeoutRef = useRef<number>(0);
+
   useEffect(() => {
     const handler = window.setTimeout(() => setDebouncedKeyword(keyword), 300);
     return () => clearTimeout(handler);
@@ -127,6 +138,7 @@ export default function MapPage() {
   useEffect(() => {
     searchHere();
   }, [searchHere]);
+
   //화면 내 매장만 filter해 sidebar 및 marker적용
   const filterStoresInView = useCallback(() => {
     if (!map) return;
@@ -146,14 +158,30 @@ export default function MapPage() {
     setFilteredStores(inView);
   }, [map, stores]);
 
-  // bounds 변경 시마다 필터링
+  // bounds 변경 시마다 필터링 + 검색 버튼 토글
   useEffect(() => {
     if (!map) return;
-    // 처음 렌더링 시
+    //줌 혹은 드래그 시: 필터링 + 버튼 보이기 + 5초 뒤 숨기기
+    const handleIdle = () => {
+      filterStoresInView();
+      setShowSearchBtn(true);
+
+      // 이전 타이머가 남아 있으면 지우고
+      window.clearTimeout(hideTimeoutRef.current);
+
+      // 5초 뒤에 버튼 숨기기
+      hideTimeoutRef.current = window.setTimeout(() => {
+        setShowSearchBtn(false);
+      }, 5000);
+    };
+
+    // 초기 렌더링 시 제휴처 가져옴
     filterStoresInView();
-    kakao.maps.event.addListener(map, 'idle', filterStoresInView);
+    kakao.maps.event.addListener(map, 'idle', handleIdle);
+
     return () => {
-      kakao.maps.event.removeListener(map, 'idle', filterStoresInView);
+      kakao.maps.event.removeListener(map, 'idle', handleIdle);
+      window.clearTimeout(hideTimeoutRef.current);
     };
   }, [map, filterStoresInView]);
 
@@ -398,10 +426,6 @@ export default function MapPage() {
     const file = e.target.files?.[0] ?? null;
     setSelectedFile(file);
   };
-  // 바텀시트 Y 위치
-  const [sheetY, setSheetY] = useState<number>(260);
-  //바텀시트 인스턴스
-  const sheetRef = useRef<BottomSheetHandle | null>(null);
 
   return (
     <div className="flex h-screen flex-col-reverse md:flex-row overflow-y-hidden ">
@@ -430,8 +454,12 @@ export default function MapPage() {
           onSheetPositionChange={(y) => setSheetY(y)}
         />
         {/* 내 위치 버튼 */}
+        {/* 모바일 */}
         <div
-          className="fixed sm:left-[93%] left-2  z-20"
+          className={clsx(
+            'fixed block sm:hidden left-2 z-20',
+            sheetY === 0 ? 'hidden' : 'block',
+          )}
           style={{ top: sheetY + 100 }}
         >
           {map && myLocation && (
@@ -439,10 +467,21 @@ export default function MapPage() {
               onClick={goToMyLocation}
               variant="ghost"
               size="sm"
-              className={clsx(
-                'rounded-full p-0  sm:px-4 sm:py-3 focus:border-none',
-                sheetY === 0 ? 'hidden' : 'block',
-              )}
+              className="rounded-full p-0 sm:px-4 sm:py-3 focus:border-none"
+            >
+              <LocateFixed size={30} className="w-5 h-7 sm:w-7 sm:h-8" />
+            </Button>
+          )}
+        </div>
+
+        {/* 데스크탑  */}
+        <div className="hidden sm:block fixed right-4 bottom-8 z-20">
+          {map && myLocation && (
+            <Button
+              onClick={goToMyLocation}
+              variant="ghost"
+              size="sm"
+              className="rounded-full p-0 sm:px-4 sm:py-3 focus:border-none"
             >
               <LocateFixed size={30} className="w-5 h-7 sm:w-7 sm:h-8" />
             </Button>
@@ -507,7 +546,7 @@ export default function MapPage() {
             </div>
             {/* 이 위치에서 검색 버튼 */}
             <div className="absolute sm:bottom-8 sm:left-[40%] bottom-[85%] left-[33%] ">
-              {map && myLocation && (
+              {map && myLocation && showSearchBtn && (
                 <>
                   <Button
                     onClick={searchHere}
@@ -530,6 +569,15 @@ export default function MapPage() {
                   </Button>
                 </>
               )}
+            </div>
+            <div className="flex sm:hidden absolute top-16 w-[60%] left-[10%]  bg-white z-10 items-center border border-gray-200 rounded-xl px-2 py-1 ">
+              <Search />
+              <DebouncedInput
+                value={keyword}
+                onChange={changeKeyword}
+                debounceTime={300}
+                placeholder="검색"
+              />
             </div>
 
             <BenefitModal

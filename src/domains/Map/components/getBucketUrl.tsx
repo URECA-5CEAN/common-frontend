@@ -12,5 +12,5 @@ export const getBucketUrl = (url: string) => {
   // 확장자 제거
   const baseName = filename.replace(/\.[^.]+$/, '');
   // svg 확장자로 조합 최적화위해
-  return `https://s3-ureca-final-project.s3.ap-northeast-2.amazonaws.com/${baseName}.svg`;
+  return `https://s3-ureca-final-project.s3.ap-northeast-2.amazonaws.com/${baseName}.png`;
 };

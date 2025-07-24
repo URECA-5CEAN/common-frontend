@@ -190,7 +190,7 @@ const BottomSheet = forwardRef<BottomSheetHandle, BottomSheetProps>(
           >
             {/* drag handle */}
             <div className="w-full flex justify-center py-2">
-              <div className="w-12 h-1.5 rounded-full bg-gray-400" />
+              <div className="w-12 h-1.5 rounded-full bg-gray-300" />
             </div>
 
             {/* scrollable content */}

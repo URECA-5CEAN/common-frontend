@@ -28,7 +28,7 @@ export default function MapSection({
   return (
     <div className="px-2 py-3 space-y-3 h-screen ">
       {/* 검색바 */}
-      <div className="flex items-center border border-gray-200 rounded-2xl px-2 py-2 mb-4">
+      <div className="hidden sm:flex  items-center border border-gray-200 rounded-2xl px-2 py-2 mb-4">
         <Search />
         <DebouncedInput
           value={keyword}
