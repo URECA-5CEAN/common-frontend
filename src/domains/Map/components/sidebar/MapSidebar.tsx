@@ -41,6 +41,8 @@ interface SideBarProps {
   toggleBookmark: (store: StoreInfo) => void;
   bookmarkIds: Set<string>;
   goToStore: (store: StoreInfo) => void;
+  sheetRef: React.RefObject<BottomSheetHandle | null>;
+  onSheetPositionChange: (y: number) => void;
 }
 
 export default function MapSidebar({
@@ -62,18 +64,12 @@ export default function MapSidebar({
   toggleBookmark,
   bookmarkIds,
   goToStore,
+  sheetRef,
+  onSheetPositionChange,
 }: SideBarProps) {
   if (!panel) return;
 
-  // 1) BottomSheet ref 생성
-  const sheetRef = useRef<BottomSheetHandle>(null);
-
-  // 2) 지도 클릭 시 시트를 peek 위치(bottom)로 스냅
-  const onMapClick = () => {
-    sheetRef.current?.snapTo('bottom');
-  };
-
-  // 3) 메뉴 선택 시 openMenu 호출 + 시트를 full 위치로 스냅
+  //메뉴 선택 시 openMenu 호출 + 시트를 middle 위치로 스냅
   const onMenuSelect = (menu: MenuType) => {
     openMenu(menu);
     sheetRef.current?.snapTo('middle');
@@ -145,7 +141,7 @@ export default function MapSidebar({
               ref={sheetRef}
               isOpen={panel.type === 'menu'}
               onClose={() => onClose(0)}
-              onMapClick={onMapClick}
+              onPositionChange={onSheetPositionChange}
             >
               {/* 메뉴 패널 (always render) */}
               <SidebarPanel
@@ -178,7 +174,7 @@ export default function MapSidebar({
               ref={sheetRef}
               isOpen={panel.type === 'detail'}
               onClose={() => onClose(1)}
-              onMapClick={onMapClick}
+              onPositionChange={onSheetPositionChange}
             >
               <SidebarPanel
                 key="detail"

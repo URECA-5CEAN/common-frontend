@@ -398,6 +398,10 @@ export default function MapPage() {
     const file = e.target.files?.[0] ?? null;
     setSelectedFile(file);
   };
+  // 바텀시트 Y 위치
+  const [sheetY, setSheetY] = useState<number>(260);
+  //바텀시트 인스턴스
+  const sheetRef = useRef<BottomSheetHandle | null>(null);
 
   return (
     <div className="flex h-screen flex-col-reverse md:flex-row overflow-y-hidden ">
@@ -422,7 +426,28 @@ export default function MapPage() {
           toggleBookmark={toggleBookmark}
           bookmarkIds={bookmarkIds}
           goToStore={goToStore}
+          sheetRef={sheetRef}
+          onSheetPositionChange={(y) => setSheetY(y)}
         />
+        {/* 내 위치 버튼 */}
+        <div
+          className="fixed sm:left-[93%] left-2  z-20"
+          style={{ top: sheetY + 100 }}
+        >
+          {map && myLocation && (
+            <Button
+              onClick={goToMyLocation}
+              variant="ghost"
+              size="sm"
+              className={clsx(
+                'rounded-full p-0  sm:px-4 sm:py-3 focus:border-none',
+                sheetY === 0 ? 'hidden' : 'block',
+              )}
+            >
+              <LocateFixed size={30} className="w-5 h-7 sm:w-7 sm:h-8" />
+            </Button>
+          )}
+        </div>
       </aside>
 
       {/* 지도 영역 */}
@@ -506,19 +531,7 @@ export default function MapPage() {
                 </>
               )}
             </div>
-            {/* 내 위치 버튼 */}
-            <div className="absolute  right-7 bottom-90  sm:bottom-8  z-10">
-              {map && myLocation && (
-                <Button
-                  onClick={goToMyLocation}
-                  variant="ghost"
-                  size="sm"
-                  className="rounded-full p-0  sm:px-4 sm:py-3 focus:border-none"
-                >
-                  <LocateFixed size={30} className="w-5 h-7 sm:w-7 sm:h-8" />
-                </Button>
-              )}
-            </div>
+
             <BenefitModal
               panel={panel}
               openmenu={openMenu}

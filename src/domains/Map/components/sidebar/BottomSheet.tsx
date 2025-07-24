@@ -22,26 +22,38 @@ export interface BottomSheetHandle {
 interface BottomSheetProps {
   isOpen: boolean; // true면 middle, false면 peek
   onClose: () => void; // peek 이하로 내려갈 때 호출
+  onPositionChange?: (y: number) => void; // Y 오프셋 변화 콜백
   children: ReactNode;
   peekHeight?: number; // peek 상태에서 남길 높이(px)
   midRatio?: number; // middle 위치 비율 (0~1)
 }
 
 const BottomSheet = forwardRef<BottomSheetHandle, BottomSheetProps>(
-  ({ isOpen, onClose, children, peekHeight = 25, midRatio = 0.5 }, ref) => {
+  (
+    {
+      isOpen,
+      onClose,
+      onPositionChange,
+      children,
+      peekHeight = 30,
+      midRatio = 0.5,
+    },
+    ref,
+  ) => {
     const animation = useAnimation();
     const [currentY, setCurrentY] = useState<number>(Infinity);
     const contentRef = useRef<HTMLDivElement>(null);
     const touchStartY = useRef(0);
+    const prevIsOpenRef = useRef<boolean>(isOpen);
 
-    // 시트 전체 높이 (뷰포트의 75%)
+    // 시트 높이 (뷰포트의 75%)
     const sheetHeight =
       typeof window !== 'undefined' ? window.innerHeight * 0.75 : 0;
     const fullY = 0;
     const middleY = sheetHeight * (1 - midRatio);
     const bottomY = sheetHeight - peekHeight;
 
-    // 외부에서 snapTo 호출 허용
+    // 외부에서 snapTo 호출할 수 있게
     useImperativeHandle(
       ref,
       () => ({
@@ -55,23 +67,32 @@ const BottomSheet = forwardRef<BottomSheetHandle, BottomSheetProps>(
             })
             .then(() => {
               setCurrentY(targetY);
+              onPositionChange?.(targetY);
               if (which === 'bottom') onClose();
             });
         },
       }),
-      [animation, onClose, fullY, middleY, bottomY],
+      [animation, onClose, onPositionChange, fullY, middleY, bottomY],
     );
 
-    // isOpen 변화에 따라 middle/bottom 스냅
+    // isOpen 변경 시에만 middle/bottom 스냅
     useEffect(() => {
+      if (prevIsOpenRef.current === isOpen) {
+        prevIsOpenRef.current = isOpen;
+        return;
+      }
+      prevIsOpenRef.current = isOpen;
       const target = isOpen ? middleY : bottomY;
       animation
         .start({
           y: target,
           transition: { type: 'spring', stiffness: 300, damping: 30 },
         })
-        .then(() => setCurrentY(target));
-    }, [isOpen, animation, middleY, bottomY]);
+        .then(() => {
+          setCurrentY(target);
+          onPositionChange?.(target);
+        });
+    }, [isOpen, animation, middleY, bottomY, onPositionChange]);
 
     // content 내부 터치 드래그 (middle 위치에서만)
     useEffect(() => {
@@ -84,18 +105,18 @@ const BottomSheet = forwardRef<BottomSheetHandle, BottomSheetProps>(
       const moveHandler = (e: TouchEvent) => {
         if (currentY !== middleY) return;
         const dy = touchStartY.current - e.touches[0].clientY;
-
         if (dy > 0) {
-          // 위로 당기면 full
           animation
             .start({
               y: fullY,
               transition: { type: 'spring', stiffness: 300, damping: 30 },
             })
-            .then(() => setCurrentY(fullY));
+            .then(() => {
+              setCurrentY(fullY);
+              onPositionChange?.(fullY);
+            });
           e.preventDefault();
         } else if (dy < 0 && el.scrollTop === 0) {
-          // 아래로 당기면 peek
           animation
             .start({
               y: bottomY,
@@ -103,6 +124,7 @@ const BottomSheet = forwardRef<BottomSheetHandle, BottomSheetProps>(
             })
             .then(() => {
               setCurrentY(bottomY);
+              onPositionChange?.(bottomY);
               onClose();
             });
           e.preventDefault();
@@ -115,7 +137,15 @@ const BottomSheet = forwardRef<BottomSheetHandle, BottomSheetProps>(
         el.removeEventListener('touchstart', startHandler);
         el.removeEventListener('touchmove', moveHandler);
       };
-    }, [currentY, middleY, fullY, bottomY, animation, onClose]);
+    }, [
+      currentY,
+      middleY,
+      fullY,
+      bottomY,
+      animation,
+      onClose,
+      onPositionChange,
+    ]);
 
     return (
       <AnimatePresence>
@@ -127,7 +157,8 @@ const BottomSheet = forwardRef<BottomSheetHandle, BottomSheetProps>(
             dragConstraints={{ top: fullY, bottom: bottomY }}
             dragElastic={0.2}
             dragMomentum={false}
-            initial={{ y: sheetHeight }}
+            // ✨ initial 을 동적으로 설정
+            initial={{ y: isOpen ? middleY : bottomY }}
             animate={animation}
             exit={{
               y: sheetHeight,
@@ -152,6 +183,7 @@ const BottomSheet = forwardRef<BottomSheetHandle, BottomSheetProps>(
                 })
                 .then(() => {
                   setCurrentY(closest);
+                  onPositionChange?.(closest);
                   if (closest === bottomY) onClose();
                 });
             }}
