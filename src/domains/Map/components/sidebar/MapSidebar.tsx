@@ -1,6 +1,6 @@
 // src/components/MapSidebar.tsx
 
-import { type ChangeEventHandler } from 'react';
+import { useRef, type ChangeEventHandler } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import mapImage from '@/assets/image/MapImage.svg';
 import starImage from '@/assets/image/StarImage.svg';
@@ -10,6 +10,7 @@ import benefitImage from '@/assets/image/BenefitImage.svg';
 import SidebarMenu from './SidebarMenu';
 import SidebarPanel from './SidebarPanel';
 import type { StoreInfo } from '../../api/store';
+import BottomSheet, { type BottomSheetHandle } from './BottomSheet';
 
 // 메뉴 타입
 export type MenuType = '지도' | '즐겨찾기' | '길찾기' | '혜택인증';
@@ -63,6 +64,21 @@ export default function MapSidebar({
   goToStore,
 }: SideBarProps) {
   if (!panel) return;
+
+  // 1) BottomSheet ref 생성
+  const sheetRef = useRef<BottomSheetHandle>(null);
+
+  // 2) 지도 클릭 시 시트를 peek 위치(bottom)로 스냅
+  const onMapClick = () => {
+    sheetRef.current?.snapTo('bottom');
+  };
+
+  // 3) 메뉴 선택 시 openMenu 호출 + 시트를 full 위치로 스냅
+  const onMenuSelect = (menu: MenuType) => {
+    openMenu(menu);
+    sheetRef.current?.snapTo('middle');
+  };
+
   return (
     <>
       {/* 최상단 메뉴 */}
@@ -70,54 +86,120 @@ export default function MapSidebar({
         menus={menus}
         icons={menuIcons}
         activeMenu={panel?.menu}
-        onSelect={openMenu}
+        onSelect={onMenuSelect}
       />
 
-      {/* 패널 애니메이션 */}
-      <AnimatePresence initial={false}>
-        {/* 메뉴 패널 (always render) */}
-        <SidebarPanel
-          key="menu"
-          index={0}
-          panel={panel}
-          stores={stores}
-          openDetail={openDetail}
-          onClose={onClose}
-          changeKeyword={changeKeyword}
-          keyword={keyword}
-          startValue={startValue}
-          endValue={endValue}
-          onStartChange={onStartChange}
-          onEndChange={onEndChange}
-          onSwap={onSwap}
-          onReset={onReset}
-          onNavigate={onNavigate}
-          bookmarks={bookmarks}
-          toggleBookmark={toggleBookmark}
-          bookmarkIds={bookmarkIds}
-          goToStore={goToStore}
-        />
-
-        {/* 상세 패널 (panel.type이 'detail'일 때만) */}
-        {panel?.type === 'detail' && panel.item && (
+      <div className="hidden sm:block">
+        {/* 패널 애니메이션 */}
+        <AnimatePresence initial={false}>
+          {/* 메뉴 패널 (always render) */}
           <SidebarPanel
-            key="detail"
-            index={1}
-            bookmarks={bookmarks}
+            key="menu"
+            index={0}
             panel={panel}
             stores={stores}
             openDetail={openDetail}
             onClose={onClose}
             changeKeyword={changeKeyword}
             keyword={keyword}
+            startValue={startValue}
+            endValue={endValue}
             onStartChange={onStartChange}
             onEndChange={onEndChange}
+            onSwap={onSwap}
+            onReset={onReset}
+            onNavigate={onNavigate}
+            bookmarks={bookmarks}
             toggleBookmark={toggleBookmark}
             bookmarkIds={bookmarkIds}
             goToStore={goToStore}
           />
-        )}
-      </AnimatePresence>
+
+          {/* 상세 패널 (panel.type이 'detail'일 때만) */}
+          {panel?.type === 'detail' && panel.item && (
+            <SidebarPanel
+              key="detail"
+              index={1}
+              bookmarks={bookmarks}
+              panel={panel}
+              stores={stores}
+              openDetail={openDetail}
+              onClose={onClose}
+              changeKeyword={changeKeyword}
+              keyword={keyword}
+              onStartChange={onStartChange}
+              onEndChange={onEndChange}
+              toggleBookmark={toggleBookmark}
+              bookmarkIds={bookmarkIds}
+              goToStore={goToStore}
+            />
+          )}
+        </AnimatePresence>
+      </div>
+      <div className="block sm:hidden">
+        {/* 패널 애니메이션 */}
+        <AnimatePresence initial={false}>
+          {panel?.type === 'menu' && (
+            <BottomSheet
+              key="menu-mobile"
+              ref={sheetRef}
+              isOpen={panel.type === 'menu'}
+              onClose={() => onClose(0)}
+              onMapClick={onMapClick}
+            >
+              {/* 메뉴 패널 (always render) */}
+              <SidebarPanel
+                key="menu"
+                index={0}
+                panel={panel}
+                stores={stores}
+                openDetail={openDetail}
+                onClose={onClose}
+                changeKeyword={changeKeyword}
+                keyword={keyword}
+                startValue={startValue}
+                endValue={endValue}
+                onStartChange={onStartChange}
+                onEndChange={onEndChange}
+                onSwap={onSwap}
+                onReset={onReset}
+                onNavigate={onNavigate}
+                bookmarks={bookmarks}
+                toggleBookmark={toggleBookmark}
+                bookmarkIds={bookmarkIds}
+                goToStore={goToStore}
+              />
+            </BottomSheet>
+          )}
+          {/* 상세 패널 (panel.type이 'detail'일 때만) */}
+          {panel?.type === 'detail' && panel.item && (
+            <BottomSheet
+              key="detail-mobile"
+              ref={sheetRef}
+              isOpen={panel.type === 'detail'}
+              onClose={() => onClose(1)}
+              onMapClick={onMapClick}
+            >
+              <SidebarPanel
+                key="detail"
+                index={1}
+                bookmarks={bookmarks}
+                panel={panel}
+                stores={stores}
+                openDetail={openDetail}
+                onClose={onClose}
+                changeKeyword={changeKeyword}
+                keyword={keyword}
+                onStartChange={onStartChange}
+                onEndChange={onEndChange}
+                toggleBookmark={toggleBookmark}
+                bookmarkIds={bookmarkIds}
+                goToStore={goToStore}
+              />
+            </BottomSheet>
+          )}
+        </AnimatePresence>
+      </div>
     </>
   );
 }

@@ -480,30 +480,42 @@ export default function MapPage() {
               ))}
             </div>
             {/* 이 위치에서 검색 버튼 */}
-            <div className="absolute bottom-8 left-[40%] ">
+            <div className="absolute sm:bottom-8 sm:left-[40%] bottom-[85%] left-[33%] ">
               {map && myLocation && (
-                <Button
-                  onClick={searchHere}
-                  variant="primary"
-                  size="md"
-                  className="flex justify-center shadow self-center hover:bg-primaryGreen-80"
-                >
-                  <RotateCcw size={16} className="mt-[3px]" />
-                  <p className="ml-1">이 위치에서 검색</p>
-                </Button>
+                <>
+                  <Button
+                    onClick={searchHere}
+                    variant="primary"
+                    size="md"
+                    className="hidden sm:flex  justify-center s  px-4 py-2 text-base shadow self-center  hover:bg-primaryGreen-80"
+                  >
+                    <RotateCcw size={16} className="sm:mt-[3px]" />
+                    <p className="ml-1">이 위치에서 검색</p>
+                  </Button>
+
+                  <Button
+                    onClick={searchHere}
+                    variant="primary"
+                    size="sm"
+                    className="flex sm:hidden justify-center shadow self-center  hover:bg-primaryGreen-80"
+                  >
+                    <RotateCcw size={16} className="sm:mt-[3px]" />
+                    <p className="ml-1">이 위치에서 검색</p>
+                  </Button>
+                </>
               )}
             </div>
 
             {/* 내 위치 버튼 */}
-            <div className="absolute bottom-8 right-8">
+            <div className="absolute bottom-72  sm:bottom-8 right-7">
               {map && myLocation && (
                 <Button
                   onClick={goToMyLocation}
                   variant="ghost"
                   size="sm"
-                  className="rounded-full"
+                  className="rounded-full p-0  sm:px-4 sm:py-3 focus:border-none"
                 >
-                  <LocateFixed size={30} />
+                  <LocateFixed size={30} className="w-5 h-7 sm:w-7 sm:h-8" />
                 </Button>
               )}
             </div>

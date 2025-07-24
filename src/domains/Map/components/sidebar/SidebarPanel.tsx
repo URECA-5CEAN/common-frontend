@@ -6,7 +6,7 @@ import StarSection from './StarSection';
 import DetailSection from './DetailSection';
 import { ChevronLeft } from 'lucide-react';
 import RoadSection from './RoadSection';
-import { useEffect, useState, type ChangeEventHandler } from 'react';
+import { useState, type ChangeEventHandler } from 'react';
 import type { StoreInfo } from '../../api/store';
 import type { MenuType } from './MapSidebar';
 
@@ -62,17 +62,7 @@ export default function SidebarPanel({
 
   const left = 64 + index * 345;
   const isDetail = panel.type === 'detail';
-  const [isMobile, setIsMobile] = useState(true);
 
-  // 1) 브라우저 크기 감지 훅
-  useEffect(() => {
-    function onResize() {
-      setIsMobile(window.innerWidth < 760);
-    }
-    onResize();
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
-  }, []);
   return (
     <motion.div
       key={index}
@@ -82,8 +72,7 @@ export default function SidebarPanel({
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       className={clsx(
         'bg-white rounded-t-2xl shadow scrollbar-custom ',
-        'fixed left-0 bottom-0 w-full max-h-[60vh] ',
-        'sm:rounded-tl-2xl sm:ml-22 md:ml-6.5 sm:mt-20 sm:rounded-bl-2xl sm:fixed sm:top-0 sm:bottom-0 sm:left-0 sm:w-[332px] sm:max-h-full',
+        'sm:rounded-tl-2xl  sm:ml-6.5 sm:mt-20 sm:rounded-bl-2xl sm:fixed sm:top-0 sm:bottom-0 sm:left-0 sm:w-[332px] sm:max-h-full',
       )}
       style={{ left }}
     >
