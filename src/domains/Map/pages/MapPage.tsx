@@ -29,7 +29,7 @@ import BenefitModal from '../components/BenefitModal';
 import clsx from 'clsx';
 import type { BottomSheetHandle } from '../components/sidebar/BottomSheet';
 import DebouncedInput from '../components/DebouncedInput';
-const ThreeJsMarker = lazy(() => import('../components/ThreeJsMarker'));
+const ThreeJmdarker = lazy(() => import('../components/ThreeJsMarker'));
 //bounds 타입에러 방지
 interface InternalBounds extends kakao.maps.LatLngBounds {
   pa: number;
@@ -391,19 +391,19 @@ export default function MapPage() {
   };
   //마운트 시 즐겨찾기 조회
   useEffect(() => {
-    let isMounted = true;
+    let imdounted = true;
 
     async function loadBookmarks() {
       try {
         const data = await fetchBookmark();
-        if (isMounted) setBookmarks(data);
+        if (imdounted) setBookmarks(data);
       } catch (err) {
         console.error('즐겨찾기 불러오기 실패', err);
       }
     }
     loadBookmarks();
     return () => {
-      isMounted = false;
+      imdounted = false;
     };
   }, []);
 
@@ -437,7 +437,7 @@ export default function MapPage() {
   return (
     <div className="flex h-screen flex-col-reverse md:flex-row overflow-y-hidden ">
       {/* 사이드바 */}
-      <aside className="relative top-[62px] md:top-[86px]  left-0 bottom-0 sm:w-[420px] z-20 flex-shrink-0">
+      <aside className="relative top-[62px] md:top-[86px]  left-0 bottom-0 md:w-[420px] z-20 flex-shrink-0">
         <MapSidebar
           stores={displayedStores}
           panel={panel}
@@ -464,7 +464,7 @@ export default function MapPage() {
         {/* 모바일 */}
         <div
           className={clsx(
-            'fixed block sm:hidden left-2 z-1',
+            'fixed block md:hidden left-2 z-1',
             sheetY === 0 ? 'hidden' : 'block',
           )}
           style={{ top: sheetY + 100 }}
@@ -473,24 +473,24 @@ export default function MapPage() {
             <Button
               onClick={goToMyLocation}
               variant="ghost"
-              size="sm"
-              className="rounded-full p-0 sm:px-4 sm:py-3 focus:border-none"
+              size="md"
+              className="rounded-full p-0 md:px-4 md:py-3 focus:border-none"
             >
-              <LocateFixed size={30} className="w-5 h-7 sm:w-7 sm:h-8" />
+              <LocateFixed size={30} className="w-5 h-7 md:w-7 md:h-8" />
             </Button>
           )}
         </div>
 
         {/* 데스크탑  */}
-        <div className="hidden sm:block fixed right-4 bottom-8 z-2">
+        <div className="hidden md:block fixed right-4 bottom-8 z-2">
           {map && myLocation && (
             <Button
               onClick={goToMyLocation}
               variant="ghost"
-              size="sm"
-              className="rounded-full p-0 sm:px-4 sm:py-3 focus:border-none"
+              size="md"
+              className="rounded-full p-0 md:px-4 md:py-3 focus:border-none"
             >
-              <LocateFixed size={30} className="w-5 h-7 sm:w-7 sm:h-8" />
+              <LocateFixed size={30} className="w-5 h-7 md:w-7 md:h-8" />
             </Button>
           )}
         </div>
@@ -498,8 +498,8 @@ export default function MapPage() {
         {/* 모바일: 바텀시트 위에 붙이기 */}
         <div
           className={clsx(
-            'fixed block sm:hidden left-[50%] transform -translate-x-1/2 z-20',
-            sheetY === 0 ? 'hidden' : 'block',  
+            'fixed block md:hidden left-[50%] transform -translate-x-1/2 z-20',
+            sheetY === 0 ? 'hidden' : 'block',
           )}
           style={{ top: sheetY + 110 }}
         >
@@ -516,12 +516,12 @@ export default function MapPage() {
         </div>
 
         {/* 데스크탑: 화면 하단 중앙에 고정 */}
-        <div className="hidden sm:block fixed bottom-8 left-[55%] transform -translate-x-1/2 z-20">
+        <div className="hidden md:block fixed bottom-8 left-[55%] transform -translate-x-1/2 z-20">
           {map && myLocation && showSearchBtn && (
             <Button
               onClick={searchHere}
               variant="primary"
-              size="md"
+              size="sm"
               className="shadow px-4 py-2"
             >
               <RotateCcw size={16} className="mr-1" />이 위치에서 검색
@@ -558,7 +558,7 @@ export default function MapPage() {
             {/* 3D 마커 */}
             {map && (
               <Suspense fallback={null}>
-                <ThreeJsMarker
+                <ThreeJmdarker
                   markers={lod3DMarkers}
                   map={map}
                   setHoveredMarkerId={setHoveredId}
@@ -586,7 +586,7 @@ export default function MapPage() {
               ))}
             </div>
 
-            <div className="flex sm:hidden absolute top-[68px] w-[83%] left-[10%]  bg-white z-2 items-center border border-gray-200 rounded-xl px-2 py-1 ">
+            <div className="flex md:hidden absolute top-[68px] w-[70%] max-w-[600px] left-[10%]  bg-white z-2 items-center border border-gray-200 rounded-xl px-2 py-1 ">
               <Search />
               <DebouncedInput
                 value={keyword}

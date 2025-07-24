@@ -1,16 +1,19 @@
 //이미지 URL 변경
+const bucketUrlCache = new Map<string, string>();
+
 export const getBucketUrl = (url: string) => {
-  let filename: string;
-  try {
-    // URL에서 pathname만 추출
-    const { pathname } = new URL(url);
-    filename = pathname.split('/').pop() ?? '';
-  } catch {
-    // 예외 시에도 마지막 경로만
-    filename = url.split('/').pop() ?? '';
-  }
-  // 확장자 제거
-  const baseName = filename.replace(/\.[^.]+$/, '');
-  // svg 확장자로 조합 최적화위해
-  return `https://s3-ureca-final-project.s3.ap-northeast-2.amazonaws.com/${baseName}.png`;
+  // 캐시에 있으면 바로 반환
+  const cached = bucketUrlCache.get(url);
+  if (cached) return cached;
+
+  // URL 파싱 없이 정규표현식으로 파일명+확장자 추출
+  const match = url.match(/\/([^\/?#]+?)(\.[^\/?#]+)?(?:[?#]|$)/);
+  const filename = match ? match[1] : url.split('/').pop() || url;
+
+  // .png 확장자로 재조합
+  const result = `https://s3-ureca-final-project.s3.ap-northeast-2.amazonaws.com/${filename}.png`;
+
+  //  캐시에 저장
+  bucketUrlCache.set(url, result);
+  return result;
 };

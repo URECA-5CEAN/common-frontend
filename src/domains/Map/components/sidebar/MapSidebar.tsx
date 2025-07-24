@@ -1,6 +1,6 @@
 // src/components/MapSidebar.tsx
 
-import { useRef, type ChangeEventHandler } from 'react';
+import { type ChangeEventHandler } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import mapImage from '@/assets/image/MapImage.svg';
 import starImage from '@/assets/image/StarImage.svg';
@@ -85,7 +85,7 @@ export default function MapSidebar({
         onSelect={onMenuSelect}
       />
 
-      <div className="hidden sm:block">
+      <div className="hidden md:block">
         {/* 패널 애니메이션 */}
         <AnimatePresence initial={false}>
           {/* 메뉴 패널 (always render) */}
@@ -132,7 +132,7 @@ export default function MapSidebar({
           )}
         </AnimatePresence>
       </div>
-      <div className="block sm:hidden">
+      <div className="block md:hidden">
         {/* 패널 애니메이션 */}
         <AnimatePresence initial={false}>
           {panel?.type === 'menu' && (

@@ -72,13 +72,13 @@ export default function SidebarPanel({
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       className={clsx(
         'bg-white rounded-t-2xl shadow scrollbar-custom ',
-        'sm:rounded-tl-2xl  sm:ml-6.5 sm:mt-20 sm:rounded-bl-2xl sm:fixed sm:top-0 sm:bottom-0 sm:left-0 sm:w-[332px] sm:max-h-full',
+        'md:rounded-tl-2xl  md:ml-6.5 md:mt-20 md:rounded-bl-2xl md:fixed md:top-0 md:bottom-0 md:left-0 md:w-[332px] md:max-h-full',
       )}
       style={{ left }}
     >
-      <div className="p-4 pr-2 bg-white relative sm:shadow-lg rounded-lg overflow-y-auto   max-h-[calc(100vh-78px)] z-10 ">
+      <div className="p-4 pr-2 bg-white relative md:shadow-lg rounded-lg overflow-y-auto   max-h-[calc(100vh-78px)] z-10 ">
         {/* 첫 번째 패널: 사용자 정보 */}
-        <div className="hidden sm:block">
+        <div className="hidden md:block">
           {index === 0 && (
             <UserSection
               username="김민석"
@@ -143,7 +143,7 @@ export default function SidebarPanel({
       {index === 1 && isDetail && (
         <button
           onClick={() => onClose(index)}
-          className="absolute active:scale-95 active:opacity-80 z-10 left-2 sm:right-2 top-2 w-10 h-10 sm:bottom-[55%] cursor-pointer hover:bg-gray-100 focus:outline-none bg-white border-1  rounded-full border-gray-200"
+          className="absolute active:scale-95 active:opacity-80 z-10 left-2 md:right-2 top-2 w-10 h-10 md:bottom-[55%] cursor-pointer hover:bg-gray-100 focus:outline-none bg-white border-1  rounded-full border-gray-200"
         >
           <ChevronLeft
             className="translate-x-1.5 text-gray-300"

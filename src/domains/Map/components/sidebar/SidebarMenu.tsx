@@ -15,7 +15,7 @@ export default function SidebarMenu({
   onSelect,
 }: SidebarMenuProps) {
   return (
-    <div className="fixed top-28 sm:top-16 right-6.5 sm:left-0  sm:bottom-0 sm:w-[90px] sm:bg-gray-50 sm:shadow text-center space-y-2 pt-10 z-1 ">
+    <div className="fixed top-28 md:top-16 right-6.5 md:left-0  md:bottom-0 md:w-[90px] md:bg-gray-50 md:shadow text-center space-y-2 pt-10 z-1 ">
       {menus.map((menu, idx) => (
         <button
           key={menu}
@@ -31,18 +31,18 @@ export default function SidebarMenu({
             'hover:shadow-lg hover:bg-primaryGreen-50',
             activeMenu === menu && 'bg-primaryGreen-60 shadow-lg ',
 
-            // 데스크탑(small 이상)
-            'sm:w-20 sm:h-20 sm:rounded-none sm:shadow-none sm:hover:shadow-none ml-1.5',
-            ' sm:hover:bg-[#DDF4FF] sm:active:scale-100 sm:active:opacity-100',
-            activeMenu === menu && 'sm:bg-[#DDF4FF] ',
+            // 데스크탑(mdall 이상)
+            'md:w-20 md:h-20 md:rounded-none md:shadow-none  md:hover:shadow-none ml-1.5',
+            ' md:hover:bg-[#DDF4FF] md:active:scale-100 md:active:opacity-100',
+            activeMenu === menu && 'md:bg-[#DDF4FF] ',
           )}
         >
           <img
             src={icons[idx]}
             alt={menu}
-            className="h-6 w-6  sm:h-10 sm:w-10 mb-0.5 sm:mb-1 "
+            className="h-6 w-6  md:h-10 md:w-10 mb-0.5 md:mb-1 "
           />
-          <span className="text-[8px] font-semibold sm:font-medium sm:text-sm">
+          <span className="text-[8px] font-semibold md:font-medium md:text-sm">
             {menu}
           </span>
         </button>
