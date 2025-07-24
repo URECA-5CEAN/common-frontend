@@ -1,6 +1,6 @@
 // src/components/MapSidebar.tsx
 
-import { type ChangeEventHandler } from 'react';
+import { lazy, Suspense, type ChangeEventHandler } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import mapImage from '@/assets/image/MapImage.svg';
 import starImage from '@/assets/image/StarImage.svg';
@@ -8,10 +8,10 @@ import roadImage from '@/assets/image/roadImage.svg';
 import benefitImage from '@/assets/image/BenefitImage.svg';
 
 import SidebarMenu from './SidebarMenu';
-import SidebarPanel from './SidebarPanel';
 import type { StoreInfo } from '../../api/store';
-import BottomSheet, { type BottomSheetHandle } from './BottomSheet';
-
+import { type BottomSheetHandle } from './BottomSheet';
+const SidebarPanel = lazy(() => import('./SidebarPanel'));
+const BottomSheet = lazy(() => import('./BottomSheet'));
 // 메뉴 타입
 export type MenuType = '지도' | '즐겨찾기' | '길찾기' | '혜택인증';
 export const menus: MenuType[] = ['지도', '즐겨찾기', '길찾기', '혜택인증'];
@@ -113,22 +113,24 @@ export default function MapSidebar({
 
           {/* 상세 패널 (panel.type이 'detail'일 때만) */}
           {panel?.type === 'detail' && panel.item && (
-            <SidebarPanel
-              key="detail"
-              index={1}
-              bookmarks={bookmarks}
-              panel={panel}
-              stores={stores}
-              openDetail={openDetail}
-              onClose={onClose}
-              changeKeyword={changeKeyword}
-              keyword={keyword}
-              onStartChange={onStartChange}
-              onEndChange={onEndChange}
-              toggleBookmark={toggleBookmark}
-              bookmarkIds={bookmarkIds}
-              goToStore={goToStore}
-            />
+            <Suspense fallback={<div>로딩 중…</div>}>
+              <SidebarPanel
+                key="detail"
+                index={1}
+                bookmarks={bookmarks}
+                panel={panel}
+                stores={stores}
+                openDetail={openDetail}
+                onClose={onClose}
+                changeKeyword={changeKeyword}
+                keyword={keyword}
+                onStartChange={onStartChange}
+                onEndChange={onEndChange}
+                toggleBookmark={toggleBookmark}
+                bookmarkIds={bookmarkIds}
+                goToStore={goToStore}
+              />
+            </Suspense>
           )}
         </AnimatePresence>
       </div>
@@ -169,30 +171,32 @@ export default function MapSidebar({
           )}
           {/* 상세 패널 (panel.type이 'detail'일 때만) */}
           {panel?.type === 'detail' && panel.item && (
-            <BottomSheet
-              key="detail-mobile"
-              ref={sheetRef}
-              isOpen={panel.type === 'detail'}
-              onClose={() => onClose(1)}
-              onPositionChange={onSheetPositionChange}
-            >
-              <SidebarPanel
-                key="detail"
-                index={1}
-                bookmarks={bookmarks}
-                panel={panel}
-                stores={stores}
-                openDetail={openDetail}
-                onClose={onClose}
-                changeKeyword={changeKeyword}
-                keyword={keyword}
-                onStartChange={onStartChange}
-                onEndChange={onEndChange}
-                toggleBookmark={toggleBookmark}
-                bookmarkIds={bookmarkIds}
-                goToStore={goToStore}
-              />
-            </BottomSheet>
+            <Suspense fallback={<div>로딩 중…</div>}>
+              <BottomSheet
+                key="detail-mobile"
+                ref={sheetRef}
+                isOpen={panel.type === 'detail'}
+                onClose={() => onClose(1)}
+                onPositionChange={onSheetPositionChange}
+              >
+                <SidebarPanel
+                  key="detail"
+                  index={1}
+                  bookmarks={bookmarks}
+                  panel={panel}
+                  stores={stores}
+                  openDetail={openDetail}
+                  onClose={onClose}
+                  changeKeyword={changeKeyword}
+                  keyword={keyword}
+                  onStartChange={onStartChange}
+                  onEndChange={onEndChange}
+                  toggleBookmark={toggleBookmark}
+                  bookmarkIds={bookmarkIds}
+                  goToStore={goToStore}
+                />
+              </BottomSheet>
+            </Suspense>
           )}
         </AnimatePresence>
       </div>
