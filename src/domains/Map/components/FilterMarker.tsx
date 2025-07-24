@@ -3,27 +3,29 @@ import React, {
   useState,
   useEffect,
   useMemo,
+  useCallback,
   Suspense,
   lazy,
 } from 'react';
-import { MapMarker } from 'react-kakao-maps-sdk';
+import { MapMarker, MarkerClusterer } from 'react-kakao-maps-sdk';
+import { useMedia } from 'react-use';
 import type { MarkerProps } from '../KakaoMapContainer';
 import type { StoreInfo } from '../api/store';
-import { MarkerClusterer } from 'react-kakao-maps-sdk';
 import { getBucketUrl } from './getBucketUrl';
-import { useMedia } from 'react-use';
+
 const StoreOverlay = lazy(() => import('./StoreOverlay'));
+
 interface Props {
-  nearbyMarkers: MarkerProps[]; //3d마커
-  farMarkers: MarkerProps[]; //2D마커
-  hoveredMarkerId?: string | null;
+  nearbyMarkers: MarkerProps[]; // 3D 마커
+  farMarkers: MarkerProps[]; // 2D 마커
+  hoveredMarkerId?: string | null; // 현재 호버된 마커 ID
   setHoveredMarkerId: (id: string | null) => void;
-  stores: StoreInfo[]; //제휴처
-  map?: kakao.maps.Map | null;
+  stores: StoreInfo[]; // 제휴처 목록
+  map?: kakao.maps.Map | null; // Kakao Map 인스턴스
   containerRef?: React.RefObject<HTMLDivElement | null>; // 지도+캔버스 컨테이너
-  openDetail: (store: StoreInfo) => void; //click시 상세보기 open
-  onStartChange: (v: string) => void;
-  onEndChange: (v: string) => void;
+  openDetail: (store: StoreInfo) => void; // 클릭 시 상세 열기
+  onStartChange: (v: string) => void; // 출발지 변경
+  onEndChange: (v: string) => void; // 도착지 변경
   toggleBookmark: (store: StoreInfo) => void;
   bookmarkIds: Set<string>;
 }
@@ -44,152 +46,147 @@ export default function FilterMarker({
 }: Props) {
   // hover 해제 지연용 타이머 ID 저장
   const hoverOutRef = useRef<number | null>(null);
-  //오버레이에 전해줄 값
+  // 오버레이 위치와 스토어 정보 저장
   const [overlay, setOverlay] = useState<{
     x: number;
     y: number;
     store: StoreInfo;
   } | null>(null);
 
-  // allMarkers를 useMemo로 묶어 nearbyMarkers/farMarkers가 바뀔 때만 재계산
+  // MarkerImage 생성 함수 useMemo로 메모이제이션
+  const createMarkerImage = useMemo(() => {
+    return (imageUrl: string) => {
+      const src = getBucketUrl(imageUrl);
+      return {
+        src,
+        size: { width: 40, height: 40 },
+        options: {
+          offset: { x: 20, y: 40 },
+        },
+      } as const;
+    };
+  }, []);
+
+  // 2) stores 배열을 Map으로 변환 (O(1) 조회용)
+  const storeMap = useMemo(() => {
+    const m = new Map<string, StoreInfo>();
+    stores.forEach((s) => m.set(s.id, s));
+    return m;
+  }, [stores]);
+
+  // 전체 마커 리스트 (2d + 3d)
   const allMarkers = useMemo(
     () => [...nearbyMarkers, ...farMarkers],
     [nearbyMarkers, farMarkers],
   );
 
-  // hoveredMarkerId가 바뀔 때마다 overlay 위치 계산
+  // hoveredMarkerId가 바뀔 때마다 오버레이 위치 계산
   useEffect(() => {
     if (!hoveredMarkerId || !map) {
       setOverlay(null);
       return;
     }
-    //마커와 제휴처 찾기
-    const m = allMarkers.find((x) => x.id === hoveredMarkerId);
-    const store = stores.find((s) => s.id === hoveredMarkerId);
+    // 호버 된 마커
+    const marker = allMarkers.find((x) => x.id === hoveredMarkerId);
+    const store = storeMap.get(hoveredMarkerId);
     const container = containerRef?.current;
-    if (!m || !store || !container) {
+    if (!marker || !store || !container) {
       setOverlay(null);
       return;
     }
-    //위도,경도 → 화면 픽셀로 변환
+    // 위도/경도 → 픽셀 좌표 변환
     const proj = map.getProjection();
     const pt = proj.containerPointFromCoords(
-      new kakao.maps.LatLng(m.lat, m.lng),
+      new kakao.maps.LatLng(marker.lat, marker.lng),
     );
     const rect = container.getBoundingClientRect();
-    // overlay에 위도경도와 제휴처 정보 저장
+    // 화면 절대 좌표 계산 후 저장
     setOverlay({
       x: pt.x + rect.left,
       y: pt.y + rect.top,
       store,
     });
-  }, [hoveredMarkerId, allMarkers, stores, map, containerRef]);
+  }, [hoveredMarkerId, allMarkers, storeMap, map, containerRef]);
 
-  // farMarkers 개수에 따라 클러스터링 여부 결정
+  // 2D 마커 개수에 따라 클러스터링 여부 결정
   const shouldCluster = farMarkers.length > 10;
-
+  // 데스크톱 여부 판단 (모바일에서 오버레이 안뜨게)
   const isDesktop = useMedia('(min-width: 640px)');
+
+  //MouseOver 함수
+  const handleMouseOver = useCallback(
+    (id: string) => {
+      if (hoverOutRef.current) window.clearTimeout(hoverOutRef.current);
+      setHoveredMarkerId(id);
+    },
+    [setHoveredMarkerId],
+  );
+  //MouseOut 함수
+  const handleMouseOut = useCallback(() => {
+    if (hoverOutRef.current) window.clearTimeout(hoverOutRef.current);
+    hoverOutRef.current = window.setTimeout(() => {
+      setHoveredMarkerId(null);
+    }, 300);
+  }, [setHoveredMarkerId]);
+
+  //클릭 시 detial창 오픈
+  const handleClick = useCallback(
+    (id: string) => {
+      const store = storeMap.get(id);
+      if (store) openDetail(store);
+    },
+    [openDetail, storeMap],
+  );
+
+  // 2D 마커 렌더링 함수 분리
+  const renderFarMarkers = () =>
+    farMarkers.map((m) => {
+      const markerImage = createMarkerImage(m.imageUrl);
+      return (
+        <MapMarker
+          key={m.id}
+          position={{ lat: m.lat, lng: m.lng }}
+          image={markerImage}
+          zIndex={shouldCluster ? 2 : 3}
+          onClick={() => handleClick(m.id)}
+          onMouseOver={() => handleMouseOver(m.id)}
+          onMouseOut={handleMouseOut}
+        />
+      );
+    });
 
   return (
     <>
+      {/* 클러스터링 분기 */}
       {shouldCluster ? (
         <MarkerClusterer
-          averageCenter={true}
-          minLevel={5} // 줌 레벨 5 이상에서 클러스터 해체
-          gridSize={100} // 클러스터 반경(px)
+          averageCenter
+          minLevel={5}
+          gridSize={150}
           styles={[
             {
-              width: '53px',
-              height: '52px',
+              width: '50px',
+              height: '50px',
               color: '#ffffff',
               backgroundColor: '#6FC3D1',
               border: '2px solid #ffffff',
               borderRadius: '50%',
               textAlign: 'center',
-              lineHeight: '52px',
+              lineHeight: '50px',
               boxShadow: '0 2px 2px rgba(12, 16, 233, 0.329)',
-              zIndex: 10,
+              zIndex: 2,
             },
           ]}
         >
-          {farMarkers.map((m) => {
-            //마커에 해당하는 제휴처 찾기
-            const store = stores.find((s) => s.id === m.id);
-            if (!store) return null;
-            return (
-              <MapMarker
-                key={m.id}
-                position={{ lat: m.lat, lng: m.lng }}
-                onClick={() => openDetail(store)}
-                image={{
-                  src: getBucketUrl(m.imageUrl), //클러스팅
-                  size: { width: 40, height: 40 },
-                  options: { offset: { x: 20, y: 40 } },
-                }}
-                zIndex={2}
-                onMouseOver={() => {
-                  if (hoverOutRef.current) clearTimeout(hoverOutRef.current);
-                  setHoveredMarkerId(m.id);
-                }}
-                onMouseOut={() => {
-                  if (hoverOutRef.current) clearTimeout(hoverOutRef.current);
-                  hoverOutRef.current = window.setTimeout(
-                    () => setHoveredMarkerId(null),
-                    300,
-                  );
-                }}
-              />
-            );
-          })}
+          {renderFarMarkers()}
         </MarkerClusterer>
       ) : (
-        farMarkers.map((m) => {
-          const store = stores.find((s) => s.id === m.id);
-          if (!store) return null;
-          return (
-            <MapMarker
-              key={m.id}
-              position={{ lat: m.lat, lng: m.lng }}
-              onClick={() => openDetail(store)}
-              image={{
-                src: getBucketUrl(m.imageUrl),
-                size: { width: 40, height: 40 },
-                options: { offset: { x: 20, y: 40 } },
-              }}
-              zIndex={3}
-              onMouseOver={() => {
-                if (hoverOutRef.current) clearTimeout(hoverOutRef.current);
-                setHoveredMarkerId(m.id);
-              }}
-              onMouseOut={() => {
-                if (hoverOutRef.current) clearTimeout(hoverOutRef.current);
-                hoverOutRef.current = window.setTimeout(
-                  () => setHoveredMarkerId(null),
-                  300,
-                );
-              }}
-            />
-          );
-        })
+        renderFarMarkers()
       )}
+
+      {/* 오버레이 데스크톱에서만, Suspense로 lazy 로딩) */}
       {overlay && isDesktop && (
-        <Suspense
-          fallback={
-            <div
-              style={{
-                position: 'fixed',
-                left: overlay.x,
-                top: overlay.y,
-                transform: 'translate(-50%, -120%)',
-                pointerEvents: 'none',
-                zIndex: 10,
-              }}
-            >
-              {/* 로딩 스피너나 투명 박스 */}
-              <div className="w-24 h-16 bg-white rounded shadow animate-pulse" />
-            </div>
-          }
-        >
+        <Suspense fallback={null}>
           <div
             style={{
               position: 'fixed',
@@ -200,15 +197,9 @@ export default function FilterMarker({
               zIndex: 10,
             }}
             onMouseEnter={() => {
-              if (hoverOutRef.current) clearTimeout(hoverOutRef.current);
+              if (hoverOutRef.current) window.clearTimeout(hoverOutRef.current);
             }}
-            onMouseLeave={() => {
-              if (hoverOutRef.current) clearTimeout(hoverOutRef.current);
-              hoverOutRef.current = window.setTimeout(
-                () => setHoveredMarkerId(null),
-                200,
-              );
-            }}
+            onMouseLeave={handleMouseOut}
           >
             <StoreOverlay
               lat={overlay.store.latitude}
