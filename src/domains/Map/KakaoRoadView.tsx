@@ -1,17 +1,13 @@
-import { CustomOverlayMap, Roadview } from 'react-kakao-maps-sdk';
-import type { LatLng } from './KakaoMapContainer';
+import { Roadview } from 'react-kakao-maps-sdk';
+// import type { LatLng } from './KakaoMapContainer';
 
-interface RoadviewProps {
-  position?: LatLng;
-  radius?: number;
-  yAnchor?: number;
-}
+// interface RoadviewProps {
+//   position?: LatLng;
+//   radius?: number;
+//   yAnchor?: number;
+// }
 
-export default function KakaoRoadview({
-  position,
-  radius = 50,
-  yAnchor = 1.2,
-}: RoadviewProps) {
+export default function KakaoRoadview() {
   return (
     <Roadview
       position={{
