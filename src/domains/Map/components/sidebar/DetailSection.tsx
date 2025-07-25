@@ -1,20 +1,15 @@
 import { Star, Share2, Webcam, Map, ChevronRight } from 'lucide-react';
 import StartEndBtn from '../StartEndBtn';
 import IconActionGroup from '../IconActionGroup';
-import {
-  fetchBenefits,
-  fetchBrands,
-  type BenefitProps,
-  type BrandProps,
-  type StoreInfo,
-} from '../../api/store';
+import { type StoreInfo } from '../../api/store';
 import clsx from 'clsx';
-import { useEffect, useState } from 'react';
+
 import bronzeMedal from '@/assets/image/bronze_medal.png';
 import silverMedal from '@/assets/image/silver_medal.png';
 import goldMedal from '@/assets/image/gold_medal.png';
 import diamondMedal from '@/assets/image/diamond_medal.png';
 import { Button } from '@/components/Button';
+import { useBenefitBrands } from '../../hooks/useBenefitBrands';
 interface DetailSectionProps {
   store: StoreInfo;
   onStartChange: (v: string) => void;
@@ -36,46 +31,16 @@ export default function DetailSection({
   toggleBookmark,
 }: DetailSectionProps) {
   const isBookmark = bookmarkIds.has(store.id);
-  const [benefits, setBenefits] = useState<BenefitProps[]>([]);
-  const [isloading, setIsLoading] = useState(false);
+  const {
+    data: benefits = [],
+    isLoading,
+    isError,
+    error,
+  } = useBenefitBrands(store.brandName);
 
-  //마운트 시 브랜드 혜택 가져옴
-  useEffect(() => {
-    // store.brandName이 없으면 API 호출하지 않음
-    if (!store.brandName) {
-      setBenefits([]);
-      return;
-    }
-
-    async function loadBenefit() {
-      setIsLoading(true);
-      try {
-        //브랜드 조회 id 가져오는 용도
-        const brands: BrandProps[] = await fetchBrands({
-          keyword: store.brandName,
-        });
-        // 조회 안될 시 리턴
-        if (brands.length === 0) {
-          setBenefits([]);
-          return;
-        }
-
-        //브랜드 ID로 혜택 조회
-        const brandId = brands[0].id;
-        const data: BenefitProps[] = await fetchBenefits(brandId);
-        setBenefits(data);
-      } catch (err) {
-        console.error('브랜드·혜택 불러오기 실패', err);
-        setBenefits([]);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    loadBenefit();
-  }, [store.brandName]);
-
-  if (isloading) return 'loading...';
+  if (isLoading) return 'Loading...';
+  if (isError) return `Error: ${error.message}`;
+  if (benefits.length === 0) return '해당 브랜드 혜택이 없습니다.';
   return (
     <div className="space-y-2  h-screen md:min-h-[800px] z-10 ">
       {/* 헤더 */}
