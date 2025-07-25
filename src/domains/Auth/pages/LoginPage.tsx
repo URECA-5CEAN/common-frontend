@@ -1,5 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import LoginForm from '../components/LoginForm';
+import mobileWave1 from '@/assets/image/mobile-wave1.svg';
+import mobileWave2 from '@/assets/image/mobile-wave2.svg';
+import mobileWave3 from '@/assets/image/mobile-wave3.svg';
+import sideWave1 from '@/assets/image/side-wave1.svg';
+import sideWave2 from '@/assets/image/side-wave2.svg';
+import sideWave3 from '@/assets/image/side-wave3.svg';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -15,27 +21,27 @@ const LoginPage = () => {
         {/* 모바일 버전 - Mobile Wave 배경 */}
         <div className="block md:hidden">
           {/* Mobile Wave 1 - 첫 번째 레이어 */}
-          <div className="absolute left-0 bottom-0 w-full h-[60vh] max-h-[60vh]">
+          <div className="absolute left-0 bottom-0 w-full max-h-[60vh]">
             <img
-              src="/src/assets/image/mobile-wave1.svg"
+              src={mobileWave1}
               alt="Mobile Wave 1"
               className="w-full h-full object-cover object-bottom"
             />
           </div>
 
           {/* Mobile Wave 2 - 두 번째 레이어 */}
-          <div className="absolute left-0 bottom-0 w-full h-[50vh] max-h-[50vh]">
+          <div className="absolute left-0 bottom-0 w-full max-h-[50vh]">
             <img
-              src="/src/assets/image/mobile-wave2.svg"
+              src={mobileWave2}
               alt="Mobile Wave 2"
               className="w-full h-full object-cover object-bottom"
             />
           </div>
 
           {/* Mobile Wave 3 - 세 번째 레이어 */}
-          <div className="absolute left-0 bottom-0 w-full h-[50vh] max-h-[50vh]">
+          <div className="absolute left-0 bottom-0 w-full max-h-[50vh]">
             <img
-              src="/src/assets/image/mobile-wave3.svg"
+              src={mobileWave3}
               alt="Mobile Wave 3"
               className="w-full h-full object-cover object-bottom"
             />
@@ -47,7 +53,7 @@ const LoginPage = () => {
           {/* Side Wave 1 - 첫 번째 레이어 */}
           <div className="absolute left-0 top-0 w-3/5 min-h-screen h-full">
             <img
-              src="/src/assets/image/side-wave1.svg"
+              src={sideWave1}
               alt="Side Wave 1"
               className="w-full h-full min-h-screen object-cover object-right transform scale-x"
             />
@@ -56,7 +62,7 @@ const LoginPage = () => {
           {/* Side Wave 2 - 두 번째 레이어 */}
           <div className="absolute left-0 top-0 w-2/5 min-h-screen h-full">
             <img
-              src="/src/assets/image/side-wave2.svg"
+              src={sideWave2}
               alt="Side Wave 2"
               className="w-full h-full min-h-screen object-cover object-right transform scale-x"
             />
@@ -65,7 +71,7 @@ const LoginPage = () => {
           {/* Side Wave 3 - 세 번째 레이어 */}
           <div className="absolute left-0 top-0 w-1/5 min-h-screen h-full">
             <img
-              src="/src/assets/image/side-wave3.svg"
+              src={sideWave3}
               alt="Side Wave 3"
               className="w-full h-full min-h-screen object-cover object-right transform scale-x"
             />
