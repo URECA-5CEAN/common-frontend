@@ -1,10 +1,18 @@
 import BadgeModal from '@/domains/MyPage/components/profile/BadgeModal';
 import UserProfile from '@/domains/MyPage/components/profile/UserProfile';
-import { BADGES, USAGE_HISTORY } from '@/domains/MyPage/constants/profile';
-import type { UserInfo, UserInfoApi } from '@/domains/MyPage/types/profile';
+import { BADGES } from '@/domains/MyPage/constants/profile';
+import type {
+  UsageHistoryItem,
+  UserInfo,
+  UserInfoApi,
+} from '@/domains/MyPage/types/profile';
 import { useEffect, useState } from 'react';
 import UsageHistory from '@/domains/MyPage/components/profile/UsageHistory';
-import { getUserInfo, getUserStat } from '@/domains/MyPage/api/profile';
+import {
+  getUsageHistory,
+  getUserInfo,
+  getUserStat,
+} from '@/domains/MyPage/api/profile';
 import { Breadcrumb } from '@/components/Breadcrumb';
 import { Button } from '@/components/Button';
 import { useNavigate } from 'react-router-dom';
@@ -14,11 +22,14 @@ const ProfilePage: React.FC = () => {
   const [selectedBadge, setSelectedBadge] = useState<string>('earlybird');
   const [tempBadge, setTempBadge] = useState<string>(selectedBadge);
   const [userInfoApi, setUserInfoApi] = useState<UserInfoApi>();
+  const [usageHistory, setUsageHistory] = useState<
+    UsageHistoryItem[] | undefined
+  >();
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    async function fetchData() {
+    const fetchUserData = async () => {
       const userInfoRes = await getUserInfo();
       const userStatRes = await getUserStat();
 
@@ -28,9 +39,16 @@ const ProfilePage: React.FC = () => {
       };
 
       setUserInfoApi(mergedData);
-    }
+    };
 
-    fetchData();
+    const fetchUsageHistory = async () => {
+      const usageHistoryRes = await getUsageHistory();
+
+      setUsageHistory(usageHistoryRes.data);
+    };
+
+    fetchUserData();
+    fetchUsageHistory();
   }, []);
 
   // 실제로는 API에서 받아올 데이터
@@ -86,7 +104,7 @@ const ProfilePage: React.FC = () => {
           />
         </div>
 
-        <UsageHistory items={USAGE_HISTORY} />
+        <UsageHistory items={usageHistory} />
       </div>
 
       <BadgeModal

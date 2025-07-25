@@ -4,72 +4,108 @@ import { validateEmail } from '../utils/validation';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/Button';
 import { useLogin } from '../hooks/useLogin';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
-  // 이메일 상태 관리
-  const [email, setEmail] = useState('');
+  const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState('');
+
+  // 폼 상태 통합 관리
+  const [form, setForm] = useState({
+    email: '',
+    password: '',
+  });
+
+  // 유효성 검사 상태
   const [isEmailValid, setIsEmailValid] = useState(true);
   const [emailTouched, setEmailTouched] = useState(false);
-
-  // 비밀번호 상태 관리
-  const [password, setPassword] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  // 로딩 상태
-  const { login, kakaoLogin, loading, error } = useLogin();
+  // 로그인 관련
+  const { login, kakaoLogin, loading } = useLogin();
 
-  const navigate = useNavigate();
+  // 통합 폼 변경 핸들러
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+    setErrorMessage(''); // 전역 에러 메시지 초기화
 
-  // 이메일 관련 핸들러들
-  const handleEmailChange = (email: string) => {
-    setEmail(email);
+    // 각 필드별 에러 메시지 초기화
+    if (name === 'email') {
+      setEmailError('');
+    } else if (name === 'password') {
+      setPasswordError('');
+    }
   };
 
   const validateEmailField = () => {
-    const valid = validateEmail(email);
+    const valid = validateEmail(form.email);
     setIsEmailValid(valid);
+    if (!valid && form.email.trim() !== '') {
+      setEmailError('올바른 이메일 형식을 입력해주세요');
+    } else {
+      setEmailError('');
+    }
     return valid;
   };
 
   const handleEmailBlur = () => {
     setEmailTouched(true);
-    if (email.trim() !== '') {
+    if (form.email.trim() !== '') {
       validateEmailField();
     }
-  };
-
-  // 비밀번호 관련 핸들러들
-  const handlePasswordChange = (password: string) => {
-    setPassword(password);
   };
 
   // 폼 제출 핸들러
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // 에러 상태 초기화
+    setEmailError('');
+    setPasswordError('');
+    setErrorMessage('');
+
+    let hasError = false;
+
     // 1. 필수 필드 검증
-    if (!email.trim() || !password.trim()) {
-      alert('모든 필드를 입력해주세요.');
-      return;
+    if (!form.email.trim()) {
+      setEmailError('이메일을 입력해주세요.');
+      hasError = true;
+    } else if (!validateEmailField()) {
+      setEmailError('올바른 이메일 형식을 입력해주세요.');
+      hasError = true;
     }
 
-    // 2. 이메일 유효성 검증
-    if (!validateEmailField()) {
-      alert('올바른 이메일 형식을 입력해주세요.');
+    if (!form.password.trim()) {
+      setPasswordError('비밀번호를 입력해주세요.');
+      hasError = true;
+    }
+
+    // 에러가 있으면 제출 중단
+    if (hasError) {
       return;
     }
 
     try {
-      // 3. 로그인 API 호출
-      await login({ email, password });
+      const result = await login({
+        email: form.email,
+        password: form.password,
+      });
 
-      alert('로그인이 완료되었습니다!');
+      console.log('로그인 성공:', result);
+      // 로그인 성공 시 Zustand 상태 변경
+      useAuthStore.getState().setIsLoggedIn(true);
 
-      // 메인 페이지로 이동
       navigate('/');
     } catch (error) {
       console.error('로그인 실패:', error);
-      // 에러는 useLogin 훅에서 이미 처리되므로 추가 알림 불필요
+      const message =
+        error instanceof Error
+          ? error.message
+          : '로그인 중 오류가 발생했습니다.';
+      setErrorMessage(message);
     }
   };
 
@@ -77,37 +113,53 @@ const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
   const handleKakaoLogin = async () => {
     try {
       await kakaoLogin();
-      alert('카카오 로그인이 완료되었습니다!');
-      navigate('/');
+      // 카카오 OAuth 페이지로 리다이렉트되므로 여기 코드는 실행되지 않음
     } catch (error) {
       console.error('카카오 로그인 실패:', error);
-      // 에러는 useLogin 훅에서 이미 처리되므로 추가 알림 불필요
+      alert('카카오 로그인 중 오류가 발생했습니다.');
     }
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full flex items-center justify-center">
       <div className="bg-white rounded-3xl shadow-lg p-4 md:p-8 w-full border-4 border-[#64A8CD]">
-        <h1 className="text-xl md:text-2xl font-bold mb-6 md:mb-8 text-center">
+        <h1 className="text-xl md:text-2xl font-bold mb-3 text-center text-gray-700">
           로그인
         </h1>
 
-        <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
+        {/* 로그인 실패 에러 메시지 - 고정 공간 */}
+        <div className="h-6 mb-3 flex items-center justify-center">
+          {errorMessage && (
+            <div className="text-xs md:text-sm text-dangerRed text-center px-4">
+              로그인에 실패했어요. 이메일과 비밀번호를 다시 확인해주세요
+            </div>
+          )}
+        </div>
+
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-4 md:space-y-6"
+          noValidate
+        >
           {/* 이메일 */}
           <div>
             <input
               type="email"
+              name="email"
               placeholder="이메일"
-              value={email}
-              onChange={(e) => handleEmailChange(e.target.value)}
+              value={form.email}
+              onChange={handleChange}
               onBlur={handleEmailBlur}
-              className="w-full border-b-2 border-gray-300 pb-2 pr-[30%] text-sm md:text-base focus:border-[#64A8CD] focus:outline-none bg-transparent"
-              required
+              className="w-full border-b-[3px] border-gray-300 pb-2 pr-[30%] text-sm md:text-base focus:border-[#1CB0F7] focus:outline-none bg-transparent transition-all duration-200"
             />
+            {/* 에러 메시지를 위한 고정 공간 (16px 높이) */}
             <div className="h-4 mt-1">
-              {!isEmailValid && emailTouched && email.trim() !== '' && (
+              {(emailError ||
+                (!isEmailValid &&
+                  emailTouched &&
+                  form.email.trim() !== '')) && (
                 <div className="text-[10px] md:text-xs text-dangerRed">
-                  올바른 이메일 형식을 입력해주세요
+                  {emailError || '올바른 이메일 형식을 입력해주세요'}
                 </div>
               )}
             </div>
@@ -118,11 +170,12 @@ const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
+                name="password"
                 placeholder="비밀번호"
-                value={password}
-                onChange={(e) => handlePasswordChange(e.target.value)}
-                className="w-full border-b-2 border-gray-300 pb-2 pr-[35%] text-sm md:text-base focus:border-[#64A8CD] focus:outline-none bg-transparent"
-                required
+                autoComplete="off"
+                value={form.password}
+                onChange={handleChange}
+                className="w-full border-b-[3px] border-gray-300 pb-2 pr-[35%] text-sm md:text-base focus:border-[#1CB0F7] focus:outline-none bg-transparent transition-all duration-200"
               />
               {/* 비밀번호 표시/숨김 토글 버튼 */}
               <button
@@ -131,32 +184,34 @@ const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
                 className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#64A8CD] transition-colors"
               >
                 {showPassword ? (
-                  <EyeClosed size={16} className="md:w-5 md:h-5" />
-                ) : (
                   <Eye size={16} className="md:w-5 md:h-5" />
+                ) : (
+                  <EyeClosed size={16} className="md:w-5 md:h-5" />
                 )}
               </button>
             </div>
+            {/* 에러 메시지를 위한 고정 공간 (16px 높이) */}
+            <div className="h-4 mt-1">
+              {passwordError && (
+                <div className="text-[10px] md:text-xs text-dangerRed">
+                  {passwordError}
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* 전역 에러 메시지 */}
-          {error && (
-            <div className="text-center">
-              <div className="text-xs md:text-sm text-dangerRed">{error}</div>
-            </div>
-          )}
-
           {/* 로그인 버튼 */}
-          <div className="mt-6 md:mt-8 pt-1">
+          <div className="pt-1">
             <Button
               type="submit"
               disabled={loading}
               variant="primary"
               size="lg"
               fullWidth
+              shadowColor="bg-[#538CAC]"
               className="!bg-[#64A8CD] hover:!bg-[#5B9BC4] disabled:!bg-[#B3D4EA] !text-sm md:!text-base"
             >
-              {loading ? '처리중...' : '로그인'}
+              {loading ? '로그인 중...' : '로그인'}
             </Button>
           </div>
         </form>
@@ -171,7 +226,8 @@ const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
             variant="primary"
             size="lg"
             fullWidth
-            className="!bg-white !text-[#64A8CD] !border-2 !border-[#64A8CD] hover:!bg-[#64A8CD] hover:!text-white !text-sm md:!text-base"
+            shadowColor="bg-[#538CAC]"
+            className="!bg-white !text-[#64A8CD] !border-2 !border-[#64A8CD] hover:!bg-gray-100 hover:!text-[#64A8CD] !text-sm md:!text-base !h-[44px]"
           >
             회원가입
           </Button>
@@ -189,9 +245,11 @@ const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
           <Button
             type="button"
             onClick={handleKakaoLogin}
+            variant="primary"
             size="lg"
             fullWidth
-            className="!bg-[#FEE500] hover:!bg-[#FFEB3B] !text-black !text-sm md:!text-base font-medium rounded-full shadow-[0_4px_0_0_#d9b900]"
+            shadowColor="bg-[#CAB700]"
+            className="!bg-[#FEE500] hover:!bg-[#FFEB3B] !text-gray-700 !text-sm md:!text-base font-medium"
           >
             카카오 로그인
           </Button>

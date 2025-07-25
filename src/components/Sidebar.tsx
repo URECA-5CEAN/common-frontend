@@ -69,6 +69,12 @@ const MYPAGE_MENU_ITEMS: MenuItem[] = [
     label: '즐겨찾기',
     alt: '즐겨찾기 아이콘',
   },
+  {
+    to: '/mypage/sharing',
+    icon: shareIcon,
+    label: '내 나눔',
+    alt: '내 나눔 아이콘',
+  },
 ];
 
 // 스타일 클래스 상수

@@ -9,6 +9,7 @@ import {
   normalizeDate,
 } from '@/domains/MyPage/utils/dateUtils';
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 interface DateFilterProps {
   selectedRange: DateRange;
@@ -71,8 +72,15 @@ const DateFilter: React.FC<DateFilterProps> = ({ selectedRange, onChange }) => {
   const displayRangeText =
     selectedRange.type !== '직접 설정' ? selectedRange.type : '직접 설정';
 
+  const location = useLocation();
+  const isStatisticsPage = location.pathname === '/mypage/statistics';
+
+  const containerClass = `flex md:flex-row flex-wrap md:items-center items-end gap-2 ${
+    isStatisticsPage ? 'justify-center' : 'justify-end'
+  } mb-3`;
+
   return (
-    <div className="flex md:flex-row flex-col md:items-center items-end gap-2 justify-end mb-2">
+    <div className={containerClass}>
       {/* 빠른 필터 드롭다운 */}
       <div className="relative" onClick={(e) => e.stopPropagation()}>
         <FilterButton text={displayRangeText} onClick={handleDropdownToggle} />
@@ -86,8 +94,6 @@ const DateFilter: React.FC<DateFilterProps> = ({ selectedRange, onChange }) => {
 
       {/* 날짜 범위 직접 설정 */}
       <div className="md:relative flex items-center gap-2">
-        <span className="text-gray-700 font-medium">기간</span>
-
         <FilterButton
           text={formatDate(selectedRange.startDate)}
           onClick={(e) => {
@@ -117,6 +123,7 @@ const DateFilter: React.FC<DateFilterProps> = ({ selectedRange, onChange }) => {
             onSelectDate={(date) =>
               handleCustomDateChange(date, openCalendarType)
             }
+            onClose={() => setOpenCalendarType(null)}
           />
         )}
       </div>

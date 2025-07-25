@@ -1,47 +1,42 @@
 name: Deploy React App to Nginx Server
-
 on:
   push:
-    branches: [ main ]
-
+    branches: [main]
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout source code
-      uses: actions/checkout@v3
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '>=20.19.0'
-
-    - name: Install dependencies and build React app
-      run: |
-        npm install
-        npm run build
-
-    - name: Set up SSH
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.EC2_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-
-    - name: Prepare temp_dist directory on EC2
-      run: |
-        ssh ubuntu@${{ secrets.EC2_HOST }} "mkdir -p ~/temp_dist"
-
-    - name: Upload build folder to EC2
-      run: |
-        scp -r ./dist/* ubuntu@${{ secrets.EC2_HOST }}:~/temp_dist/
-
-    - name: Move build contents to Nginx directory with sudo
-      run: |
-        ssh ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
-          sudo mkdir -p /var/www/html/
-          sudo rm -rf /var/www/html/* # Optional: cleanup old files
-          sudo mv ~/temp_dist/* /var/www/html/
-          rm -rf ~/temp_dist
-        EOF
+      - name: Checkout source code
+        uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '>=20.19.0'
+      - name: Install dependencies and build React app
+        run: |
+          npm install
+          VITE_API_URL=${{ secrets.VITE_API_URL }} \
+          VITE_AUTH_TOKEN=${{ secrets.VITE_AUTH_TOKEN }} \
+          VITE_KAKAO_API=${{ secrets.VITE_KAKAO_API }} \
+          npm run build
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+      - name: Prepare temp_dist directory on EC2
+        run: |
+          ssh ubuntu@${{ secrets.EC2_HOST }} "mkdir -p ~/temp_dist"
+      - name: Upload build folder to EC2
+        run: |
+          scp -r ./dist/* ubuntu@${{ secrets.EC2_HOST }}:~/temp_dist/
+      - name: Move build contents to Nginx directory with sudo
+        run: |
+          ssh ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+            sudo mkdir -p /var/www/html/
+            sudo rm -rf /var/www/html/* # Optional: cleanup old files
+            sudo mv ~/temp_dist/* /var/www/html/
+            rm -rf ~/temp_dist
+            sudo systemctl reload nginx
+          EOF

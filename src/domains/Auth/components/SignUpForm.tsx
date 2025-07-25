@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { ArrowLeft, CircleCheck, Eye, EyeClosed } from 'lucide-react';
 import { validateEmail, validatePassword } from '../utils/validation';
-import { checkNicknameDuplicate } from '../api/signUpApi';
 import { useSignUp } from '../hooks/useSignUp';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/Button';
@@ -13,93 +12,181 @@ const SignUpForm = ({
   onBackToLogin?: () => void;
   onBack?: () => void;
 }) => {
-  //이름, 성별 정보 상태 관리
+  // 기본 정보 상태
   const [name, setName] = useState('');
   const [gender, setGender] = useState<'male' | 'female' | null>(null);
 
-  //이메일 상태 관리
+  // 이메일 상태
   const [email, setEmail] = useState('');
   const [isEmailValid, setIsEmailValid] = useState(true);
-  const [emailTouched, setEmailTouched] = useState(false); // 사용자가 필드를 건드린 상태 추적
+  const [emailTouched, setEmailTouched] = useState(false);
+  const [isEmailDuplicate, setIsEmailDuplicate] = useState(false);
+  const [emailCheckLoading, setEmailCheckLoading] = useState(false);
+  const [emailChecked, setEmailChecked] = useState(false);
+  const [emailErrorMessage, setEmailErrorMessage] = useState('');
 
-  //닉네임 상태 관리
+  // 닉네임 상태
   const [nickname, setNickname] = useState('');
   const [isNicknameDuplicate, setIsNicknameDuplicate] = useState(false);
   const [nicknameTouched, setNicknameTouched] = useState(false);
+  const [nicknameCheckLoading, setNicknameCheckLoading] = useState(false);
+  const [nicknameChecked, setNicknameChecked] = useState(false);
 
-  //비밀번호 상태 관리
+  // 비밀번호 상태
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [passwordTouched, setPasswordTouched] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); // 비밀번호 표시/숨김 상태
+  const [showPassword, setShowPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState('');
   const [confirmPasswordTouched, setConfirmPasswordTouched] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // 비밀번호 확인 표시/숨김 상태
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  //외부 훅 및 유틸리티
-  const { signUp, loading } = useSignUp();
+  // 외부 훅 및 유틸리티
+  const {
+    signUp: handleSignUpAPI,
+    checkNickname,
+    checkEmail,
+    loading,
+  } = useSignUp();
   const navigate = useNavigate();
 
+  // 계산된 값들
   const isPasswordMatch = password !== '' && password === confirmPassword;
   const isConfirmPasswordDisabled = passwordError !== '' || password === '';
 
-  // === 이메일 관련 핸들러들 ===
-  const handleEmailChange = (email: string) => {
-    setEmail(email);
-  };
+  // 이메일 핸들러
+  const checkEmailDuplicate = async (showAlert = false) => {
+    if (!email.trim()) {
+      if (showAlert) {
+        setEmailErrorMessage('이메일을 입력해주세요.');
+      }
+      return;
+    }
 
-  const validateEmailField = () => {
-    const valid = validateEmail(email);
-    setIsEmailValid(valid);
-    return valid;
+    // 이메일 형식 검증
+    if (!validateEmail(email)) {
+      if (showAlert) {
+        setEmailErrorMessage('올바른 이메일 형식을 입력해주세요.');
+      }
+      return;
+    }
+
+    try {
+      if (showAlert) {
+        setEmailCheckLoading(true);
+        setEmailErrorMessage('');
+      }
+      const res = await checkEmail(email);
+      setIsEmailDuplicate(res.data);
+      setEmailTouched(true);
+
+      if (showAlert) {
+        setEmailChecked(true);
+        if (res.data) {
+          setEmailErrorMessage(
+            '이미 사용중인 이메일입니다. 다른 이메일을 입력해주세요.',
+          );
+        } else {
+          setEmailErrorMessage('');
+        }
+      }
+    } catch (error) {
+      console.error('이메일 중복 확인 오류:', error);
+      if (showAlert) {
+        setEmailErrorMessage(
+          '이메일 중복 확인 중 오류가 발생했습니다. 다시 시도해주세요.',
+        );
+      }
+    } finally {
+      if (showAlert) {
+        setEmailCheckLoading(false);
+      }
+    }
   };
 
   const handleEmailBlur = () => {
     setEmailTouched(true);
-    validateEmailField();
+    const valid = validateEmail(email);
+    setIsEmailValid(valid);
+    checkEmailDuplicate(false);
   };
 
-  // === 닉네임 관련 핸들러들 ===
-  const handleNicknameBlur = async () => {
-    setNicknameTouched(true);
-    const res = await checkNicknameDuplicate(nickname);
-    setIsNicknameDuplicate(res.data);
+  const handleEmailCheck = () => {
+    checkEmailDuplicate(true);
   };
 
-  // === 비밀번호 관련 핸들러들 ===
+  const handleEmailChange = (value: string) => {
+    setEmail(value);
+    setEmailChecked(false);
+    setIsEmailDuplicate(false);
+    setEmailErrorMessage('');
+  };
+
+  // 닉네임 핸들러
+  const checkNicknameDuplicate = async (showAlert = false) => {
+    if (!nickname.trim()) {
+      return;
+    }
+
+    try {
+      if (showAlert) {
+        setNicknameCheckLoading(true);
+      }
+      const res = await checkNickname(nickname);
+      setIsNicknameDuplicate(res.data);
+      setNicknameTouched(true);
+
+      if (showAlert) {
+        setNicknameChecked(true);
+      }
+    } catch (error) {
+      console.error('닉네임 중복 확인 오류:', error);
+    } finally {
+      if (showAlert) {
+        setNicknameCheckLoading(false);
+      }
+    }
+  };
+
+  const handleNicknameCheck = () => {
+    checkNicknameDuplicate(true);
+  };
+
+  const handleNicknameChange = (value: string) => {
+    setNickname(value);
+    setNicknameChecked(false);
+    setIsNicknameDuplicate(false);
+  };
+
+  // 비밀번호 핸들러
+  const togglePasswordVisibility = (field: 'password' | 'confirmPassword') => {
+    if (field === 'password') {
+      setShowPassword(!showPassword);
+    } else {
+      setShowConfirmPassword(!showConfirmPassword);
+    }
+  };
+
   const handlePasswordChange = (val: string) => {
-    const trimmedValue = val.replace(/\s/g, '');
-    setPassword(trimmedValue);
-  };
-
-  const validatePasswordField = () => {
-    const error = validatePassword(password);
-    setPasswordError(error);
-    return !error;
+    setPassword(val.replace(/\s/g, ''));
   };
 
   const handlePasswordBlur = () => {
     setPasswordTouched(true);
-    validatePasswordField();
+    const error = validatePassword(password);
+    setPasswordError(error);
   };
 
-  // === 비밀번호 확인 관련 핸들러들 ===
   const handleConfirmPasswordChange = (val: string) => {
-    const trimmedValue = val.replace(/\s/g, '');
-    setConfirmPassword(trimmedValue);
+    setConfirmPassword(val.replace(/\s/g, ''));
   };
 
   const handleConfirmPasswordBlur = () => {
     setConfirmPasswordTouched(true);
   };
 
-  //폼 제출 핸들러
-  // - 모든 필드의 유효성을 최종 검증
-  // - 서버에 회원가입 요청 전송
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // 1. 필수 필드 검증
+  // 폼 검증
+  const validateAllFields = () => {
     if (
       !name ||
       !gender ||
@@ -108,65 +195,54 @@ const SignUpForm = ({
       !password ||
       !confirmPassword
     ) {
-      alert('모든 항목을 입력해주세요.');
-      return;
+      return false;
     }
 
-    // 2. 아직 검증되지 않은 필드들을 검증 (사용자가 blur 이벤트 없이 제출한 경우)
+    if (!emailChecked || !nicknameChecked) {
+      return false;
+    }
+
     if (!emailTouched) {
       setEmailTouched(true);
-      if (!validateEmailField()) {
-        alert('이메일 형식이 올바르지 않아요.');
-        return;
-      }
+      const valid = validateEmail(email);
+      setIsEmailValid(valid);
+      if (!valid) return false;
     }
 
     if (!passwordTouched) {
       setPasswordTouched(true);
-      if (!validatePasswordField()) {
-        alert(
-          '비밀번호가 조건을 만족하지 않습니다. 최소 8자 이상, 영문자, 숫자, 특수문자를 포함하고 연속된 숫자 3개 이상은 사용할 수 없습니다.',
-        );
-        return;
-      }
+      const error = validatePassword(password);
+      setPasswordError(error);
+      if (error) return false;
     }
 
     if (!confirmPasswordTouched) {
       setConfirmPasswordTouched(true);
     }
 
-    // 3. 닉네임 중복 확인 (회원가입 시점에 최종 확인)
-    try {
-      const nicknameCheckResult = await checkNicknameDuplicate(nickname);
-      if (nicknameCheckResult.data === true) {
-        alert('이미 사용중인 닉네임입니다. 다른 닉네임을 입력해주세요.');
-        setIsNicknameDuplicate(true);
-        setNicknameTouched(true);
-        return;
-      }
-      // 중복이 아닌 경우 상태 업데이트
-      setIsNicknameDuplicate(false);
-    } catch (error: unknown) {
-      console.error('닉네임 중복 확인 오류:', error);
-      alert('닉네임 중복 확인 중 오류가 발생했습니다. 다시 시도해주세요.');
-      return;
-    }
-
-    // 4. 최종 유효성 검사
-    if (
+    return !(
       !isEmailValid ||
+      isEmailDuplicate ||
       isNicknameDuplicate ||
       passwordError ||
       !isPasswordMatch
-    ) {
-      alert('입력값을 다시 확인해주세요.');
-      return;
-    }
+    );
+  };
 
-    // 5. 회원가입 API 호출
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateAllFields()) return;
+
     try {
-      await signUp({ name, gender, email, nickname, password });
-      alert('회원가입이 완료되었습니다!');
+      await handleSignUpAPI({
+        name,
+        gender: gender as 'male' | 'female',
+        email,
+        nickname,
+        password,
+      });
+
       if (onBackToLogin) {
         onBackToLogin();
       } else {
@@ -182,13 +258,17 @@ const SignUpForm = ({
   };
 
   return (
-    <div className="flex items-center justify-center py-8">
+    <div className="w-full flex items-center justify-center">
       <div className="bg-white rounded-3xl shadow-lg p-4 md:p-8 w-full border-4 border-[#64A8CD]">
-        <h1 className="text-xl md:text-2xl font-bold mb-6 md:mb-8 text-center">
+        <h1 className="text-xl md:text-2xl font-bold mb-6 md:mb-8 text-center text-gray-700">
           회원가입
         </h1>
 
-        <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-4 md:space-y-6"
+          noValidate
+        >
           {/* 이름 */}
           <div>
             <input
@@ -196,8 +276,7 @@ const SignUpForm = ({
               placeholder="이름"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full border-b-2 border-gray-300 pb-2 pr-[30%] text-sm md:text-base focus:border-[#64A8CD] focus:outline-none bg-transparent"
-              required
+              className="w-full border-b-[3px] border-gray-300 pb-2 pr-[30%] text-sm md:text-base focus:border-[#1CB0F7] focus:outline-none bg-transparent transition-all duration-200"
             />
           </div>
 
@@ -227,20 +306,51 @@ const SignUpForm = ({
             </button>
           </div>
 
-          {/* 이메일 */}
+          {/* 이메일 입력 필드 - 중복 확인 포함 */}
           <div>
-            <input
-              type="email"
-              placeholder="이메일"
-              value={email}
-              onChange={(e) => handleEmailChange(e.target.value)}
-              onBlur={handleEmailBlur}
-              className="w-full border-b-2 border-gray-300 pb-2 pr-[30%] text-sm md:text-base focus:border-[#64A8CD] focus:outline-none bg-transparent"
-            />
+            <div className="relative">
+              <input
+                type="email"
+                placeholder="이메일"
+                value={email}
+                onChange={(e) => handleEmailChange(e.target.value)}
+                onBlur={handleEmailBlur}
+                className="w-full border-b-[3px] border-gray-300 pb-2 pr-[35%] text-sm md:text-base focus:border-[#1CB0F7] focus:outline-none bg-transparent transition-all duration-200"
+              />
+              <button
+                type="button"
+                onClick={handleEmailCheck}
+                disabled={emailCheckLoading || !email.trim()}
+                className={`absolute right-0 top-0 text-xs md:text-sm px-3 py-1 rounded ${
+                  emailCheckLoading || !email.trim()
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-[#1CB0F7] text-white hover:bg-[#0ea5e9]'
+                }`}
+              >
+                {emailCheckLoading ? '확인중...' : '중복확인'}
+              </button>
+            </div>
             <div className="h-4 mt-1">
-              {!isEmailValid && emailTouched && email.trim() !== '' && (
+              {!isEmailValid &&
+                emailTouched &&
+                email.trim() !== '' &&
+                !emailErrorMessage && (
+                  <div className="text-[10px] md:text-xs text-dangerRed">
+                    올바른 이메일 형식을 입력해주세요
+                  </div>
+                )}
+              {emailChecked &&
+                !isEmailDuplicate &&
+                email.trim() !== '' &&
+                isEmailValid &&
+                !emailErrorMessage && (
+                  <div className="text-[10px] md:text-xs text-green-600">
+                    사용 가능한 이메일입니다
+                  </div>
+                )}
+              {emailErrorMessage && (
                 <div className="text-[10px] md:text-xs text-dangerRed">
-                  올바른 이메일 형식을 입력해주세요
+                  {emailErrorMessage}
                 </div>
               )}
             </div>
@@ -248,20 +358,40 @@ const SignUpForm = ({
 
           {/* 닉네임 입력 필드 - 중복 확인 포함 */}
           <div>
-            <input
-              type="text"
-              placeholder="닉네임"
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
-              onBlur={handleNicknameBlur}
-              className="w-full border-b-2 border-gray-300 pb-2 pr-[30%] text-sm md:text-base focus:border-[#64A8CD] focus:outline-none bg-transparent"
-            />
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="닉네임"
+                value={nickname}
+                onChange={(e) => handleNicknameChange(e.target.value)}
+                className="w-full border-b-[3px] border-gray-300 pb-2 pr-[35%] text-sm md:text-base focus:border-[#1CB0F7] focus:outline-none bg-transparent transition-all duration-200"
+              />
+              <button
+                type="button"
+                onClick={handleNicknameCheck}
+                disabled={nicknameCheckLoading || !nickname.trim()}
+                className={`absolute right-0 top-0 text-xs md:text-sm px-3 py-1 rounded ${
+                  nicknameCheckLoading || !nickname.trim()
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-[#1CB0F7] text-white hover:bg-[#0ea5e9]'
+                }`}
+              >
+                {nicknameCheckLoading ? '확인중...' : '중복확인'}
+              </button>
+            </div>
             <div className="h-4 mt-1">
               {isNicknameDuplicate &&
                 nicknameTouched &&
                 nickname.trim() !== '' && (
                   <div className="text-[10px] md:text-xs text-dangerRed">
                     사용중인 닉네임이에요
+                  </div>
+                )}
+              {nicknameChecked &&
+                !isNicknameDuplicate &&
+                nickname.trim() !== '' && (
+                  <div className="text-[10px] md:text-xs text-green-600">
+                    사용 가능한 닉네임입니다
                   </div>
                 )}
             </div>
@@ -276,18 +406,19 @@ const SignUpForm = ({
                 value={password}
                 onChange={(e) => handlePasswordChange(e.target.value)}
                 onBlur={handlePasswordBlur}
-                className="w-full border-b-2 border-gray-300 pb-2 pr-[35%] text-sm md:text-base focus:border-[#64A8CD] focus:outline-none bg-transparent"
+                autoComplete="off"
+                className="w-full border-b-[3px] border-gray-300 pb-2 pr-[35%] text-sm md:text-base focus:border-[#1CB0F7] focus:outline-none bg-transparent transition-all duration-200"
               />
               {/* 비밀번호 표시/숨김 토글 버튼 */}
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)}
+                onClick={() => togglePasswordVisibility('password')}
                 className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#64A8CD] transition-colors"
               >
                 {showPassword ? (
-                  <EyeClosed size={16} className="md:w-5 md:h-5" />
-                ) : (
                   <Eye size={16} className="md:w-5 md:h-5" />
+                ) : (
+                  <EyeClosed size={16} className="md:w-5 md:h-5" />
                 )}
               </button>
             </div>
@@ -310,17 +441,18 @@ const SignUpForm = ({
                 onChange={(e) => handleConfirmPasswordChange(e.target.value)}
                 onBlur={handleConfirmPasswordBlur}
                 disabled={isConfirmPasswordDisabled}
-                className={`w-full border-b-2 pb-2 pr-[35%] text-sm md:text-base focus:outline-none bg-transparent ${
+                autoComplete="off"
+                className={`w-full border-b-[3px] pb-2 pr-[35%] text-sm md:text-base focus:outline-none bg-transparent transition-all duration-200 ${
                   isConfirmPasswordDisabled
                     ? 'border-gray-200 text-gray-400 cursor-not-allowed'
-                    : 'border-gray-300 focus:border-[#64A8CD]'
+                    : 'border-gray-300 focus:border-[#1CB0F7]'
                 }`}
               />
               {/* 비밀번호 확인 표시/숨김 토글 버튼 - 비밀번호가 일치하지 않을 때만 표시 */}
               {!(isPasswordMatch && confirmPassword && !passwordError) && (
                 <button
                   type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  onClick={() => togglePasswordVisibility('confirmPassword')}
                   disabled={isConfirmPasswordDisabled}
                   className={`absolute right-0 top-1/2 -translate-y-1/2 transition-colors ${
                     isConfirmPasswordDisabled
@@ -329,9 +461,9 @@ const SignUpForm = ({
                   }`}
                 >
                   {showConfirmPassword ? (
-                    <EyeClosed size={16} className="md:w-5 md:h-5" />
-                  ) : (
                     <Eye size={16} className="md:w-5 md:h-5" />
+                  ) : (
+                    <EyeClosed size={16} className="md:w-5 md:h-5" />
                   )}
                 </button>
               )}
@@ -372,17 +504,19 @@ const SignUpForm = ({
         </form>
 
         {/* 로그인 페이지로 이동 링크 */}
-        <div className="flex items-center justify-center gap-8 mt-4 md:mt-6">
+        <div className="flex items-center justify-center gap-2 md:gap-8 mt-4 md:mt-6">
           {/* 이용약관으로 돌아가기 버튼 */}
           {onBack && (
             <button
               type="button"
               onClick={onBack}
-              className="flex items-center gap-1 text-[#64A8CD] hover:text-[#5B9BC4] hover:bg-gray-200 transition-colors p-2 rounded-md"
+              className="flex items-center gap-1 text-[#64A8CD] hover:text-[#5B9BC4] hover:bg-gray-200 transition-colors p-1 md:p-2 rounded-md"
               title="이용약관으로 돌아가기"
             >
-              <ArrowLeft size={16} className="md:w-5 md:h-5" />
-              <span className="text-xs md:text-sm">뒤로가기</span>
+              <ArrowLeft size={14} className="md:w-5 md:h-5" />
+              <span className="text-xs md:text-sm whitespace-nowrap">
+                뒤로가기
+              </span>
             </button>
           )}
 

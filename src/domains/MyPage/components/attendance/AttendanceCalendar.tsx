@@ -1,6 +1,7 @@
 import Calendar from 'react-calendar';
 import { Button } from '@/components/Button';
 import presentIcon from '@/assets/icons/present_icon.png';
+import { LoadingSpinner } from '@/domains/MyPage/components/LoadingSpinner';
 
 interface AttendanceCalendarProps {
   calendarValue: Date | null;
@@ -33,9 +34,6 @@ const STYLES = {
   statusDotAbsent:
     'w-full md:max-w-9 h-full md:max-h-9 bg-gray-200 rounded-full',
   tileContent: 'w-full max-w-9 aspect-square',
-  spinner: 'w-full h-full flex justify-center items-center',
-  spinnerDot:
-    'w-5 h-5 border-3 border-gray-300 border-t-primaryGreen-80 rounded-full animate-spin',
 };
 
 const StatusDot = ({ isPresent }: { isPresent: boolean }) => {
@@ -48,12 +46,6 @@ const StatusDot = ({ isPresent }: { isPresent: boolean }) => {
   }
   return <div className={STYLES.statusDotAbsent} />;
 };
-
-const LoadingSpinner = () => (
-  <div className={STYLES.spinner}>
-    <div className={STYLES.spinnerDot} />
-  </div>
-);
 
 export const AttendanceCalendar = ({
   calendarValue,
