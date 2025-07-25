@@ -1,12 +1,10 @@
-// src/components/BottomSheet.tsx
-
 import {
-  type ReactNode,
   forwardRef,
   useImperativeHandle,
   useEffect,
   useState,
   useRef,
+  type ReactNode,
 } from 'react';
 import {
   AnimatePresence,
@@ -20,12 +18,12 @@ export interface BottomSheetHandle {
 }
 
 interface BottomSheetProps {
-  isOpen: boolean; // true면 middle, false면 peek
-  onClose: () => void; // peek 이하로 내려갈 때 호출
-  onPositionChange?: (y: number) => void; // Y 오프셋 변화 콜백
+  isOpen: boolean;
+  onClose: () => void;
+  onPositionChange?: (y: number) => void;
   children: ReactNode;
-  peekHeight?: number; // peek 상태에서 남길 높이(px)
-  midRatio?: number; // middle 위치 비율 (0~1)
+  peekHeight?: number;
+  midRatio?: number;
 }
 
 const BottomSheet = forwardRef<BottomSheetHandle, BottomSheetProps>(
@@ -44,108 +42,108 @@ const BottomSheet = forwardRef<BottomSheetHandle, BottomSheetProps>(
     const [currentY, setCurrentY] = useState<number>(Infinity);
     const contentRef = useRef<HTMLDivElement>(null);
     const touchStartY = useRef(0);
+    const scrollTopOnStart = useRef(0);
     const prevIsOpenRef = useRef<boolean>(isOpen);
 
-    // 시트 높이 (뷰포트의 75%)
     const sheetHeight =
       typeof window !== 'undefined' ? window.innerHeight * 0.75 : 0;
     const fullY = 0;
     const middleY = sheetHeight * (1 - midRatio);
     const bottomY = sheetHeight - peekHeight;
 
-    // 외부에서 snapTo 호출할 수 있게
+    const transition = { type: 'spring' as const, stiffness: 300, damping: 30 };
+
     useImperativeHandle(
       ref,
       () => ({
         snapTo(which) {
-          const targetY =
+          const target =
             which === 'full' ? fullY : which === 'middle' ? middleY : bottomY;
-          animation
-            .start({
-              y: targetY,
-              transition: { type: 'spring', stiffness: 300, damping: 30 },
-            })
-            .then(() => {
-              setCurrentY(targetY);
-              onPositionChange?.(targetY);
-              if (which === 'bottom') onClose();
-            });
+          animation.start({ y: target, transition }).then(() => {
+            setCurrentY(target);
+            onPositionChange?.(target);
+            if (which === 'bottom') onClose();
+          });
         },
       }),
-      [animation, onClose, onPositionChange, fullY, middleY, bottomY],
+      [animation, fullY, middleY, bottomY, onClose, onPositionChange],
     );
 
-    // isOpen 변경 시에만 middle/bottom 스냅
     useEffect(() => {
-      if (prevIsOpenRef.current === isOpen) {
-        prevIsOpenRef.current = isOpen;
-        return;
-      }
+      if (prevIsOpenRef.current === isOpen) return;
       prevIsOpenRef.current = isOpen;
       const target = isOpen ? middleY : bottomY;
-      animation
-        .start({
-          y: target,
-          transition: { type: 'spring', stiffness: 300, damping: 30 },
-        })
-        .then(() => {
-          setCurrentY(target);
-          onPositionChange?.(target);
-        });
+      animation.start({ y: target, transition }).then(() => {
+        setCurrentY(target);
+        onPositionChange?.(target);
+      });
     }, [isOpen, animation, middleY, bottomY, onPositionChange]);
 
-    // content 내부 터치 드래그 (middle 위치에서만)
     useEffect(() => {
       const el = contentRef.current;
       if (!el) return;
 
-      const startHandler = (e: TouchEvent) => {
+      const onTouchStart = (e: TouchEvent) => {
         touchStartY.current = e.touches[0].clientY;
+        scrollTopOnStart.current = el.scrollTop;
       };
-      const moveHandler = (e: TouchEvent) => {
-        if (currentY !== middleY) return;
+
+      const onTouchMove = (e: TouchEvent) => {
         const dy = touchStartY.current - e.touches[0].clientY;
-        if (dy > 0) {
-          animation
-            .start({
-              y: fullY,
-              transition: { type: 'spring', stiffness: 300, damping: 30 },
-            })
-            .then(() => {
-              setCurrentY(fullY);
-              onPositionChange?.(fullY);
-            });
-          e.preventDefault();
-        } else if (dy < 0 && el.scrollTop === 0) {
-          animation
-            .start({
-              y: bottomY,
-              transition: { type: 'spring', stiffness: 300, damping: 30 },
-            })
-            .then(() => {
-              setCurrentY(bottomY);
-              onPositionChange?.(bottomY);
-              onClose();
-            });
-          e.preventDefault();
+        const goingUp = dy > 10;
+        const goingDown = dy < -10;
+
+        if (currentY !== middleY) return;
+
+        if (goingDown && scrollTopOnStart.current <= 0 && el.scrollTop <= 0) {
+          animation.start({ y: bottomY, transition }).then(() => {
+            setCurrentY(bottomY);
+            onPositionChange?.(bottomY);
+            onClose();
+          });
+          if (e.cancelable) e.preventDefault();
+        } else if (goingUp && el.scrollTop <= 0) {
+          animation.start({ y: fullY, transition }).then(() => {
+            setCurrentY(fullY);
+            onPositionChange?.(fullY);
+          });
+          if (e.cancelable) e.preventDefault();
         }
       };
 
-      el.addEventListener('touchstart', startHandler, { passive: true });
-      el.addEventListener('touchmove', moveHandler, { passive: false });
+      el.addEventListener('touchstart', onTouchStart, { passive: true });
+      el.addEventListener('touchmove', onTouchMove, { passive: false });
       return () => {
-        el.removeEventListener('touchstart', startHandler);
-        el.removeEventListener('touchmove', moveHandler);
+        el.removeEventListener('touchstart', onTouchStart);
+        el.removeEventListener('touchmove', onTouchMove);
       };
     }, [
+      animation,
       currentY,
-      middleY,
       fullY,
       bottomY,
-      animation,
       onClose,
       onPositionChange,
+      middleY,
     ]);
+
+    useEffect(() => {
+      const el = contentRef.current;
+      if (!el) return;
+
+      const onScroll = () => {
+        const scrollRatio = el.scrollTop / (el.scrollHeight - el.clientHeight);
+        if (scrollRatio > 0.1 && currentY !== fullY) {
+          animation.start({ y: fullY, transition }).then(() => {
+            setCurrentY(fullY);
+            onPositionChange?.(fullY);
+          });
+        }
+      };
+
+      el.addEventListener('scroll', onScroll);
+      return () => el.removeEventListener('scroll', onScroll);
+    }, [animation, currentY, fullY, onPositionChange]);
 
     return (
       <AnimatePresence>
@@ -155,45 +153,36 @@ const BottomSheet = forwardRef<BottomSheetHandle, BottomSheetProps>(
             style={{ height: sheetHeight, maxHeight: '80vh' }}
             drag="y"
             dragConstraints={{ top: fullY, bottom: bottomY }}
-            dragElastic={0.2}
-            dragMomentum={false}
-            // ✨ initial 을 동적으로 설정
+            dragElastic={0.25}
+            dragMomentum={true}
             initial={{ y: isOpen ? middleY : bottomY }}
             animate={animation}
-            exit={{
-              y: sheetHeight,
-              transition: { type: 'spring', stiffness: 300, damping: 30 },
-            }}
+            exit={{ y: sheetHeight, transition }}
             onDragEnd={(_, info: PanInfo) => {
-              const offsetY = info.point.y - (window.innerHeight - sheetHeight);
-              const pts = [fullY, middleY, bottomY];
-              let closest = fullY;
-              let minD = Math.abs(offsetY - fullY);
-              pts.forEach((pt) => {
-                const d = Math.abs(offsetY - pt);
-                if (d < minD) {
-                  minD = d;
-                  closest = pt;
-                }
-              });
-              animation
-                .start({
-                  y: closest,
-                  transition: { type: 'spring', stiffness: 300, damping: 30 },
-                })
-                .then(() => {
-                  setCurrentY(closest);
-                  onPositionChange?.(closest);
-                  if (closest === bottomY) onClose();
+              const offsetY = info.offset.y;
+              const threshold = sheetHeight * 0.15;
+
+              if (offsetY > threshold) {
+                const target = currentY === fullY ? middleY : bottomY;
+                animation.start({ y: target, transition }).then(() => {
+                  setCurrentY(target);
+                  onPositionChange?.(target);
+                  if (target === bottomY) onClose();
                 });
+              } else if (offsetY < -threshold) {
+                animation.start({ y: fullY, transition }).then(() => {
+                  setCurrentY(fullY);
+                  onPositionChange?.(fullY);
+                });
+              } else {
+                animation.start({ y: currentY, transition });
+              }
             }}
           >
-            {/* drag handle */}
             <div className="w-full flex justify-center py-2">
               <div className="w-12 h-1.5 rounded-full bg-gray-300" />
             </div>
 
-            {/* scrollable content */}
             <div
               ref={contentRef}
               className="flex-1 overflow-y-auto pt-1 pb-5 touch-none"
