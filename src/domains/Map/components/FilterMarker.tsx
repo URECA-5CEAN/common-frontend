@@ -53,102 +53,6 @@ export default function FilterMarker({
     store: StoreInfo;
   } | null>(null);
 
-  // MarkerImage 생성 함수 useMemo로 메모이제이션
-  const createMarkerImage = useMemo(() => {
-    return (imageUrl: string) => {
-      const src = imageUrl;
-      return {
-        src,
-        size: { width: 40, height: 40 },
-        options: {
-          offset: { x: 20, y: 40 },
-        },
-      } as const;
-    };
-  }, []);
-
-  // 2) stores 배열을 Map으로 변환 (O(1) 조회용)
-  const storeMap = useMemo(() => {
-    const m = new Map<string, StoreInfo>();
-    stores.forEach((s) => m.set(s.id, s));
-    return m;
-  }, [stores]);
-
-  // hoveredMarkerId가 바뀔 때마다 오버레이 위치 계산
-  useEffect(() => {
-    if (!hoveredMarkerId || !map) {
-      setOverlay(null);
-      return;
-    }
-    // 호버 된 마커
-    const marker = Markers.find((x) => x.id === hoveredMarkerId);
-    const store = storeMap.get(hoveredMarkerId);
-    const container = containerRef?.current;
-    if (!marker || !store || !container) {
-      setOverlay(null);
-      return;
-    }
-    // 위도/경도 → 픽셀 좌표 변환
-    const proj = map.getProjection();
-    const pt = proj.containerPointFromCoords(
-      new kakao.maps.LatLng(marker.lat, marker.lng),
-    );
-    const rect = container.getBoundingClientRect();
-    // 화면 절대 좌표 계산 후 저장
-    setOverlay({
-      x: pt.x + rect.left,
-      y: pt.y + rect.top,
-      store,
-    });
-  }, [hoveredMarkerId, Markers, storeMap, map, containerRef]);
-
-  // 2D 마커 개수에 따라 클러스터링 여부 결정
-  const shouldCluster = Markers.length > 20;
-  // 데스크톱 여부 판단 (모바일에서 오버레이 안뜨게)
-  const isDesktop = useMedia('(min-width: 640px)');
-
-  //MouseOver 함수
-  const handleMouseOver = useCallback(
-    (id: string) => {
-      if (hoverOutRef.current) window.clearTimeout(hoverOutRef.current);
-      setHoveredMarkerId(id);
-    },
-    [setHoveredMarkerId],
-  );
-  //MouseOut 함수
-  const handleMouseOut = useCallback(() => {
-    if (hoverOutRef.current) window.clearTimeout(hoverOutRef.current);
-    hoverOutRef.current = window.setTimeout(() => {
-      setHoveredMarkerId(null);
-    }, 300);
-  }, [setHoveredMarkerId]);
-
-  //클릭 시 detial창 오픈
-  const handleClick = useCallback(
-    (id: string) => {
-      const store = storeMap.get(id);
-      if (store) openDetail(store);
-    },
-    [openDetail, storeMap],
-  );
-
-  // 2D 마커 렌더링 함수 분리
-  const renderFarMarkers = () =>
-    Markers.map((m) => {
-      const markerImage = createMarkerImage(m.imageUrl);
-      return (
-        <MapMarker
-          key={m.id}
-          position={{ lat: m.lat, lng: m.lng }}
-          image={markerImage}
-          zIndex={shouldCluster ? 2 : 3}
-          onClick={() => handleClick(m.id)}
-          onMouseOver={() => handleMouseOver(m.id)}
-          onMouseOut={handleMouseOut}
-        />
-      );
-    });
-
   useEffect(() => {
     if (!map) return;
 
@@ -183,6 +87,101 @@ export default function FilterMarker({
     };
   }, [map, center, stores]);
 
+  // 2) stores 배열을 Map으로 변환
+  const storeMap = useMemo(() => {
+    const m = new Map<string, StoreInfo>();
+    stores.forEach((s) => m.set(s.id, s));
+    return m;
+  }, [stores]);
+
+  // hoveredMarkerId가 바뀔 때마다 오버레이 위치 계산
+  useEffect(() => {
+    if (!hoveredMarkerId || !map) {
+      setOverlay(null);
+      return;
+    }
+    // 호버 된 마커
+    const marker = Markers.find((x) => x.id === hoveredMarkerId);
+    const store = storeMap.get(hoveredMarkerId);
+    const container = containerRef?.current;
+    if (!marker || !store || !container) {
+      setOverlay(null);
+      return;
+    }
+    // 위도/경도 → 픽셀 좌표 변환
+    const proj = map.getProjection();
+    const pt = proj.containerPointFromCoords(
+      new kakao.maps.LatLng(marker.lat, marker.lng),
+    );
+    const rect = container.getBoundingClientRect();
+    // 화면 절대 좌표 계산 후 저장
+    setOverlay({
+      x: pt.x + rect.left,
+      y: pt.y + rect.top,
+      store,
+    });
+  }, [hoveredMarkerId, Markers, storeMap, map, containerRef]);
+
+  //MouseOver 함수
+  const handleMouseOver = useCallback(
+    (id: string) => {
+      if (hoverOutRef.current) window.clearTimeout(hoverOutRef.current);
+      setHoveredMarkerId(id);
+    },
+    [setHoveredMarkerId],
+  );
+  //MouseOut 함수
+  const handleMouseOut = useCallback(() => {
+    if (hoverOutRef.current) window.clearTimeout(hoverOutRef.current);
+    hoverOutRef.current = window.setTimeout(() => {
+      setHoveredMarkerId(null);
+    }, 300);
+  }, [setHoveredMarkerId]);
+
+  //클릭 시 detial창 오픈
+  const handleClick = useCallback(
+    (id: string) => {
+      const store = storeMap.get(id);
+      if (store) openDetail(store);
+    },
+    [openDetail, storeMap],
+  );
+
+  // MarkerImage 생성 함수 useMemo로 메모이제이션
+  const createMarkerImage = useMemo(() => {
+    return (imageUrl: string) => {
+      const src = imageUrl;
+      return {
+        src,
+        size: { width: 40, height: 40 },
+        options: {
+          offset: { x: 20, y: 40 },
+        },
+      } as const;
+    };
+  }, []);
+  // 2D 마커 렌더링 함수 분리
+  const renderFarMarkers = () =>
+    Markers.map((m) => {
+      const markerImage = createMarkerImage(m.imageUrl);
+      return (
+        <MapMarker
+          key={m.id}
+          position={{ lat: m.lat, lng: m.lng }}
+          image={markerImage}
+          zIndex={shouldCluster ? 2 : 3}
+          onClick={() => handleClick(m.id)}
+          onMouseOver={() => handleMouseOver(m.id)}
+          onMouseOut={handleMouseOut}
+        />
+      );
+    });
+
+  // 2D 마커 개수에 따라 클러스터링 여부 결정
+  const shouldCluster = Markers.length > 20;
+  // 데스크톱 여부 판단 (모바일에서 오버레이 안뜨게)
+  const isDesktop = useMedia('(min-width: 640px)');
+
   return (
     <>
       {/* 클러스터링 분기 */}
@@ -202,7 +201,7 @@ export default function FilterMarker({
               textAlign: 'center',
               lineHeight: '50px',
               boxShadow: '0 2px 2px rgba(12, 16, 233, 0.329)',
-              zIndex: 2,
+              zIndex: 3,
             },
           ]}
         >
@@ -222,7 +221,7 @@ export default function FilterMarker({
               top: overlay.y,
               transform: 'translate(-50%, -120%)',
               pointerEvents: 'auto',
-              zIndex: 10,
+              zIndex: 2,
             }}
             onMouseEnter={() => {
               if (hoverOutRef.current) window.clearTimeout(hoverOutRef.current);

@@ -71,12 +71,12 @@ export default function SidebarPanel({
       exit={{ x: -332, opacity: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       className={clsx(
-        'bg-white rounded-t-2xl shadow h-auto scrollbar-custom ',
+        'bg-white rounded-t-2xl shadow h-auto  ',
         'md:rounded-tl-2xl  md:ml-6.5 md:mt-20 md:rounded-bl-2xl md:fixed md:top-0 md:bottom-0 md:left-0 md:w-[332px] md:max-h-full',
       )}
       style={{ left }}
     >
-      <div className="p-4 pr-2 bg-white relative md:shadow-lg rounded-lg overflow-y-auto h-auto  md:max-h-[calc(100vh-78px)] z-10 ">
+      <div className="p-4 pr-2 bg-white relative md:shadow-lg rounded-lg scrollbar-custom overflow-y-auto h-auto  md:max-h-[calc(100vh-78px)] z-10 ">
         {/* 첫 번째 패널: 사용자 정보 */}
         <div className="hidden md:block">
           {index === 0 && (

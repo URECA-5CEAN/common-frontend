@@ -22,7 +22,7 @@ export default function MyLocationBtn({
       {/* 모바일용 버튼 */}
       <div
         className={clsx(
-          'fixed block md:hidden left-6 z-1',
+          'fixed block md:hidden left-6 z-1 ',
           sheetY === 0 ? 'hidden' : 'block',
         )}
         style={{ top: sheetY + 100 }}
@@ -33,7 +33,7 @@ export default function MyLocationBtn({
           size="md"
           className="rounded-full p-0 focus:border-none"
         >
-          <LocateFixed size={30} className="w-5 h-7" />
+          <LocateFixed size={30} className="w-4 h-7 " />
         </Button>
       </div>
 
