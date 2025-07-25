@@ -23,6 +23,9 @@ importers:
       framer-motion:
         specifier: ^12.23.6
         version: 12.23.6(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      keen-slider:
+        specifier: ^6.8.6
+        version: 6.8.6
       lucide:
         specifier: ^0.525.0
         version: 0.525.0
@@ -1254,6 +1257,9 @@ packages:
 
   kakao.maps.d.ts@0.1.40:
     resolution: {integrity: sha512-nX69MB1ok04epe3OqS+/tEeWBbU31GSQbvDPJmQRRltzzqn6t4jBsO5v1nzalUjCKzwcH2CptOc767NZ7Hbu3g==}
+
+  keen-slider@6.8.6:
+    resolution: {integrity: sha512-dcEQ7GDBpCjUQA8XZeWh3oBBLLmyn8aoeIQFGL/NTVkoEOsmlnXqA4QykUm/SncolAZYGsEk/PfUhLZ7mwMM2w==}
 
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
@@ -2849,6 +2855,8 @@ snapshots:
   json5@2.2.3: {}
 
   kakao.maps.d.ts@0.1.40: {}
+
+  keen-slider@6.8.6: {}
 
   keyv@4.5.4:
     dependencies:

@@ -1,5 +1,3 @@
-// src/components/MapSidebar.tsx
-
 import { lazy, Suspense, type ChangeEventHandler } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import mapImage from '@/assets/image/MapImage.svg';
@@ -24,25 +22,25 @@ export type Panel =
 
 interface SideBarProps {
   stores: StoreInfo[];
-  panel: Panel; // <- MapPage에서 내려받는 현재 메뉴
-  openMenu: (menu: MenuType) => void; // <- 메뉴 변경 콜백
-  openDetail: (store: StoreInfo) => void; // <- 상세 열기 콜백
-  onClose: (index: number) => void; // <- 패널 닫기 콜백
-  changeKeyword?: ChangeEventHandler<HTMLInputElement>;
+  panel: Panel; // MapPage에서 내려받는 현재 메뉴
+  openMenu: (menu: MenuType) => void; //  메뉴 변경 콜백
+  openDetail: (store: StoreInfo) => void; //  상세 열기 콜백
+  onClose: (index: number) => void; //  패널 닫기 콜백
+  changeKeyword?: ChangeEventHandler<HTMLInputElement>; //키워드 바꿔주는 콜백
   keyword?: string;
-  startValue: string;
-  endValue: string;
+  startValue: string; //출발지
+  endValue: string; // 도착지
   onStartChange: (v: string) => void;
   onEndChange: (v: string) => void;
   onSwap: () => void;
   onReset: () => void;
-  onNavigate: () => void;
+  onNavigate: () => void; // 길찾기
   bookmarks: StoreInfo[];
   toggleBookmark: (store: StoreInfo) => void;
-  bookmarkIds: Set<string>;
-  goToStore: (store: StoreInfo) => void;
+  bookmarkIds: Set<string>; // 즐겨찾기인지 확인
+  goToStore: (store: StoreInfo) => void; //해당 제휴처로 이동
   sheetRef: React.RefObject<BottomSheetHandle | null>;
-  onSheetPositionChange: (y: number) => void;
+  onSheetPositionChange: (y: number) => void; // 바텀시트 y좌표 콜백
   sheetDetail: React.RefObject<BottomSheetHandle | null>;
   onDetailSheetPositionChange: (y: number) => void;
 }

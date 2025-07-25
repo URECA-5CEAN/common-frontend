@@ -30,6 +30,7 @@ import clsx from 'clsx';
 import type { BottomSheetHandle } from '../components/sidebar/BottomSheet';
 import DebouncedInput from '../components/DebouncedInput';
 import { useDebounce } from 'react-use';
+import CategorySlider from '../components/CategorySlider';
 const ThreeJmdarker = lazy(() => import('../components/ThreeJsMarker'));
 //bounds 타입에러 방지
 interface InternalBounds extends kakao.maps.LatLngBounds {
@@ -39,13 +40,20 @@ interface InternalBounds extends kakao.maps.LatLngBounds {
   ha: number;
 }
 
-type CategoryType = '음식점' | '카페' | '편의점' | '대형마트' | '문화시설';
+type CategoryType =
+  | '음식점'
+  | '카페'
+  | '편의점'
+  | '대형마트'
+  | '문화시설'
+  | '렌터카';
 const Category: CategoryType[] = [
   '음식점',
   '카페',
   '편의점',
   '대형마트',
   '문화시설',
+  '렌터카',
 ];
 export default function MapPage() {
   //도 + 3D 캔버스 감쌀 div
@@ -101,7 +109,7 @@ export default function MapPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   // 바텀시트 Y 위치
-  const [sheetY, setSheetY] = useState<number>(0);
+  const [sheetY, setSheetY] = useState<number>();
   //바텀시트 인스턴스
   const sheetRef = useRef<BottomSheetHandle | null>(null);
   const sheetDetail = useRef<BottomSheetHandle | null>(null);
@@ -111,6 +119,7 @@ export default function MapPage() {
   // bounds 변경 시마다 시간 업데이트
   const hideTimeoutRef = useRef<number>(0);
 
+  // peek 상태 바텀시트 높이
   const peekHeight = 30;
 
   const [idleCount, setIdleCount] = useState(0);
@@ -120,6 +129,7 @@ export default function MapPage() {
     const sheetHeight = window.innerHeight * 0.75;
     setSheetY(sheetHeight - peekHeight);
   }, []);
+
   useEffect(() => {
     const handler = window.setTimeout(() => setDebouncedKeyword(keyword), 300);
     return () => clearTimeout(handler);
@@ -450,6 +460,7 @@ export default function MapPage() {
     setSelectedFile(file);
   };
 
+  console.log(sheetY);
   return (
     <div className="flex h-screen flex-col-reverse md:flex-row overflow-y-hidden ">
       {/* 사이드바 */}
@@ -587,8 +598,13 @@ export default function MapPage() {
               </Suspense>
             )}
 
-            <div className="absolute left-[10%] md:left-10 top-28 md:top-24 z-2">
-              <div className="flex justify-start space-x-2">
+            <div className="absolute left-[10%] w-full md:left-10 top-28 md:top-24 z-2  overflow-x-auto">
+              <CategorySlider
+                Category={Category}
+                isCategory={isCategory}
+                changeCategory={changeCategory}
+              />
+              <div className="md:flex justify-start space-x-2 hidden">
                 {Category.map((cate) => (
                   <button
                     key={cate}
