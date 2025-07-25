@@ -31,6 +31,7 @@ import type { BottomSheetHandle } from '../components/sidebar/BottomSheet';
 import DebouncedInput from '../components/DebouncedInput';
 import { useDebounce } from 'react-use';
 import CategorySlider from '../components/CategorySlider';
+import DeskTopBtns from '../components/DeskTopBtns';
 const ThreeJmdarker = lazy(() => import('../components/ThreeJsMarker'));
 //bounds 타입에러 방지
 interface InternalBounds extends kakao.maps.LatLngBounds {
@@ -109,7 +110,7 @@ export default function MapPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   // 바텀시트 Y 위치
-  const [sheetY, setSheetY] = useState<number>();
+  const [sheetY, setSheetY] = useState<number>(0);
   //바텀시트 인스턴스
   const sheetRef = useRef<BottomSheetHandle | null>(null);
   const sheetDetail = useRef<BottomSheetHandle | null>(null);
@@ -604,22 +605,11 @@ export default function MapPage() {
                 isCategory={isCategory}
                 changeCategory={changeCategory}
               />
-              <div className="md:flex justify-start space-x-2 hidden">
-                {Category.map((cate) => (
-                  <button
-                    key={cate}
-                    className={clsx(
-                      ' text-xs px-6 hover:text-primaryGreen py-1.5 w-24 cursor-pointer rounded-2xl border-2 border-gray-200',
-                      isCategory === cate
-                        ? 'text-primaryGreen bg-white'
-                        : 'bg-white',
-                    )}
-                    onClick={() => changeCategory(cate)}
-                  >
-                    {cate}
-                  </button>
-                ))}
-              </div>
+              <DeskTopBtns
+                Category={Category}
+                isCategory={isCategory}
+                changeCategory={changeCategory}
+              />
             </div>
 
             <div className="flex md:hidden absolute top-[68px] w-[70%] max-w-[600px] left-[10%]  bg-white z-2 items-center border border-gray-200 rounded-xl px-2 py-1 ">

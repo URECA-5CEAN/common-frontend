@@ -2,7 +2,7 @@ import 'keen-slider/keen-slider.min.css';
 import { useKeenSlider } from 'keen-slider/react';
 import clsx from 'clsx';
 
-interface CategorySliderProps {
+export interface CategoryProps {
   Category: string[];
   isCategory: string;
   changeCategory: (cate: string) => void;
@@ -12,7 +12,7 @@ export default function CategorySlider({
   Category,
   isCategory,
   changeCategory,
-}: CategorySliderProps) {
+}: CategoryProps) {
   const [sliderRef] = useKeenSlider<HTMLDivElement>({
     mode: 'snap',
     slides: {
@@ -22,9 +22,9 @@ export default function CategorySlider({
   });
 
   return (
-    <div ref={sliderRef} className="keen-slider flex ">
+    <div ref={sliderRef} className="keen-slider flex s">
       {Category.map((cate) => (
-        <div key={cate} className="keen-slider__slide pr-20">
+        <div key={cate} className="keen-slider__slide pr-20 md:hidden">
           <button
             className={clsx(
               'text-xs  px-4  py-1.5 w-20 text-center  rounded-2xl border-2 border-gray-200 cursor-pointer whitespace-nowrap',
