@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import clsx from 'clsx';
-import UserSection from '../UserSection';
+import UserSection from './UserSection';
 import MapSection from './MapSection';
 import StarSection from './StarSection';
 import DetailSection from './DetailSection';
@@ -71,22 +71,23 @@ export default function SidebarPanel({
       exit={{ x: -332, opacity: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       className={clsx(
-        'absolute -top-2 w-[332px]  bg-white rounded-2xl shadow-2xl z-10 ml-6',
-        isDetail ? 'min-h-[800px] translate-y-4' : 'bottom-0',
+        'bg-white rounded-t-2xl shadow h-auto  ',
+        'md:rounded-tl-2xl  md:ml-6.5 md:mt-20 md:rounded-bl-2xl md:fixed md:top-0 md:bottom-0 md:left-0 md:w-[332px] md:max-h-full',
       )}
       style={{ left }}
     >
-      <div className="p-4 pr-2 bg-white  shadow-lg rounded-lg max-h-[calc(100vh-78px)]  scrollbar-custom z-10 overflow-y-auto">
+      <div className="p-4 pr-2 bg-white relative md:shadow-lg rounded-lg scrollbar-custom overflow-y-auto h-auto  md:max-h-[calc(100vh-78px)] z-10 ">
         {/* 첫 번째 패널: 사용자 정보 */}
-        {index === 0 && (
-          <UserSection
-            username="김민석"
-            level={1}
-            currentExp={5}
-            nextLevelExp={20}
-          />
-        )}
-
+        <div className="hidden md:block">
+          {index === 0 && (
+            <UserSection
+              username="김민석"
+              level={1}
+              currentExp={5}
+              nextLevelExp={20}
+            />
+          )}
+        </div>
         {/* 메뉴 및 상세 분기 렌더링 */}
         {index === 0 && panel.menu === '지도' && (
           <MapSection
@@ -139,10 +140,10 @@ export default function SidebarPanel({
       </div>
 
       {/* 패널 닫기 버튼 */}
-      {isDetail && (
+      {index === 1 && isDetail && (
         <button
           onClick={() => onClose(index)}
-          className="absolute right-0 translate-x-10 w-10 h-12 bottom-[55%] cursor-pointer hover:bg-gray-100 focus:outline-none bg-white border-2 border-l-0 rounded-lg border-gray-200"
+          className="absolute active:scale-95 active:opacity-80 z-10 left-2  md:left-[100%] top-8  w-10 md:h-12 md:border-l-0 h-10 md:top-[43%] cursor-pointer hover:bg-gray-100 focus:outline-none bg-white border-1  md:rounded-lg rounded-full border-gray-200"
         >
           <ChevronLeft
             className="translate-x-1.5 text-gray-300"

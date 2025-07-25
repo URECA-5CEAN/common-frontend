@@ -13,7 +13,7 @@ export default function StarListItem({
   openDetail,
 }: StarListProps) {
   return (
-    <div className="border-b border-gray-200 space-y-1 flex cursor-pointer">
+    <div className="border-b border-gray-200 space-y-1 flex justify-between cursor-pointer">
       <div onClick={openDetail}>
         <p className="font-semibold">{bookmark.name}</p>
         <p className="text-xs w-60 truncate">{bookmark.address}</p>

@@ -21,9 +21,9 @@ export default function StarSection({
   return (
     <div className="px-2 py-3 space-y-3 h-screen ">
       {/* 리스트 아이템 반복 */}
-      {bookmarks.map((bookmark) => (
+      {bookmarks.map((bookmark, idx) => (
         <StoreCard
-          key={bookmark.id}
+          key={`${bookmark.id}-${idx}`}
           store={bookmark}
           openDetail={openDetail}
           onStartChange={onStartChange}
