@@ -30,7 +30,7 @@ export default function KakaoMapContainer({
 }: PropsWithChildren<Props>) {
   // Kakao Maps SDK 비동기 로딩 훅
   const [loading, error] = useKakaoLoader({
-    appkey: '8d8c95c000044686b1c98de7e08ae5c1',
+    appkey: import.meta.env.VITE_KAKAO_API,
     libraries: ['services', 'clusterer'],
   });
 

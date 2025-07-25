@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import UserTotalRanking from '../components/UserTotalRanking';
-import UserStoreRanking from '../components/UserStoreRanking';
+import UserTotalRanking from '../components/ranking/UserTotalRanking';
+import UserStoreRanking from '../components/ranking/UserStoreRanking';
 
 type Tab = {
   title: string;

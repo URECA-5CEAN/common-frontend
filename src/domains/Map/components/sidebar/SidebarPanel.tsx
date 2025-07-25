@@ -27,6 +27,10 @@ interface SidebarPanelProps {
   onSwap?: () => void;
   onReset?: () => void;
   onNavigate?: () => void;
+  bookmarks: StoreInfo[];
+  toggleBookmark: (store: StoreInfo) => void;
+  bookmarkIds: Set<string>;
+  goToStore: (store: StoreInfo) => void;
 }
 
 export default function SidebarPanel({
@@ -44,11 +48,15 @@ export default function SidebarPanel({
   onSwap,
   onReset,
   onNavigate,
+  bookmarks,
+  toggleBookmark,
+  bookmarkIds,
+  goToStore,
 }: SidebarPanelProps) {
   const [ShowStar, SetShowStar] = useState<boolean>(false);
 
+  // 즐겨찾기 토글
   const onStar = () => {
-    // 즐겨찾기 토글
     SetShowStar((prev) => !prev);
   };
 
@@ -63,12 +71,12 @@ export default function SidebarPanel({
       exit={{ x: -332, opacity: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       className={clsx(
-        'absolute -top-2 w-[332px] bg-white rounded-2xl shadow-2xl z-10 ml-6',
-        isDetail ? 'h-[800px] translate-y-4' : 'bottom-0',
+        'absolute -top-2 w-[332px]  bg-white rounded-2xl shadow-2xl z-10 ml-6',
+        isDetail ? 'min-h-[800px] translate-y-4' : 'bottom-0',
       )}
       style={{ left }}
     >
-      <div className="p-4 bg-white shadow-lg rounded-lg">
+      <div className="p-4 pr-2 bg-white  shadow-lg rounded-lg max-h-[calc(100vh-78px)]  scrollbar-custom z-10 overflow-y-auto">
         {/* 첫 번째 패널: 사용자 정보 */}
         {index === 0 && (
           <UserSection
@@ -88,14 +96,18 @@ export default function SidebarPanel({
             keyword={keyword}
             onStartChange={onStartChange}
             onEndChange={onEndChange}
+            toggleBookmark={toggleBookmark}
+            bookmarkIds={bookmarkIds}
           />
         )}
         {index === 0 && panel.menu === '즐겨찾기' && (
           <StarSection
             openDetail={openDetail}
-            stores={stores}
+            bookmarks={bookmarks}
             onStartChange={onStartChange}
             onEndChange={onEndChange}
+            toggleBookmark={toggleBookmark}
+            bookmarkIds={bookmarkIds}
           />
         )}
         {index === 0 && panel.menu === '길찾기' && (
@@ -108,8 +120,10 @@ export default function SidebarPanel({
             onReset={onReset}
             onNavigate={onNavigate}
             onStar={onStar}
+            bookmarks={bookmarks}
             openDetail={openDetail}
             isShowStar={ShowStar}
+            goToStore={goToStore}
           />
         )}
         {index === 1 && panel.type === 'detail' && panel.item && (
@@ -117,6 +131,9 @@ export default function SidebarPanel({
             store={panel.item}
             onStartChange={onStartChange}
             onEndChange={onEndChange}
+            bookmarkIds={bookmarkIds}
+            toggleBookmark={toggleBookmark}
+            goToStore={goToStore}
           />
         )}
       </div>
@@ -125,7 +142,7 @@ export default function SidebarPanel({
       {isDetail && (
         <button
           onClick={() => onClose(index)}
-          className="absolute right-0 translate-x-10 w-10 h-12 bottom-[55%] focus:outline-none bg-white border-2 rounded-lg border-gray-200"
+          className="absolute right-0 translate-x-10 w-10 h-12 bottom-[55%] cursor-pointer hover:bg-gray-100 focus:outline-none bg-white border-2 border-l-0 rounded-lg border-gray-200"
         >
           <ChevronLeft
             className="translate-x-1.5 text-gray-300"

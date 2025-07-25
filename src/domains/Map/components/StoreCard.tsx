@@ -7,6 +7,8 @@ interface StoreCardProps {
   openDetail: (store: StoreInfo) => void;
   onStartChange: (v: string) => void;
   onEndChange: (v: string) => void;
+  toggleBookmark: (store: StoreInfo) => void;
+  isBookmark: boolean;
 }
 
 export default function StoreCard({
@@ -14,20 +16,24 @@ export default function StoreCard({
   openDetail,
   onStartChange,
   onEndChange,
+  toggleBookmark,
+  isBookmark,
 }: StoreCardProps) {
+  //const isBookmark =
   return (
     <div
-      className="flex items-stretch bg-white "
+      className="flex items-stretch bg-white cursor-pointer"
       onClick={() => openDetail(store)}
     >
       <img
         src={store.brandImageUrl}
         alt={store.name}
-        className="w-[100px] h-[100px] rounded-md mr-3"
+        className="w-[80px] h-[80px] rounded-md mr-3 self-center"
+        loading="lazy"
       />
       {/* 텍스트 영역 */}
       <div className="flex flex-1 mt-2 flex-col justify-between space-y-2 h-full  ">
-        <p className="text-lg font-semibold truncate w-[170px]">{store.name}</p>
+        <p className="text-lg font-semibold truncate w-48 ">{store.name}</p>
         <p className=" text-xs text-gray-500 line-clamp-2 w-40">
           {store.address}
         </p>
@@ -38,7 +44,15 @@ export default function StoreCard({
             onStartChange={onStartChange}
             onEndChange={onEndChange}
           />
-          <Star />
+          <Star
+            className={
+              isBookmark ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
+            }
+            onClick={(e) => {
+              e.stopPropagation(); // 카드 클릭과 겹치지 않도록
+              toggleBookmark(store);
+            }}
+          />
         </div>
       </div>
     </div>
