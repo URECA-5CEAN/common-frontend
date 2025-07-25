@@ -462,10 +462,12 @@ export default function MapPage() {
     setSelectedFile(file);
   };
 
+  console.log(sheetY);
+
   return (
     <div className="flex h-screen flex-col-reverse md:flex-row overflow-y-hidden ">
       {/* 사이드바 */}
-      <aside className="relative top-[62px] md:top-[86px]  left-0 bottom-0 md:w-[420px] z-20 flex-shrink-0">
+      <aside className="relative top-[62px] md:top-[86px] mr-6 md:m-0  left-0 bottom-0 md:w-[420px] z-20 flex-shrink-0">
         <MapSidebar
           stores={displayedStores}
           panel={panel}
@@ -511,7 +513,7 @@ export default function MapPage() {
       </aside>
 
       {/* 지도 영역 */}
-      <div className="flex-1 relative overflow-x-hidden ">
+      <div className="flex-1 relative overflow-x-hidden">
         <div ref={containerRef} className="absolute inset-0 ">
           <KakaoMapContainer
             center={myLocation ?? center}
@@ -549,7 +551,7 @@ export default function MapPage() {
               </Suspense>
             )}
 
-            <div className="absolute left-[10%] w-full md:left-10 top-28 md:top-24 z-2  overflow-x-auto">
+            <div className="absolute  w-full md:ml-10 ml-6 top-28 md:top-24 z-2  overflow-x-auto">
               <CategorySlider
                 Category={Category}
                 isCategory={isCategory}
@@ -562,7 +564,7 @@ export default function MapPage() {
               />
             </div>
 
-            <div className="flex md:hidden absolute top-[68px] w-[70%] max-w-[600px] left-[10%]  bg-white z-2 items-center border border-gray-200 rounded-xl px-2 py-1 ">
+            <div className="flex md:hidden  absolute top-[68px] left-6 right-6   bg-white z-2 items-center border border-gray-200 rounded-xl px-2 py-1 ">
               <Search />
               <DebouncedInput
                 value={keyword}

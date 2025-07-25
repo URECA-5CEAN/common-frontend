@@ -17,7 +17,7 @@ export default function CategorySlider({
     mode: 'snap',
     slides: {
       perView: 'auto',
-      spacing: 4,
+      spacing: 2,
     },
   });
 

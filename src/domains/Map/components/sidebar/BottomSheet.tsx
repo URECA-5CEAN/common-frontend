@@ -102,7 +102,7 @@ const BottomSheet = forwardRef<BottomSheetHandle, BottomSheetProps>(
         if (currentY !== middleY) return;
 
         // 아래로 스와이프 → bottom으로
-        if (goingDown && scrollTopOnStart.current <= 0 && el.scrollTop <= 0) {
+        if (goingDown && scrollTopOnStart.current <= 5 && el.scrollTop <= 5) {
           animation.start({ y: bottomY, transition }).then(() => {
             setCurrentY(bottomY);
             onPositionChange?.(bottomY);
@@ -169,7 +169,7 @@ const BottomSheet = forwardRef<BottomSheetHandle, BottomSheetProps>(
             exit={{ y: sheetHeight, transition }}
             onDragEnd={(_, info: PanInfo) => {
               const offsetY = info.offset.y;
-              const threshold = sheetHeight * 0.15;
+              const threshold = sheetHeight * 0.1;
 
               if (offsetY > threshold) {
                 // 아래로 드래그 → middle → bottom

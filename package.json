@@ -24,7 +24,6 @@
     "react-kakao-maps-sdk": "^1.2.0",
     "react-router-dom": "^7.6.3",
     "react-use": "^17.6.0",
-    "swiper": "^11.2.10",
     "tailwindcss": "^4.1.11",
     "three": "^0.178.0",
     "three-stdlib": "^2.36.0"
