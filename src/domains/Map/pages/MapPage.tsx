@@ -14,7 +14,7 @@ import MapSidebar, {
   type MenuType,
   type Panel,
 } from '../components/sidebar/MapSidebar';
-import { LocateFixed, RotateCcw, Search } from 'lucide-react';
+import { RotateCcw, Search } from 'lucide-react';
 import type { MarkerProps, LatLng } from '../KakaoMapContainer';
 import { getDistance } from '../utils/getDistance';
 import {
@@ -32,6 +32,7 @@ import DebouncedInput from '../components/DebouncedInput';
 import { useDebounce } from 'react-use';
 import CategorySlider from '../components/CategorySlider';
 import DeskTopBtns from '../components/DeskTopBtns';
+import MyLocationBtn from '../components/MyLocationBtn';
 const ThreeJmdarker = lazy(() => import('../components/ThreeJsMarker'));
 //bounds 타입에러 방지
 interface InternalBounds extends kakao.maps.LatLngBounds {
@@ -456,12 +457,12 @@ export default function MapPage() {
     [bookmarks],
   );
 
+  //혜택인증 영수증 파일 선택
   const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
     setSelectedFile(file);
   };
 
-  console.log(sheetY);
   return (
     <div className="flex h-screen flex-col-reverse md:flex-row overflow-y-hidden ">
       {/* 사이드바 */}
@@ -491,39 +492,14 @@ export default function MapPage() {
           onDetailSheetPositionChange={(y) => setSheetY(y)}
         />
         {/* 내 위치 버튼 */}
-        {/* 모바일 */}
-        <div
-          className={clsx(
-            'fixed block md:hidden left-2 z-1',
-            sheetY === 0 ? 'hidden' : 'block',
-          )}
-          style={{ top: sheetY + 100 }}
-        >
-          {map && myLocation && (
-            <Button
-              onClick={goToMyLocation}
-              variant="ghost"
-              size="md"
-              className="rounded-full p-0 md:px-4 md:py-3 focus:border-none"
-            >
-              <LocateFixed size={30} className="w-5 h-7 md:w-7 md:h-8" />
-            </Button>
-          )}
-        </div>
-
-        {/* 데스크탑  */}
-        <div className="hidden md:block fixed right-4 bottom-8 z-2">
-          {map && myLocation && (
-            <Button
-              onClick={goToMyLocation}
-              variant="ghost"
-              size="md"
-              className="rounded-full p-0 md:px-4 md:py-3 focus:border-none"
-            >
-              <LocateFixed size={30} className="w-5 h-7 md:w-7 md:h-8" />
-            </Button>
-          )}
-        </div>
+        {map && myLocation && (
+          <MyLocationBtn
+            map={map}
+            myLocation={myLocation}
+            goToMyLocation={goToMyLocation}
+            sheetY={sheetY}
+          />
+        )}
 
         {/* 모바일: 바텀시트 위에 붙이기 */}
         <div

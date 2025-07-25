@@ -3,7 +3,6 @@ import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three-stdlib';
 import type { MarkerProps } from '../KakaoMapContainer';
 import type { StoreInfo } from '../api/store';
-import { useMedia } from 'react-use';
 
 interface ThreeJsMarkerProps {
   markers: MarkerProps[];
