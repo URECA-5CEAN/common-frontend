@@ -92,9 +92,6 @@ const ProfilePage: React.FC = () => {
               내 정보 수정
             </Button>
           </div>
-          <div className="text-2xl mb-1">
-            {userInfoApi?.nickname}님 반갑습니다
-          </div>
 
           <UserProfile
             userInfo={userInfo}
