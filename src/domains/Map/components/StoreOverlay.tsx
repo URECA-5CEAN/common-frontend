@@ -3,6 +3,7 @@ import StartEndBtn from './StartEndBtn';
 import IconActionGroup from './IconActionGroup';
 import type { StoreInfo } from '../api/store';
 import clsx from 'clsx';
+import { useBenefitBrands } from '../hooks/useBenefitBrands';
 
 interface OverlayProps {
   lat: number;
@@ -21,6 +22,16 @@ const StoreOverlay = ({
   toggleBookmark,
   isBookmark,
 }: OverlayProps) => {
+  const {
+    data: benefits = [],
+    isLoading,
+    isError,
+    error,
+  } = useBenefitBrands(store.brandName);
+
+  if (isLoading) return 'Loading...';
+  if (isError) return `Error: ${error.message}`;
+  if (benefits.length === 0) return '해당 브랜드 혜택이 없습니다.';
   return (
     <div className="hidden sm:block bg-white rounded-2xl  w-[360px] p-4 space-y-3 z-1">
       {/* 헤더 */}
@@ -36,8 +47,9 @@ const StoreOverlay = ({
       </span>
       {/* 혜택안내 영역 */}
       <div>
-        <p className="text-lg   mb-1">받을 수 있는 혜택</p>
-        <p className="text-base text-gray-800">영화 티켓 1+1</p>
+        <p className="text-lg font-semibold mb-1">받을 수 있는 혜택</p>
+        <p className="text-sm text-gray-800">{benefits[0].name}</p>
+        <p className="text-sm text-gray-800">{benefits[0].description}</p>
       </div>
       {/* 버튼  영역 */}
       <div className="flex justify-between ">
