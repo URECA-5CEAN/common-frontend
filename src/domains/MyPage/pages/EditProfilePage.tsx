@@ -67,6 +67,9 @@ const EditProfilePage = () => {
     confirmPassword: '',
   });
   const [isValid, setIsValid] = useState(true);
+  const [membership, setMembership] = useState<
+    '' | '우수' | 'VIP' | 'VVIP' | string | undefined
+  >('');
 
   const navigate = useNavigate();
 
@@ -127,6 +130,7 @@ const EditProfilePage = () => {
 
   useEffect(() => {
     validateForm();
+    setMembership(userInfoApi?.membership);
   }, [userInfoApi, password, confirmPassword, validateForm]);
 
   // 사용자 정보 수정 처리
@@ -138,7 +142,12 @@ const EditProfilePage = () => {
 
     setIsLoading(true);
     try {
-      await editUserInfo(userInfoApi.nickname, userInfoApi.address, password);
+      await editUserInfo(
+        userInfoApi.nickname,
+        userInfoApi.address,
+        password,
+        membership,
+      );
       navigate('/mypage/profile');
     } catch (error) {
       console.error('사용자 정보 수정 실패:', error);
@@ -190,6 +199,43 @@ const EditProfilePage = () => {
             readOnly
             disabled
           />
+
+          {/* 성별 선택 버튼 */}
+          <div className="flex gap-2 md:gap-4">
+            <button
+              type="button"
+              className={`flex-1 py-1 px-3 md:px-6 rounded-xl border-2 text-sm md:text-base font-medium transition-colors cursor-pointer ${
+                membership === '우수'
+                  ? 'bg-primaryGreen text-white border-primaryGreen hover:bg-[#75b5c0]'
+                  : 'border-gray-200 text-gray-400 bg-white'
+              }`}
+              onClick={() => setMembership('우수')}
+            >
+              우수
+            </button>
+            <button
+              type="button"
+              className={`flex-1 py-1 px-3 md:px-6 rounded-xl border-2 text-sm md:text-base font-medium transition-colors cursor-pointer ${
+                membership === 'VIP'
+                  ? 'bg-primaryGreen text-white border-primaryGreen hover:bg-[#75b5c0]'
+                  : 'border-gray-200 text-gray-400 bg-white'
+              }`}
+              onClick={() => setMembership('VIP')}
+            >
+              VIP
+            </button>
+            <button
+              type="button"
+              className={`flex-1 py-1 px-3 md:px-6 rounded-xl border-2 text-sm md:text-base font-medium transition-colors cursor-pointer ${
+                membership === 'VVIP'
+                  ? 'bg-primaryGreen text-white border-primaryGreen hover:bg-[#75b5c0]'
+                  : 'border-gray-200 text-gray-400 bg-white'
+              }`}
+              onClick={() => setMembership('VVIP')}
+            >
+              VVIP
+            </button>
+          </div>
 
           {/* 닉네임 입력 */}
           <FloatingInput

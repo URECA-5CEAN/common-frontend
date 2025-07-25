@@ -29,13 +29,11 @@ const UserLevel: React.FC<UserLevelProps> = ({ nickname, level }) => (
 );
 
 interface UserLocationProps {
-  location: string;
   grade: string;
 }
 
-const UserLocation: React.FC<UserLocationProps> = ({ location, grade }) => (
+const UserLocation: React.FC<UserLocationProps> = ({ grade }) => (
   <div className="flex flex-col gap-1">
-    <div>{location}</div>
     <div>{grade}</div>
   </div>
 );
@@ -61,10 +59,7 @@ const UserInfo: React.FC<UserInfoProps> = ({
         <UserLevel nickname={userInfoApi.nickname} level={userInfoApi.level} />
         <ProgressBar current={userInfoApi.exp} max={50} />
       </div>
-      <UserLocation
-        location={userInfoApi.address}
-        grade={userInfoApi.membership}
-      />
+      <UserLocation grade={userInfoApi.membership} />
     </div>
   );
 };
