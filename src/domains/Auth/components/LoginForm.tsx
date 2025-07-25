@@ -4,6 +4,7 @@ import { validateEmail } from '../utils/validation';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/Button';
 import { useLogin } from '../hooks/useLogin';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
   const navigate = useNavigate();
@@ -94,6 +95,9 @@ const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
       });
 
       console.log('로그인 성공:', result);
+      // 로그인 성공 시 Zustand 상태 변경
+      useAuthStore.getState().setIsLoggedIn(true);
+
       navigate('/');
     } catch (error) {
       console.error('로그인 실패:', error);
