@@ -5,8 +5,6 @@ import {
   useMemo,
   useCallback,
   type ChangeEvent,
-  Suspense,
-  lazy,
 } from 'react';
 import KakaoMapContainer from '../KakaoMapContainer';
 import FilterMarker from '../components/FilterMarker';
@@ -15,8 +13,8 @@ import MapSidebar, {
   type Panel,
 } from '../components/sidebar/MapSidebar';
 import { Search } from 'lucide-react';
-import type { MarkerProps, LatLng } from '../KakaoMapContainer';
-import { getDistance } from '../utils/getDistance';
+import type { LatLng } from '../KakaoMapContainer';
+
 import {
   createBookmark,
   deleteBookmark,
@@ -32,7 +30,7 @@ import CategorySlider from '../components/CategorySlider';
 import DeskTopBtns from '../components/DeskTopBtns';
 import MyLocationBtn from '../components/MyLocationBtn';
 import SearchHereBtn from '../components/SearchHearBtn';
-const ThreeJmdarker = lazy(() => import('../components/ThreeJsMarker'));
+
 //bounds 타입에러 방지
 interface InternalBounds extends kakao.maps.LatLngBounds {
   pa: number;
@@ -88,8 +86,6 @@ export default function MapPage() {
     menu: '지도',
   });
 
-  // MarkerClusterer 참조
-  const clustererRef = useRef<kakao.maps.MarkerClusterer | null>(null);
   //검색 디바운스
   const [isCategory, SetIsCategory] = useState<string>('');
 
@@ -100,11 +96,6 @@ export default function MapPage() {
 
   //즐겨찾기
   const [bookmarks, setBookmarks] = useState<StoreInfo[]>([]);
-
-  //3d마커
-  const [lod3DMarkers, setLod3DMarkers] = useState<MarkerProps[]>([]);
-  //2d마커
-  const [lod2DMarkers, setLod2DMarkers] = useState<MarkerProps[]>([]);
 
   //혜택인증 파일
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -264,100 +255,6 @@ export default function MapPage() {
     return panel.menu === '즐겨찾기' ? bookmarks : filteredStores;
   }, [panel.menu, bookmarks, filteredStores]);
 
-  // 거리 기준으로 2D / 3D 마커 분리 RADIUS_JN = 거리
-  const RADIUS_KM = 0.5;
-  const [nearbyMarkers, farMarkers] = useMemo(() => {
-    const near: MarkerProps[] = [];
-    const far: MarkerProps[] = [];
-    displayedStores.forEach((store) => {
-      //중심과 제휴처 거리
-      const distance = getDistance(center, {
-        lat: store.latitude,
-        lng: store.longitude,
-      });
-      const marker: MarkerProps = {
-        id: store.id,
-        lat: store.latitude,
-        lng: store.longitude,
-        imageUrl: store.brandImageUrl ?? '',
-      };
-      //설정 거리기준 가까운 제휴처 먼 제휴처 나눔
-      if (distance <= RADIUS_KM) near.push(marker);
-      else far.push(marker);
-    });
-    return [near, far];
-  }, [displayedStores, center]);
-
-  useEffect(() => {
-    if (!map) return;
-    // idle 콜백 함수 정의
-    const handleIdle = () => {
-      const level = map.getLevel!();
-      //3d마커 개수 제한
-      const max3D = level <= 2 ? 30 : level <= 4 ? 20 : level <= 6 ? 10 : 5;
-      const enriched = nearbyMarkers
-        .map((m) => ({
-          marker: m,
-          distance: getDistance(center, m as LatLng),
-        }))
-        .sort((a, b) => a.distance - b.distance)
-        .slice(0, max3D)
-        .map((item) => item.marker); // marker만 추출
-
-      setLod3DMarkers(enriched);
-
-      // 2D마커 개수 제한
-      const max2D = level <= 2 ? 40 : level <= 4 ? 30 : level <= 6 ? 20 : 10;
-      const enriched2D = farMarkers
-        .map((m) => ({
-          marker: m,
-          distance: getDistance(center, m as LatLng),
-        }))
-        .sort((a, b) => a.distance - b.distance)
-        .slice(0, max2D)
-        .map((item) => item.marker);
-
-      setLod2DMarkers(enriched2D);
-    };
-
-    // idle 이벤트 등록
-    kakao.maps.event.addListener(map, 'idle', handleIdle);
-    handleIdle();
-    // 클린업
-    return () => {
-      kakao.maps.event.removeListener(map, 'idle', handleIdle);
-    };
-  }, [map, nearbyMarkers, farMarkers, center]);
-
-  // 3d 클러스터
-  useEffect(() => {
-    if (!map) return;
-    const clusterer = new kakao.maps.MarkerClusterer({
-      map,
-      averageCenter: true,
-      gridSize: 50,
-      minLevel: 3,
-      styles: [
-        {
-          width: '53px',
-          height: '52px',
-          color: '#fff',
-          backgroundColor: '#0ef81a',
-          border: '2px solid #fff',
-          borderRadius: '50%',
-          textAlign: 'center',
-          lineHeight: '52px',
-          boxShadow: '0 2px 2px rgba(0,0,0,0.2)',
-        },
-      ],
-    });
-    clustererRef.current = clusterer;
-    return () => {
-      clusterer.setMap(null); // 클러스터러 제거
-      clusterer.clear(); // 내부 마커 모두 해제
-    };
-  }, [map]);
-
   // 사이드바 메뉴 Open
   const openMenu = (menu: MenuType) => {
     setPanel({ type: 'menu', menu });
@@ -462,8 +359,6 @@ export default function MapPage() {
     setSelectedFile(file);
   };
 
-  console.log(sheetY);
-
   return (
     <div className="flex h-screen flex-col-reverse md:flex-row overflow-y-hidden ">
       {/* 사이드바 */}
@@ -523,11 +418,10 @@ export default function MapPage() {
           >
             {/* 2D 마커/오버레이 */}
             <FilterMarker
-              nearbyMarkers={lod3DMarkers}
-              farMarkers={lod2DMarkers}
               hoveredMarkerId={hoveredId}
               setHoveredMarkerId={setHoveredId}
               map={map}
+              center={center}
               containerRef={containerRef}
               stores={displayedStores}
               openDetail={openDetail}
@@ -536,20 +430,6 @@ export default function MapPage() {
               toggleBookmark={toggleBookmark}
               bookmarkIds={bookmarkIds}
             />
-
-            {/* 3D 마커 */}
-            {map && (
-              <Suspense fallback={null}>
-                <ThreeJmdarker
-                  markers={lod3DMarkers}
-                  map={map}
-                  setHoveredMarkerId={setHoveredId}
-                  container={containerRef.current!}
-                  openDetail={openDetail}
-                  stores={displayedStores}
-                />
-              </Suspense>
-            )}
 
             <div className="absolute  w-full md:ml-10 ml-6 top-28 md:top-24 z-2  overflow-x-auto">
               <CategorySlider

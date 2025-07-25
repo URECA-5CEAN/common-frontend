@@ -9,15 +9,13 @@ import React, {
 } from 'react';
 import { MapMarker, MarkerClusterer } from 'react-kakao-maps-sdk';
 import { useMedia } from 'react-use';
-import type { MarkerProps } from '../KakaoMapContainer';
+import type { LatLng, MarkerProps } from '../KakaoMapContainer';
 import type { StoreInfo } from '../api/store';
-import { getBucketUrl } from './getBucketUrl';
+import { getDistance } from '../utils/getDistance';
 
 const StoreOverlay = lazy(() => import('./StoreOverlay'));
 
 interface Props {
-  nearbyMarkers: MarkerProps[]; // 3D 마커
-  farMarkers: MarkerProps[]; // 2D 마커
   hoveredMarkerId?: string | null; // 현재 호버된 마커 ID
   setHoveredMarkerId: (id: string | null) => void;
   stores: StoreInfo[]; // 제휴처 목록
@@ -28,11 +26,10 @@ interface Props {
   onEndChange: (v: string) => void; // 도착지 변경
   toggleBookmark: (store: StoreInfo) => void;
   bookmarkIds: Set<string>;
+  center: LatLng;
 }
 
 export default function FilterMarker({
-  nearbyMarkers,
-  farMarkers,
   hoveredMarkerId,
   setHoveredMarkerId,
   stores,
@@ -43,9 +40,12 @@ export default function FilterMarker({
   onEndChange,
   toggleBookmark,
   bookmarkIds,
+  center,
 }: Props) {
   // hover 해제 지연용 타이머 ID 저장
   const hoverOutRef = useRef<number | null>(null);
+  //2d마커
+  const [Markers, SetMarkers] = useState<MarkerProps[]>([]);
   // 오버레이 위치와 스토어 정보 저장
   const [overlay, setOverlay] = useState<{
     x: number;
@@ -56,7 +56,7 @@ export default function FilterMarker({
   // MarkerImage 생성 함수 useMemo로 메모이제이션
   const createMarkerImage = useMemo(() => {
     return (imageUrl: string) => {
-      const src = getBucketUrl(imageUrl);
+      const src = imageUrl;
       return {
         src,
         size: { width: 40, height: 40 },
@@ -74,12 +74,6 @@ export default function FilterMarker({
     return m;
   }, [stores]);
 
-  // 전체 마커 리스트 (2d + 3d)
-  const allMarkers = useMemo(
-    () => [...nearbyMarkers, ...farMarkers],
-    [nearbyMarkers, farMarkers],
-  );
-
   // hoveredMarkerId가 바뀔 때마다 오버레이 위치 계산
   useEffect(() => {
     if (!hoveredMarkerId || !map) {
@@ -87,7 +81,7 @@ export default function FilterMarker({
       return;
     }
     // 호버 된 마커
-    const marker = allMarkers.find((x) => x.id === hoveredMarkerId);
+    const marker = Markers.find((x) => x.id === hoveredMarkerId);
     const store = storeMap.get(hoveredMarkerId);
     const container = containerRef?.current;
     if (!marker || !store || !container) {
@@ -106,10 +100,10 @@ export default function FilterMarker({
       y: pt.y + rect.top,
       store,
     });
-  }, [hoveredMarkerId, allMarkers, storeMap, map, containerRef]);
+  }, [hoveredMarkerId, Markers, storeMap, map, containerRef]);
 
   // 2D 마커 개수에 따라 클러스터링 여부 결정
-  const shouldCluster = farMarkers.length > 10;
+  const shouldCluster = Markers.length > 20;
   // 데스크톱 여부 판단 (모바일에서 오버레이 안뜨게)
   const isDesktop = useMedia('(min-width: 640px)');
 
@@ -140,7 +134,7 @@ export default function FilterMarker({
 
   // 2D 마커 렌더링 함수 분리
   const renderFarMarkers = () =>
-    farMarkers.map((m) => {
+    Markers.map((m) => {
       const markerImage = createMarkerImage(m.imageUrl);
       return (
         <MapMarker
@@ -155,6 +149,40 @@ export default function FilterMarker({
       );
     });
 
+  useEffect(() => {
+    if (!map) return;
+
+    const handleIdle = () => {
+      const level = map.getLevel!();
+      const max2D = level <= 2 ? 20 : level <= 4 ? 40 : level <= 6 ? 60 : 80;
+      const enriched2D = stores
+        .map((m) => ({
+          marker: m,
+          distance: getDistance(center, {
+            lat: m.latitude,
+            lng: m.longitude,
+          }),
+        }))
+        .sort((a, b) => a.distance - b.distance)
+        .slice(0, max2D)
+        .map((item) => ({
+          id: item.marker.id,
+          lat: item.marker.latitude,
+          lng: item.marker.longitude,
+          imageUrl: item.marker.brandImageUrl ?? '',
+        }));
+
+      SetMarkers(enriched2D);
+    };
+
+    kakao.maps.event.addListener(map, 'idle', handleIdle);
+    handleIdle();
+
+    return () => {
+      kakao.maps.event.removeListener(map, 'idle', handleIdle);
+    };
+  }, [map, center, stores]);
+
   return (
     <>
       {/* 클러스터링 분기 */}
@@ -162,7 +190,7 @@ export default function FilterMarker({
         <MarkerClusterer
           averageCenter
           minLevel={5}
-          gridSize={150}
+          gridSize={50}
           styles={[
             {
               width: '50px',

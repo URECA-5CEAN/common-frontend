@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import clsx from 'clsx';
-import UserSection from '../UserSection';
+import UserSection from './UserSection';
 import MapSection from './MapSection';
 import StarSection from './StarSection';
 import DetailSection from './DetailSection';
