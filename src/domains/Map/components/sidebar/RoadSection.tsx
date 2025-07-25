@@ -102,7 +102,7 @@ export default function RoadSection({
         </div>
 
         {/* 액션 버튼 그룹 */}
-        <div className="flex items-center space-x-2 ">
+        <div className="flex items-center justify-between space-x-2 ">
           {/* 다시입력 */}
           <Button
             onClick={onReset}

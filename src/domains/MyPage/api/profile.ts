@@ -24,11 +24,12 @@ export const editUserInfo = async (
   nickname: string,
   address: string,
   password: string,
+  membership?: string,
 ) => {
   const token = localStorage.getItem('authToken');
   const response = await axios.put(
     `${baseURL}/user`,
-    { nickname, address, password },
+    { nickname, address, password, membership },
     {
       headers: {
         Authorization: token,

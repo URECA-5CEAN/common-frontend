@@ -5,8 +5,6 @@ import {
   useMemo,
   useCallback,
   type ChangeEvent,
-  Suspense,
-  lazy,
 } from 'react';
 import KakaoMapContainer from '../KakaoMapContainer';
 import FilterMarker from '../components/FilterMarker';
@@ -14,9 +12,9 @@ import MapSidebar, {
   type MenuType,
   type Panel,
 } from '../components/sidebar/MapSidebar';
-import { LocateFixed, RotateCcw } from 'lucide-react';
-import type { MarkerProps, LatLng } from '../KakaoMapContainer';
-import { getDistance } from '../utils/getDistance';
+import { Search } from 'lucide-react';
+import type { LatLng } from '../KakaoMapContainer';
+
 import {
   createBookmark,
   deleteBookmark,
@@ -24,10 +22,15 @@ import {
   fetchStores,
   type StoreInfo,
 } from '../api/store';
-import { Button } from '@/components/Button';
 import BenefitModal from '../components/BenefitModal';
-import clsx from 'clsx';
-const ThreeJsMarker = lazy(() => import('../components/ThreeJsMarker'));
+import type { BottomSheetHandle } from '../components/sidebar/BottomSheet';
+import DebouncedInput from '../components/DebouncedInput';
+import { useDebounce } from 'react-use';
+import CategorySlider from '../components/CategorySlider';
+import DeskTopBtns from '../components/DeskTopBtns';
+import MyLocationBtn from '../components/MyLocationBtn';
+import SearchHereBtn from '../components/SearchHearBtn';
+
 //bounds 타입에러 방지
 interface InternalBounds extends kakao.maps.LatLngBounds {
   pa: number;
@@ -36,13 +39,20 @@ interface InternalBounds extends kakao.maps.LatLngBounds {
   ha: number;
 }
 
-type CategoryType = '음식점' | '카페' | '편의점' | '대형마트' | '문화시설';
+type CategoryType =
+  | '음식점'
+  | '카페'
+  | '편의점'
+  | '대형마트'
+  | '문화시설'
+  | '렌터카';
 const Category: CategoryType[] = [
   '음식점',
   '카페',
   '편의점',
   '대형마트',
   '문화시설',
+  '렌터카',
 ];
 export default function MapPage() {
   //도 + 3D 캔버스 감쌀 div
@@ -71,10 +81,11 @@ export default function MapPage() {
   const [debouncedKeyword, setDebouncedKeyword] = useState<string>(keyword);
 
   // 사이드바 menu 현재 상태
-  const [panel, setPanel] = useState<Panel>({ type: 'menu', menu: '지도' });
+  const [panel, setPanel] = useState<Panel>({
+    type: 'menu',
+    menu: '지도',
+  });
 
-  // MarkerClusterer 참조
-  const clustererRef = useRef<kakao.maps.MarkerClusterer | null>(null);
   //검색 디바운스
   const [isCategory, SetIsCategory] = useState<string>('');
 
@@ -86,13 +97,30 @@ export default function MapPage() {
   //즐겨찾기
   const [bookmarks, setBookmarks] = useState<StoreInfo[]>([]);
 
-  //3d마커
-  const [lod3DMarkers, setLod3DMarkers] = useState<MarkerProps[]>([]);
-  //2d마커
-  const [lod2DMarkers, setLod2DMarkers] = useState<MarkerProps[]>([]);
-
   //혜택인증 파일
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  // 바텀시트 Y 위치
+  const [sheetY, setSheetY] = useState<number>(0);
+  //바텀시트 인스턴스
+  const sheetRef = useRef<BottomSheetHandle | null>(null);
+  const sheetDetail = useRef<BottomSheetHandle | null>(null);
+  //이 위치 검색버튼 상태
+  const [showSearchBtn, setShowSearchBtn] = useState(false);
+
+  // bounds 변경 시마다 시간 업데이트
+  const hideTimeoutRef = useRef<number>(0);
+
+  // peek 상태 바텀시트 높이
+  const peekHeight = 30;
+
+  const [idleCount, setIdleCount] = useState(0);
+
+  // 초기 바텀시트 위치 계산
+  useEffect(() => {
+    const sheetHeight = window.innerHeight * 0.75;
+    setSheetY(sheetHeight - peekHeight);
+  }, []);
 
   useEffect(() => {
     const handler = window.setTimeout(() => setDebouncedKeyword(keyword), 300);
@@ -126,6 +154,7 @@ export default function MapPage() {
   useEffect(() => {
     searchHere();
   }, [searchHere]);
+
   //화면 내 매장만 filter해 sidebar 및 marker적용
   const filterStoresInView = useCallback(() => {
     if (!map) return;
@@ -145,14 +174,36 @@ export default function MapPage() {
     setFilteredStores(inView);
   }, [map, stores]);
 
-  // bounds 변경 시마다 필터링
+  // bounds 변경 시마다 필터링 + 검색 버튼 토글
+  useDebounce(
+    () => {
+      // 3초동안 추가 idle 이벤트 없으면 여기가 실행
+      filterStoresInView();
+      setShowSearchBtn(true);
+
+      // 5초 뒤 버튼 숨기기
+      clearTimeout(hideTimeoutRef.current);
+      hideTimeoutRef.current = window.setTimeout(() => {
+        setShowSearchBtn(false);
+      }, 5000);
+    },
+    300,
+    [idleCount], // 줌 드래그 할 시 값 변경
+  );
+
+  // idle 이벤트에서는 카운터만 올려 주기
   useEffect(() => {
     if (!map) return;
-    // 처음 렌더링 시
+    // 마운트 시 제휴처 보여줌
     filterStoresInView();
-    kakao.maps.event.addListener(map, 'idle', filterStoresInView);
+
+    const handleIdle = () => {
+      setIdleCount((c) => c + 1);
+    };
+    kakao.maps.event.addListener(map, 'idle', handleIdle);
     return () => {
-      kakao.maps.event.removeListener(map, 'idle', filterStoresInView);
+      kakao.maps.event.removeListener(map, 'idle', handleIdle);
+      clearTimeout(hideTimeoutRef.current);
     };
   }, [map, filterStoresInView]);
 
@@ -204,114 +255,23 @@ export default function MapPage() {
     return panel.menu === '즐겨찾기' ? bookmarks : filteredStores;
   }, [panel.menu, bookmarks, filteredStores]);
 
-  // 거리 기준으로 2D / 3D 마커 분리 RADIUS_JN = 거리
-  const RADIUS_KM = 0.5;
-  const [nearbyMarkers, farMarkers] = useMemo(() => {
-    const near: MarkerProps[] = [];
-    const far: MarkerProps[] = [];
-    displayedStores.forEach((store) => {
-      //중심과 제휴처 거리
-      const distance = getDistance(center, {
-        lat: store.latitude,
-        lng: store.longitude,
-      });
-      const marker: MarkerProps = {
-        id: store.id,
-        lat: store.latitude,
-        lng: store.longitude,
-        imageUrl: store.brandImageUrl ?? '',
-      };
-      //설정 거리기준 가까운 제휴처 먼 제휴처 나눔
-      if (distance <= RADIUS_KM) near.push(marker);
-      else far.push(marker);
-    });
-    return [near, far];
-  }, [displayedStores, center]);
-
-  useEffect(() => {
-    if (!map) return;
-    // idle 콜백 함수 정의
-    const handleIdle = () => {
-      const level = map.getLevel!();
-      //3d마커 개수 제한
-      const max3D = level <= 2 ? 30 : level <= 4 ? 20 : level <= 6 ? 10 : 5;
-      const enriched = nearbyMarkers
-        .map((m) => ({
-          marker: m,
-          distance: getDistance(center, m as LatLng),
-        }))
-        .sort((a, b) => a.distance - b.distance)
-        .slice(0, max3D)
-        .map((item) => item.marker); // marker만 추출
-
-      setLod3DMarkers(enriched);
-
-      // 2D마커 개수 제한
-      const max2D = level <= 2 ? 40 : level <= 4 ? 30 : level <= 6 ? 20 : 10;
-      const enriched2D = farMarkers
-        .map((m) => ({
-          marker: m,
-          distance: getDistance(center, m as LatLng),
-        }))
-        .sort((a, b) => a.distance - b.distance)
-        .slice(0, max2D)
-        .map((item) => item.marker);
-
-      setLod2DMarkers(enriched2D);
-    };
-
-    // idle 이벤트 등록
-    kakao.maps.event.addListener(map, 'idle', handleIdle);
-    handleIdle();
-    // 클린업
-    return () => {
-      kakao.maps.event.removeListener(map, 'idle', handleIdle);
-    };
-  }, [map, nearbyMarkers, farMarkers, center]);
-
-  // 3d 클러스터
-  useEffect(() => {
-    if (!map) return;
-    const clusterer = new kakao.maps.MarkerClusterer({
-      map,
-      averageCenter: true,
-      gridSize: 50,
-      minLevel: 3,
-      styles: [
-        {
-          width: '53px',
-          height: '52px',
-          color: '#fff',
-          backgroundColor: '#0ef81a',
-          border: '2px solid #fff',
-          borderRadius: '50%',
-          textAlign: 'center',
-          lineHeight: '52px',
-          boxShadow: '0 2px 2px rgba(0,0,0,0.2)',
-        },
-      ],
-    });
-    clustererRef.current = clusterer;
-    return () => {
-      clusterer.setMap(null); // 클러스터러 제거
-      clusterer.clear(); // 내부 마커 모두 해제
-    };
-  }, [map]);
-
   // 사이드바 메뉴 Open
   const openMenu = (menu: MenuType) => {
     setPanel({ type: 'menu', menu });
   };
 
   //매장 선택 시 상세열기
-  const openDetail = useCallback((store: StoreInfo) => {
-    setPanel({ type: 'detail', menu: '지도', item: store });
-  }, []);
+  const openDetail = useCallback(
+    (store: StoreInfo) => {
+      setPanel({ type: 'detail', menu: panel.menu, item: store });
+    },
+    [panel.menu],
+  );
 
   //상세 닫기
   const closePanel = useCallback(() => {
-    setPanel({ type: 'menu', menu: '지도' });
-  }, []);
+    setPanel({ type: 'menu', menu: panel.menu });
+  }, [panel.menu]);
 
   //키워드 변경 시 카테고리 초기화
   const changeKeyword = (e: ChangeEvent<HTMLInputElement>) => {
@@ -355,19 +315,19 @@ export default function MapPage() {
   };
   //마운트 시 즐겨찾기 조회
   useEffect(() => {
-    let isMounted = true;
+    let imdounted = true;
 
     async function loadBookmarks() {
       try {
         const data = await fetchBookmark();
-        if (isMounted) setBookmarks(data);
+        if (imdounted) setBookmarks(data);
       } catch (err) {
         console.error('즐겨찾기 불러오기 실패', err);
       }
     }
     loadBookmarks();
     return () => {
-      isMounted = false;
+      imdounted = false;
     };
   }, []);
 
@@ -393,16 +353,16 @@ export default function MapPage() {
     [bookmarks],
   );
 
+  //혜택인증 영수증 파일 선택
   const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
     setSelectedFile(file);
   };
 
-  console.log(isCategory);
   return (
-    <>
+    <div className="flex h-screen flex-col-reverse md:flex-row overflow-y-hidden ">
       {/* 사이드바 */}
-      <div className="fixed top-[62px] md:top-[86px] left-0 bottom-0 w-20 z-20">
+      <aside className="relative top-[62px] md:top-[86px] mr-6 md:m-0  left-0 bottom-0 md:w-[420px] z-20 flex-shrink-0">
         <MapSidebar
           stores={displayedStores}
           panel={panel}
@@ -422,11 +382,33 @@ export default function MapPage() {
           toggleBookmark={toggleBookmark}
           bookmarkIds={bookmarkIds}
           goToStore={goToStore}
+          sheetRef={sheetRef}
+          sheetDetail={sheetDetail}
+          onSheetPositionChange={(y) => setSheetY(y)}
+          onDetailSheetPositionChange={(y) => setSheetY(y)}
         />
-      </div>
+        {/* 내 위치 버튼 */}
+        {map && myLocation && (
+          <MyLocationBtn
+            map={map}
+            myLocation={myLocation}
+            goToMyLocation={goToMyLocation}
+            sheetY={sheetY}
+          />
+        )}
+        {map && myLocation && (
+          <SearchHereBtn
+            map={map}
+            myLocation={myLocation}
+            show={showSearchBtn}
+            sheetY={sheetY}
+            onClick={searchHere}
+          />
+        )}
+      </aside>
 
       {/* 지도 영역 */}
-      <div className="h-screen pt-[62px] md:pt-[86px] ml-[22%] relative">
+      <div className="flex-1 relative overflow-x-hidden">
         <div ref={containerRef} className="absolute inset-0 ">
           <KakaoMapContainer
             center={myLocation ?? center}
@@ -436,11 +418,10 @@ export default function MapPage() {
           >
             {/* 2D 마커/오버레이 */}
             <FilterMarker
-              nearbyMarkers={lod3DMarkers}
-              farMarkers={lod2DMarkers}
               hoveredMarkerId={hoveredId}
               setHoveredMarkerId={setHoveredId}
               map={map}
+              center={center}
               containerRef={containerRef}
               stores={displayedStores}
               openDetail={openDetail}
@@ -450,64 +431,29 @@ export default function MapPage() {
               bookmarkIds={bookmarkIds}
             />
 
-            {/* 3D 마커 */}
-            {map && (
-              <Suspense fallback={null}>
-                <ThreeJsMarker
-                  markers={lod3DMarkers}
-                  map={map}
-                  setHoveredMarkerId={setHoveredId}
-                  container={containerRef.current!}
-                  openDetail={openDetail}
-                  stores={displayedStores}
-                />
-              </Suspense>
-            )}
-
-            <div className=" fixed left-96 ml-16 top-24 z-2 flex justify-start space-x-2">
-              {Category.map((cate) => (
-                <button
-                  className={clsx(
-                    'px-6 text-xs cursor-pointer hover:text-primaryGreen py-1.5 rounded-2xl border-2  border-gray-200',
-                    isCategory === cate
-                      ? 'text-primaryGreen bg-white '
-                      : ' bg-white',
-                  )}
-                  onClick={() => changeCategory(cate)}
-                  key={cate}
-                >
-                  {cate}
-                </button>
-              ))}
-            </div>
-            {/* 이 위치에서 검색 버튼 */}
-            <div className="absolute bottom-8 left-[43%]">
-              {map && myLocation && (
-                <Button
-                  onClick={searchHere}
-                  variant="primary"
-                  size="md"
-                  className="flex justify-center shadow self-center hover:bg-primaryGreen-80"
-                >
-                  <RotateCcw size={16} className="mt-[3px]" />
-                  <p className="ml-1">이 위치에서 검색</p>
-                </Button>
-              )}
+            <div className="absolute  w-full md:ml-10 ml-6 top-28 md:top-24 z-2  overflow-x-auto">
+              <CategorySlider
+                Category={Category}
+                isCategory={isCategory}
+                changeCategory={changeCategory}
+              />
+              <DeskTopBtns
+                Category={Category}
+                isCategory={isCategory}
+                changeCategory={changeCategory}
+              />
             </div>
 
-            {/* 내 위치 버튼 */}
-            <div className="absolute bottom-8 right-8">
-              {map && myLocation && (
-                <Button
-                  onClick={goToMyLocation}
-                  variant="ghost"
-                  size="sm"
-                  className="rounded-full"
-                >
-                  <LocateFixed size={30} />
-                </Button>
-              )}
+            <div className="flex md:hidden  absolute top-[68px] left-6 right-6   bg-white z-2 items-center border border-gray-200 rounded-xl px-2 py-1 ">
+              <Search />
+              <DebouncedInput
+                value={keyword}
+                onChange={changeKeyword}
+                debounceTime={300}
+                placeholder="검색"
+              />
             </div>
+
             <BenefitModal
               panel={panel}
               openmenu={openMenu}
@@ -518,6 +464,6 @@ export default function MapPage() {
           </KakaoMapContainer>
         </div>
       </div>
-    </>
+    </div>
   );
 }
