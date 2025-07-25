@@ -1,63 +1,82 @@
 import { useState } from 'react';
-import axios from 'axios';
-
-interface SignUpFormData {
-  name: string;
-  nickname: string;
-  email: string;
-  password: string;
-  gender: 'male' | 'female';
-}
-
-interface SignUpSuccessResponse {
-  statusCode: number;
-  message: string;
-  data: {
-    id: string;
-    name: string;
-    email: string;
-    password: null;
-  };
-}
-
-interface SignUpErrorResponse {
-  statusCode: number;
-  message: string;
-  data: {
-    statusCode: number;
-    statusCodeName: string;
-    detailMessage: string;
-  };
-}
+import {
+  signUp,
+  checkNicknameDuplicate,
+  checkEmailDuplicate,
+} from '../api/signUpApi';
+import type { SignUpData } from '../api/signUpApi';
 
 export const useSignUp = () => {
   const [loading, setLoading] = useState(false);
-  const API_URL = import.meta.env.VITE_API_URL;
+  const [error, setError] = useState<string | null>(null);
 
-  const signUp = async (formData: SignUpFormData) => {
+  const handleSignUp = async (formData: SignUpData) => {
     try {
       setLoading(true);
-      const response = await axios.post(`${API_URL}/user/signup`, formData);
-      return response.data as SignUpSuccessResponse;
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        const errorData = error.response?.data as SignUpErrorResponse;
-        if (errorData?.data?.statusCode === 20002) {
-          throw new Error(
-            errorData.data.detailMessage || '해당 사용자가 이미 있습니다.',
-          );
-        }
-        throw new Error(errorData?.data?.detailMessage || '회원가입 실패');
+      setError(null);
+
+      const result = await signUp(formData);
+
+      if (result.statusCode === 200) {
+        return result;
       } else {
-        throw new Error('알 수 없는 오류가 발생했습니다.');
+        throw new Error(result.message || '회원가입에 실패했습니다.');
       }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : '회원가입 중 오류가 발생했습니다.';
+      setError(errorMessage);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCheckNickname = async (nickname: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const result = await checkNicknameDuplicate(nickname);
+      return result;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : '닉네임 중복 확인 중 오류가 발생했습니다.';
+      setError(errorMessage);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCheckEmail = async (email: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const result = await checkEmailDuplicate(email);
+      return result;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : '이메일 중복 확인 중 오류가 발생했습니다.';
+      setError(errorMessage);
+      throw error;
     } finally {
       setLoading(false);
     }
   };
 
   return {
-    signUp,
+    signUp: handleSignUp,
+    checkNickname: handleCheckNickname,
+    checkEmail: handleCheckEmail,
     loading,
+    error,
   };
 };
