@@ -1,46 +1,113 @@
-import axios from 'axios';
-
-// axios 기본 설정
-const API_URL = import.meta.env.VITE_API_URL;
-
 export interface SignUpData {
-  email: string;
-  password: string;
   name: string;
   nickname: string;
-  phoneNumber: string;
-  birth: string;
+  email: string;
+  password: string;
+  gender: 'male' | 'female';
 }
 
-export interface SignUpResponse {
-  success: boolean;
+export interface SignUpSuccessResponse {
+  statusCode: number;
   message: string;
-  user?: {
+  data: {
     id: string;
-    email: string;
     name: string;
+    email: string;
+    address: string;
+    gender: string;
+    title: string | null;
+    membership: string;
     nickname: string;
   };
 }
 
+export interface SignUpErrorResponse {
+  statusCode: number;
+  message: string;
+  data: {
+    statusCode: number;
+    statusCodeName: string;
+    detailMessage: string;
+  };
+}
+
 export const checkNicknameDuplicate = async (nickname: string) => {
-  const res = await axios.get(
-    `${API_URL}/user/isDupNickname?nickname=${nickname}`,
-  );
-  return res.data as { statusCode: number; message: string; data: boolean }; //true는 중복, false는 중복 아님
+  try {
+    const API_URL = import.meta.env.VITE_API_URL;
+    const response = await fetch(
+      `${API_URL}/user/isDupNickname?nickname=${nickname}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error('닉네임 중복 확인 요청 실패');
+    }
+
+    const data = await response.json();
+    return data as { statusCode: number; message: string; data: boolean }; // true는 중복, false는 중복 아님
+  } catch (error) {
+    console.error('닉네임 중복 확인 API 오류:', error);
+    throw error;
+  }
+};
+
+export const checkEmailDuplicate = async (email: string) => {
+  try {
+    const API_URL = import.meta.env.VITE_API_URL;
+    const encodedEmail = encodeURIComponent(email);
+    const response = await fetch(
+      `${API_URL}/user/isDupEmail?email=${encodedEmail}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error('이메일 중복 확인 요청 실패');
+    }
+
+    const data = await response.json();
+    return data as { statusCode: number; message: string; data: boolean }; // true는 중복, false는 중복 아님
+  } catch (error) {
+    console.error('이메일 중복 확인 API 오류:', error);
+    throw error;
+  }
 };
 
 export const signUp = async (
   signUpData: SignUpData,
-): Promise<SignUpResponse> => {
+): Promise<SignUpSuccessResponse> => {
   try {
-    const response = await axios.post(`${API_URL}/auth/signup`, signUpData, {
+    const API_URL = import.meta.env.VITE_API_URL;
+    const response = await fetch(`${API_URL}/user/signup`, {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
+      body: JSON.stringify(signUpData),
     });
 
-    return response.data;
+    const data = await response.json();
+
+    if (response.ok && data.statusCode === 200) {
+      return data as SignUpSuccessResponse;
+    } else {
+      // 에러 응답 처리
+      const errorData = data as SignUpErrorResponse;
+      throw new Error(
+        errorData.data?.detailMessage ||
+          errorData.message ||
+          '회원가입에 실패했습니다.',
+      );
+    }
   } catch (error) {
     console.error('회원가입 API 오류:', error);
     throw error;

@@ -10,6 +10,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   width?: string | number;
   height?: string | number;
   loading?: boolean;
+  shadowColor?: string;
 }
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -55,6 +56,7 @@ export const Button: React.FC<ButtonProps> = ({
   className = '',
   disabled,
   loading,
+  shadowColor,
   ...rest
 }) => {
   const inlineStyle = {
@@ -68,9 +70,10 @@ export const Button: React.FC<ButtonProps> = ({
 
   const shadowClass = [
     'absolute top-[3px] left-0 w-full h-full rounded-xl z-1',
-    disabled
-      ? shadowClassMap[variant].disabled
-      : shadowClassMap[variant].default,
+    shadowColor ||
+      (disabled
+        ? shadowClassMap[variant].disabled
+        : shadowClassMap[variant].default),
     !disabled && 'cursor-pointer',
   ]
     .filter(Boolean)
