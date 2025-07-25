@@ -14,7 +14,7 @@ import MapSidebar, {
   type MenuType,
   type Panel,
 } from '../components/sidebar/MapSidebar';
-import { RotateCcw, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import type { MarkerProps, LatLng } from '../KakaoMapContainer';
 import { getDistance } from '../utils/getDistance';
 import {
@@ -24,15 +24,14 @@ import {
   fetchStores,
   type StoreInfo,
 } from '../api/store';
-import { Button } from '@/components/Button';
 import BenefitModal from '../components/BenefitModal';
-import clsx from 'clsx';
 import type { BottomSheetHandle } from '../components/sidebar/BottomSheet';
 import DebouncedInput from '../components/DebouncedInput';
 import { useDebounce } from 'react-use';
 import CategorySlider from '../components/CategorySlider';
 import DeskTopBtns from '../components/DeskTopBtns';
 import MyLocationBtn from '../components/MyLocationBtn';
+import SearchHereBtn from '../components/SearchHearBtn';
 const ThreeJmdarker = lazy(() => import('../components/ThreeJsMarker'));
 //bounds 타입에러 방지
 interface InternalBounds extends kakao.maps.LatLngBounds {
@@ -500,40 +499,15 @@ export default function MapPage() {
             sheetY={sheetY}
           />
         )}
-
-        {/* 모바일: 바텀시트 위에 붙이기 */}
-        <div
-          className={clsx(
-            'fixed block md:hidden left-[50%] transform -translate-x-1/2 z-20',
-            sheetY === 0 ? 'hidden' : 'block',
-          )}
-          style={{ top: sheetY + 110 }}
-        >
-          {map && myLocation && showSearchBtn && (
-            <Button
-              onClick={searchHere}
-              variant="primary"
-              size="sm"
-              className="shadow px-3 py-2"
-            >
-              <RotateCcw size={16} className="mr-1" />이 위치에서 검색
-            </Button>
-          )}
-        </div>
-
-        {/* 데스크탑: 화면 하단 중앙에 고정 */}
-        <div className="hidden md:block fixed bottom-8 left-[55%] transform -translate-x-1/2 z-20">
-          {map && myLocation && showSearchBtn && (
-            <Button
-              onClick={searchHere}
-              variant="primary"
-              size="sm"
-              className="shadow px-4 py-2"
-            >
-              <RotateCcw size={16} className="mr-1" />이 위치에서 검색
-            </Button>
-          )}
-        </div>
+        {map && myLocation && (
+          <SearchHereBtn
+            map={map}
+            myLocation={myLocation}
+            show={showSearchBtn}
+            sheetY={sheetY}
+            onClick={searchHere}
+          />
+        )}
       </aside>
 
       {/* 지도 영역 */}
