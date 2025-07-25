@@ -58,7 +58,7 @@ export default function FilterMarker({
 
     const handleIdle = () => {
       const level = map.getLevel!();
-      const max2D = level <= 2 ? 20 : level <= 4 ? 40 : level <= 6 ? 60 : 80;
+      const max2D = level <= 2 ? 20 : level <= 4 ? 30 : level <= 6 ? 40 : 50;
       const enriched2D = stores
         .map((m) => ({
           marker: m,
@@ -162,11 +162,11 @@ export default function FilterMarker({
   }, []);
   // 2D 마커 렌더링 함수 분리
   const renderFarMarkers = () =>
-    Markers.map((m) => {
+    Markers.map((m, idx) => {
       const markerImage = createMarkerImage(m.imageUrl);
       return (
         <MapMarker
-          key={m.id}
+          key={`${m.id}-${idx}`}
           position={{ lat: m.lat, lng: m.lng }}
           image={markerImage}
           zIndex={shouldCluster ? 2 : 3}

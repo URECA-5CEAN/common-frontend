@@ -18,6 +18,7 @@ export interface StoreInfo {
   longitude: number;
   brandName: string;
   brandImageUrl?: string;
+  isRecommended?: string;
 }
 
 export interface FetchStoresParams {

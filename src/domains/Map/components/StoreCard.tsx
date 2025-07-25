@@ -31,6 +31,12 @@ export default function StoreCard({
         className="w-[80px] h-[80px] rounded-md mr-3 self-center"
         loading="lazy"
       />
+      {store.isRecommended && (
+        <div className="absolute top-[170px] left-7 bg-red-500 text-white text-xs font-semibold px-2 py-0.5 rounded-full shadow-md z-10">
+          AI추천
+        </div>
+      )}
+
       {/* 텍스트 영역 */}
       <div className="flex flex-1 mt-2 flex-col justify-between space-y-2 h-full  ">
         <p className="text-lg font-semibold truncate w-48 ">{store.name}</p>

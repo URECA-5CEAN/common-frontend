@@ -9,11 +9,16 @@ const apiClient: AxiosInstance = axios.create({
 
 const token = import.meta.env.VITE_AUTH_TOKEN;
 
+export interface AiRecommendResult {
+  reason: string;
+  store: StoreInfo;
+}
+
 export async function fetchAiRecommendedStore(
   params: FetchStoresParams,
-): Promise<StoreInfo> {
+): Promise<AiRecommendResult> {
   try {
-    const response = await apiClient.post<StoreInfo>(
+    const { data } = await apiClient.post<{ data: AiRecommendResult }>(
       '/recommend/store',
       params,
       {
@@ -22,8 +27,7 @@ export async function fetchAiRecommendedStore(
         },
       },
     );
-
-    return response.data;
+    return data.data;
   } catch (error: unknown) {
     const axiosErr = error as AxiosError<{ message: string }>;
     const message =

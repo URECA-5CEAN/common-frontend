@@ -30,15 +30,10 @@ import CategorySlider from '../components/CategorySlider';
 import DeskTopBtns from '../components/DeskTopBtns';
 import MyLocationBtn from '../components/MyLocationBtn';
 import SearchHereBtn from '../components/SearchHearBtn';
-import { useAiRecommend } from '../hooks/useAiRecommend';
+import { fetchAiRecommendedStore } from '../api/ai';
+import { extractBouns, type InternalBounds } from '../utils/extractBouns';
 
 //bounds 타입에러 방지
-interface InternalBounds extends kakao.maps.LatLngBounds {
-  pa: number;
-  qa: number;
-  oa: number;
-  ha: number;
-}
 
 type CategoryType =
   | '음식점'
@@ -117,6 +112,31 @@ export default function MapPage() {
 
   const [idleCount, setIdleCount] = useState(0);
 
+  const [recommendedStore, setRecommendedStore] = useState<StoreInfo | null>(
+    null,
+  );
+
+  // 제휴처 목록 조회 함수
+  const searchHere = useCallback(async () => {
+    if (!map) return;
+    const bounds = extractBouns(map);
+    if (!bounds) return;
+
+    try {
+      const data = await fetchStores({
+        keyword: debouncedKeyword,
+        category: isCategory,
+        ...bounds,
+        centerLat: center.lat,
+        centerLng: center.lng,
+      });
+
+      setStores(data);
+    } catch {
+      setStores([]);
+    }
+  }, [map, debouncedKeyword, isCategory]);
+
   // 초기 바텀시트 위치 계산
   useEffect(() => {
     const sheetHeight = window.innerHeight * 0.75;
@@ -128,57 +148,41 @@ export default function MapPage() {
     return () => clearTimeout(handler);
   }, [keyword]);
 
-  // 제휴처 목록 조회 함수
-  const searchHere = useCallback(async () => {
-    if (!map) return;
-    const bounds = map.getBounds() as InternalBounds;
-    if (!bounds) return;
-    const { pa: latMax, qa: latMin, oa: lngMax, ha: lngMin } = bpunds;
-    try {
-      const data = await fetchStores({
-        keyword: debouncedKeyword || isCategory,
-        category: isCategory,
-        latMin,
-        latMax,
-        lngMin,
-        lngMax,
-        centerLat: center.lat,
-        centerLng: center.lng,
-      });
+  useEffect(() => {
+    const fetchAI = async () => {
+      if (!map) return;
 
-      setStores(data);
-    } catch {
-      setStores([]);
-    }
-  }, [map, debouncedKeyword, isCategory]);
+      const bounds = extractBouns(map);
+      if (!bounds) return;
+      console.time('AI 추천 로딩');
+      try {
+        const result = await fetchAiRecommendedStore({
+          keyword: debouncedKeyword,
+          category: isCategory,
+          ...bounds,
+          centerLat: center.lat,
+          centerLng: center.lng,
+        });
+        const recommended = { ...result.store, isRecommended: result.reason };
+        setRecommendedStore(recommended);
+        console.timeEnd('AI 추천 로딩');
+        // stores에도 포함시키기 (중복 방지)
+        setStores((prev) => {
+          const exists = prev.some((store) => store.id === recommended.id);
+          return exists ? prev : [recommended, ...prev];
+        });
+        console.log(recommendedStore);
+      } catch (err) {
+        console.log('AI 제휴처 추천 실패:', err);
+      }
+    };
+
+    fetchAI();
+  }, [map, debouncedKeyword, isCategory, center]);
 
   useEffect(() => {
     searchHere();
   }, [searchHere]);
-
-  // AI 제휴처 추천 로직
-  const bounds = map?.getBounds() as InternalBounds;
-  const latMin = bounds?.qa ?? 0;
-  const latMax = bounds?.pa ?? 0;
-  const lngMin = bounds?.ha ?? 0;
-  const lngMax = bounds?.oa ?? 0;
-  const {
-    data: recommendedStore,
-    isLoading,
-    error,
-  } = useAiRecommend({
-    keyword: debouncedKeyword,
-    category: isCategory,
-    latMin,
-    latMax,
-    lngMin,
-    lngMax,
-    centerLat: center.lat,
-    centerLng: center.lng,
-  });
-
-  console.log(recommendedStore);
-
   //화면 내 매장만 filter해 sidebar 및 marker적용
   const filterStoresInView = useCallback(() => {
     if (!map) return;
@@ -274,10 +278,21 @@ export default function MapPage() {
     [map, searchHere],
   );
 
-  //즐겨찾기 사이드바 클릭 시 즐겨찾기만 보이도록
+  //즐겨찾기 사이드바 클릭 시 즐겨찾기만 보이도록 +AI 추천 제휴처 추가
   const displayedStores = useMemo<StoreInfo[]>(() => {
-    return panel.menu === '즐겨찾기' ? bookmarks : filteredStores;
-  }, [panel.menu, bookmarks, filteredStores]);
+    if (panel.menu === '즐겨찾기') return bookmarks;
+
+    const list = [...filteredStores];
+
+    if (
+      recommendedStore &&
+      !filteredStores.some((store) => store.id === recommendedStore.id)
+    ) {
+      return [recommendedStore, ...list]; // 맨 앞에 추가
+    }
+
+    return list;
+  }, [panel.menu, bookmarks, filteredStores, recommendedStore]);
 
   // 사이드바 메뉴 Open
   const openMenu = (menu: MenuType) => {
@@ -420,7 +435,7 @@ export default function MapPage() {
             sheetY={sheetY}
           />
         )}
-        {map && myLocation && (
+        {map && (
           <SearchHereBtn
             map={map}
             myLocation={myLocation}
