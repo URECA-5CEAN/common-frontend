@@ -1,4 +1,3 @@
-// src/api/store.ts
 import axios from 'axios';
 import type { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 

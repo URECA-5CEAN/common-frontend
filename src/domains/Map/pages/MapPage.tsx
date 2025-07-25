@@ -30,6 +30,7 @@ import CategorySlider from '../components/CategorySlider';
 import DeskTopBtns from '../components/DeskTopBtns';
 import MyLocationBtn from '../components/MyLocationBtn';
 import SearchHereBtn from '../components/SearchHearBtn';
+import { useAiRecommend } from '../hooks/useAiRecommend';
 
 //bounds 타입에러 방지
 interface InternalBounds extends kakao.maps.LatLngBounds {
@@ -130,8 +131,8 @@ export default function MapPage() {
   // 제휴처 목록 조회 함수
   const searchHere = useCallback(async () => {
     if (!map) return;
-    const bpunds = map.getBounds() as InternalBounds;
-    if (!bpunds) return;
+    const bounds = map.getBounds() as InternalBounds;
+    if (!bounds) return;
     const { pa: latMax, qa: latMin, oa: lngMax, ha: lngMin } = bpunds;
     try {
       const data = await fetchStores({
@@ -154,6 +155,29 @@ export default function MapPage() {
   useEffect(() => {
     searchHere();
   }, [searchHere]);
+
+  // AI 제휴처 추천 로직
+  const bounds = map?.getBounds() as InternalBounds;
+  const latMin = bounds?.qa ?? 0;
+  const latMax = bounds?.pa ?? 0;
+  const lngMin = bounds?.ha ?? 0;
+  const lngMax = bounds?.oa ?? 0;
+  const {
+    data: recommendedStore,
+    isLoading,
+    error,
+  } = useAiRecommend({
+    keyword: debouncedKeyword,
+    category: isCategory,
+    latMin,
+    latMax,
+    lngMin,
+    lngMax,
+    centerLat: center.lat,
+    centerLng: center.lng,
+  });
+
+  console.log(recommendedStore);
 
   //화면 내 매장만 filter해 sidebar 및 marker적용
   const filterStoresInView = useCallback(() => {
