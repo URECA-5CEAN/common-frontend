@@ -6,7 +6,6 @@ export interface Post {
   brand: string;
   type: string;
   date: string;
-  time: string;
   place: string;
   isClosed: boolean;
 }

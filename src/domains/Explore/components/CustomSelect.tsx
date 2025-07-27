@@ -10,6 +10,7 @@ interface CustomSelectProps {
   onChange: (value: SelectOption | TimeValue | null) => void;
   options?: SelectOption[];
   placeholder?: string;
+  disabled?: boolean;
 }
 
 const CustomSelect = ({
@@ -18,6 +19,7 @@ const CustomSelect = ({
   options,
   value,
   onChange,
+  disabled = false,
 }: CustomSelectProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
@@ -148,6 +150,7 @@ const CustomSelect = ({
             setIsOpen(!isOpen);
           }}
           className={`flex justify-between min-w-24 gap-1 cursor-pointer`}
+          disabled={disabled}
         >
           <span>{displayValue()}</span> <ChevronDown />
         </button>
