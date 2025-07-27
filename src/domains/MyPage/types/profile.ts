@@ -6,10 +6,11 @@ export interface Badge {
 
 export interface UsageHistoryItem {
   id: number;
+  date: string;
+  time: string;
   store: string;
-  benefitAmount: number;
+  benefit: string;
   experience: number;
-  visitedAt: string;
 }
 
 export interface UserInfo {

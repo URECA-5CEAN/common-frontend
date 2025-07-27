@@ -3,13 +3,13 @@ import { CircleCheck } from 'lucide-react';
 const STYLES = {
   subtitle: 'text-2xl font-bold mb-2',
   todayMissionBox:
-    'w-full md:max-w-[463px] bg-gray-100 text-gray-300 py-4 px-5 rounded-xl flex justify-between',
+    'w-full max-w-[463px] bg-gray-100 text-gray-300 py-4 px-5 rounded-xl flex justify-between',
   todayMissionIcon: 'text-primaryGreen',
   encyclopediaBox:
-    'w-full md:max-w-[463px] bg-white border border-primaryGreen-60 py-4 px-5 rounded-xl flex justify-between',
+    'w-full max-w-[463px] bg-white border border-primaryGreen-60 py-4 px-5 rounded-xl flex justify-between',
   encyclopediaIcon: 'text-gray-200',
   weeklyMissionBox:
-    'w-full md:max-w-[463px] bg-white border border-primaryGreen-60 py-4 px-5 rounded-xl flex justify-between mb-3',
+    'w-full max-w-[463px] bg-white border border-primaryGreen-60 py-4 px-5 rounded-xl flex justify-between mb-3',
   weeklyMissionRight: 'flex gap-2',
   weeklyMissionIcon: 'text-gray-200',
 };
