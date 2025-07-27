@@ -1,0 +1,73 @@
+import { Breadcrumb } from '@/components/Breadcrumb';
+import { Button } from '@/components/Button';
+import SharePostList from '@/domains/Explore/components/share/SharePostList';
+import type { Post } from '@/domains/Explore/types/share';
+import { Plus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
+// 임의 데이터
+const postList: Post[] = [
+  {
+    id: '1',
+    title: '롯데월드 자유이용권 1+1 나눠요!',
+    content: '혼자 가기 아쉬워서 같이 가실 분 구해요 :)',
+    category: '테마파크',
+    brand: '롯데월드',
+    type: '1+1 나눔',
+    date: '7/12, 17:00',
+    place: '롯데월드 정문 앞',
+    isClosed: false,
+  },
+  {
+    id: 'b11703b5-b31d-465f-8234-1d2fccf3383f',
+    title: 'CGV 영화 티켓 1장 나눔',
+    content: '시간 맞는 분께 드릴게요. 선착순!',
+    category: '영화',
+    brand: 'CGV',
+    type: '티켓 나눔',
+    date: '7/13, 19:00',
+    place: 'CGV 강남점',
+    isClosed: false,
+  },
+  {
+    id: '3',
+    title: '메가박스 팝콘 교환권 같이 쓰실 분!',
+    content: '영화 볼 분 없어도 괜찮아요, 팝콘 나눔 원해요!',
+    category: '영화',
+    brand: '메가박스',
+    type: '혜택 공유',
+    date: '7/14, 15:00',
+    place: '메가박스 코엑스점',
+    isClosed: false,
+  },
+];
+
+const MySharingPage = () => {
+  const navigate = useNavigate();
+
+  return (
+    <div className="w-full max-w-[1050px] m-6">
+      <Breadcrumb title="마이페이지" subtitle="내 나눔" />
+      <div className="text-[32px] font-bold my-3">내 나눔</div>
+
+      <div className="flex justify-between gap-4">
+        <div className="flex gap-2 flex-1"></div>
+        <div className="fixed right-4 bottom-4 sm:static sm:right-auto sm:bottom-auto sm:flex sm:items-center z-10">
+          <Button
+            variant="primary"
+            size="lg"
+            className="sm:flex whitespace-nowrap px-4 py-2 rounded-md items-center gap-1"
+            onClick={() => navigate('/explore/share/write')}
+          >
+            <Plus size={18} />
+            <span className="hidden sm:flex">글 작성</span>
+          </Button>
+        </div>
+      </div>
+
+      <SharePostList posts={postList} />
+    </div>
+  );
+};
+
+export default MySharingPage;

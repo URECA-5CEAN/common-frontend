@@ -1,4 +1,5 @@
 import type { UsageHistoryItem } from '@/domains/MyPage/types/profile';
+import dolphinFind from '@/assets/image/dolphin_find.png';
 
 interface HistoryItemProps {
   item: UsageHistoryItem;
@@ -26,12 +27,22 @@ interface HistoryListProps {
   items: UsageHistoryItem[];
 }
 
-const HistoryList: React.FC<HistoryListProps> = ({ items }) => (
-  <div className="flex flex-col gap-2">
-    {items.map((item) => (
-      <HistoryItem key={item.id} item={item} />
-    ))}
-  </div>
-);
+const HistoryList: React.FC<HistoryListProps> = ({ items }) =>
+  items.length > 0 ? (
+    <div className="flex flex-col gap-2">
+      {items.map((item) => (
+        <HistoryItem key={item.id} item={item} />
+      ))}
+    </div>
+  ) : (
+    <div className="w-full flex flex-col items-center py-10">
+      <img
+        src={dolphinFind}
+        alt="무언가를 찾는 돌고래 캐릭터"
+        className="w-[150px]"
+      />
+      사용내역이 없어요
+    </div>
+  );
 
 export default HistoryList;

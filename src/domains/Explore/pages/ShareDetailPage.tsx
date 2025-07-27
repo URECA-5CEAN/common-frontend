@@ -1,8 +1,7 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 const ShareDetailPage = () => {
   const { postId } = useParams();
-  const navigate = useNavigate();
 
   return (
     <div className="w-full max-w-[1050px] m-6">

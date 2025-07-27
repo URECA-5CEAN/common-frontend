@@ -13,15 +13,15 @@ export const useLogin = () => {
 
       const result = await login(loginData);
 
-      if (result.success) {
-        // 토큰을 로컬 스토리지에 저장 (실제 프로젝트에서는 보안 고려)
-        if (result.token) {
-          localStorage.setItem('authToken', result.token);
+      if (result.statusCode === 200) {
+        // 토큰을 로컬 스토리지에 저장
+        if (result.data.token) {
+          localStorage.setItem('authToken', result.data.token);
         }
 
-        // 사용자 정보를 로컬 스토리지에 저장
-        if (result.user) {
-          localStorage.setItem('userData', JSON.stringify(result.user));
+        // userDto가 있다면 사용자 정보 저장 (현재는 null이지만 향후 사용 가능)
+        if (result.data.userDto) {
+          localStorage.setItem('userInfo', JSON.stringify(result.data.userDto));
         }
 
         return result;
@@ -47,15 +47,15 @@ export const useLogin = () => {
 
       const result = await kakaoLogin();
 
-      if (result.success) {
+      if (result.statusCode === 200) {
         // 토큰을 로컬 스토리지에 저장
-        if (result.token) {
-          localStorage.setItem('authToken', result.token);
+        if (result.data.token) {
+          localStorage.setItem('authToken', result.data.token);
         }
 
-        // 사용자 정보를 로컬 스토리지에 저장
-        if (result.user) {
-          localStorage.setItem('userData', JSON.stringify(result.user));
+        // userDto가 있다면 사용자 정보 저장
+        if (result.data.userDto) {
+          localStorage.setItem('userInfo', JSON.stringify(result.data.userDto));
         }
 
         return result;

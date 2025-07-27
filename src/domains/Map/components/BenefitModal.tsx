@@ -24,7 +24,7 @@ export default function BenefitModal({
         isOpen={panel.menu === '혜택인증'}
         title="멤버십 혜택 사용 인증하기"
         description={
-          <div className="px-10 py-6 text-black flex flex-col justify-center items-center ">
+          <div className="px-10 py-6  text-black flex flex-col justify-center items-center ">
             영수증을 촬영하여 올려주시면
             <br />
             아래 항목을 확인한 후 인증을 도와드릴게요!

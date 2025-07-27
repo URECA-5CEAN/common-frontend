@@ -1,7 +1,7 @@
 import type { Post } from '@/domains/Explore/types/share';
-import { Calendar } from 'lucide-react';
+import { Calendar, Trash2 } from 'lucide-react';
 import { MapPin } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 interface SharePostItemProps {
   post: Post;
@@ -9,6 +9,7 @@ interface SharePostItemProps {
 
 const SharePostItem = ({ post }: SharePostItemProps) => {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   const handleClick = () => {
     navigate(`/explore/share/${post.id}`);
@@ -16,8 +17,11 @@ const SharePostItem = ({ post }: SharePostItemProps) => {
   return (
     <li
       onClick={handleClick}
-      className="border rounded-xl p-4 border-gray-200 cursor-pointer flex flex-col sm:flex-row justify-between gap-4"
+      className="relative border rounded-xl p-4 border-gray-200 cursor-pointer flex flex-col sm:flex-row justify-between gap-4"
     >
+      <button className="absolute right-4 top-4 text-gray-400 ">
+        {pathname === '/mypage/sharing' && <Trash2 />}
+      </button>
       <div className="flex gap-2 sm:gap-4">
         <div className="relative w-16 h-16 sm:w-32 sm:h-32 flex items-center justify-center flex-shrink-0">
           {/* <img /> */}

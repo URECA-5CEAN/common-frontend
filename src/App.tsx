@@ -1,4 +1,10 @@
-import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom';
+import {
+  BrowserRouter,
+  Navigate,
+  Outlet,
+  Route,
+  Routes,
+} from 'react-router-dom';
 import LandingPage from './domains/Landing/pages/LandingPage';
 import MapPage from './domains/Map/pages/MapPage';
 import Header from './components/Header';
@@ -16,6 +22,9 @@ import MissionPage from './domains/MyPage/pages/MissionPage';
 import StatisticsPage from './domains/MyPage/pages/StatisticsPage';
 import FavoritesPage from './domains/MyPage/pages/FavoritesPage';
 import EditProfilePage from '@/domains/MyPage/pages/EditProfilePage';
+import MySharingPage from '@/domains/MyPage/pages/MySharingPage';
+import { useAuthStore } from '@/store/useAuthStore';
+import dolphinFind from '@/assets/image/dolphin_find.png';
 
 const AppLayout = () => {
   return (
@@ -37,34 +46,92 @@ const SidebarLayout = () => {
   );
 };
 
+const NotFoundPage = () => {
+  return (
+    <div className="flex flex-col items-center justify-center h-screen m-6 text-center break-keep">
+      <img
+        src={dolphinFind}
+        alt="무언가를 찾는 돌고래 캐릭터"
+        className="w-40 mb-5"
+      />
+      <h1 className="text-xl md:text-2xl font-bold mb-4">
+        404 - 페이지를 찾을 수 없습니다.
+      </h1>
+      <p>요청하신 페이지가 존재하지 않거나 잘못된 경로입니다.</p>
+      <a href="/" className="mt-6 text-blue-600 underline">
+        홈으로 돌아가기
+      </a>
+    </div>
+  );
+};
+
+const ProtectedRoute = () => {
+  const { isLoggedIn } = useAuthStore();
+
+  if (!isLoggedIn) {
+    // 로그인 안 된 경우 로그인 페이지로 이동
+    return <Navigate to="/" replace />;
+  }
+
+  // 로그인 됐으면 자식 라우트 렌더링
+  return <Outlet />;
+};
+
+export const PublicRoute = () => {
+  const { isLoggedIn } = useAuthStore();
+
+  if (isLoggedIn) {
+    return <Navigate to="/" replace />;
+  }
+
+  return <Outlet />;
+};
+
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* 헤더 공통 적용 */}
         <Route element={<AppLayout />}>
+          {/* 로그인 안 된 사람도 접근 가능한 기본 페이지들 */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/map" element={<MapPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignUpPage />} />
 
-          {/* 사이드바 레이아웃 포함 */}
+          {/* 로그인 되어 있으면 못 가도록 설정 (로그인/회원가입) */}
+          <Route element={<PublicRoute />}>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignUpPage />} />
+          </Route>
+
+          {/* 인증 필요 없는 explore 메뉴 */}
           <Route element={<SidebarLayout />}>
             <Route path="/explore/rankings" element={<RankingPage />} />
             <Route path="/explore/share" element={<SharePage />} />
-            <Route path="/explore/share/write" element={<ShareWritePage />} />
             <Route
               path="/explore/share/:postId"
               element={<ShareDetailPage />}
             />
             <Route path="/explore/membership" element={<MembershipPage />} />
-            <Route path="/mypage/profile" element={<ProfilePage />} />
-            <Route path="/mypage/edit" element={<EditProfilePage />} />
-            <Route path="/mypage/collection" element={<CollectionPage />} />
-            <Route path="/mypage/missions" element={<MissionPage />} />
-            <Route path="/mypage/statistics" element={<StatisticsPage />} />
-            <Route path="/mypage/favorites" element={<FavoritesPage />} />
           </Route>
+
+          {/* 로그인 필요 */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/explore/share/write" element={<ShareWritePage />} />
+          </Route>
+
+          {/* 로그인 필요 */}
+          <Route element={<ProtectedRoute />}>
+            <Route element={<SidebarLayout />}>
+              <Route path="/mypage/profile" element={<ProfilePage />} />
+              <Route path="/mypage/edit" element={<EditProfilePage />} />
+              <Route path="/mypage/collection" element={<CollectionPage />} />
+              <Route path="/mypage/missions" element={<MissionPage />} />
+              <Route path="/mypage/statistics" element={<StatisticsPage />} />
+              <Route path="/mypage/favorites" element={<FavoritesPage />} />
+              <Route path="/mypage/sharing" element={<MySharingPage />} />
+            </Route>
+          </Route>
+
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

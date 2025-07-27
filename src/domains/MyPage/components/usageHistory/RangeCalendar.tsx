@@ -1,15 +1,18 @@
+import { Button } from '@/components/Button';
 import Calendar from 'react-calendar';
 
 interface RangeCalendarProps {
   type: '시작일' | '종료일';
   selectedDate?: Date;
   onSelectDate: (date: Date) => void;
+  onClose: () => void;
 }
 
 export const RangeCalendar: React.FC<RangeCalendarProps> = ({
   type,
   selectedDate,
   onSelectDate,
+  onClose,
 }) => {
   const defaultValue = selectedDate
     ? new Date(
@@ -42,6 +45,11 @@ export const RangeCalendar: React.FC<RangeCalendarProps> = ({
           showNeighboringMonth={false}
           formatDay={(_, date) => date.getDate().toString()}
         />
+        <div className="w-full flex justify-center">
+          <Button width="100px" variant="secondary" onClick={onClose}>
+            닫기
+          </Button>
+        </div>
       </div>
       <div className="md:hidden fixed inset-0 z-10000 flex items-center justify-center bg-black/30"></div>
     </>

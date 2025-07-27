@@ -43,6 +43,75 @@ interface CreateDeleteStoresResponse {
   message: string;
   data: string;
 }
+
+interface FetchBrandsProps {
+  keyword?: string;
+  sortBy?: string;
+}
+
+export interface BrandProps {
+  id: string;
+  name: string;
+  image_url: string;
+}
+
+export interface BenefitProps {
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+}
+
+interface FetchBrandsResponse {
+  statusCode: number;
+  message: string;
+  data: BrandProps[];
+}
+
+//브랜드 조회
+export const fetchBrands = async (
+  params: FetchBrandsProps = {},
+): Promise<BrandProps[]> => {
+  try {
+    const response: AxiosResponse<FetchBrandsResponse> = await apiClient.get(
+      '/brand',
+      {
+        params: {
+          keyword: params.keyword ?? '',
+          sortBy: params.sortBy ?? '',
+        },
+      },
+    );
+
+    return response.data.data;
+  } catch (error: unknown) {
+    const axiosErr = error as AxiosError<{ message: string }>;
+    const message =
+      axiosErr.response?.data?.message ??
+      axiosErr.message ??
+      '브랜드  조회 중 알 수 없는 오류가 발생했습니다.';
+    throw new Error(`브랜드 조회 실패: ${message}`);
+  }
+};
+
+// 기존에 추가하신 fetchBenefits
+export const fetchBenefits = async (
+  brandId: string,
+): Promise<BenefitProps[]> => {
+  try {
+    const response: AxiosResponse<{ data: BenefitProps[] }> =
+      await apiClient.get(`/benefit/${brandId}`);
+    return response.data.data;
+  } catch (error: unknown) {
+    const axiosErr = error as AxiosError<{ message: string }>;
+    const message =
+      axiosErr.response?.data?.message ??
+      axiosErr.message ??
+      '브랜드 혜택  조회 중 알 수 없는 오류가 발생했습니다.';
+    throw new Error(`브랜드 혜택 조회 실패: ${message}`);
+  }
+};
+
 //제휴처 목록 조회
 export const fetchStores = async (
   params: FetchStoresParams,
