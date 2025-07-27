@@ -17,6 +17,7 @@ const CATEGORIES = [
   '편의점',
   '대형마트',
   '문화시설',
+  '렌터카',
 ] as const;
 
 const FavoritesPage = () => {
@@ -183,7 +184,7 @@ const FavoritesPage = () => {
   );
 
   return (
-    <div className="w-full max-w-[1050px] m-6">
+    <div className="w-[calc(100%-48px)] max-w-[1050px] m-6">
       <Breadcrumb title="마이페이지" subtitle="즐겨찾기" />
 
       <h1 className="text-[32px] font-bold my-3">즐겨찾기</h1>
