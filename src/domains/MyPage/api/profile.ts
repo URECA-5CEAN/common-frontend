@@ -61,11 +61,3 @@ export const getUsageHistory = async () => {
 
   return response.data;
 };
-
-export const getNicknameDuplicate = async (nickname: string) => {
-  const response = await axios.get(`${baseURL}/user/isDupNickname`, {
-    params: { nickname },
-  });
-
-  return response.data;
-};
