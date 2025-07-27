@@ -10,6 +10,16 @@ export interface Post {
   isClosed: boolean;
 }
 
+export interface PostWriteRequest {
+  title: string;
+  content: string;
+  category: string;
+  brandId: string;
+  benefitId: string;
+  promiseDate: string;
+  location: string;
+}
+
 export interface TimeValue {
   period: '오전' | '오후';
   hour: string;

@@ -5,11 +5,13 @@ import {
   getTodayString,
   toISOStringFromDateTime,
 } from '../utils/datetimeUtils';
-import type { SelectOption, TimeValue } from '../types/share';
+import type { PostWriteRequest, SelectOption, TimeValue } from '../types/share';
 import SelectFields from '../components/share/SelectFields';
 import PostContentFields from '../components/share/PostContentFields';
 import DateTimePicker from '../components/share/DateTimePicker';
 import PlaceField from '../components/share/PlaceField';
+import { createSharePost } from '../api/share';
+import { useNavigate } from 'react-router-dom';
 
 const ShareWritePage = () => {
   const [category, setCategory] = useState<SelectOption | null>(null);
@@ -20,6 +22,8 @@ const ShareWritePage = () => {
   const [date, setDate] = useState(() => getTodayString());
   const [place, setPlace] = useState('');
   const [time, setTime] = useState<TimeValue>(() => getDefaultTime());
+
+  const navigate = useNavigate();
 
   const handleSubmit = async () => {
     if (
@@ -35,7 +39,7 @@ const ShareWritePage = () => {
       return;
     }
 
-    const newPost = {
+    const newPost: PostWriteRequest = {
       category: category.value,
       brandId: brand.value,
       benefitId: benefitType.value,
@@ -45,7 +49,12 @@ const ShareWritePage = () => {
       location: place || '미정',
     };
 
-    console.log('작성한 데이터:', newPost);
+    try {
+      await createSharePost(newPost);
+      navigate('/explore/share');
+    } catch (error) {
+      alert('작성 실패' + error);
+    }
   };
 
   return (

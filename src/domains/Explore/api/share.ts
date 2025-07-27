@@ -1,4 +1,5 @@
 import axios from 'axios';
+import type { PostWriteRequest } from '../types/share';
 
 const baseURL = import.meta.env.VITE_API_URL;
 const token = import.meta.env.VITE_AUTH_TOKEN;
@@ -26,4 +27,12 @@ export const getBenefitType = async (brandId: string) => {
   });
 
   return response.data.data;
+};
+
+export const createSharePost = async (postData: PostWriteRequest) => {
+  await axios.post(`${baseURL}/user/article`, postData, {
+    headers: {
+      Authorization: token,
+    },
+  });
 };
