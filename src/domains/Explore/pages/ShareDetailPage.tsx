@@ -5,7 +5,7 @@ const ShareDetailPage = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="max-w-[800px] mx-auto px-4 py-6">
+    <div className="w-full max-w-[1050px] m-6">
       <span>{postId}</span>
     </div>
   );

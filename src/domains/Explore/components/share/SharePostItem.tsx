@@ -1,7 +1,6 @@
 import type { Post } from '@/domains/Explore/types/share';
 import { Calendar } from 'lucide-react';
 import { MapPin } from 'lucide-react';
-import { Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface SharePostItemProps {
@@ -17,11 +16,8 @@ const SharePostItem = ({ post }: SharePostItemProps) => {
   return (
     <li
       onClick={handleClick}
-      className="relative border rounded-xl p-4 border-gray-200 cursor-pointer flex flex-col sm:flex-row justify-between gap-4"
+      className="border rounded-xl p-4 border-gray-200 cursor-pointer flex flex-col sm:flex-row justify-between gap-4"
     >
-      <button className="absolute right-4 top-4 text-gray-400 ">
-        <Heart />
-      </button>
       <div className="flex gap-2 sm:gap-4">
         <div className="relative w-16 h-16 sm:w-32 sm:h-32 flex items-center justify-center flex-shrink-0">
           {/* <img /> */}
