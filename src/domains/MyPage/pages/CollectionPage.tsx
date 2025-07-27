@@ -56,7 +56,7 @@ const CollectionPage = () => {
 
   return (
     <>
-      <div className="w-full max-w-[1050px] m-6">
+      <div className="w-[calc(100%-48px)] max-w-[1050px] m-6">
         <Breadcrumb title="마이페이지" subtitle="혜택 도감" />
         <div>
           <div className="text-[32px] font-bold my-3">혜택 도감</div>
