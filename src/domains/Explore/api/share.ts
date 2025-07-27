@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { PostWriteRequest } from '../types/share';
+import type { Post, PostWriteRequest } from '../types/share';
 
 const baseURL = import.meta.env.VITE_API_URL;
 const token = import.meta.env.VITE_AUTH_TOKEN;
@@ -35,4 +35,12 @@ export const createSharePost = async (postData: PostWriteRequest) => {
       Authorization: token,
     },
   });
+};
+
+export const getSharePostList = async (): Promise<Post[]> => {
+  const response = await axios.get(`${baseURL}/user/article`, {
+    headers: { Authorization: token },
+  });
+
+  return response.data.data.postList;
 };
