@@ -17,6 +17,7 @@ interface RouteItem {
   id: number;
   from: string;
   to: string;
+  waypointNames?: string[];
 }
 interface RouteInputProps {
   openDetail: (store: StoreInfo) => void;

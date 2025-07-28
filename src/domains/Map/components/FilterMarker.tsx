@@ -189,7 +189,7 @@ export default function FilterMarker({
               zIndex={2}
             >
               <div className="relative">
-                <div className="w-10 h-10 rounded-full bg-primaryGreen opacity-80 animate-ping " />
+                <div className="w-14 h-14 rounded-full bg-primaryGreen opacity-80 animate-ping " />
               </div>
             </CustomOverlayMap>
           )}
@@ -197,7 +197,7 @@ export default function FilterMarker({
       );
     });
 
-  // 2D 마커 개수에 따라 클러스터링 여부 결정
+  // 마커 개수에 따라 클러스터링 여부 결정
   const shouldCluster = Markers.length > 20;
   // 데스크톱 여부 판단 (모바일에서 오버레이 안뜨게)
   const isDesktop = useMedia('(min-width: 640px)');
@@ -208,7 +208,7 @@ export default function FilterMarker({
       {shouldCluster ? (
         <MarkerClusterer
           averageCenter
-          minLevel={5}
+          minLevel={6}
           gridSize={50}
           styles={[
             {
