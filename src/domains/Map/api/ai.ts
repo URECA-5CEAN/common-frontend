@@ -7,8 +7,7 @@ const apiClient: AxiosInstance = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-const token = import.meta.env.VITE_AUTH_TOKEN;
-
+const token = localStorage.getItem('authToken');
 export interface AiRecommendResult {
   reason: string;
   store: StoreInfo;
@@ -27,6 +26,7 @@ export async function fetchAiRecommendedStore(
         },
       },
     );
+    console.log(data.data);
     return data.data;
   } catch (error: unknown) {
     const axiosErr = error as AxiosError<{ message: string }>;

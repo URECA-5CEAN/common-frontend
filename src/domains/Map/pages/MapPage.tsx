@@ -112,9 +112,7 @@ export default function MapPage() {
 
   const [idleCount, setIdleCount] = useState(0);
 
-  const [recommendedStore, setRecommendedStore] = useState<StoreInfo | null>(
-    null,
-  );
+  const [recommendedStore, setRecommendedStore] = useState<StoreInfo>();
 
   // 제휴처 목록 조회 함수
   const searchHere = useCallback(async () => {
@@ -132,10 +130,15 @@ export default function MapPage() {
       });
 
       setStores(data);
+      fetchAI();
     } catch {
       setStores([]);
     }
   }, [map, debouncedKeyword, isCategory]);
+
+  useEffect(() => {
+    searchHere();
+  }, [searchHere]);
 
   // 초기 바텀시트 위치 계산
   useEffect(() => {
@@ -148,41 +151,36 @@ export default function MapPage() {
     return () => clearTimeout(handler);
   }, [keyword]);
 
+  const fetchAI = useCallback(async () => {
+    if (!map) return;
+
+    const bounds = extractBouns(map);
+    if (!bounds) return;
+
+    try {
+      const result = await fetchAiRecommendedStore({
+        keyword: debouncedKeyword,
+        category: isCategory,
+        ...bounds,
+        centerLat: center.lat,
+        centerLng: center.lng,
+      });
+      const recommended = { ...result.store, isRecommended: result.reason };
+      setRecommendedStore(recommended);
+
+      setStores((prev) => {
+        const exists = prev.some((store) => store.id === recommended.id);
+        return exists ? prev : [recommended, ...prev];
+      });
+    } catch (err) {
+      console.log('AI 제휴처 추천 실패:', err);
+    }
+  }, [map, debouncedKeyword, isCategory]);
+
   useEffect(() => {
-    const fetchAI = async () => {
-      if (!map) return;
-
-      const bounds = extractBouns(map);
-      if (!bounds) return;
-      console.time('AI 추천 로딩');
-      try {
-        const result = await fetchAiRecommendedStore({
-          keyword: debouncedKeyword,
-          category: isCategory,
-          ...bounds,
-          centerLat: center.lat,
-          centerLng: center.lng,
-        });
-        const recommended = { ...result.store, isRecommended: result.reason };
-        setRecommendedStore(recommended);
-        console.timeEnd('AI 추천 로딩');
-        // stores에도 포함시키기 (중복 방지)
-        setStores((prev) => {
-          const exists = prev.some((store) => store.id === recommended.id);
-          return exists ? prev : [recommended, ...prev];
-        });
-        console.log(recommendedStore);
-      } catch (err) {
-        console.log('AI 제휴처 추천 실패:', err);
-      }
-    };
-
     fetchAI();
-  }, [map, debouncedKeyword, isCategory, center]);
+  }, [fetchAI]);
 
-  useEffect(() => {
-    searchHere();
-  }, [searchHere]);
   //화면 내 매장만 filter해 sidebar 및 marker적용
   const filterStoresInView = useCallback(() => {
     if (!map) return;
@@ -284,11 +282,12 @@ export default function MapPage() {
 
     const list = [...filteredStores];
 
-    if (
-      recommendedStore &&
-      !filteredStores.some((store) => store.id === recommendedStore.id)
-    ) {
-      return [recommendedStore, ...list]; // 맨 앞에 추가
+    if (recommendedStore) {
+      // 이미 있는 경우도 일단 제외하고 맨 앞에 다시 삽입 (표식 포함)
+      const listWithoutRecommended = list.filter(
+        (store) => store.id !== recommendedStore.id,
+      );
+      return [recommendedStore, ...listWithoutRecommended];
     }
 
     return list;

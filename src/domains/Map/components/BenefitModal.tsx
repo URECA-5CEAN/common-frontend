@@ -3,10 +3,11 @@ import { Modal } from '@/components/Modal';
 import { Plus } from 'lucide-react';
 import type { MenuType, Panel } from './sidebar/MapSidebar';
 import type { ChangeEvent, Dispatch, SetStateAction } from 'react';
+import { uploadReceiptImage } from '../api/store';
 
 interface BenefitModalProps {
   panel: Panel;
-  selectedFile: File | null;
+  selectedFile: File;
   handleFileSelect: (e: ChangeEvent<HTMLInputElement>) => void;
   openmenu: (menu: MenuType) => void;
   setSelectedFile: Dispatch<SetStateAction<File | null>>;
@@ -18,6 +19,18 @@ export default function BenefitModal({
   openmenu,
   setSelectedFile,
 }: BenefitModalProps) {
+  const handleOCRUpload = async (file: File) => {
+    if (!selectedFile) {
+      return;
+    }
+    try {
+      const result = await uploadReceiptImage(file);
+      console.log(result);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <>
       <Modal
@@ -70,9 +83,11 @@ export default function BenefitModal({
           <Button
             variant="primary"
             fullWidth
-            onClick={() => {
-              alert(`${selectedFile?.name}제출성공`);
-              setSelectedFile(null);
+            onClick={async () => {
+              if (!selectedFile) return;
+              await handleOCRUpload(selectedFile); // 파일 먼저 전송하고
+              setSelectedFile(null); // 전송 끝난 후 초기화
+              openmenu('지도'); // 모달도 닫기
             }}
           >
             제출하기
