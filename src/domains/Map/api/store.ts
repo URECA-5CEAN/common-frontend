@@ -68,6 +68,14 @@ interface FetchBrandsResponse {
   data: BrandProps[];
 }
 
+export interface BenefitData {
+  storeName: string;
+  category: string;
+  address: string;
+  visitedAt: string;
+  totalAmount: number;
+}
+
 //브랜드 조회
 export const fetchBrands = async (
   params: FetchBrandsProps = {},
@@ -212,13 +220,13 @@ export async function deleteBookmark(storeId: string): Promise<string> {
   }
 }
 
-export async function uploadReceiptImage(file: File): Promise<string> {
+export async function uploadReceiptImage(file: File): Promise<BenefitData> {
   console.log(file);
   const formData = new FormData();
   formData.append('imageFile', file);
   console.log(formData);
   try {
-    const response: AxiosResponse<{ data: string }> = await apiClient.post(
+    const response: AxiosResponse<{ data: BenefitData }> = await apiClient.post(
       '/ocr',
       formData,
       {
@@ -236,5 +244,32 @@ export async function uploadReceiptImage(file: File): Promise<string> {
       axiosErr.message ??
       'OCR 업로드 중 알 수 없는 오류가 발생했습니다.';
     throw new Error(`OCR 업로드 실패: ${message}`);
+  }
+}
+
+export async function saveBenefitData(
+  data: BenefitData,
+  benefitAmount: number,
+  userEmail: string,
+): Promise<void> {
+  try {
+    const response: AxiosResponse = await apiClient.post(
+      `/ocr/save?benefitAmount=${benefitAmount}`,
+      data,
+      {
+        headers: {
+          Authorization: token,
+          'X-User-email': userEmail,
+        },
+      },
+    );
+    return response.data;
+  } catch (error: unknown) {
+    const axiosErr = error as AxiosError<{ message: string }>;
+    const message =
+      axiosErr.response?.data?.message ??
+      axiosErr.message ??
+      'OCR 인증저장 중 알 수 없는 오류가 발생했습니다.';
+    throw new Error(`OCR 인증저장 실패: ${message}`);
   }
 }

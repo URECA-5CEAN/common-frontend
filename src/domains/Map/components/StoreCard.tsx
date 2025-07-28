@@ -2,7 +2,6 @@ import { Info, Star } from 'lucide-react';
 import StartEndBtn from './StartEndBtn';
 import type { StoreInfo } from '../api/store';
 import clsx from 'clsx';
-import { useState } from 'react';
 
 interface StoreCardProps {
   store: StoreInfo;
@@ -24,7 +23,7 @@ export default function StoreCard({
   return (
     <div
       className={clsx(
-        'flex items-stretch  cursor-pointer py-2 rounded-lg',
+        'relative flex items-stretch  cursor-pointer py-2 rounded-lg',
         store.isRecommended ? 'bg-primaryGreen-40 pt-6' : 'bg-white',
       )}
       onClick={() => openDetail(store)}
@@ -37,22 +36,22 @@ export default function StoreCard({
       />
       {store.isRecommended && (
         <div className="group">
-          <div className="hidden  md:block absolute top-[28px] left-[28px] md:top-[185px] md:left-[30px] text-primaryGreen-80 text-lg font-semibold z-2">
+          <div className="hidden  md:block absolute top-[28px] left-[28px] md:top-[5px] md:left-[5px] text-primaryGreen-80 text-lg font-semibold z-2">
             AI의 픽!
           </div>
           <Info
             size={17}
-            className="hidden md:block absolute top-[32px] left-[90px] md:top-[190px] md:left-[92px] text-primaryGreen-80"
+            className="hidden md:block absolute top-[32px] left-[90px] md:top-[10px] md:left-[65px] text-primaryGreen-80"
           />
 
           {/* 말풍선 툴팁 */}
-          <div className="absolute top-[156px] left-[116px] hidden group-hover:block bg-white  text-xs px-3 py-2 z-2 shadow rounded-xl whitespace-nowrap">
+          <div className="absolute -top-5 left-[86px] hidden group-hover:block bg-white  text-xs px-3 py-2 z-2 shadow rounded-xl whitespace-nowrap">
             <p className="w-36">
               AI를 활용해 김민석님을 위한 <br />
               맞춤 제휴처를 제공해드려요!
             </p>
           </div>
-          <p className="absolute md:hidden text-base top-[32px] left-[28px] font-semibold text-primaryGreen-80">
+          <p className="absolute md:hidden text-base top-[5px] left-[6px] font-semibold text-primaryGreen-80">
             AI를 활용해 김민석님을 위한 맞춤 제휴처 추천!
           </p>
         </div>

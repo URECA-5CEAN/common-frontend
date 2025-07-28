@@ -26,7 +26,6 @@ export async function fetchAiRecommendedStore(
         },
       },
     );
-    console.log(data.data);
     return data.data;
   } catch (error: unknown) {
     const axiosErr = error as AxiosError<{ message: string }>;
