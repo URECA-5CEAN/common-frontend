@@ -12,7 +12,7 @@ import { saveBenefitData, uploadReceiptImage } from '../api/store';
 
 interface BenefitModalProps {
   panel: Panel;
-  selectedFile: File | null;
+  selectedFile: File;
   handleFileSelect: (e: ChangeEvent<HTMLInputElement>) => void;
   openmenu: (menu: MenuType) => void;
   setSelectedFile: Dispatch<SetStateAction<File | null>>;
@@ -59,23 +59,20 @@ export default function BenefitModal({
         isOpen={panel.menu === '혜택인증'}
         title="멤버십 혜택 사용 인증하기"
         description={
-          <div className="px-10 py-6  text-black flex flex-col justify-center items-center">
-            <p className="text-center">
-              영수증을 촬영하여 올려주시면
-              <br />
-              아래 항목을 확인한 후 인증을 도와드릴게요!
-            </p>
-
-            <p className="text-gray-400 mt-1">
+          <div className="px-10 py-6  text-black flex flex-col justify-center items-center ">
+            영수증을 촬영하여 올려주시면
+            <br />
+            아래 항목을 확인한 후 인증을 도와드릴게요!
+            <br />
+            <p className="text-gray-400">
               (확인항목: 제휴처, 결제시간, 할인금액)
             </p>
-
             {!selectedFile ? (
               <label
                 htmlFor="image-upload"
-                className="hover:bg-primaryGreen-40 flex mt-4 flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primaryGreen transition-colors"
+                className="hover:bg-primaryGreen-40 flex mt-2 flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primaryGreen transition-colors"
               >
-                <Plus size={40} className="text-gray-400 hover:text-white" />
+                <Plus size={40} className="text-gray-400 hover:text-white " />
                 <input
                   id="image-upload"
                   type="file"
@@ -97,7 +94,7 @@ export default function BenefitModal({
                   setAmount(Number(e.target.value))
                 }
                 className="mt-2 text-sm border border-gray-200 py-2 px-2 w-[100%]"
-              />
+              ></input>
             )}
           </div>
         }
