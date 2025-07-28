@@ -14,13 +14,15 @@ const RadioButton: React.FC<RadioButtonProps> = ({ isSelected }) => (
 );
 
 interface BadgeOptionProps {
-  badge: Badge;
   isSelected: boolean;
   onClick: () => void;
+  title: string;
+  desc: string;
 }
 
 const BadgeOption: React.FC<BadgeOptionProps> = ({
-  badge,
+  title,
+  desc,
   isSelected,
   onClick,
 }) => (
@@ -34,14 +36,14 @@ const BadgeOption: React.FC<BadgeOptionProps> = ({
                     : 'outline-1 outline-gray-200'
                 }`}
   >
-    <p>{badge.name}</p>
-    <p className="text-xs">{badge.description}</p>
+    <p>{title}</p>
+    <p className="text-xs">{desc}</p>
     <RadioButton isSelected={isSelected} />
   </div>
 );
 
 interface BadgeSelectionProps {
-  badges: Badge[];
+  badges?: Badge[];
   tempBadge: string;
   setTempBadge: (badgeId: string) => void;
 }
@@ -52,12 +54,13 @@ const BadgeSelection: React.FC<BadgeSelectionProps> = ({
   setTempBadge,
 }) => (
   <div className="flex gap-4">
-    {badges.map((badge) => (
+    {badges?.map((badge, idx) => (
       <BadgeOption
-        key={badge.id}
-        badge={badge}
-        isSelected={tempBadge === badge.id}
-        onClick={() => setTempBadge(badge.id)}
+        key={idx}
+        title={badge.title}
+        desc={badge.reason}
+        isSelected={tempBadge === badge.title}
+        onClick={() => setTempBadge(badge.title)}
       />
     ))}
   </div>

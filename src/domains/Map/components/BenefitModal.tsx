@@ -2,7 +2,13 @@ import { Button } from '@/components/Button';
 import { Modal } from '@/components/Modal';
 import { Plus } from 'lucide-react';
 import type { MenuType, Panel } from './sidebar/MapSidebar';
-import type { ChangeEvent, Dispatch, SetStateAction } from 'react';
+import {
+  useState,
+  type ChangeEvent,
+  type Dispatch,
+  type SetStateAction,
+} from 'react';
+import { saveBenefitData, uploadReceiptImage } from '../api/store';
 
 interface BenefitModalProps {
   panel: Panel;
@@ -18,6 +24,35 @@ export default function BenefitModal({
   openmenu,
   setSelectedFile,
 }: BenefitModalProps) {
+  const [isResult, setIsResult] = useState<boolean>(false);
+  const [amout, setAmount] = useState<number>(0);
+  const handleOCRUpload = async (file: File) => {
+    if (!selectedFile) {
+      return;
+    }
+    try {
+      const result = await uploadReceiptImage(file);
+      console.log(result);
+      if (result) setIsResult(true);
+      if (!result) return;
+      const response = await saveBenefitData(
+        {
+          storeName: result.storeName ?? '',
+          category: result.category ?? '',
+          address: result.address ?? '',
+          visitedAt: result.visitedAt ?? new Date().toISOString(),
+          totalAmount: result.totalAmount ?? 0,
+        },
+        amout,
+        'test@test.com',
+      );
+      setAmount(0);
+      console.log(response);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <>
       <Modal
@@ -46,12 +81,20 @@ export default function BenefitModal({
                   onChange={handleFileSelect}
                 />
               </label>
+            ) : !isResult ? (
+              <p className="mt-2 text-sm text-gray-600">
+                {selectedFile.name} 선택됨
+              </p>
             ) : (
-              <>
-                <p className="mt-2 text-sm text-gray-600">
-                  {selectedFile && selectedFile?.name} 선택됨
-                </p>
-              </>
+              <input
+                type="text"
+                placeholder="할인받은 금액 입력"
+                value={amout}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setAmount(Number(e.target.value))
+                }
+                className="mt-2 text-sm border border-gray-200 py-2 px-2 w-[100%]"
+              ></input>
             )}
           </div>
         }
@@ -70,9 +113,10 @@ export default function BenefitModal({
           <Button
             variant="primary"
             fullWidth
-            onClick={() => {
-              alert(`${selectedFile?.name}제출성공`);
-              setSelectedFile(null);
+            onClick={async () => {
+              if (!selectedFile) return;
+              await handleOCRUpload(selectedFile); // 파일 먼저 전송하고
+              setSelectedFile(null); // 전송 끝난 후 초기화
             }}
           >
             제출하기

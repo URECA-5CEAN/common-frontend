@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Eye, EyeClosed } from 'lucide-react';
 import { validateEmail } from '../utils/validation';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/Button';
 import { useLogin } from '../hooks/useLogin';
 import { useAuthStore } from '@/store/useAuthStore';
+import { openKakaoLogin, openKakaoSignup } from '@/domains/Auth/api/loginApi';
 
 const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
   const navigate = useNavigate();
@@ -22,9 +23,10 @@ const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [isKakaoSubmit, setIsKakoSubmit] = useState(false);
 
   // 로그인 관련
-  const { login, kakaoLogin, loading } = useLogin();
+  const { login, loading } = useLogin();
 
   // 통합 폼 변경 핸들러
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -101,23 +103,49 @@ const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
       navigate('/');
     } catch (error) {
       console.error('로그인 실패:', error);
-      const message =
-        error instanceof Error
-          ? error.message
-          : '로그인 중 오류가 발생했습니다.';
-      setErrorMessage(message);
+      setErrorMessage(
+        '로그인에 실패했어요. 이메일과 비밀번호를 다시 확인해주세요',
+      );
     }
   };
 
+  useEffect(() => {
+    if (!isKakaoSubmit) return;
+    const messageHandler = async (event: MessageEvent) => {
+      if (event.data?.token) {
+        if (event.data.result === 'login success') {
+          localStorage.setItem('authToken', event.data.token);
+          useAuthStore.getState().setIsLoggedIn(true);
+          navigate('/');
+        } else if (event.data.result === 'signup required') {
+          try {
+            const res = await openKakaoSignup(event.data.token);
+            localStorage.setItem('authToken', res.data.token);
+            useAuthStore.getState().setIsLoggedIn(true);
+            navigate('/');
+          } catch (err) {
+            console.error('카카오 회원가입 실패:', err);
+          }
+        }
+      } else {
+        setErrorMessage(
+          '카카오 로그인 중 오류가 발생했어요. 잠시 후 다시 시도해주세요',
+        );
+        setIsKakoSubmit(false);
+      }
+    };
+
+    window.addEventListener('message', messageHandler);
+
+    return () => {
+      window.removeEventListener('message', messageHandler);
+    };
+  }, [isKakaoSubmit, navigate]);
+
   // 카카오 로그인 핸들러
   const handleKakaoLogin = async () => {
-    try {
-      await kakaoLogin();
-      // 카카오 OAuth 페이지로 리다이렉트되므로 여기 코드는 실행되지 않음
-    } catch (error) {
-      console.error('카카오 로그인 실패:', error);
-      alert('카카오 로그인 중 오류가 발생했습니다.');
-    }
+    await openKakaoLogin();
+    setIsKakoSubmit(true);
   };
 
   return (
@@ -131,7 +159,7 @@ const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
         <div className="h-6 mb-3 flex items-center justify-center">
           {errorMessage && (
             <div className="text-xs md:text-sm text-dangerRed text-center px-4">
-              로그인에 실패했어요. 이메일과 비밀번호를 다시 확인해주세요
+              {errorMessage}
             </div>
           )}
         </div>

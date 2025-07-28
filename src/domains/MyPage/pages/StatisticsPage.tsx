@@ -5,7 +5,7 @@ import { useClickOutside } from '@/domains/MyPage/hooks/useClickOutside';
 import { useState } from 'react';
 
 const STYLES = {
-  container: 'w-full max-w-[1050px]',
+  container: 'w-[calc(100%-48px)] max-w-[1050px] m-6',
   title: 'text-[32px] font-bold my-3',
   subtitle: 'text-2xl font-bold',
   card: '',
@@ -241,7 +241,7 @@ const StatisticsPage = () => {
   });
 
   return (
-    <div className={STYLES.container + ' m-6'}>
+    <div className={STYLES.container}>
       <Breadcrumb title="마이페이지" subtitle="통계" />
 
       <div className={STYLES.title}>통계</div>
@@ -275,7 +275,7 @@ const StatisticsPage = () => {
 
           {/* 선택된 기간 꺾은선 그래프 */}
           <div className="w-full">
-            <div className="flex mb-4 gap-2">
+            <div className="flex mb-4 gap-2 flex-col md:flex-row">
               <h3 className="text-xl flex items-center">절약 그래프</h3>
               {/* 기간 선택 버튼 */}
               <div className="flex gap-1 justify-center">

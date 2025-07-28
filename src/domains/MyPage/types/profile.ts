@@ -1,15 +1,14 @@
 export interface Badge {
-  id: string;
-  name: string;
-  description: string;
+  title: string;
+  reason: string;
 }
 
 export interface UsageHistoryItem {
   id: number;
+  store: string;
   date: string;
   time: string;
-  store: string;
-  benefit: string;
+  benefitAmount: number;
   experience: number;
 }
 

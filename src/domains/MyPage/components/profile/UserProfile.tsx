@@ -9,30 +9,32 @@ import vipIcon from '@/assets/icons/vip_icon.png';
 import vvipIcon from '@/assets/icons/vvip_icon.png';
 
 interface ProfileImageProps {
-  src: string;
+  src?: string;
   alt: string;
 }
 
 const ProfileImage: React.FC<ProfileImageProps> = ({ src, alt }) => (
-  <div className="w-[144px] overflow-hidden">
-    <img
-      src={src}
-      alt={alt}
-      className="h-full w-auto object-cover object-center"
-    />
+  <div className="w-[144px] h-full overflow-hidden">
+    {src ? (
+      <img
+        src={src}
+        alt={alt}
+        className="h-full w-auto object-cover object-center"
+      />
+    ) : (
+      <div className="h-full aspect-square w-auto object-cover object-center bg-gray-200 rounded-xl"></div>
+    )}
   </div>
 );
 
 interface UserProfileProps {
   userInfo: UserInfoType;
-  selectedBadgeName: string;
   onBadgeClick: () => void;
   userInfoApi?: UserInfoApi;
 }
 
 const UserProfile: React.FC<UserProfileProps> = ({
   userInfo,
-  selectedBadgeName,
   onBadgeClick,
   userInfoApi,
 }) => {
@@ -42,19 +44,13 @@ const UserProfile: React.FC<UserProfileProps> = ({
     VVIP: vvipIcon,
   };
 
-  const iconSrc = userInfoApi
-    ? (membershipIconMap[userInfoApi.membership] ?? excellentIcon)
-    : excellentIcon;
+  const iconSrc = userInfoApi && membershipIconMap[userInfoApi.membership];
 
   return (
-    <div className="w-full border border-gray-200 rounded-2xl flex lg:flex-row flex-col gap-5 p-5 md:justify-between items-center">
-      <div className="flex gap-4 items-center w-full">
+    <div className="w-full lg:h-[186px] border border-gray-200 rounded-2xl flex lg:flex-row flex-col gap-5 p-5 md:justify-between items-center">
+      <div className="flex gap-4 w-full">
         <ProfileImage src={iconSrc} alt="우수아이콘" />
-        <UserInfo
-          selectedBadgeName={selectedBadgeName}
-          onBadgeClick={onBadgeClick}
-          userInfoApi={userInfoApi}
-        />
+        <UserInfo onBadgeClick={onBadgeClick} userInfoApi={userInfoApi} />
       </div>
       <UserStats userInfo={userInfo} />
     </div>

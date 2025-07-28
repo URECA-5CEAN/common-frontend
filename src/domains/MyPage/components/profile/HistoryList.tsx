@@ -15,7 +15,7 @@ const HistoryItem: React.FC<HistoryItemProps> = ({ item }) => (
       </div>
     </div>
     <div className="flex flex-col gap-2">
-      <p>{item.benefit}</p>
+      <p>{item.benefitAmount}</p>
       <p className="text-xs text-gray-500 flex justify-end">
         경험치 +{item.experience}
       </p>
@@ -27,8 +27,9 @@ interface HistoryListProps {
   items: UsageHistoryItem[];
 }
 
-const HistoryList: React.FC<HistoryListProps> = ({ items }) =>
-  items.length > 0 ? (
+const HistoryList: React.FC<HistoryListProps> = ({ items }) => {
+  // console.log(items);
+  return items.length > 0 ? (
     <div className="flex flex-col gap-2">
       {items.map((item) => (
         <HistoryItem key={item.id} item={item} />
@@ -44,5 +45,5 @@ const HistoryList: React.FC<HistoryListProps> = ({ items }) =>
       사용내역이 없어요
     </div>
   );
-
+};
 export default HistoryList;

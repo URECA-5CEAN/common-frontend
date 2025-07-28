@@ -1,52 +1,46 @@
 import { Breadcrumb } from '@/components/Breadcrumb';
 import { ProgressBar } from '@/domains/MyPage/components/ProgressBar';
-import sampleImage from '@/assets/icons/vvip_icon.png';
 import bronzeMedal from '@/assets/image/bronze_medal.png';
 import silverMedal from '@/assets/image/silver_medal.png';
 import goldMedal from '@/assets/image/gold_medal.png';
 import diamondMedal from '@/assets/image/diamond_medal.png';
+import { getAllBrandList } from '@/domains/MyPage/api/collection';
+import { useEffect, useState } from 'react';
+
+interface Brand {
+  name: string;
+  image_url: string;
+}
 
 const CollectionPage = () => {
-  // 실제로는 API에서 받아올 데이터
+  // 전체 도감 카운트
   const collectionInfo = {
     collectionCount: 400,
     totalCollection: 500,
   };
   const allMedals = [bronzeMedal, silverMedal, goldMedal, diamondMedal];
+  const [brandList, setBrandList] = useState<Brand[]>([]);
 
-  const collectionInfoList = [
-    {
-      name: '롯데월드 아쿠아리움',
-      image: sampleImage,
-      current: 20,
-      total: 20,
-    },
-    {
-      name: '에버랜드',
-      image: sampleImage,
-      current: 5,
-      total: 20,
-    },
-    {
-      name: '할리스 커피',
-      image: sampleImage,
-      current: 2,
-      total: 20,
-    },
-    {
-      name: 'CGV',
-      image: sampleImage,
-      current: 15,
-      total: 20,
-    },
-  ];
+  useEffect(() => {
+    const fetchAllBrandList = async () => {
+      try {
+        const response = await getAllBrandList();
+        setBrandList(response.data);
+      } catch (error) {
+        console.error('사용자 정보 로드 실패:', error);
+      }
+    };
+
+    fetchAllBrandList();
+  }, []);
 
   const progressPercentage = (
     (collectionInfo.collectionCount / collectionInfo.totalCollection) *
     100
   ).toFixed(2);
 
-  const getMedalCount = (current: number): number => {
+  const getMedalCount = (current?: number): number => {
+    if (!current) return 0;
     if (current >= 15) return 4;
     if (current >= 10) return 3;
     if (current >= 5) return 2;
@@ -56,7 +50,7 @@ const CollectionPage = () => {
 
   return (
     <>
-      <div className="w-full max-w-[1050px] m-6">
+      <div className="w-[calc(100%-48px)] max-w-[1050px] m-6">
         <Breadcrumb title="마이페이지" subtitle="혜택 도감" />
         <div>
           <div className="text-[32px] font-bold my-3">혜택 도감</div>
@@ -76,8 +70,8 @@ const CollectionPage = () => {
             </p>
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full">
-            {collectionInfoList.map((info, index) => {
-              const earnedMedalCount = getMedalCount(info.current);
+            {brandList.map((brand, index) => {
+              const earnedMedalCount = getMedalCount(20);
               const medalsToShow = allMedals.slice(0, earnedMedalCount);
 
               return (
@@ -86,11 +80,11 @@ const CollectionPage = () => {
                   className="border-1 border-gray-200 rounded-xl p-4 flex md:flex-row flex-col gap-3 w-full items-center justify-around"
                 >
                   <div className="max-w-[129px] flex items-center">
-                    <img src={info.image} alt={info.name} />
+                    <img src={brand.image_url} alt={brand.name} />
                   </div>
                   <div className="w-full md:w-[100px] flex flex-col gap-2 items-center">
                     <div className="break-words break-keep text-center h-[48px] w-full flex justify-center items-center">
-                      {info.name}
+                      {brand.name}
                     </div>
                     <div className="flex h-[47px] md:h-[33px] -space-x-[24px] md:-space-x-[12%] w-full md:w-[100px] justify-center md:justify-start">
                       {medalsToShow.map((medal, idx) => (
@@ -103,7 +97,7 @@ const CollectionPage = () => {
                       ))}
                     </div>
                     <div className="w-full">
-                      <ProgressBar current={info.current} max={info.total} />
+                      <ProgressBar current={20} max={20} />
                     </div>
                   </div>
                 </div>

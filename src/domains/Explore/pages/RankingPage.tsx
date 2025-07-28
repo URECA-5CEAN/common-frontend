@@ -16,7 +16,7 @@ const RankingPage = () => {
   const [activeTab, setActiveTab] = useState(0);
 
   return (
-    <div className="h-[1500px] w-full max-w-[1050px] px-6 sm:px-0">
+    <div className="w-full max-w-[1050px] m-6">
       {/* 탭 버튼 */}
       <div>
         {tabs.map((item, i) => (
