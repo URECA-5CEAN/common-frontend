@@ -37,7 +37,7 @@ interface HistoryListProps {
 }
 
 const HistoryList: React.FC<HistoryListProps> = ({ items }) => {
-  console.log(items);
+  // console.log(items);
   return items.length > 0 ? (
     <div className="flex flex-col gap-2">
       {items.map((item) => (

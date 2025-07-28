@@ -17,9 +17,11 @@ const BadgeButton: React.FC<BadgeButtonProps> = ({ title, onClick }) => {
       {title}
     </div>
   ) : (
-    <Button onClick={onClick} className="" variant="secondary" height="30px">
-      칭호 생성하기
-    </Button>
+    <div>
+      <Button onClick={onClick} className="" variant="secondary" height="30px">
+        칭호 생성하기
+      </Button>
+    </div>
   );
 };
 
