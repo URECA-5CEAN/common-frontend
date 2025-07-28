@@ -77,7 +77,6 @@ export default function RoadSection({
       };
 
       const res = await findDirectionPath(body);
-      console.log(res);
       const routeItems = DirecitonRoot(res);
       setRoutes(routeItems);
     } catch (err) {
