@@ -12,9 +12,11 @@ import type { StoreInfo } from '../../api/store';
 import OnOffBtn from '../OnOffBtn';
 import StarListItem from '../StarListItem';
 import { Button } from '@/components/Button';
+import { findDirectionPath, type DirectionRequestBody } from '../../api/road';
+import { DirecitonRoot } from '../DirecitonRoot';
 
 interface RouteItem {
-  id: number;
+  id: string;
   from: string;
   to: string;
   waypointNames?: string[];
@@ -42,25 +44,47 @@ export default function RoadSection({
   onSwap,
   onReset,
   onStar,
-  onNavigate,
   isShowStar,
   bookmarks,
   goToStore,
   openDetail,
 }: RouteInputProps) {
   const [savedRoutes, setSavedRoutes] = useState<RouteItem[]>([
-    { id: 1, from: '할리스 OO점', to: '할리스 OO점' },
-    { id: 2, from: '할리스 OO점', to: '할리스 OO점' },
-    { id: 3, from: '할리스 OO점', to: '할리스 OO점' },
+    { id: '1', from: '할리스 OO점', to: '할리스 OO점' },
+    { id: '2', from: '할리스 OO점', to: '할리스 OO점' },
+    { id: '3', from: '할리스 OO점', to: '할리스 OO점' },
   ]);
   const [showRecent, setShowRecent] = useState<boolean>(true);
   const [recentRoutes] = useState<RouteItem[]>([
-    { id: 11, from: '할리스 OO점', to: '할리스 OO점' },
-    { id: 12, from: '할리스 OO점', to: '할리스 OO점' },
-    { id: 13, from: '할리스 OO점', to: '할리스 OO점' },
+    { id: '11', from: '할리스 OO점', to: '할리스 OO점' },
+    { id: '12', from: '할리스 OO점', to: '할리스 OO점' },
+    { id: '13', from: '할리스 OO점', to: '할리스 OO점' },
   ]);
   const inputStyle = 'w-full px-4 py-2 text-sm focus:outline-none';
+  const [routes, setRoutes] = useState<RouteItem[]>([]);
+  const handleNavigate = async () => {
+    try {
+      const body: DirectionRequestBody = {
+        origin: { x: 127.11024, y: 37.39434, angle: 270 },
+        destination: { x: 127.11024, y: 37.39434, angle: 270 },
+        waypoints: [{ name: '잠실역', x: 127.101, y: 37.402 }],
+        priority: 'RECOMMEND',
+        car_fuel: 'GASOLINE',
+        car_hipass: false,
+        alternatives: false,
+        road_details: false,
+        summary: false,
+      };
 
+      const res = await findDirectionPath(body);
+      console.log(res);
+      const routeItems = DirecitonRoot(res);
+      setRoutes(routeItems);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : '오류 발생');
+    }
+  };
+  console.log(routes);
   return (
     <div className="max-w-md mx-auto  space-y-6 bg-white min-h-dvh">
       {/* 입력창 + 액션 버튼 */}
@@ -139,7 +163,7 @@ export default function RoadSection({
           )}
 
           <Button
-            onClick={onNavigate}
+            onClick={handleNavigate}
             variant="primary"
             size="sm"
             className="flex hover:brightness-110 focus:outline-none"

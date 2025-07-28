@@ -7,30 +7,34 @@ const apiClient: AxiosInstance = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
+//도착, 출발지
 interface Coordinate {
   x: number;
   y: number;
   angle?: number;
 }
 
+//경유지
 interface Waypoint {
   name: string;
   x: number;
   y: number;
 }
 
-interface DirectionRequestBody {
+// 길찾기 요청값
+export interface DirectionRequestBody {
   origin: Coordinate;
   destination: Coordinate;
   waypoints?: Waypoint[];
-  priority: 'RECOMMEND' | 'FASTEST' | 'SHORTEST';
-  car_fuel?: 'GASOLINE' | 'DIESEL' | 'EV' | 'HYBRID';
+  priority?: 'RECOMMEND' | 'FASTEST' | 'SHORTEST'; // 추천,최소,최단 경로
+  car_fuel?: 'GASOLINE' | 'DIESEL' | 'EV' | 'HYBRID'; // 차 종류
   car_hipass?: boolean;
   alternatives?: boolean;
   road_details?: boolean;
   summary?: boolean;
 }
 
+// 응답 값
 export interface DirectionResponse {
   statusCode: number;
   message: string;
@@ -40,13 +44,16 @@ export interface DirectionResponse {
   };
 }
 
+//루트 별 코드 및 메세지
 export interface Route {
   result_code: number;
   result_msg: string;
   summary: RouteSummary;
   sections: RouteSection[];
+  guides: Guide[];
 }
 
+//길찾기 모든 값
 export interface RouteSummary {
   origin: CoordPoint;
   destination: CoordPoint;
@@ -82,15 +89,17 @@ export interface RouteSection {
   guides: Guide[];
 }
 
+//도로별 정보
 export interface Road {
   name: string;
   distance: number;
   duration: number;
   traffic_speed: number;
-  traffic_state: number; // 0~3 등급
-  vertexes: number[]; // [x1, y1, x2, y2, ...]
+  traffic_state: number; // 원할 , 서행, 정체
+  vertexes: number[];
 }
 
+//구간(도로)별 가이드
 export interface Guide {
   name: string;
   x: number;
@@ -102,13 +111,14 @@ export interface Guide {
   road_index: number;
 }
 
+const token = localStorage.getItem('authToken');
+
 export async function findDirectionPath(
   body: DirectionRequestBody,
-  token: string,
 ): Promise<DirectionResponse> {
   try {
     const response = await apiClient.post<DirectionResponse>(
-      '/map/direction/path',
+      '/direction/path',
       body,
       {
         headers: {
@@ -116,7 +126,6 @@ export async function findDirectionPath(
         },
       },
     );
-    console.log(response);
     return response.data;
   } catch (error: unknown) {
     const axiosErr = error as AxiosError<{ message: string }>;
