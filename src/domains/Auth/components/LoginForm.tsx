@@ -144,7 +144,7 @@ const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
 
   // 카카오 로그인 핸들러
   const handleKakaoLogin = async () => {
-    await openKakaoLogin(); // 이 안에서 window.open으로 팝업 열기
+    await openKakaoLogin();
     setIsKakoSubmit(true);
   };
 

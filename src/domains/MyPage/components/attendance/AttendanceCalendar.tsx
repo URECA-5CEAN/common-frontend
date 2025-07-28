@@ -27,9 +27,9 @@ const CALENDAR_CONFIG = {
 };
 
 const STYLES = {
-  calendarWrapper: 'w-full flex justify-center lg:justify-start mb-10',
+  calendarWrapper: 'w-full flex justify-start mb-10',
   calendarContainer:
-    'bg-white w-full h-[648px] md:max-w-[463px] border border-gray-200 rounded-xl p-3 md:p-[30px] flex flex-col items-center justify-between',
+    'bg-white w-full h-full md:h-[648px] md:max-w-[463px] border border-gray-200 rounded-xl p-3 pb-5 md:p-[30px] flex flex-col items-center justify-between',
   statusDotPresent: 'w-full md:max-w-9 h-full md:max-h-9 rounded-full',
   statusDotAbsent:
     'w-full md:max-w-9 h-full md:max-h-9 bg-gray-200 rounded-full',

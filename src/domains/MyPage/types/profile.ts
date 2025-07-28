@@ -5,8 +5,6 @@ export interface Badge {
 
 export interface UsageHistoryItem {
   id: number;
-  date: string;
-  time: string;
   store: string;
   date: string;
   time: string;
