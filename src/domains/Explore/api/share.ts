@@ -44,3 +44,12 @@ export const getSharePostList = async (): Promise<Post[]> => {
 
   return response.data.data.postList;
 };
+
+export const getSharePostById = async (postId: string): Promise<Post> => {
+  const response = await axios.get(`${baseURL}/user/article/detail`, {
+    params: { postId },
+    headers: { Authorization: token },
+  });
+
+  return response.data.data;
+};

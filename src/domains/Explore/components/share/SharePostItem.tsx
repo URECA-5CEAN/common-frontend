@@ -47,7 +47,8 @@ const SharePostItem = ({ post }: SharePostItemProps) => {
           </div>
           <div className="flex flex-wrap sm:hidden text-gray-400 gap-x-1 text-sm">
             <div className="flex gap-1">
-              <Calendar size={16} /> {post.promiseDate}
+              <Calendar size={16} />
+              {`${dateTime.date}, ${dateTime.time.period} ${dateTime.time.hour}:${dateTime.time.minute}`}
             </div>
             <span>·</span>
             <div className="flex gap-1">
