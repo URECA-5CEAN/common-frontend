@@ -33,7 +33,12 @@ const StoreOverlay = ({
   if (isError) return `Error: ${error.message}`;
   if (benefits.length === 0) return '해당 브랜드 혜택이 없습니다.';
   return (
-    <div className="hidden sm:block bg-white rounded-2xl  w-[360px] p-4 space-y-3 z-1">
+    <div
+      className={clsx(
+        'hidden sm:block   rounded-2xl  w-[360px] p-4 space-y-3 z-1',
+        store.isRecommended ? 'bg-primaryGreen-40' : 'bg-white',
+      )}
+    >
       {/* 헤더 */}
       <div className="flex justify-between items-start">
         <div>

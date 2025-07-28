@@ -7,7 +7,11 @@ import React, {
   Suspense,
   lazy,
 } from 'react';
-import { MapMarker, MarkerClusterer } from 'react-kakao-maps-sdk';
+import {
+  CustomOverlayMap,
+  MapMarker,
+  MarkerClusterer,
+} from 'react-kakao-maps-sdk';
 import { useMedia } from 'react-use';
 import type { LatLng, MarkerProps } from '../KakaoMapContainer';
 import type { StoreInfo } from '../api/store';
@@ -74,6 +78,7 @@ export default function FilterMarker({
           lat: item.marker.latitude,
           lng: item.marker.longitude,
           imageUrl: item.marker.brandImageUrl ?? '',
+          isRecommended: item.marker.isRecommended ?? '',
         }));
 
       SetMarkers(enriched2D);
@@ -164,16 +169,31 @@ export default function FilterMarker({
   const renderFarMarkers = () =>
     Markers.map((m, idx) => {
       const markerImage = createMarkerImage(m.imageUrl);
+
       return (
-        <MapMarker
-          key={`${m.id}-${idx}`}
-          position={{ lat: m.lat, lng: m.lng }}
-          image={markerImage}
-          zIndex={shouldCluster ? 2 : 3}
-          onClick={() => handleClick(m.id)}
-          onMouseOver={() => handleMouseOver(m.id)}
-          onMouseOut={handleMouseOut}
-        />
+        <React.Fragment key={`${m.id}-${idx}`}>
+          {/* 기본 마커 */}
+          <MapMarker
+            position={{ lat: m.lat, lng: m.lng }}
+            image={markerImage}
+            zIndex={shouldCluster ? 2 : 3}
+            onClick={() => handleClick(m.id)}
+            onMouseOver={() => handleMouseOver(m.id)}
+            onMouseOut={handleMouseOut}
+          />
+
+          {/* AI추천 마커 애니메이션 효과 */}
+          {m.isRecommended && (
+            <CustomOverlayMap
+              position={{ lat: m.lat + 0.00005, lng: m.lng }}
+              zIndex={2}
+            >
+              <div className="relative">
+                <div className="w-10 h-10 rounded-full bg-primaryGreen opacity-80 animate-ping " />
+              </div>
+            </CustomOverlayMap>
+          )}
+        </React.Fragment>
       );
     });
 
