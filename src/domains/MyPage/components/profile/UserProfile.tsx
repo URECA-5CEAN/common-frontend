@@ -29,14 +29,12 @@ const ProfileImage: React.FC<ProfileImageProps> = ({ src, alt }) => (
 
 interface UserProfileProps {
   userInfo: UserInfoType;
-  selectedBadgeName: string;
   onBadgeClick: () => void;
   userInfoApi?: UserInfoApi;
 }
 
 const UserProfile: React.FC<UserProfileProps> = ({
   userInfo,
-  selectedBadgeName,
   onBadgeClick,
   userInfoApi,
 }) => {
@@ -52,11 +50,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
     <div className="w-full lg:h-[186px] border border-gray-200 rounded-2xl flex lg:flex-row flex-col gap-5 p-5 md:justify-between items-center">
       <div className="flex gap-4 w-full">
         <ProfileImage src={iconSrc} alt="우수아이콘" />
-        <UserInfo
-          selectedBadgeName={selectedBadgeName}
-          onBadgeClick={onBadgeClick}
-          userInfoApi={userInfoApi}
-        />
+        <UserInfo onBadgeClick={onBadgeClick} userInfoApi={userInfoApi} />
       </div>
       <UserStats userInfo={userInfo} />
     </div>

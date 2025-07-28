@@ -1,6 +1,5 @@
 import BadgeModal from '@/domains/MyPage/components/profile/BadgeModal';
 import UserProfile from '@/domains/MyPage/components/profile/UserProfile';
-import { BADGES } from '@/domains/MyPage/constants/profile';
 import type {
   UsageHistoryItem,
   UserInfo,
@@ -9,6 +8,7 @@ import type {
 import { useEffect, useState } from 'react';
 import UsageHistory from '@/domains/MyPage/components/profile/UsageHistory';
 import {
+  editUserInfo,
   getUsageHistory,
   getUserInfo,
   getUserStat,
@@ -25,6 +25,7 @@ const ProfilePage: React.FC = () => {
   const [usageHistory, setUsageHistory] = useState<
     UsageHistoryItem[] | undefined
   >();
+  const [isConfirmLoading, setIsConfirmLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -59,17 +60,28 @@ const ProfilePage: React.FC = () => {
     totalMission: 3,
   };
 
-  const selectedBadgeName =
-    BADGES.find((badge) => badge.id === selectedBadge)?.name || '';
-
   const handleBadgeClick = (): void => {
     setTempBadge(selectedBadge);
     setOpen(true);
   };
 
-  const handleConfirm = (): void => {
-    setSelectedBadge(tempBadge);
-    setOpen(false);
+  const updateTitle = async () => {
+    setIsConfirmLoading(true);
+    try {
+      await editUserInfo({ title: tempBadge });
+      setSelectedBadge(tempBadge);
+      setIsConfirmLoading(false);
+      setUserInfoApi((prev) => {
+        if (!prev) return prev;
+        return { ...prev, title: tempBadge };
+      });
+    } catch (error) {
+      console.error('사용자 정보 로드 실패:', error);
+      alert('오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    } finally {
+      setIsConfirmLoading(false);
+      setOpen(false);
+    }
   };
 
   const handleClose = (): void => {
@@ -95,7 +107,6 @@ const ProfilePage: React.FC = () => {
 
           <UserProfile
             userInfo={userInfo}
-            selectedBadgeName={selectedBadgeName}
             onBadgeClick={handleBadgeClick}
             userInfoApi={userInfoApi}
           />
@@ -107,10 +118,11 @@ const ProfilePage: React.FC = () => {
       <BadgeModal
         isOpen={open}
         onClose={handleClose}
-        badges={BADGES}
+        userInfoApi={userInfoApi}
         tempBadge={tempBadge}
         setTempBadge={setTempBadge}
-        onConfirm={handleConfirm}
+        onConfirm={updateTitle}
+        isConfirmLoading={isConfirmLoading}
       />
     </>
   );
