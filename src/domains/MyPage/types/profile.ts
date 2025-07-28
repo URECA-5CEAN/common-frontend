@@ -8,7 +8,7 @@ export interface UsageHistoryItem {
   store: string;
   date: string;
   time: string;
-  benefit: string;
+  benefitAmount: number;
   experience: number;
   visitedAt: string;
 }
