@@ -177,7 +177,7 @@ const SharePage = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="w-full max-w-[1050px] mx-auto px-6 sm:px-0">
+    <div className="w-full max-w-[1050px] m-6">
       <h2 className="text-[32px] font-bold mb-4">혜택 나누기</h2>
 
       <div className="flex justify-between gap-4">

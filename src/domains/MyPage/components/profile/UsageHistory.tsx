@@ -29,10 +29,11 @@ const UsageHistory: React.FC<UsageHistoryProps> = ({ items }) => {
     if (!items) return [];
 
     return items.filter((item) => {
-      const itemDate = new Date(item.date);
+      const itemDate = new Date(item.visitedAt);
       return itemDate >= startDate && itemDate <= endDate;
     });
   }, [items, selectedRange]);
+  console.log(items);
 
   return (
     <div className="mt-10">

@@ -27,9 +27,9 @@ const CALENDAR_CONFIG = {
 };
 
 const STYLES = {
-  calendarWrapper: 'w-full flex justify-center lg:justify-start mb-10',
+  calendarWrapper: 'w-full flex mb-10',
   calendarContainer:
-    'bg-white w-full h-[648px] md:max-w-[463px] border border-gray-200 rounded-xl p-3 md:p-[30px] flex flex-col items-center justify-between',
+    'bg-white w-full h-[624px] md:h-[648px] md:max-w-[463px] border border-gray-200 rounded-xl p-3 pb-6 md:p-[30px] flex flex-col items-center justify-between',
   statusDotPresent: 'w-full md:max-w-9 h-full md:max-h-9 rounded-full',
   statusDotAbsent:
     'w-full md:max-w-9 h-full md:max-h-9 bg-gray-200 rounded-full',
@@ -72,7 +72,12 @@ export const AttendanceCalendar = ({
   };
 
   const getButtonText = () => {
-    if (loading) return <LoadingSpinner />;
+    if (loading)
+      return (
+        <div className="w-5 h-5">
+          <LoadingSpinner />
+        </div>
+      );
     if (isTodayPresent) return '오늘 출석 완료';
     return '출석 체크';
   };
