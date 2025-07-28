@@ -166,14 +166,20 @@ const NicknameField = ({
         height="28px"
         type="button"
         onClick={onCheckNickname}
-        disabled={!isNicknameValid}
+        disabled={!isNicknameValid || isNicknameLoading}
         className={`text-xs md:text-sm ${
           !isNicknameValid
             ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
             : 'bg-primaryGreen text-white hover:bg-[#0ea5e9]'
         }`}
       >
-        {isNicknameLoading ? <LoadingSpinner /> : '중복확인'}
+        {isNicknameLoading ? (
+          <div className="w-4 h-4">
+            <LoadingSpinner />
+          </div>
+        ) : (
+          '중복확인'
+        )}
       </Button>
     </div>
   </div>
@@ -367,12 +373,12 @@ const EditProfilePage = () => {
     setIsSubmitting(true);
 
     try {
-      await editUserInfo(
-        userInfo.nickname,
-        userInfo.address,
+      await editUserInfo({
+        nickname: userInfo.nickname,
+        address: userInfo.address,
         password,
-        userInfo.membership,
-      );
+        membership: userInfo.membership,
+      });
       navigate('/mypage/profile');
     } catch (error) {
       console.error('사용자 정보 수정 실패:', error);
@@ -505,7 +511,13 @@ const EditProfilePage = () => {
               취소
             </Button>
             <Button fullWidth height="42px" disabled={isSubmitting}>
-              {isSubmitting ? <LoadingSpinner /> : '수정하기'}
+              {isSubmitting ? (
+                <div className="w-5 h-5">
+                  <LoadingSpinner />
+                </div>
+              ) : (
+                '수정하기'
+              )}
             </Button>
           </div>
         </form>

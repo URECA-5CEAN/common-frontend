@@ -72,7 +72,12 @@ export const AttendanceCalendar = ({
   };
 
   const getButtonText = () => {
-    if (loading) return <LoadingSpinner />;
+    if (loading)
+      return (
+        <div className="w-5 h-5">
+          <LoadingSpinner />
+        </div>
+      );
     if (isTodayPresent) return '오늘 출석 완료';
     return '출석 체크';
   };
