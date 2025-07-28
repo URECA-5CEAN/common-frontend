@@ -53,3 +53,10 @@ export const getSharePostById = async (postId: string): Promise<Post> => {
 
   return response.data.data;
 };
+
+export const getShareLocations = async (): Promise<string[]> => {
+  const response = await axios.get(`${baseURL}/user/article/locations`, {
+    headers: { Authorization: token },
+  });
+  return response.data.data;
+};
