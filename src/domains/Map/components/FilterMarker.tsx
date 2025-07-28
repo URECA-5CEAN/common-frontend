@@ -7,7 +7,11 @@ import React, {
   Suspense,
   lazy,
 } from 'react';
-import { MapMarker, MarkerClusterer } from 'react-kakao-maps-sdk';
+import {
+  CustomOverlayMap,
+  MapMarker,
+  MarkerClusterer,
+} from 'react-kakao-maps-sdk';
 import { useMedia } from 'react-use';
 import type { LatLng, MarkerProps } from '../KakaoMapContainer';
 import type { StoreInfo } from '../api/store';
@@ -58,7 +62,7 @@ export default function FilterMarker({
 
     const handleIdle = () => {
       const level = map.getLevel!();
-      const max2D = level <= 2 ? 20 : level <= 4 ? 40 : level <= 6 ? 60 : 80;
+      const max2D = level <= 2 ? 20 : level <= 4 ? 30 : level <= 6 ? 40 : 50;
       const enriched2D = stores
         .map((m) => ({
           marker: m,
@@ -74,6 +78,7 @@ export default function FilterMarker({
           lat: item.marker.latitude,
           lng: item.marker.longitude,
           imageUrl: item.marker.brandImageUrl ?? '',
+          isRecommended: item.marker.isRecommended ?? '',
         }));
 
       SetMarkers(enriched2D);
@@ -162,22 +167,37 @@ export default function FilterMarker({
   }, []);
   // 2D 마커 렌더링 함수 분리
   const renderFarMarkers = () =>
-    Markers.map((m) => {
+    Markers.map((m, idx) => {
       const markerImage = createMarkerImage(m.imageUrl);
+
       return (
-        <MapMarker
-          key={m.id}
-          position={{ lat: m.lat, lng: m.lng }}
-          image={markerImage}
-          zIndex={shouldCluster ? 2 : 3}
-          onClick={() => handleClick(m.id)}
-          onMouseOver={() => handleMouseOver(m.id)}
-          onMouseOut={handleMouseOut}
-        />
+        <React.Fragment key={`${m.id}-${idx}`}>
+          {/* 기본 마커 */}
+          <MapMarker
+            position={{ lat: m.lat, lng: m.lng }}
+            image={markerImage}
+            zIndex={shouldCluster ? 2 : 3}
+            onClick={() => handleClick(m.id)}
+            onMouseOver={() => handleMouseOver(m.id)}
+            onMouseOut={handleMouseOut}
+          />
+
+          {/* AI추천 마커 애니메이션 효과 */}
+          {m.isRecommended && (
+            <CustomOverlayMap
+              position={{ lat: m.lat + 0.00005, lng: m.lng }}
+              zIndex={2}
+            >
+              <div className="relative">
+                <div className="w-14 h-14 rounded-full bg-primaryGreen opacity-80 animate-ping " />
+              </div>
+            </CustomOverlayMap>
+          )}
+        </React.Fragment>
       );
     });
 
-  // 2D 마커 개수에 따라 클러스터링 여부 결정
+  // 마커 개수에 따라 클러스터링 여부 결정
   const shouldCluster = Markers.length > 20;
   // 데스크톱 여부 판단 (모바일에서 오버레이 안뜨게)
   const isDesktop = useMedia('(min-width: 640px)');
@@ -188,7 +208,7 @@ export default function FilterMarker({
       {shouldCluster ? (
         <MarkerClusterer
           averageCenter
-          minLevel={5}
+          minLevel={6}
           gridSize={50}
           styles={[
             {

@@ -1,4 +1,3 @@
-// src/api/store.ts
 import axios from 'axios';
 import type { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 
@@ -8,7 +7,7 @@ const apiClient: AxiosInstance = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-const token = import.meta.env.VITE_AUTH_TOKEN;
+const token = localStorage.getItem('authToken');
 export interface StoreInfo {
   id: string;
   name: string;
@@ -19,6 +18,7 @@ export interface StoreInfo {
   longitude: number;
   brandName: string;
   brandImageUrl?: string;
+  isRecommended?: string;
 }
 
 export interface FetchStoresParams {
@@ -66,6 +66,14 @@ interface FetchBrandsResponse {
   statusCode: number;
   message: string;
   data: BrandProps[];
+}
+
+export interface BenefitData {
+  storeName: string;
+  category: string;
+  address: string;
+  visitedAt: string;
+  totalAmount: number;
 }
 
 //브랜드 조회
@@ -209,5 +217,59 @@ export async function deleteBookmark(storeId: string): Promise<string> {
       axiosErr.message ??
       '즐겨찾기 삭제 중 알 수 없는 오류가 발생했습니다.';
     throw new Error(`즐겨찾기 삭제 실패: ${message}`);
+  }
+}
+
+export async function uploadReceiptImage(file: File): Promise<BenefitData> {
+  console.log(file);
+  const formData = new FormData();
+  formData.append('imageFile', file);
+  console.log(formData);
+  try {
+    const response: AxiosResponse<{ data: BenefitData }> = await apiClient.post(
+      '/ocr',
+      formData,
+      {
+        headers: {
+          Authorization: token,
+          'Content-Type': 'multipart/form-data',
+        },
+      },
+    );
+    return response.data.data;
+  } catch (error: unknown) {
+    const axiosErr = error as AxiosError<{ message: string }>;
+    const message =
+      axiosErr.response?.data?.message ??
+      axiosErr.message ??
+      'OCR 업로드 중 알 수 없는 오류가 발생했습니다.';
+    throw new Error(`OCR 업로드 실패: ${message}`);
+  }
+}
+
+export async function saveBenefitData(
+  data: BenefitData,
+  benefitAmount: number,
+  userEmail: string,
+): Promise<void> {
+  try {
+    const response: AxiosResponse = await apiClient.post(
+      `/ocr/save?benefitAmount=${benefitAmount}`,
+      data,
+      {
+        headers: {
+          Authorization: token,
+          'X-User-email': userEmail,
+        },
+      },
+    );
+    return response.data;
+  } catch (error: unknown) {
+    const axiosErr = error as AxiosError<{ message: string }>;
+    const message =
+      axiosErr.response?.data?.message ??
+      axiosErr.message ??
+      'OCR 인증저장 중 알 수 없는 오류가 발생했습니다.';
+    throw new Error(`OCR 인증저장 실패: ${message}`);
   }
 }
