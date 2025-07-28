@@ -12,7 +12,7 @@ import { saveBenefitData, uploadReceiptImage } from '../api/store';
 
 interface BenefitModalProps {
   panel: Panel;
-  selectedFile: File;
+  selectedFile: File | null;
   handleFileSelect: (e: ChangeEvent<HTMLInputElement>) => void;
   openmenu: (menu: MenuType) => void;
   setSelectedFile: Dispatch<SetStateAction<File | null>>;
