@@ -6,9 +6,11 @@ import StarSection from './StarSection';
 import DetailSection from './DetailSection';
 import { ChevronLeft } from 'lucide-react';
 import RoadSection from './RoadSection';
-import { useState, type ChangeEventHandler } from 'react';
+import { useEffect, useState, type ChangeEventHandler } from 'react';
 import type { StoreInfo } from '../../api/store';
 import type { MenuType } from './MapSidebar';
+import { getUserInfo, getUserStat } from '@/domains/MyPage/api/profile';
+import type { UserInfoApi } from '@/domains/MyPage/types/profile';
 
 interface SidebarPanelProps {
   index: number; // 0 = 메뉴, 1 = 상세
@@ -55,6 +57,24 @@ export default function SidebarPanel({
 }: SidebarPanelProps) {
   const [ShowStar, SetShowStar] = useState<boolean>(false);
 
+  const [userInfo, setUserInfo] = useState<UserInfoApi>();
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const userInfoRes = await getUserInfo();
+      const userStatRes = await getUserStat();
+
+      const mergedData = {
+        ...userInfoRes.data,
+        ...userStatRes.data,
+      };
+
+      setUserInfo(mergedData);
+    };
+
+    fetchUserData();
+  }, []);
+
   // 즐겨찾기 토글
   const onStar = () => {
     SetShowStar((prev) => !prev);
@@ -63,6 +83,7 @@ export default function SidebarPanel({
   const left = 64 + index * 345;
   const isDetail = panel.type === 'detail';
 
+  if (!userInfo) return;
   return (
     <motion.div
       key={index}
@@ -81,10 +102,11 @@ export default function SidebarPanel({
         <div className="hidden md:block">
           {index === 0 && (
             <UserSection
-              username="김민석"
-              level={1}
-              currentExp={5}
-              nextLevelExp={20}
+              membership={userInfo.membership}
+              username={userInfo.nickname}
+              level={userInfo.level}
+              currentExp={userInfo.exp}
+              nextLevelExp={50}
             />
           )}
         </div>
