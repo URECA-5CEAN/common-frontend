@@ -5,32 +5,23 @@ interface HistoryItemProps {
   item: UsageHistoryItem;
 }
 
-const HistoryItem: React.FC<HistoryItemProps> = ({ item }) => {
-  const visitedAt = item.visitedAt;
-  const date = new Date(visitedAt);
-  const formattedDate = `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
-  const formattedTime = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-
-  return (
-    <div className="flex border border-gray-200 rounded-2xl px-4 py-5 justify-between">
-      <div className="flex gap-[10px]">
-        <p className="text-xs text-gray-500 h-6 flex items-center">
-          {formattedDate}
-        </p>
-        <div className="flex flex-col gap-2">
-          <p>{item.store}</p>
-          <p className="text-xs text-gray-500">{formattedTime}</p>
-        </div>
-      </div>
+const HistoryItem: React.FC<HistoryItemProps> = ({ item }) => (
+  <div className="flex border border-gray-200 rounded-2xl px-4 py-5 justify-between">
+    <div className="flex gap-[10px]">
+      <p className="text-xs text-gray-500 h-6 flex items-center">{item.date}</p>
       <div className="flex flex-col gap-2">
-        <p>{item.benefitAmount.toLocaleString()}원 할인</p>
-        <p className="text-xs text-gray-500 flex justify-end">
-          경험치 +{item.experience}
-        </p>
+        <p>{item.store}</p>
+        <p className="text-xs text-gray-500">{item.time}</p>
       </div>
     </div>
-  );
-};
+    <div className="flex flex-col gap-2">
+      <p>{item.benefit}</p>
+      <p className="text-xs text-gray-500 flex justify-end">
+        경험치 +{item.experience}
+      </p>
+    </div>
+  </div>
+);
 
 interface HistoryListProps {
   items: UsageHistoryItem[];
@@ -54,6 +45,5 @@ const HistoryList: React.FC<HistoryListProps> = ({ items }) => {
       사용내역이 없어요
     </div>
   );
-};
 
 export default HistoryList;

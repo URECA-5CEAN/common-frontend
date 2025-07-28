@@ -31,7 +31,7 @@ interface UserLevelProps {
 }
 
 const UserLevel: React.FC<UserLevelProps> = ({ nickname, level }) => (
-  <div className="flex sm:items-end font-bold gap-1 flex-col sm:flex-row">
+  <div className="flex items-end font-bold gap-1">
     <p className="text-2xl">{nickname}</p>
     <p>Lv.{level}</p>
   </div>

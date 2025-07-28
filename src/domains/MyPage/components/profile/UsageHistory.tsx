@@ -29,7 +29,7 @@ const UsageHistory: React.FC<UsageHistoryProps> = ({ items }) => {
     if (!items) return [];
 
     return items.filter((item) => {
-      const itemDate = new Date(item.visitedAt);
+      const itemDate = new Date(item.date);
       return itemDate >= startDate && itemDate <= endDate;
     });
   }, [items, selectedRange]);

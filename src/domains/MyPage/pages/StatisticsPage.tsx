@@ -5,7 +5,7 @@ import { useClickOutside } from '@/domains/MyPage/hooks/useClickOutside';
 import { useState } from 'react';
 
 const STYLES = {
-  container: 'w-[calc(100%-48px)] max-w-[1050px] m-6',
+  container: 'w-full max-w-[1050px]',
   title: 'text-[32px] font-bold my-3',
   subtitle: 'text-2xl font-bold',
   card: '',
@@ -241,7 +241,7 @@ const StatisticsPage = () => {
   });
 
   return (
-    <div className={STYLES.container}>
+    <div className={STYLES.container + ' m-6'}>
       <Breadcrumb title="마이페이지" subtitle="통계" />
 
       <div className={STYLES.title}>통계</div>

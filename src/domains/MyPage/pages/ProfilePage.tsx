@@ -90,7 +90,7 @@ const ProfilePage: React.FC = () => {
 
   return (
     <>
-      <div className="w-[calc(100%-48px)] max-w-[1050px] m-6">
+      <div className="w-full max-w-[1050px] m-6">
         <Breadcrumb title="마이페이지" subtitle="내 정보" />
 
         <div className="flex flex-col">

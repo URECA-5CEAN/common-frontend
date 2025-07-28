@@ -1,70 +1,24 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 
 import { Button } from '@/components/Button';
 import { Breadcrumb } from '@/components/Breadcrumb';
-import {
-  editUserInfo,
-  getNicknameDuplicate,
-  getUserInfo,
-} from '@/domains/MyPage/api/profile';
+import { editUserInfo, getUserInfo } from '@/domains/MyPage/api/profile';
 import type { UserInfoApi } from '@/domains/MyPage/types/profile';
 import { LoadingSpinner } from '@/domains/MyPage/components/LoadingSpinner';
-
-// 상수 정의
-const VALIDATION_RULES = {
-  NICKNAME: {
-    MIN_LENGTH: 2,
-    MAX_LENGTH: 10,
-  },
-  PASSWORD: {
-    MIN_LENGTH: 4,
-    MAX_LENGTH: 16,
-  },
-} as const;
-
-const MEMBERSHIP_TYPES = ['우수', 'VIP', 'VVIP'] as const;
-
-const ERROR_MESSAGES = {
-  NICKNAME_REQUIRED: '닉네임을 입력해주세요.',
-  NICKNAME_TOO_SHORT: '닉네임을 2자 이상 입력해주세요.',
-  NICKNAME_DUPLICATE: '이미 사용중인 닉네임이에요',
-  NICKNAME_AVAILABLE: '사용 가능한 닉네임이에요',
-  PASSWORD_REQUIRED: '비밀번호를 입력해주세요.',
-  PASSWORD_TOO_SHORT: '비밀번호를 4자 이상 입력해주세요.',
-  PASSWORD_MISMATCH: '비밀번호가 일치하지 않습니다.',
-  LOAD_USER_INFO_FAILED:
-    '사용자 정보를 불러오는데 실패했습니다. 잠시 후 다시 시도해주세요',
-  EDIT_USER_INFO_FAILED: '수정에 실패했습니다. 다시 시도해주세요.',
-} as const;
-
-// 타입 정의
-interface ValidationResult {
-  isValid: boolean;
-  errorMessage: string;
-}
-
-interface FormErrors {
-  nickname: string;
-  password: string;
-  confirmPassword: string;
-}
 
 interface FloatingInputProps {
   id: string;
   label: string;
   type?: string;
   value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (value: string) => void;
   error?: string;
   readOnly?: boolean;
   disabled?: boolean;
-  maxLength?: number;
-  nicknameDupMsg?: string;
 }
 
-// 컴포넌트 분리
 const FloatingInput = ({
   id,
   label,
@@ -74,8 +28,6 @@ const FloatingInput = ({
   error,
   readOnly,
   disabled,
-  maxLength,
-  nicknameDupMsg,
 }: FloatingInputProps) => (
   <div>
     <div className="relative w-full group focus-within:text-gray-700">
@@ -83,13 +35,11 @@ const FloatingInput = ({
         type={type}
         id={id}
         value={value}
-        onChange={onChange}
+        onChange={(e) => onChange(e.target.value)}
         readOnly={readOnly}
         disabled={disabled}
         className={`peer w-full px-3 pt-5 placeholder-transparent focus:outline-none border-b border-gray-400 
         ${disabled ? 'bg-gray-100 cursor-not-allowed text-gray-500 h-[60px] pb-0' : 'pb-2 h-[50px]'}`}
-        placeholder={label}
-        maxLength={maxLength}
       />
 
       <label
@@ -185,193 +135,92 @@ const NicknameField = ({
   </div>
 );
 
-// 유틸리티 함수들
-const createValidationResult = (
-  isValid: boolean,
-  errorMessage: string = '',
-): ValidationResult => ({
-  isValid,
-  errorMessage,
-});
-
-const validateNicknameInput = (
-  nickname: string,
-  originalNickname: string,
-): ValidationResult => {
-  if (!nickname.trim()) {
-    return createValidationResult(false, ERROR_MESSAGES.NICKNAME_REQUIRED);
-  }
-
-  if (nickname.length < VALIDATION_RULES.NICKNAME.MIN_LENGTH) {
-    return createValidationResult(false, ERROR_MESSAGES.NICKNAME_TOO_SHORT);
-  }
-
-  if (originalNickname === nickname) {
-    return createValidationResult(true);
-  }
-
-  return createValidationResult(true);
-};
-
-const validatePasswordInput = (password: string): ValidationResult => {
-  if (!password.trim()) {
-    return createValidationResult(false, ERROR_MESSAGES.PASSWORD_REQUIRED);
-  }
-
-  if (password.length < VALIDATION_RULES.PASSWORD.MIN_LENGTH) {
-    return createValidationResult(false, ERROR_MESSAGES.PASSWORD_TOO_SHORT);
-  }
-
-  return createValidationResult(true);
-};
-
-const validateConfirmPasswordInput = (
-  password: string,
-  confirmPassword: string,
-): ValidationResult => {
-  if (password !== confirmPassword) {
-    return createValidationResult(false, ERROR_MESSAGES.PASSWORD_MISMATCH);
-  }
-
-  return createValidationResult(true);
-};
-
-const shouldShowNicknameDuplicateButton = (
-  nickname: string,
-  originalNickname: string,
-): boolean => {
-  return (
-    nickname !== originalNickname &&
-    nickname.trim() !== '' &&
-    nickname.length >= VALIDATION_RULES.NICKNAME.MIN_LENGTH
-  );
-};
-
-// 메인 컴포넌트
 const EditProfilePage = () => {
-  // 상태 관리
-  const [userInfo, setUserInfo] = useState<UserInfoApi>();
+  const [userInfoApi, setUserInfoApi] = useState<UserInfoApi>();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formErrors, setFormErrors] = useState<FormErrors>({
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({
     nickname: '',
+    // address: '',
     password: '',
     confirmPassword: '',
   });
-  const [isNicknameValid, setIsNicknameValid] = useState(false);
-  const [originalNickname, setOriginalNickname] = useState('');
-  const [nicknameDuplicateMessage, setNicknameDuplicateMessage] = useState('');
-  const [isCheckingNickname, setIsCheckingNickname] = useState(false);
+  const [isValid, setIsValid] = useState(true);
+  const [membership, setMembership] = useState<
+    '' | '우수' | 'VIP' | 'VVIP' | string | undefined
+  >('');
 
   const navigate = useNavigate();
 
-  // 사용자 정보 로드
-  const loadUserInfo = async () => {
-    try {
-      const response = await getUserInfo();
-      setUserInfo(response.data);
-      setOriginalNickname(response.data.nickname);
-    } catch (error) {
-      console.error('사용자 정보 로드 실패:', error);
-      alert(ERROR_MESSAGES.LOAD_USER_INFO_FAILED);
-      navigate('/mypage/profile');
-    }
-  };
-
-  // 에러 상태 업데이트
-  const updateFormError = (field: keyof FormErrors, message: string) => {
-    setFormErrors((prev) => ({ ...prev, [field]: message }));
-  };
-
-  // 닉네임 검증
-  const validateAndUpdateNickname = (nickname: string) => {
-    const validation = validateNicknameInput(nickname, originalNickname);
-    const shouldShowButton = shouldShowNicknameDuplicateButton(
-      nickname,
-      originalNickname,
-    );
-
-    updateFormError('nickname', validation.errorMessage);
-    setIsNicknameValid(shouldShowButton && validation.isValid);
-
-    // 에러가 있으면 성공 메시지는 지우기
-    if (validation.errorMessage) {
-      setNicknameDuplicateMessage('');
-    }
-
-    return validation.isValid;
-  };
-
-  // 비밀번호 검증
-  const validateAndUpdatePassword = (password: string) => {
-    const validation = validatePasswordInput(password);
-    updateFormError('password', validation.errorMessage);
-    return validation.isValid;
-  };
-
-  // 비밀번호 확인 검증
-  const validateAndUpdateConfirmPassword = (confirmPassword: string) => {
-    const validation = validateConfirmPasswordInput(password, confirmPassword);
-    updateFormError('confirmPassword', validation.errorMessage);
-    return validation.isValid;
-  };
-
-  // 닉네임 중복 체크
-  const checkNicknameDuplicate = async (): Promise<boolean> => {
-    if (!userInfo?.nickname) return false;
-
-    if (originalNickname === userInfo.nickname) {
-      setIsNicknameValid(false);
-      return true;
-    }
-
-    setIsCheckingNickname(true);
-
-    try {
-      const response = await getNicknameDuplicate(userInfo.nickname);
-
-      if (response.data === true) {
-        updateFormError('nickname', ERROR_MESSAGES.NICKNAME_DUPLICATE);
-        return false;
-      } else if (response.data === false) {
-        setNicknameDuplicateMessage(ERROR_MESSAGES.NICKNAME_AVAILABLE);
-        return true;
+  // 초기 사용자 정보 로드
+  useEffect(() => {
+    const loadUserInfo = async () => {
+      try {
+        const response = await getUserInfo();
+        setUserInfoApi(response.data);
+      } catch (error) {
+        console.error('사용자 정보 로드 실패:', error);
+        alert(
+          '사용자 정보를 불러오는데 실패했습니다. 잠시 후 다시 시도해주세요',
+        );
+        navigate('/mypage/profile');
       }
-    } catch (error) {
-      console.error('닉네임 중복 체크 실패:', error);
-      alert(ERROR_MESSAGES.EDIT_USER_INFO_FAILED);
-    } finally {
-      setIsCheckingNickname(false);
+    };
+
+    loadUserInfo();
+  }, []);
+  console.log(userInfoApi);
+
+  // 폼 유효성 검사
+  const validateForm = useCallback((): boolean => {
+    const newErrors = {
+      nickname: '',
+      address: '',
+      password: '',
+      confirmPassword: '',
+    };
+
+    let valid = true;
+
+    if (!userInfoApi?.nickname.trim()) {
+      newErrors.nickname = '닉네임을 입력해주세요.';
+      valid = false;
     }
 
-    return false;
-  };
+    if (!userInfoApi?.address.trim()) {
+      newErrors.address = '주소를 입력해주세요.';
+      valid = false;
+    }
 
-  // 폼 제출 검증
-  const validateForm = async (): Promise<boolean> => {
-    if (!userInfo) return false;
+    if (!password.trim()) {
+      newErrors.password = '비밀번호를 입력해주세요.';
+      valid = false;
+    }
 
-    const isNicknameValid = validateAndUpdateNickname(userInfo.nickname);
-    const isPasswordValid = validateAndUpdatePassword(password);
-    const isConfirmPasswordValid =
-      validateAndUpdateConfirmPassword(confirmPassword);
-    const isNicknameDuplicateValid = await checkNicknameDuplicate();
+    if (password !== confirmPassword) {
+      newErrors.confirmPassword = '비밀번호가 일치하지 않습니다.';
+      valid = false;
+    }
 
-    return (
-      isNicknameValid &&
-      isPasswordValid &&
-      isConfirmPasswordValid &&
-      isNicknameDuplicateValid
-    );
-  };
+    setErrors(newErrors);
+    setIsValid(valid); // 여기서 상태 업데이트
+    return valid;
+  }, [userInfoApi, password, confirmPassword]);
 
-  // 사용자 정보 수정
-  const submitUserInfoEdit = async () => {
-    if (!userInfo) return;
+  useEffect(() => {
+    validateForm();
+    setMembership(userInfoApi?.membership);
+  }, [userInfoApi, password, confirmPassword, validateForm]);
 
-    setIsSubmitting(true);
+  // 사용자 정보 수정 처리
+  const handleEditUserInfo = async () => {
+    if (!userInfoApi) return;
 
+    const isValid = validateForm();
+    if (!isValid) return;
+
+    setIsLoading(true);
     try {
       await editUserInfo({
         nickname: userInfo.nickname,
@@ -382,60 +231,29 @@ const EditProfilePage = () => {
       navigate('/mypage/profile');
     } catch (error) {
       console.error('사용자 정보 수정 실패:', error);
-      alert(ERROR_MESSAGES.EDIT_USER_INFO_FAILED);
+      alert('수정에 실패했습니다. 다시 시도해주세요.');
     } finally {
-      setIsSubmitting(false);
+      setIsLoading(false);
     }
   };
 
-  // 이벤트 핸들러들
-  const handleFormSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const isFormValid = await validateForm();
-    if (isFormValid) {
-      await submitUserInfoEdit();
-    }
+  // 닉네임 업데이트
+  const handleNicknameChange = (value: string) => {
+    setUserInfoApi((prev) => (prev ? { ...prev, nickname: value } : undefined));
   };
 
-  const handleMembershipChange = (membership: string) => {
-    setUserInfo((prev) => (prev ? { ...prev, membership } : undefined));
-  };
+  // // 주소 업데이트 (향후 추가될 경우를 위해)
+  // const handleAddressChange = (value: string) => {
+  //   setUserInfoApi((prev) => (prev ? { ...prev, address: value } : undefined));
+  // };
 
-  const handleNicknameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newNickname = e.target.value;
-    setUserInfo((prev) =>
-      prev ? { ...prev, nickname: newNickname } : undefined,
-    );
-    setNicknameDuplicateMessage('');
-    validateAndUpdateNickname(newNickname);
-  };
-
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newPassword = e.target.value;
-    setPassword(newPassword);
-    validateAndUpdatePassword(newPassword);
-  };
-
-  const handleConfirmPasswordChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const newConfirmPassword = e.target.value;
-    setConfirmPassword(newConfirmPassword);
-    validateAndUpdateConfirmPassword(newConfirmPassword);
-  };
-
+  // 이전 페이지로 이동
   const handleGoBack = () => {
     navigate('/mypage/profile');
   };
 
-  // 초기화
-  useEffect(() => {
-    loadUserInfo();
-  }, []);
-
   return (
-    <div className="w-[calc(100%-48px)] max-w-[1050px] m-6">
+    <div className="w-full max-w-[1050px] m-6">
       <Breadcrumb title="마이페이지" subtitle="내 정보" />
 
       {/* 헤더 */}
@@ -452,61 +270,98 @@ const EditProfilePage = () => {
 
       {/* 폼 컨테이너 */}
       <div className="w-full flex justify-center">
-        <form
-          onSubmit={handleFormSubmit}
-          className="flex flex-col gap-5 max-w-[700px] w-full"
-        >
+        <div className="flex flex-col gap-5 max-w-[700px] w-full">
           <FloatingInput
             id="email"
             label="이메일"
-            value={userInfo?.email || ''}
-            onChange={() => {}}
+            value={userInfoApi?.email || ''}
+            onChange={() => {}} // 변경 불가 처리
             readOnly
             disabled
           />
 
-          <MembershipSelector
-            selectedMembership={userInfo?.membership}
-            onMembershipChange={handleMembershipChange}
+          {/* 성별 선택 버튼 */}
+          <div className="flex gap-2 md:gap-4">
+            <button
+              type="button"
+              className={`flex-1 py-1 px-3 md:px-6 rounded-xl border-2 text-sm md:text-base font-medium transition-colors cursor-pointer ${
+                membership === '우수'
+                  ? 'bg-primaryGreen text-white border-primaryGreen hover:bg-[#75b5c0]'
+                  : 'border-gray-200 text-gray-400 bg-white'
+              }`}
+              onClick={() => setMembership('우수')}
+            >
+              우수
+            </button>
+            <button
+              type="button"
+              className={`flex-1 py-1 px-3 md:px-6 rounded-xl border-2 text-sm md:text-base font-medium transition-colors cursor-pointer ${
+                membership === 'VIP'
+                  ? 'bg-primaryGreen text-white border-primaryGreen hover:bg-[#75b5c0]'
+                  : 'border-gray-200 text-gray-400 bg-white'
+              }`}
+              onClick={() => setMembership('VIP')}
+            >
+              VIP
+            </button>
+            <button
+              type="button"
+              className={`flex-1 py-1 px-3 md:px-6 rounded-xl border-2 text-sm md:text-base font-medium transition-colors cursor-pointer ${
+                membership === 'VVIP'
+                  ? 'bg-primaryGreen text-white border-primaryGreen hover:bg-[#75b5c0]'
+                  : 'border-gray-200 text-gray-400 bg-white'
+              }`}
+              onClick={() => setMembership('VVIP')}
+            >
+              VVIP
+            </button>
+          </div>
+
+          {/* 닉네임 입력 */}
+          <FloatingInput
+            id="nickname"
+            label="닉네임"
+            value={userInfoApi?.nickname || ''}
+            onChange={handleNicknameChange}
+            error={errors.nickname}
           />
 
-          <NicknameField
-            nickname={userInfo?.nickname || ''}
-            error={formErrors.nickname}
-            nicknameDupMsg={nicknameDuplicateMessage}
-            isNicknameValid={isNicknameValid}
-            isNicknameLoading={isCheckingNickname}
-            onNicknameChange={handleNicknameChange}
-            onCheckNickname={checkNicknameDuplicate}
-          />
+          {/* 주소 입력 (현재 코드에는 없지만 API에 있으므로 추가)
+          <FloatingInput
+            id="address"
+            label="주소"
+            value={userInfoApi?.address || ''}
+            onChange={handleAddressChange}
+            error={errors.address}
+          /> */}
 
+          {/* 비밀번호 입력 */}
           <FloatingInput
             id="password"
-            label={`새 비밀번호 (${VALIDATION_RULES.PASSWORD.MIN_LENGTH}~${VALIDATION_RULES.PASSWORD.MAX_LENGTH}자 이내)`}
+            label="새 비밀번호"
             type="password"
             value={password}
-            onChange={handlePasswordChange}
-            error={formErrors.password}
-            maxLength={VALIDATION_RULES.PASSWORD.MAX_LENGTH}
+            onChange={setPassword}
+            error={errors.password}
           />
 
+          {/* 비밀번호 확인 입력 */}
           <FloatingInput
             id="confirmPassword"
             label="새 비밀번호 확인"
             type="password"
             value={confirmPassword}
-            onChange={handleConfirmPasswordChange}
-            error={formErrors.confirmPassword}
-            maxLength={VALIDATION_RULES.PASSWORD.MAX_LENGTH}
+            onChange={setConfirmPassword}
+            error={errors.confirmPassword}
           />
 
+          {/* 버튼 그룹 */}
           <div className="flex gap-5">
             <Button
               fullWidth
               variant="secondary"
               height="42px"
               onClick={handleGoBack}
-              type="button"
             >
               취소
             </Button>
@@ -520,7 +375,7 @@ const EditProfilePage = () => {
               )}
             </Button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );
