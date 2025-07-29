@@ -33,8 +33,6 @@ const UsageHistory: React.FC<UsageHistoryProps> = ({ items }) => {
       return itemDate >= startDate && itemDate <= endDate;
     });
   }, [items, selectedRange]);
-  console.log(selectedRange.startDate);
-  console.log(items);
 
   return (
     <div className="mt-10">
