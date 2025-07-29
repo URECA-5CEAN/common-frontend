@@ -126,7 +126,7 @@ const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
             navigate('/');
           } else if (event.data.result === 'signup required') {
             setKakoSignupToken(event?.data.token);
-            handleKakaoSignup(event?.data.token);
+            handleKakaoSignup();
           }
         } else if (event.data.statusCode === 20003) {
           setErrorMessage(
