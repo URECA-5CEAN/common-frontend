@@ -1,5 +1,5 @@
 import { Button } from '@/components/Button';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   getDefaultTime,
   getTodayString,
@@ -12,6 +12,7 @@ import DateTimePicker from '../components/share/DateTimePicker';
 import PlaceField from '../components/share/PlaceField';
 import { createSharePost } from '../api/share';
 import { useNavigate } from 'react-router-dom';
+import { usePrompt } from '../hooks/usePrompt';
 
 const ShareWritePage = () => {
   const [category, setCategory] = useState<SelectOption | null>(null);
@@ -22,8 +23,37 @@ const ShareWritePage = () => {
   const [date, setDate] = useState(() => getTodayString());
   const [place, setPlace] = useState('');
   const [time, setTime] = useState<TimeValue>(() => getDefaultTime());
-
+  const isDirty = (): boolean => {
+    return (
+      Boolean(category) ||
+      Boolean(brand) ||
+      Boolean(benefitType) ||
+      title.trim() !== '' ||
+      content.trim() !== '' ||
+      place.trim() !== '' ||
+      date !== getTodayString() ||
+      JSON.stringify(time) !== JSON.stringify(getDefaultTime())
+    );
+  };
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty()) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [category, brand, benefitType, title, content, date, time, place]);
+
+  usePrompt(
+    isDirty(),
+    '페이지를 벗어나시겠습니까? 변경사항이 저장되지 않을 수 있습니다.',
+  );
 
   const handleSubmit = async () => {
     if (
@@ -35,7 +65,7 @@ const ShareWritePage = () => {
       !date ||
       !time
     ) {
-      alert('모든 항목을 입력해주세요.');
+      alert('모든 항목을 입력해주세요.'); // 해당 input 밑에 알림으로 변경
       return;
     }
 

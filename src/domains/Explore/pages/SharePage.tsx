@@ -154,7 +154,7 @@ const SharePage = () => {
         </div>
       </div>
 
-      <div className="flex gap-2 mt-4">
+      <div className="flex gap-2 mt-4 flex-wrap">
         <CustomSelect
           type="single"
           options={categories}
