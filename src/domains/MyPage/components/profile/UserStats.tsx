@@ -21,14 +21,18 @@ const StatCard: React.FC<StatCardProps> = ({ to, title, value }) => (
 
 interface UserStatsProps {
   userInfo: UserInfo;
+  usageHistoryLength: number;
 }
 
-const UserStats: React.FC<UserStatsProps> = ({ userInfo }) => (
+const UserStats: React.FC<UserStatsProps> = ({
+  userInfo,
+  usageHistoryLength,
+}) => (
   <div className="flex justify-center items-center gap-5 w-full lg:w-fit">
     <StatCard
       to="/mypage/collection"
       title="도감"
-      value={`${userInfo.collectionCount}/${userInfo.totalCollection}`}
+      value={`${usageHistoryLength}/420`}
     />
     <StatCard
       to="/mypage/missions"

@@ -31,12 +31,14 @@ interface UserProfileProps {
   userInfo: UserInfoType;
   onBadgeClick: () => void;
   userInfoApi?: UserInfoApi;
+  usageHistoryLength: number;
 }
 
 const UserProfile: React.FC<UserProfileProps> = ({
   userInfo,
   onBadgeClick,
   userInfoApi,
+  usageHistoryLength,
 }) => {
   const membershipIconMap: Record<string, string> = {
     우수: excellentIcon,
@@ -52,7 +54,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
         <ProfileImage src={iconSrc} alt="우수아이콘" />
         <UserInfo onBadgeClick={onBadgeClick} userInfoApi={userInfoApi} />
       </div>
-      <UserStats userInfo={userInfo} />
+      <UserStats userInfo={userInfo} usageHistoryLength={usageHistoryLength} />
     </div>
   );
 };
