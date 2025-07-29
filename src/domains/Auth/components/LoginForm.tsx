@@ -25,10 +25,10 @@ const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [isKakaoSubmit, setIsKakoSubmit] = useState(false);
+  const [isKakaoSubmit, setIsKakaoSubmit] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isConfirmLoading, setIsConfirmLoading] = useState(false);
-  const [kakaoSignupToken, setKakoSignupToken] = useState('');
+  const [kakaoSignupToken, setKakaoSignupToken] = useState('');
 
   // 로그인 관련
   const { login, loading } = useLogin();
@@ -125,7 +125,7 @@ const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
             useAuthStore.getState().setIsLoggedIn(true);
             navigate('/');
           } else if (event.data.result === 'signup required') {
-            setKakoSignupToken(event?.data.token);
+            setKakaoSignupToken(event?.data.token);
             handleKakaoSignup();
           }
         } else if (event.data.statusCode === 20003) {
@@ -139,7 +139,7 @@ const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
         );
         console.error(error);
 
-        setIsKakoSubmit(false);
+        setIsKakaoSubmit(false);
       }
     };
 
@@ -153,7 +153,7 @@ const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
   // 카카오 로그인 핸들러
   const handleKakaoLogin = async () => {
     await openKakaoLogin();
-    setIsKakoSubmit(true);
+    setIsKakaoSubmit(true);
   };
 
   const handleKakaoSignup = async () => {
