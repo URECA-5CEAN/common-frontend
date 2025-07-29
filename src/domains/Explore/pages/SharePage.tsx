@@ -26,6 +26,8 @@ const SharePage = () => {
   const [benefits, setBenefits] = useState<SelectOption[]>([]);
   const [benefit, setBenefit] = useState<SelectOption | null>(null);
 
+  const [searchKeyword, setSearchKeyword] = useState('');
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -86,9 +88,21 @@ const SharePage = () => {
       const matchCategory = category ? post.category === category.label : true;
       const matchBrand = brand ? post.brandName === brand.label : true;
       const matchBenefit = benefit ? post.benefitName === benefit.label : true;
-      return matchLocation && matchCategory && matchBrand && matchBenefit;
+
+      const matchSearch = searchKeyword
+        ? post.title.includes(searchKeyword) ||
+          post.content.includes(searchKeyword)
+        : true;
+
+      return (
+        matchLocation &&
+        matchCategory &&
+        matchBrand &&
+        matchBenefit &&
+        matchSearch
+      );
     });
-  }, [postList, location, category, brand, benefit]);
+  }, [postList, location, category, brand, benefit, searchKeyword]);
 
   const handleLocation = (value: SelectOption | TimeValue | null) => {
     setLocation(value as SelectOption);
@@ -138,6 +152,8 @@ const SharePage = () => {
             type="text"
             className="flex-1 border rounded-2xl px-4 py-1 border-gray-200"
             placeholder="검색"
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
           />
         </div>
 
