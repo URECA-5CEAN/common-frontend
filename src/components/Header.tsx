@@ -2,7 +2,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import menuIcon from '@/assets/icons/menu-hamburger.svg';
 import arrowIcon from '@/assets/icons/arrow_icon.svg';
-import headerWaveImg from '@/assets/image/header-wave.png';
+import headerWaveImg from '@/assets/image/header-wave3.svg';
 import { useAuthStore } from '@/store/useAuthStore';
 
 // 타입 정의
@@ -42,6 +42,7 @@ const MENU_CONFIG = {
           { to: '/mypage/missions', label: '미션' },
           { to: '/mypage/statistics', label: '통계' },
           { to: '/mypage/favorites', label: '즐겨찾기' },
+          { to: '/mypage/sharing', label: '내 나눔' },
         ],
       },
     ],
@@ -52,23 +53,23 @@ const MENU_CONFIG = {
 // 스타일 상수
 const STYLES = {
   header: {
-    base: 'z-100 fixed top-0 w-full h-[42px] md:h-[52px] px-6 md:px-12 flex items-end justify-between text-white',
+    base: 'z-1000 fixed top-0 w-full h-[42px] md:h-[52px] px-6 md:px-12 flex items-end justify-between text-white',
     transparent: 'bg-transparent',
     default: 'bg-primaryGreen',
   },
   logo: 'text-xl md:text-[2rem] px-3 md:px-2 py-3 md:py-2 font-bold z-1000',
   desktopNav: 'text-xl hidden md:flex',
   desktopLogin:
-    'p-[0.625rem] text-xl absolute right-[38px] top-[18px] hidden md:block transition-[background-color] duration-300 hover:bg-black/5 rounded-xl z-1000 cursor-pointer',
+    'p-[0.625rem] text-xl absolute right-[38px] top-[18px] hidden md:block transition-[background-color] duration-100 hover:bg-black/5 rounded-xl z-1000 cursor-pointer',
   mobileMenuButton: 'absolute right-6 top-0 p-3 cursor-pointer md:hidden',
   mobileMenuContainer: `
-    transition-[max-height,padding-top,padding-bottom] duration-300 ease-in-out z-10
-    overflow-hidden absolute top-[62px] left-0 w-full bg-white text-gray-500 shadow-md px-5 rounded-b-2xl
+    transition-[max-height,padding-top,padding-bottom] duration-300 ease-in-out z-100
+    overflow-hidden absolute top-[42px] left-0 w-full bg-white text-gray-500 shadow-md px-5 rounded-b-2xl
   `,
   activeMenuItem:
     'font-bold bg-[#DDF4FF] border-2 border-[#84D8FF] rounded-lg text-[#1CB0F7]',
   headerWave:
-    'absolute top-[42px] md:top-[52px] left-0 w-full h-5 md:h-[34px] z-100',
+    'absolute top-[40px] md:top-[50px] w-full min-w-[1150px] md:min-w-[1960px] left-0 h-5 md:h-[34px] z-200',
 };
 
 // 유틸리티 함수
@@ -160,7 +161,7 @@ const DesktopNavigation = ({
           <NavLink
             key={to}
             to={to}
-            className={`p-[0.625rem] z-1000 transition-[background-color] duration-300 hover:bg-black/5 rounded-xl ${isActive ? 'font-bold' : ''} ${textColorClass}`}
+            className={`p-[0.625rem] z-1000 transition-[background-color] duration-100 hover:bg-black/5 rounded-xl ${isActive ? 'font-bold' : ''} ${textColorClass}`}
           >
             {label}
           </NavLink>
@@ -283,12 +284,12 @@ const MenuItemWithSubItems = ({
       <img
         src={arrowIcon}
         alt="화살표 아이콘"
-        className={`w-6 transition-transform duration-300 ${isSubOpen ? 'rotate-180' : ''}`}
+        className={`w-6 transition-transform duration-100 ${isSubOpen ? 'rotate-180' : ''}`}
       />
     </button>
 
     <div
-      className={`overflow-hidden transition-[max-height] duration-300 ${isSubOpen ? 'max-h-[400px]' : 'max-h-0'}`}
+      className={`overflow-hidden transition-[max-height] duration-100 ${isSubOpen ? 'max-h-[400px]' : 'max-h-0'}`}
     >
       <div className="flex flex-col gap-[10px] py-1">
         {item.subItems?.map((subItem) => (
@@ -341,7 +342,7 @@ const MobileMenu = ({
   <div
     className={`${STYLES.mobileMenuContainer} ${isOpen ? 'max-h-[700px] md:max-h-0' : 'max-h-0'}`}
   >
-    <div className="w-full flex flex-col gap-3 py-5">
+    <div className="w-full flex flex-col gap-3 py-5 pt-7">
       {menu.map((item, index) =>
         item.subItems ? (
           <MenuItemWithSubItems
