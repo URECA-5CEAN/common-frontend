@@ -6,8 +6,7 @@ import goldMedal from '@/assets/image/gold_medal.png';
 import diamondMedal from '@/assets/image/diamond_medal.png';
 import { getAllBrandList } from '@/domains/MyPage/api/collection';
 import { useEffect, useState } from 'react';
-import { getUsageHistory } from '@/domains/MyPage/api/profile';
-import type { UsageHistoryItem } from '@/domains/MyPage/types/profile';
+import { useUsageHistoryStore } from '@/store/useUsageHistoryStore';
 
 interface Brand {
   name: string;
@@ -18,7 +17,7 @@ interface Brand {
 const CollectionPage = () => {
   const allMedals = [bronzeMedal, silverMedal, goldMedal, diamondMedal];
   const [brandList, setBrandList] = useState<Brand[]>([]);
-  const [usageHistory, setUsageHistory] = useState<UsageHistoryItem[]>([]);
+  const { usageHistory, fetchUsageHistory } = useUsageHistoryStore();
 
   useEffect(() => {
     const fetchAllBrandList = async () => {
@@ -29,18 +28,11 @@ const CollectionPage = () => {
         console.error('사용자 정보 로드 실패:', error);
       }
     };
-    const fetchUsageHistory = async () => {
-      try {
-        const response = await getUsageHistory();
-        setUsageHistory(response.data);
-      } catch (error) {
-        console.error('사용자 정보 로드 실패:', error);
-      }
-    };
-
     fetchAllBrandList();
-    fetchUsageHistory();
-  }, []);
+    if (usageHistory.length === 0) {
+      fetchUsageHistory();
+    }
+  }, [fetchUsageHistory, usageHistory.length]);
 
   // 브랜드명만 추출 (지점명 제거)
   function extractBrand(storeId: string, brandNames: string[]) {
@@ -127,7 +119,7 @@ const CollectionPage = () => {
                   className="border-1 border-gray-200 rounded-xl p-4 flex md:flex-row flex-col gap-3 w-full items-center justify-around"
                 >
                   <div className="max-w-[129px] flex items-center">
-                    <img src={brand.image_url} alt={brand.name} />
+                    <img src={brand.image_url || undefined} alt={brand.name} />
                   </div>
                   <div className="w-full md:w-[100px] flex flex-col gap-2 items-center">
                     <div className="break-words break-keep text-center h-[48px] w-full flex justify-center items-center">
