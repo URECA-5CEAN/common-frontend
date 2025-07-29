@@ -6,6 +6,8 @@ import { Button } from '@/components/Button';
 import { useLogin } from '../hooks/useLogin';
 import { useAuthStore } from '@/store/useAuthStore';
 import { openKakaoLogin, openKakaoSignup } from '@/domains/Auth/api/loginApi';
+import { Modal } from '@/components/Modal';
+import { LoadingSpinner } from '@/domains/MyPage/components/LoadingSpinner';
 
 const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
   const navigate = useNavigate();
@@ -24,6 +26,8 @@ const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
   const [passwordError, setPasswordError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isKakaoSubmit, setIsKakoSubmit] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isConfirmLoading, setIsConfirmLoading] = useState(false);
 
   // 로그인 관련
   const { login, loading } = useLogin();
@@ -112,12 +116,16 @@ const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
   useEffect(() => {
     if (!isKakaoSubmit) return;
     const messageHandler = async (event: MessageEvent) => {
+      console.log(event.data);
+
       if (event.data?.token) {
         if (event.data.result === 'login success') {
           localStorage.setItem('authToken', event.data.token);
+          localStorage.setItem('isKakao', 'true');
           useAuthStore.getState().setIsLoggedIn(true);
           navigate('/');
         } else if (event.data.result === 'signup required') {
+          setIsOpen(true);
           try {
             const res = await openKakaoSignup(event.data.token);
             localStorage.setItem('authToken', res.data.token);
@@ -127,6 +135,10 @@ const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
             console.error('카카오 회원가입 실패:', err);
           }
         }
+      } else if (event.data.statusCode === 20003) {
+        setErrorMessage(
+          '이미 카카오 계정과 같은 이메일로 가입된 계정이 있어요.',
+        );
       } else {
         setErrorMessage(
           '카카오 로그인 중 오류가 발생했어요. 잠시 후 다시 시도해주세요',
@@ -146,6 +158,15 @@ const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
   const handleKakaoLogin = async () => {
     await openKakaoLogin();
     setIsKakoSubmit(true);
+  };
+
+  const onConfirm = () => {
+    setIsConfirmLoading(true);
+    console.log('확인');
+  };
+
+  const onClose = () => {
+    setIsOpen(false);
   };
 
   return (
@@ -283,6 +304,33 @@ const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
           </Button>
         </div>
       </div>
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        title="카카오 회원가입"
+        description="처음 카카오 계정으로 로그인 하시는군요! 첫 로그인 유저는 회원가입이 필요합니다. 회원가입 하시겠어요? 확인 버튼을 누르면 회원가입이 자동으로 진행돼요."
+        actions={
+          <div className="flex gap-3">
+            <Button variant="secondary" fullWidth onClick={onClose}>
+              취소
+            </Button>
+            <Button
+              variant="primary"
+              fullWidth
+              onClick={onConfirm}
+              disabled={isConfirmLoading}
+            >
+              {isConfirmLoading ? (
+                <div className="w-6 h-6">
+                  <LoadingSpinner />
+                </div>
+              ) : (
+                '회원가입 하기'
+              )}
+            </Button>
+          </div>
+        }
+      ></Modal>
     </div>
   );
 };

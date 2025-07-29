@@ -263,6 +263,7 @@ const EditProfilePage = () => {
   const [originalNickname, setOriginalNickname] = useState('');
   const [nicknameDuplicateMessage, setNicknameDuplicateMessage] = useState('');
   const [isCheckingNickname, setIsCheckingNickname] = useState(false);
+  const [isKakao, setIsKakao] = useState(false);
 
   const navigate = useNavigate();
 
@@ -392,9 +393,27 @@ const EditProfilePage = () => {
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const isFormValid = await validateForm();
-    if (isFormValid) {
-      await submitUserInfoEdit();
+    if (!userInfo) return false;
+    if (isKakao) {
+      if (!userInfo) return;
+
+      setIsSubmitting(true);
+      try {
+        await editUserInfo({
+          membership: userInfo.membership,
+        });
+        navigate('/mypage/profile');
+      } catch (error) {
+        console.error('사용자 정보 수정 실패:', error);
+        alert(ERROR_MESSAGES.EDIT_USER_INFO_FAILED);
+      } finally {
+        setIsSubmitting(false);
+      }
+    } else {
+      const isFormValid = await validateForm();
+      if (isFormValid) {
+        await submitUserInfoEdit();
+      }
     }
   };
 
@@ -432,6 +451,11 @@ const EditProfilePage = () => {
   // 초기화
   useEffect(() => {
     loadUserInfo();
+    const getIsKakao = localStorage.getItem('isKakao');
+
+    if (originalNickname.includes('[Kakao]') || !!getIsKakao) {
+      setIsKakao(!!getIsKakao);
+    }
   }, []);
 
   return (
@@ -470,35 +494,50 @@ const EditProfilePage = () => {
             onMembershipChange={handleMembershipChange}
           />
 
-          <NicknameField
-            nickname={userInfo?.nickname || ''}
-            error={formErrors.nickname}
-            nicknameDupMsg={nicknameDuplicateMessage}
-            isNicknameValid={isNicknameValid}
-            isNicknameLoading={isCheckingNickname}
-            onNicknameChange={handleNicknameChange}
-            onCheckNickname={checkNicknameDuplicate}
-          />
+          {isKakao ? (
+            <FloatingInput
+              id="nickname"
+              label="닉네임"
+              value={userInfo?.nickname || ''}
+              onChange={() => {}}
+              readOnly
+              disabled
+            />
+          ) : (
+            <NicknameField
+              nickname={userInfo?.nickname || ''}
+              error={formErrors.nickname}
+              nicknameDupMsg={nicknameDuplicateMessage}
+              isNicknameValid={isNicknameValid}
+              isNicknameLoading={isCheckingNickname}
+              onNicknameChange={handleNicknameChange}
+              onCheckNickname={checkNicknameDuplicate}
+            />
+          )}
 
-          <FloatingInput
-            id="password"
-            label={`새 비밀번호 (${VALIDATION_RULES.PASSWORD.MIN_LENGTH}~${VALIDATION_RULES.PASSWORD.MAX_LENGTH}자 이내)`}
-            type="password"
-            value={password}
-            onChange={handlePasswordChange}
-            error={formErrors.password}
-            maxLength={VALIDATION_RULES.PASSWORD.MAX_LENGTH}
-          />
+          {!isKakao && (
+            <>
+              <FloatingInput
+                id="password"
+                label={`새 비밀번호 (${VALIDATION_RULES.PASSWORD.MIN_LENGTH}~${VALIDATION_RULES.PASSWORD.MAX_LENGTH}자 이내)`}
+                type="password"
+                value={password}
+                onChange={handlePasswordChange}
+                error={formErrors.password}
+                maxLength={VALIDATION_RULES.PASSWORD.MAX_LENGTH}
+              />
 
-          <FloatingInput
-            id="confirmPassword"
-            label="새 비밀번호 확인"
-            type="password"
-            value={confirmPassword}
-            onChange={handleConfirmPasswordChange}
-            error={formErrors.confirmPassword}
-            maxLength={VALIDATION_RULES.PASSWORD.MAX_LENGTH}
-          />
+              <FloatingInput
+                id="confirmPassword"
+                label="새 비밀번호 확인"
+                type="password"
+                value={confirmPassword}
+                onChange={handleConfirmPasswordChange}
+                error={formErrors.confirmPassword}
+                maxLength={VALIDATION_RULES.PASSWORD.MAX_LENGTH}
+              />
+            </>
+          )}
 
           <div className="flex gap-5">
             <Button
