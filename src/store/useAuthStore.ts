@@ -11,6 +11,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
   setIsLoggedIn: (value) => set({ isLoggedIn: value }),
   logout: () => {
     localStorage.removeItem('authToken');
+    localStorage.removeItem('isKakao');
     set({ isLoggedIn: false });
   },
 }));

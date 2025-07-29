@@ -85,10 +85,10 @@ const STYLES = {
   iconContainer: 'w-6 h-6 mr-2 flex items-center',
   icon: 'w-full h-full object-contain',
   linkBase:
-    'h-12 flex items-center px-4 rounded-lg transition-[background-color] duration-300 border-2',
+    'h-12 flex items-center px-4 rounded-lg transition-[background-color] duration-100 border-2',
   linkActive:
     'font-bold bg-[#DDF4FF] border-[#84D8FF] text-[#1CB0F7] hover:bg-[#cee8f5]',
-  linkInactive: 'hover:bg-[#DDF4FF] border-transparent text-gray-500',
+  linkInactive: 'hover:bg-[#f0f0f0] border-transparent text-gray-500',
 };
 
 // 하위 컴포넌트
