@@ -1,34 +1,28 @@
 import BadgeModal from '@/domains/MyPage/components/profile/BadgeModal';
 import UserProfile from '@/domains/MyPage/components/profile/UserProfile';
-import type {
-  UsageHistoryItem,
-  UserInfo,
-  UserInfoApi,
-} from '@/domains/MyPage/types/profile';
+import type { UserInfo, UserInfoApi } from '@/domains/MyPage/types/profile';
 import { useEffect, useState } from 'react';
 import UsageHistory from '@/domains/MyPage/components/profile/UsageHistory';
 import {
   editUserInfo,
-  getUsageHistory,
   getUserInfo,
   getUserStat,
 } from '@/domains/MyPage/api/profile';
 import { Breadcrumb } from '@/components/Breadcrumb';
 import { Button } from '@/components/Button';
 import { useNavigate } from 'react-router-dom';
+import { useUsageHistoryStore } from '@/store/useUsageHistoryStore';
 
 const ProfilePage: React.FC = () => {
   const [open, setOpen] = useState<boolean>(false);
-  const [selectedBadge, setSelectedBadge] = useState<string>('earlybird');
+  const [selectedBadge, setSelectedBadge] = useState<string>('');
   const [tempBadge, setTempBadge] = useState<string>(selectedBadge);
   const [userInfoApi, setUserInfoApi] = useState<UserInfoApi>();
-  const [usageHistory, setUsageHistory] = useState<
-    UsageHistoryItem[] | undefined
-  >();
+  const { usageHistory, fetchUsageHistory } = useUsageHistoryStore();
   const [isConfirmLoading, setIsConfirmLoading] = useState(false);
 
   const navigate = useNavigate();
-
+  const usageHistoryLength = usageHistory.length;
   useEffect(() => {
     const fetchUserData = async () => {
       const userInfoRes = await getUserInfo();
@@ -42,15 +36,11 @@ const ProfilePage: React.FC = () => {
       setUserInfoApi(mergedData);
     };
 
-    const fetchUsageHistory = async () => {
-      const usageHistoryRes = await getUsageHistory();
-
-      setUsageHistory(usageHistoryRes.data);
-    };
-
     fetchUserData();
-    fetchUsageHistory();
-  }, []);
+    if (usageHistoryLength === 0) {
+      fetchUsageHistory();
+    }
+  }, [fetchUsageHistory, usageHistoryLength]);
 
   // 실제로는 API에서 받아올 데이터
   const userInfo: UserInfo = {
@@ -109,6 +99,7 @@ const ProfilePage: React.FC = () => {
             userInfo={userInfo}
             onBadgeClick={handleBadgeClick}
             userInfoApi={userInfoApi}
+            usageHistoryLength={usageHistoryLength}
           />
         </div>
 
