@@ -12,9 +12,11 @@ import DateTimePicker from '../components/share/DateTimePicker';
 import PlaceField from '../components/share/PlaceField';
 import { createSharePost } from '../api/share';
 import { useNavigate } from 'react-router-dom';
-import { usePrompt } from '../hooks/usePrompt';
+import { useUnsavedChanges } from '../../../contexts/UnsavedChangesContext';
 
 const ShareWritePage = () => {
+  const navigate = useNavigate();
+
   const [category, setCategory] = useState<SelectOption | null>(null);
   const [brand, setBrand] = useState<SelectOption | null>(null);
   const [benefitType, setBenefitType] = useState<SelectOption | null>(null);
@@ -23,37 +25,49 @@ const ShareWritePage = () => {
   const [date, setDate] = useState(() => getTodayString());
   const [place, setPlace] = useState('');
   const [time, setTime] = useState<TimeValue>(() => getDefaultTime());
-  const isDirty = (): boolean => {
-    return (
-      Boolean(category) ||
-      Boolean(brand) ||
-      Boolean(benefitType) ||
-      title.trim() !== '' ||
-      content.trim() !== '' ||
-      place.trim() !== '' ||
-      date !== getTodayString() ||
-      JSON.stringify(time) !== JSON.stringify(getDefaultTime())
-    );
-  };
-  const navigate = useNavigate();
+  const [initialValues] = useState(() => ({
+    category: null,
+    brand: null,
+    benefitType: null,
+    title: '',
+    content: '',
+    date: getTodayString(),
+    place: '',
+    time: getDefaultTime(),
+  }));
+
+  const { setHasUnsavedChanges } = useUnsavedChanges();
 
   useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (isDirty()) {
-        e.preventDefault();
-        e.returnValue = '';
-      }
-    };
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, [category, brand, benefitType, title, content, date, time, place]);
+    const hasChanges =
+      category !== initialValues.category ||
+      brand !== initialValues.brand ||
+      benefitType !== initialValues.benefitType ||
+      title !== initialValues.title ||
+      content !== initialValues.content ||
+      date !== initialValues.date ||
+      place !== initialValues.place ||
+      JSON.stringify(time) !== JSON.stringify(initialValues.time);
 
-  usePrompt(
-    isDirty(),
-    '페이지를 벗어나시겠습니까? 변경사항이 저장되지 않을 수 있습니다.',
-  );
+    setHasUnsavedChanges(hasChanges);
+  }, [
+    category,
+    brand,
+    benefitType,
+    title,
+    content,
+    date,
+    place,
+    time,
+    initialValues,
+    setHasUnsavedChanges,
+  ]);
+
+  useEffect(() => {
+    return () => {
+      setHasUnsavedChanges(false);
+    };
+  }, [setHasUnsavedChanges]);
 
   const handleSubmit = async () => {
     if (
@@ -65,7 +79,7 @@ const ShareWritePage = () => {
       !date ||
       !time
     ) {
-      alert('모든 항목을 입력해주세요.'); // 해당 input 밑에 알림으로 변경
+      alert('모든 항목을 입력해주세요.');
       return;
     }
 
@@ -81,6 +95,7 @@ const ShareWritePage = () => {
 
     try {
       await createSharePost(newPost);
+      setHasUnsavedChanges(false);
       navigate('/explore/share');
     } catch (error) {
       alert('작성 실패' + error);
