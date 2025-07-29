@@ -1,9 +1,10 @@
-import { NavLink, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import menuIcon from '@/assets/icons/menu-hamburger.svg';
 import arrowIcon from '@/assets/icons/arrow_icon.svg';
 import headerWaveImg from '@/assets/image/header-wave.png';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useUnsavedChanges } from '@/contexts/UnsavedChangesContext';
 
 // 타입 정의
 type MenuItem = {
@@ -115,20 +116,27 @@ const Logo = ({
   isSignUpPage: boolean;
   isLoginPage: boolean;
 }) => {
+  const { handleProtectedNavigation } = useUnsavedChanges();
+
   const textColorClass = isSignUpPage
     ? 'text-primaryGreen'
     : isLoginPage
       ? 'text-primaryGreen md:text-white'
       : '';
 
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    onMenuClose();
+    handleProtectedNavigation('/');
+  };
+
   return (
-    <NavLink
-      to="/"
+    <button
       className={`${STYLES.logo} ${textColorClass}`}
-      onClick={onMenuClose}
+      onClick={handleClick}
     >
       지중해
-    </NavLink>
+    </button>
   );
 };
 
@@ -140,12 +148,18 @@ const DesktopNavigation = ({
   menu: MenuItem[];
 }) => {
   const location = useLocation();
+  const { handleProtectedNavigation } = useUnsavedChanges();
 
   const isMenuItemActive = (to: string) => {
     if (to.startsWith('/explore')) {
       return location.pathname.startsWith('/explore');
     }
     return location.pathname === to;
+  };
+
+  const handleClick = (to: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    handleProtectedNavigation(to);
   };
 
   return (
@@ -157,13 +171,13 @@ const DesktopNavigation = ({
         const textColorClass = isSignUpPage ? 'text-primaryGreen' : '';
 
         return (
-          <NavLink
+          <button
             key={to}
-            to={to}
+            onClick={handleClick(to)}
             className={`p-[0.625rem] z-1000 transition-[background-color] duration-300 hover:bg-black/5 rounded-xl ${isActive ? 'font-bold' : ''} ${textColorClass}`}
           >
             {label}
-          </NavLink>
+          </button>
         );
       })}
     </nav>
@@ -179,7 +193,13 @@ const DesktopAuth = ({
   isLoggedIn: boolean;
   onLogout: () => void;
 }) => {
+  const { handleProtectedNavigation } = useUnsavedChanges();
   const textColorClass = isLoginPage ? 'text-primaryGreen' : '';
+
+  const handleLoginClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    handleProtectedNavigation('/login');
+  };
 
   if (isLoggedIn) {
     return (
@@ -193,14 +213,12 @@ const DesktopAuth = ({
   }
 
   return (
-    <NavLink
-      to="/login"
-      className={({ isActive }) =>
-        `${STYLES.desktopLogin} ${isActive ? 'font-bold' : ''} ${textColorClass}`
-      }
+    <button
+      onClick={handleLoginClick}
+      className={`${STYLES.desktopLogin} ${textColorClass}`}
     >
       로그인
-    </NavLink>
+    </button>
   );
 };
 
@@ -247,17 +265,25 @@ const SubMenuItem = ({
 }: {
   item: { to: string; label: string };
   onClose: () => void;
-}) => (
-  <NavLink
-    to={item.to}
-    onClick={onClose}
-    className={({ isActive }) =>
-      `py-1 pl-8 h-9 flex items-center ${isActive ? STYLES.activeMenuItem : ''}`
-    }
-  >
-    {item.label}
-  </NavLink>
-);
+}) => {
+  const location = useLocation();
+  const { handleProtectedNavigation } = useUnsavedChanges();
+  const isActive = location.pathname === item.to;
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    onClose();
+    handleProtectedNavigation(item.to);
+  };
+  return (
+    <button
+      onClick={handleClick}
+      className={`py-1 pl-8 h-9 flex items-center ${isActive ? STYLES.activeMenuItem : ''}`}
+    >
+      {item.label}
+    </button>
+  );
+};
 
 const MenuItemWithSubItems = ({
   item,
@@ -306,18 +332,28 @@ const SimpleMenuItem = ({
   item: MenuItem;
   onClose: () => void;
 }) => {
+  const location = useLocation();
+  const { handleProtectedNavigation } = useUnsavedChanges();
+
   if (!item.to) return null;
 
+  const isActive = location.pathname === item.to;
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    onClose();
+    if (item.to) {
+      handleProtectedNavigation(item.to);
+    }
+  };
+
   return (
-    <NavLink
-      to={item.to}
-      onClick={onClose}
-      className={({ isActive }) =>
-        `px-4 py-2 h-10 flex items-center ${isActive ? STYLES.activeMenuItem : ''}`
-      }
+    <button
+      onClick={handleClick}
+      className={`px-4 py-2 h-10 flex items-center ${isActive ? STYLES.activeMenuItem : ''}`}
     >
       {item.label}
-    </NavLink>
+    </button>
   );
 };
 
