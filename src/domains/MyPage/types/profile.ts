@@ -5,11 +5,9 @@ export interface Badge {
 
 export interface UsageHistoryItem {
   id: number;
-  store: string;
-  date: string;
-  time: string;
+  storeId: string;
+  visitedAt: string;
   benefitAmount: number;
-  experience: number;
 }
 
 export interface UserInfo {
