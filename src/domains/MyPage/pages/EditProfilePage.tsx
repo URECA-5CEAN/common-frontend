@@ -456,7 +456,7 @@ const EditProfilePage = () => {
     if (originalNickname.includes('[Kakao]') || !!getIsKakao) {
       setIsKakao(!!getIsKakao);
     }
-  }, []);
+  }, [originalNickname]);
 
   return (
     <div className="w-[calc(100%-48px)] max-w-[1050px] m-6">
