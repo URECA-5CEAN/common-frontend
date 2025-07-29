@@ -2,7 +2,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import menuIcon from '@/assets/icons/menu-hamburger.svg';
 import arrowIcon from '@/assets/icons/arrow_icon.svg';
-import headerWaveImg from '@/assets/image/header-wave3.svg';
+import headerWaveImg from '@/assets/image/header-wave.svg';
 import { useAuthStore } from '@/store/useAuthStore';
 
 // 타입 정의
@@ -53,15 +53,15 @@ const MENU_CONFIG = {
 // 스타일 상수
 const STYLES = {
   header: {
-    base: 'z-1000 fixed top-0 w-full h-[42px] md:h-[52px] px-6 md:px-12 flex items-end justify-between text-white',
+    base: 'z-1000 fixed top-0 w-full h-[42px] md:h-[48px] py-2 px-6 md:px-10 flex items-end justify-between text-white',
     transparent: 'bg-transparent',
     default: 'bg-primaryGreen',
   },
-  logo: 'text-xl md:text-[2rem] px-3 md:px-2 py-3 md:py-2 font-bold z-1000',
-  desktopNav: 'text-xl hidden md:flex',
+  logo: 'text-xl md:text-2xl px-3 md:px-2 py-3 md:py-2 font-bold z-1000',
+  desktopNav: 'text-lg hidden md:flex',
   desktopLogin:
-    'p-[0.625rem] text-xl absolute right-[38px] top-[18px] hidden md:block transition-[background-color] duration-100 hover:bg-black/5 rounded-xl z-1000 cursor-pointer',
-  mobileMenuButton: 'absolute right-6 top-0 p-3 cursor-pointer md:hidden',
+    'py-[7px] px-3 text-lg absolute right-[38px] top-2 hidden md:block transition-[background-color] duration-100 hover:bg-black/5 rounded-xl z-1000 cursor-pointer',
+  mobileMenuButton: 'absolute right-6 top-[-5px] p-3 cursor-pointer md:hidden',
   mobileMenuContainer: `
     transition-[max-height,padding-top,padding-bottom] duration-300 ease-in-out z-100
     overflow-hidden absolute top-[42px] left-0 w-full bg-white text-gray-500 shadow-md px-5 rounded-b-2xl
@@ -69,7 +69,7 @@ const STYLES = {
   activeMenuItem:
     'font-bold bg-[#DDF4FF] border-2 border-[#84D8FF] rounded-lg text-[#1CB0F7]',
   headerWave:
-    'absolute top-[40px] md:top-[50px] w-full min-w-[1150px] md:min-w-[1960px] left-0 h-5 md:h-[34px] z-200',
+    'absolute top-[40px] md:top-[50px] w-full min-w-[1150px] left-0 h-5 md:h-[34px] z-200',
 };
 
 // 유틸리티 함수
@@ -161,7 +161,7 @@ const DesktopNavigation = ({
           <NavLink
             key={to}
             to={to}
-            className={`p-[0.625rem] z-1000 transition-[background-color] duration-100 hover:bg-black/5 rounded-xl ${isActive ? 'font-bold' : ''} ${textColorClass}`}
+            className={`py-[7px] px-3 z-1000 transition-[background-color] duration-100 hover:bg-black/5 rounded-xl ${isActive ? 'font-bold' : ''} ${textColorClass}`}
           >
             {label}
           </NavLink>
@@ -371,7 +371,10 @@ const MobileMenu = ({
 );
 
 const HeaderWave = () => (
-  <img src={headerWaveImg} alt="헤더" className={STYLES.headerWave} />
+  <div className="absolute top-[40px] md:top-[34px] w-full min-w-[1150px] left-0 h-5 md:h-[34px] z-200 flex">
+    <img src={headerWaveImg} alt="헤더" className="" />
+    <img src={headerWaveImg} alt="헤더" className="" />
+  </div>
 );
 
 // 메인 컴포넌트
@@ -409,7 +412,7 @@ const Header = () => {
     <>
       <header className={`${STYLES.header.base} ${pageStyles.bgClass}`}>
         {/* 로고 + 데스크탑 네비게이션 */}
-        <div className="flex items-center absolute left-3 md:left-10 top-1 md:top-3 gap-2">
+        <div className="flex items-center absolute left-3 md:left-10 top-[-2px] md:top-1 gap-2">
           <Logo
             onMenuClose={handleMenuClose}
             isSignUpPage={pageStyles.isSignUpPage}
