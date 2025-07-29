@@ -156,7 +156,7 @@ const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
     setIsKakoSubmit(true);
   };
 
-  const handleKakaoSignup = async (token) => {
+  const handleKakaoSignup = async () => {
     setIsOpen(true);
   };
 
