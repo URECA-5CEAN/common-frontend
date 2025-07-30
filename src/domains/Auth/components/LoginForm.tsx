@@ -322,13 +322,15 @@ const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
         isOpen={isOpen}
         onClose={onClose}
         title="카카오 회원가입"
-        description=<>
-          처음 카카오 계정으로 로그인 하시는군요!
-          <br />
-          회원가입 하기 버튼을 누르면 회원가입이 자동으로 진행돼요.
-        </>
+        description={
+          <>
+            처음 카카오 계정으로 로그인 하시는군요!
+            <br />
+            회원가입 하기 버튼을 누르면 회원가입이 자동으로 진행돼요.
+          </>
+        }
         actions={
-          <div className="flex gap-3">
+          <>
             <Button variant="secondary" fullWidth onClick={onClose}>
               취소
             </Button>
@@ -346,7 +348,7 @@ const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
                 '회원가입 하기'
               )}
             </Button>
-          </div>
+          </>
         }
       ></Modal>
     </div>

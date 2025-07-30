@@ -99,29 +99,31 @@ export default function BenefitModal({
           </div>
         }
         onClose={() => openmenu('지도')}
-        actions=<div className="flex gap-3">
-          <Button
-            variant="secondary"
-            fullWidth
-            onClick={() => {
-              openmenu('지도');
-              setSelectedFile(null);
-            }}
-          >
-            취소
-          </Button>
-          <Button
-            variant="primary"
-            fullWidth
-            onClick={async () => {
-              if (!selectedFile) return;
-              await handleOCRUpload(selectedFile); // 파일 먼저 전송하고
-              setSelectedFile(null); // 전송 끝난 후 초기화
-            }}
-          >
-            제출하기
-          </Button>
-        </div>
+        actions={
+          <>
+            <Button
+              variant="secondary"
+              fullWidth
+              onClick={() => {
+                openmenu('지도');
+                setSelectedFile(null);
+              }}
+            >
+              취소
+            </Button>
+            <Button
+              variant="primary"
+              fullWidth
+              onClick={async () => {
+                if (!selectedFile) return;
+                await handleOCRUpload(selectedFile); // 파일 먼저 전송하고
+                setSelectedFile(null); // 전송 끝난 후 초기화
+              }}
+            >
+              제출하기
+            </Button>
+          </>
+        }
       ></Modal>
     </>
   );
