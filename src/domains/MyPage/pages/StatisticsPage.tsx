@@ -65,52 +65,52 @@ const STYLES = {
 //   { month: '7월', amount: 69000 },
 // ];
 
-const categoryData = [
-  { category: '카페', count: 60 },
-  { category: '음식점', count: 30 },
-  { category: '편의점', count: 10 },
-];
+// const categoryData = [
+//   { category: '카페', count: 60 },
+//   { category: '음식점', count: 30 },
+//   { category: '편의점', count: 10 },
+// ];
 
-const regionUsage = [
-  { name: '강남구', count: 6 },
-  { name: '서초구', count: 4 },
-  { name: '마포구', count: 3 },
-  { name: '종로구', count: 5 },
-  { name: '용산구', count: 2 },
-];
+// const regionUsage = [
+//   { name: '강남구', count: 6 },
+//   { name: '서초구', count: 4 },
+//   { name: '마포구', count: 3 },
+//   { name: '종로구', count: 5 },
+//   { name: '용산구', count: 2 },
+// ];
 
-const weeklyUsage = [
-  { name: '월', count: 6 },
-  { name: '화', count: 4 },
-  { name: '수', count: 3 },
-  { name: '목', count: 5 },
-  { name: '금', count: 2 },
-  { name: '토', count: 2 },
-  { name: '일', count: 2 },
-];
+// const weeklyUsage = [
+//   { name: '월', count: 6 },
+//   { name: '화', count: 4 },
+//   { name: '수', count: 3 },
+//   { name: '목', count: 5 },
+//   { name: '금', count: 2 },
+//   { name: '토', count: 2 },
+//   { name: '일', count: 2 },
+// ];
 
-const hourlyUsage = [
-  { name: '0~3시', count: 2 },
-  { name: '3~6시', count: 1 },
-  { name: '6~9시', count: 4 },
-  { name: '9~12시', count: 7 },
-  { name: '12~15시', count: 6 },
-  { name: '15~18시', count: 5 },
-  { name: '18~21시', count: 8 },
-  { name: '21~24시', count: 3 },
-];
+// const hourlyUsage = [
+//   { name: '0~3시', count: 2 },
+//   { name: '3~6시', count: 1 },
+//   { name: '6~9시', count: 4 },
+//   { name: '9~12시', count: 7 },
+//   { name: '12~15시', count: 6 },
+//   { name: '15~18시', count: 5 },
+//   { name: '18~21시', count: 8 },
+//   { name: '21~24시', count: 3 },
+// ];
 
-const topPartners = [
-  { name: '할리스커피', count: 21 },
-  { name: 'CGV', count: 18 },
-  { name: 'GS25', count: 15 },
-];
+// const topPartners = [
+//   { name: '할리스커피', count: 21 },
+//   { name: 'CGV', count: 18 },
+//   { name: 'GS25', count: 15 },
+// ];
 
-const topBranches = [
-  { name: '할리스커피 강남점', count: 24 },
-  { name: 'CGV 홍대점', count: 19 },
-  { name: 'GS25 잠실점', count: 17 },
-];
+// const topBranches = [
+//   { name: '할리스커피 강남점', count: 24 },
+//   { name: 'CGV 홍대점', count: 19 },
+//   { name: 'GS25 잠실점', count: 17 },
+// ];
 
 // 컴포넌트들
 interface ComparisonBarProps {
