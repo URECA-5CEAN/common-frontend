@@ -31,3 +31,29 @@ export const checkInAttendance = async () => {
 
   return response.data;
 };
+
+export const getMyMission = async () => {
+  const token = localStorage.getItem('authToken');
+  const response = await axios.get(`${baseURL}/user/mission/my`, {
+    headers: {
+      Authorization: token,
+    },
+  });
+
+  return response.data;
+};
+
+export const setMissionCompleted = async (id: string) => {
+  const token = localStorage.getItem('authToken');
+  const response = await axios.post(
+    `${baseURL}/user/mission/complete`,
+    { id },
+    {
+      headers: {
+        Authorization: token,
+      },
+    },
+  );
+
+  return response.data;
+};
