@@ -17,7 +17,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 
-export enum NaviGuideType {
+enum NaviGuideType {
   STRAIGHT = 0,
   LEFT_TURN = 1,
   RIGHT_TURN = 2,

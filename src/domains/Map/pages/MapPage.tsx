@@ -423,7 +423,9 @@ export default function MapPage() {
     setSelectedFile(file);
   };
 
+  //길찾기 시 그 중심으로 이동
   useEffect(() => {
+    console.log('📍selectedRoute.path:', selectedRoute?.path);
     if (selectedRoute?.path.length) {
       const centerIdx = Math.floor(selectedRoute.path.length / 2);
       const center = selectedRoute.path[centerIdx];
@@ -489,6 +491,16 @@ export default function MapPage() {
             onMapCreate={setMap}
             onCenterChanged={setCenter}
             selectedRoute={selectedRoute}
+            start={
+              startValue.lat !== 0 && startValue.lng !== 0
+                ? { lat: startValue.lat, lng: startValue.lng }
+                : undefined
+            }
+            end={
+              endValue.lat !== 0 && endValue.lng !== 0
+                ? { lat: endValue.lat, lng: endValue.lng }
+                : undefined
+            }
           >
             {/* 2D 마커/오버레이 */}
             <FilterMarker

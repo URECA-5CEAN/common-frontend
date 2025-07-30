@@ -128,18 +128,23 @@ export default function MapSidebar({
                 <SidebarPanel
                   key="detail"
                   index={index}
-                  bookmarks={bookmarks}
                   panel={panel}
                   stores={stores}
                   openDetail={openDetail}
                   onClose={onClose}
                   changeKeyword={changeKeyword}
                   keyword={keyword}
+                  startValue={startValue}
+                  endValue={endValue}
                   onStartChange={onStartChange}
                   onEndChange={onEndChange}
+                  onSwap={onSwap}
+                  onReset={onReset}
+                  bookmarks={bookmarks}
                   toggleBookmark={toggleBookmark}
                   bookmarkIds={bookmarkIds}
                   goToStore={goToStore}
+                  openRoadDetail={openRoadDetail}
                 />
               </Suspense>
             )}
@@ -193,18 +198,23 @@ export default function MapSidebar({
                 <SidebarPanel
                   key="detail"
                   index={1}
-                  bookmarks={bookmarks}
                   panel={panel}
                   stores={stores}
                   openDetail={openDetail}
                   onClose={onClose}
                   changeKeyword={changeKeyword}
                   keyword={keyword}
+                  startValue={startValue}
+                  endValue={endValue}
                   onStartChange={onStartChange}
                   onEndChange={onEndChange}
+                  onSwap={onSwap}
+                  onReset={onReset}
+                  bookmarks={bookmarks}
                   toggleBookmark={toggleBookmark}
                   bookmarkIds={bookmarkIds}
                   goToStore={goToStore}
+                  openRoadDetail={openRoadDetail}
                 />
               </BottomSheet>
             </Suspense>

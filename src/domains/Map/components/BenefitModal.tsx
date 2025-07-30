@@ -45,6 +45,7 @@ export default function BenefitModal({
         amout,
         'test@test.com',
       );
+      console.log(response);
       setAmount(0);
     } catch (err) {
       console.error(err);

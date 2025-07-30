@@ -20,7 +20,6 @@ export default function RouteCard({
 }: Props) {
   const allRoads = route.section?.flatMap((s) => s.roads) || [];
   const majorRoad = MajorLoads(allRoads);
-  console.log(route);
 
   const routeBookmark = async () => {
     try {

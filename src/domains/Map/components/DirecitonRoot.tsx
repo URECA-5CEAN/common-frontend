@@ -16,7 +16,7 @@ export function convertVertexesToCoords(
 export function DirecitonRoot(response: DirectionResponse): RouteItem[] {
   const { routes, id } = response.data;
 
-  return (routes ?? []).map((route, idx) => {
+  return (routes ?? []).map((route) => {
     const directionid = id;
     const from = route.summary.origin.name;
     const to = route.summary.destination.name;

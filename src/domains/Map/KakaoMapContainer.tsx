@@ -1,5 +1,10 @@
 import type { PropsWithChildren } from 'react';
-import { Map, Polyline, useKakaoLoader } from 'react-kakao-maps-sdk';
+import {
+  CustomOverlayMap,
+  Map,
+  Polyline,
+  useKakaoLoader,
+} from 'react-kakao-maps-sdk';
 import type { RouteItem } from './components/sidebar/RoadSection';
 import { getTrafficInfo } from './components/getTrafficInfo';
 
@@ -9,6 +14,8 @@ interface Props {
   onMapCreate: (map: kakao.maps.Map) => void;
   onCenterChanged: (center: LatLng) => void;
   selectedRoute?: RouteItem | null;
+  start?: LatLng;
+  end?: LatLng;
 }
 
 export interface MarkerProps {
@@ -53,6 +60,8 @@ export default function KakaoMapContainer({
   onCenterChanged,
   children,
   selectedRoute,
+  start,
+  end,
 }: PropsWithChildren<Props>) {
   // Kakao Maps SDK 비동기 로딩 훅
   const [loading, error] = useKakaoLoader({
@@ -78,6 +87,40 @@ export default function KakaoMapContainer({
         onCenterChanged(c); // 부모로 콜백
       }}
     >
+      {start && (
+        <CustomOverlayMap position={start} yAnchor={2.8}>
+          <div
+            style={{
+              background: '#34c759',
+              color: 'white',
+              padding: '4px 8px',
+              borderRadius: '16px',
+              fontSize: '10px',
+              fontWeight: 600,
+              boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+            }}
+          >
+            출발
+          </div>
+        </CustomOverlayMap>
+      )}
+      {end && (
+        <CustomOverlayMap position={end} yAnchor={2.8}>
+          <div
+            style={{
+              background: '#ff3b30',
+              color: 'white',
+              padding: '4px 8px',
+              borderRadius: '16px',
+              fontSize: '10px',
+              fontWeight: 600,
+              boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+            }}
+          >
+            도착
+          </div>
+        </CustomOverlayMap>
+      )}
       {selectedRoute &&
         splitPathByRoad(selectedRoute.path, selectedRoute.road).map(
           (segment, idx) => {

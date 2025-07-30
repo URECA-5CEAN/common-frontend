@@ -43,6 +43,7 @@ export interface DirectionResponse {
     trans_id: string;
     routes: Route[];
   };
+  bookmark?: boolean;
 }
 
 //루트 별 코드 및 메세지
@@ -139,18 +140,18 @@ export async function findDirectionPath(
   }
 }
 
-export interface DirectionBookmarkResponse {
-  statusCode: number;
-  message: string;
-  data: DirectionBookmark[];
-}
-
 export interface DirectionBookmark {
   id: string;
   trans_id: string;
   routes: Route[];
   userId: string;
   bookmark: boolean;
+}
+
+export interface DirectionBookmarkResponse {
+  statusCode: number;
+  message: string;
+  data: DirectionBookmark[];
 }
 
 export async function fetchDirectionBookmarks(): Promise<DirectionBookmark[]> {
@@ -173,7 +174,6 @@ export async function fetchDirectionBookmarks(): Promise<DirectionBookmark[]> {
     throw new Error(`즐겨찾기 조회 실패: ${message}`);
   }
 }
-
 export async function updateBookmarkStatus(
   id: string,
   bookmark: boolean,

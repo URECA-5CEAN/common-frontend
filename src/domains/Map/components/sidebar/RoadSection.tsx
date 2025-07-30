@@ -14,7 +14,6 @@ import { Button } from '@/components/Button';
 import {
   fetchDirectionBookmarks,
   findDirectionPath,
-  type DirectionBookmark,
   type DirectionRequestBody,
   type RouteSection,
 } from '../../api/road';
@@ -54,7 +53,7 @@ export interface RouteItem {
     name: string;
     distance: number;
     traffic_state: number;
-    path: LatLng[];
+    path?: LatLng[];
   }[];
 
   section?: RouteSection[];
@@ -82,7 +81,7 @@ export default function RoadSection({
   openDetail,
   openRoadDetail,
 }: RouteInputProps) {
-  const [showBookmark, setShowBookmark] = useState<boolean>(true);
+  //const [showBookmark, setShowBookmark] = useState<boolean>(true);
   const [ShowStar, SetShowStar] = useState<boolean>(false);
   const [showRoute, setShowRoute] = useState<boolean>(false);
   const inputStyle = 'w-full px-4 py-2 text-sm focus:outline-none';
@@ -121,13 +120,13 @@ export default function RoadSection({
       try {
         const data = await fetchDirectionBookmarks();
         console.log(data);
-        setSavedRoutes(data);
       } catch (error) {
         console.log(error);
       }
     };
     fetchBookmark();
   }, []);
+
   return (
     <div className="max-w-md mx-auto  space-y-6 bg-white min-h-dvh">
       {/* 입력창 + 액션 버튼 */}
@@ -243,14 +242,16 @@ export default function RoadSection({
               {savedRoutes &&
                 savedRoutes.map((r) => (
                   <li
-                    key={r.id}
+                    key={r.directionid}
                     className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-full"
-                    onClick={() => openRoadDetail(r.routes[0])}
+                    onClick={() => openRoadDetail(r)}
                   >
-                    <span className="text-sm">{`${r.routes[0].summary.origin.name} → ${r.routes[0].summary.destination.name}`}</span>
+                    <span className="text-sm">{`${r.to} → ${r.from}`}</span>
                     <button
                       onClick={() =>
-                        setSavedRoutes((s) => s.filter((x) => x.id !== r.id))
+                        setSavedRoutes((s) =>
+                          s.filter((x) => x.directionid !== r.directionid),
+                        )
                       }
                       className="p-1 text-gray-400 hover:text-red-500"
                     >
