@@ -59,7 +59,15 @@ const LineChart: React.FC<LineChartProps> = ({
     },
     plugins: {
       legend: { display: false },
-      tooltip: { enabled: true },
+      tooltip: {
+        enabled: true,
+        callbacks: {
+          label: function (context) {
+            const value = context.raw;
+            return `${value}원`;
+          },
+        },
+      },
     },
     scales: {
       y: {
