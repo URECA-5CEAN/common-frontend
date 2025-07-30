@@ -22,11 +22,13 @@ import MissionPage from './domains/MyPage/pages/MissionPage';
 import StatisticsPage from './domains/MyPage/pages/StatisticsPage';
 import FavoritesPage from './domains/MyPage/pages/FavoritesPage';
 import EditProfilePage from '@/domains/MyPage/pages/EditProfilePage';
-import MySharingPage from '@/domains/MyPage/pages/MySharingPage';
+import MySharePage from '@/domains/MyPage/pages/MySharePage';
 import { useAuthStore } from '@/store/useAuthStore';
 import dolphinFind from '@/assets/image/dolphin_find.png';
 import LeaveConfirmModal from '@/components/LeaveConfirmModal';
 import { UnsavedChangesProvider } from '@/contexts/UnsavedChangesContext';
+import MyShareDetailPage from '@/domains/MyPage/pages/MyShareDetailPage';
+import MyShareEditPage from '@/domains/MyPage/pages/MyShareEditPage';
 
 const AppLayout = () => {
   return (
@@ -130,7 +132,15 @@ function App() {
                 <Route path="/mypage/missions" element={<MissionPage />} />
                 <Route path="/mypage/statistics" element={<StatisticsPage />} />
                 <Route path="/mypage/favorites" element={<FavoritesPage />} />
-                <Route path="/mypage/sharing" element={<MySharingPage />} />
+                <Route path="/mypage/share" element={<MySharePage />} />
+                <Route
+                  path="/mypage/share/:postId"
+                  element={<MyShareDetailPage />}
+                />
+                <Route
+                  path="/mypage/share/edit/:postId"
+                  element={<MyShareEditPage />}
+                />
               </Route>
             </Route>
 
