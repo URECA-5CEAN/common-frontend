@@ -1,11 +1,13 @@
 import type { PropsWithChildren } from 'react';
-import { Map, useKakaoLoader } from 'react-kakao-maps-sdk';
+import { Map, Polyline, useKakaoLoader } from 'react-kakao-maps-sdk';
+import type { RouteItem } from './components/sidebar/RoadSection';
 
 interface Props {
   center: LatLng;
   level: number;
   onMapCreate: (map: kakao.maps.Map) => void;
   onCenterChanged: (center: LatLng) => void;
+  selectedRoute?: RouteItem | null;
 }
 
 export interface MarkerProps {
@@ -28,6 +30,7 @@ export default function KakaoMapContainer({
   onMapCreate,
   onCenterChanged,
   children,
+  selectedRoute,
 }: PropsWithChildren<Props>) {
   // Kakao Maps SDK 비동기 로딩 훅
   const [loading, error] = useKakaoLoader({
@@ -38,6 +41,7 @@ export default function KakaoMapContainer({
   if (loading) return <div>지도를 불러오는 중...</div>;
   if (error) return <div>지도를 불러올 수 없습니다.</div>;
 
+  console.log(selectedRoute);
   return (
     <Map
       center={center}
@@ -53,6 +57,15 @@ export default function KakaoMapContainer({
         onCenterChanged(c); // 부모로 콜백
       }}
     >
+      {selectedRoute && (
+        <Polyline
+          path={selectedRoute.path}
+          strokeWeight={4}
+          strokeColor="#007aff"
+          strokeOpacity={0.8}
+          strokeStyle="solid"
+        />
+      )}
       {children} {/* Map 내부에 2D/3D 마커, 오버레이, 버튼 등을 렌더링 */}
     </Map>
   );

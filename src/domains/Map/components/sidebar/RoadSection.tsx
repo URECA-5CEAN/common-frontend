@@ -53,8 +53,6 @@ export interface RouteItem {
 
 interface RouteInputProps {
   openDetail: (store: StoreInfo) => void;
-  onStar: () => void;
-  isShowStar: boolean;
   startValue: LocationInfo;
   endValue: LocationInfo;
   onSwap?: () => void;
@@ -70,17 +68,22 @@ export default function RoadSection({
   endValue,
   onSwap,
   onReset,
-  onStar,
-  isShowStar,
   bookmarks,
   goToStore,
   openDetail,
   openRoadDetail,
 }: RouteInputProps) {
-  const [showRecent, setShowRecent] = useState<boolean>(true);
-
+  //const [showRecent, setShowRecent] = useState<boolean>(true);
+  const [ShowStar, SetShowStar] = useState<boolean>(false);
+  const [showRoute, setShowRoute] = useState<boolean>(false);
   const inputStyle = 'w-full px-4 py-2 text-sm focus:outline-none';
   const [routes, setRoutes] = useState<RouteItem[]>([]);
+
+  // 즐겨찾기 토글
+  const onStar = () => {
+    SetShowStar((prev) => !prev);
+    setShowRoute(false);
+  };
   const handleNavigate = async () => {
     try {
       const body: DirectionRequestBody = {
@@ -96,8 +99,8 @@ export default function RoadSection({
       };
 
       const res = await findDirectionPath(body);
-      console.log(res);
       const routeItems = DirecitonRoot(res);
+      setShowRoute(true);
       setRoutes(routeItems);
     } catch (err) {
       alert(err instanceof Error ? err.message : '오류 발생');
@@ -158,7 +161,7 @@ export default function RoadSection({
           </Button>
 
           {/* 즐겨찾기 혹은 경로목록*/}
-          {!isShowStar ? (
+          {!ShowStar ? (
             <Button
               onClick={onStar}
               variant="ghost"
@@ -192,13 +195,13 @@ export default function RoadSection({
         </div>
       </div>
 
-      {isShowStar ? (
+      {ShowStar ? (
         <div className="space-y-2 px-2">
           <div className=" flex justify-between">
             <p className="text-xl font-bold text-gray-600">즐겨찾기</p>
-            <p className="text-sm flex ">
+            <div className="text-sm flex ">
               <p>추천순</p> <ChevronDown className="inline" />
-            </p>
+            </div>
           </div>
           {bookmarks.map((bookmark) => (
             <StarListItem
@@ -257,16 +260,18 @@ export default function RoadSection({
           </div> */}
         </>
       )}
-      <div className="flex flex-col px-2 ">
-        {routes.map((route, idx) => (
-          <RouteCard
-            key={route.id}
-            route={route}
-            idx={idx}
-            onClick={() => openRoadDetail(route)}
-          />
-        ))}
-      </div>
+      {showRoute && (
+        <div className="flex flex-col px-2 ">
+          {routes.map((route, idx) => (
+            <RouteCard
+              key={route.id}
+              route={route}
+              idx={idx}
+              onClick={() => openRoadDetail(route)}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

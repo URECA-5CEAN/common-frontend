@@ -59,8 +59,6 @@ export default function SidebarPanel({
   goToStore,
   openRoadDetail,
 }: SidebarPanelProps) {
-  const [ShowStar, SetShowStar] = useState<boolean>(false);
-
   const [userInfo, setUserInfo] = useState<UserInfoApi>();
 
   useEffect(() => {
@@ -78,11 +76,6 @@ export default function SidebarPanel({
 
     fetchUserData();
   }, []);
-
-  // 즐겨찾기 토글
-  const onStar = () => {
-    SetShowStar((prev) => !prev);
-  };
 
   const left = 64 + index * 345;
   const isDetail = panel.type === 'detail';
@@ -144,10 +137,8 @@ export default function SidebarPanel({
             onSwap={onSwap}
             onReset={onReset}
             onNavigate={onNavigate}
-            onStar={onStar}
             bookmarks={bookmarks}
             openDetail={openDetail}
-            isShowStar={ShowStar}
             goToStore={goToStore}
             openRoadDetail={openRoadDetail}
           />

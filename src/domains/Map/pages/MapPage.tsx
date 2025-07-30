@@ -129,6 +129,8 @@ export default function MapPage() {
   const [idleCount, setIdleCount] = useState(0);
   //AI 추천 제휴처
   const [recommendedStore, setRecommendedStore] = useState<StoreInfo>();
+  // 선택한 길찾기
+  const [selectedRoute, setSelectedRoute] = useState<RouteItem | null>(null);
 
   // 제휴처 목록 조회 함수
   const searchHere = useCallback(async () => {
@@ -327,6 +329,7 @@ export default function MapPage() {
     (route: RouteItem) => {
       setPanel({ type: 'road', menu: panel.menu, item: route });
       setPanelIndex(1);
+      setSelectedRoute(route);
     },
     [panel.menu],
   );
@@ -420,6 +423,14 @@ export default function MapPage() {
     setSelectedFile(file);
   };
 
+  useEffect(() => {
+    if (selectedRoute?.path.length) {
+      const centerIdx = Math.floor(selectedRoute.path.length / 2);
+      const center = selectedRoute.path[centerIdx];
+      map?.setCenter(new kakao.maps.LatLng(center.lat, center.lng));
+    }
+  }, [selectedRoute]);
+
   return (
     <div className="flex h-screen flex-col-reverse md:flex-row overflow-y-hidden ">
       {/* 사이드바 */}
@@ -477,6 +488,7 @@ export default function MapPage() {
             level={5}
             onMapCreate={setMap}
             onCenterChanged={setCenter}
+            selectedRoute={selectedRoute}
           >
             {/* 2D 마커/오버레이 */}
             <FilterMarker
