@@ -1,4 +1,4 @@
-import type { UserRank } from '@/domains/Explore/components/ranking/UserTotalRanking';
+import type { UserRank } from '@/domains/Explore/types/rank';
 import medalGold from '@/assets/icons/medal_gold.png';
 import medalSilver from '@/assets/icons/medal_silver.png';
 import medalBronze from '@/assets/icons/medal_bronze.png';
@@ -20,7 +20,7 @@ const columnClass = {
 
 const medals = [medalGold, medalSilver, medalBronze];
 
-const RankingList = ({ rankList }: RankingListProps) => {
+const UserRankingList = ({ rankList }: RankingListProps) => {
   const [myNickname, setMyNickname] = useState<string | null>(null);
   const [isPassedMyRank, setIsPassedMyRank] = useState(true);
   const myRankRef = useRef<HTMLLIElement>(null);
@@ -69,7 +69,7 @@ const RankingList = ({ rankList }: RankingListProps) => {
 
   return (
     <>
-      <div className="mt-4 bg-[#F9EBCE] flex px-1 sm:px-4 py-2.5 sm:py-6 rounded-3xl justify-around items-center text-gray-500 font-bold break-keep whitespace-normal">
+      <div className="mt-4 bg-[#F9EBCE] flex px-1 sm:px-4 py-2.5 sm:py-6 rounded-3xl justify-around items-center text-gray-700 font-bold break-keep whitespace-normal">
         <div className={columnClass.rank}>순위</div>
         <div className={columnClass.nickname}>닉네임</div>
         <div className={columnClass.completion}>도감 완성률</div>
@@ -78,9 +78,7 @@ const RankingList = ({ rankList }: RankingListProps) => {
       </div>
 
       {myRank && isPassedMyRank && (
-        <div
-          className="sticky top-15 bg-[#BBE3E6] rounded-2xl flex sm:px-4 py-3.5 sm:py-4 justify-around items-center z-10" // Add z-10 to ensure it's above other items
-        >
+        <div className="sticky top-15 bg-[#BBE3E6] rounded-2xl flex sm:px-4 py-3.5 sm:py-4 justify-around items-center z-10">
           <div className={columnClass.rank}>
             {rankList.indexOf(myRank) < 3 ? (
               <img
@@ -110,7 +108,7 @@ const RankingList = ({ rankList }: RankingListProps) => {
         </div>
       )}
 
-      <ul className="">
+      <ul>
         {rankList.map((user, index) => (
           <li
             key={index}
@@ -155,4 +153,4 @@ const RankingList = ({ rankList }: RankingListProps) => {
   );
 };
 
-export default RankingList;
+export default UserRankingList;

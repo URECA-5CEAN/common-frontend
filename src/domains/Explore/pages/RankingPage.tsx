@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import UserTotalRanking from '../components/ranking/UserTotalRanking';
-import UserStoreRanking from '../components/ranking/UserStoreRanking';
+import UserTotalRanking from '@/domains/Explore/components/ranking/UserTotalRanking';
+import StoreRanking from '@/domains/Explore/components/ranking/StoreRanking';
 
 type Tab = {
   title: string;
@@ -9,7 +9,7 @@ type Tab = {
 
 const tabs: Tab[] = [
   { title: '전체', content: <UserTotalRanking /> },
-  { title: '매장별', content: <UserStoreRanking /> },
+  { title: '매장별', content: <StoreRanking /> },
 ];
 
 const RankingPage = () => {

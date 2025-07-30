@@ -1,16 +1,8 @@
 import { useEffect, useState } from 'react';
-import RankingList from '@/domains/Explore/components/ranking/RankingList';
+import UserRankingList from '@/domains/Explore/components/ranking/UserRankingList';
 import RankingPodium from '@/domains/Explore/components/ranking/RankingPodium';
 import { getUserRank } from '@/domains/Explore/api/rank';
-
-export type UserRank = {
-  rank: number;
-  nickname: string;
-  title: string;
-  completePercentage: string;
-  level: number;
-  storeUsage: number;
-};
+import type { UserRank } from '@/domains/Explore/types/rank';
 
 const UserTotalRanking = () => {
   const [rankList, setRankList] = useState<UserRank[]>([]);
@@ -39,7 +31,7 @@ const UserTotalRanking = () => {
   return (
     <>
       <RankingPodium podiumRanks={podiumRanks} />
-      <RankingList rankList={rankList} />
+      <UserRankingList rankList={rankList} />
     </>
   );
 };
