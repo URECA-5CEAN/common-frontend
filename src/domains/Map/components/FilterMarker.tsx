@@ -16,6 +16,7 @@ import { useMedia } from 'react-use';
 import type { LatLng, MarkerProps } from '../KakaoMapContainer';
 import type { StoreInfo } from '../api/store';
 import { getDistance } from '../utils/getDistance';
+import type { LocationInfo } from '../pages/MapPage';
 
 const StoreOverlay = lazy(() => import('./StoreOverlay'));
 
@@ -26,8 +27,8 @@ interface Props {
   map?: kakao.maps.Map | null; // Kakao Map 인스턴스
   containerRef?: React.RefObject<HTMLDivElement | null>; // 지도+캔버스 컨테이너
   openDetail: (store: StoreInfo) => void; // 클릭 시 상세 열기
-  onStartChange: (v: string) => void; // 출발지 변경
-  onEndChange: (v: string) => void; // 도착지 변경
+  onStartChange: (v: LocationInfo) => void; // 출발지 변경
+  onEndChange: (v: LocationInfo) => void; // 도착지 변경
   toggleBookmark: (store: StoreInfo) => void;
   bookmarkIds: Set<string>;
   center: LatLng;

@@ -63,6 +63,7 @@ interface RouteInputProps {
   onNavigate?: () => void;
   bookmarks: StoreInfo[];
   goToStore: (store: StoreInfo) => void;
+  openRoadDetail: (route: RouteItem) => void;
 }
 
 export default function RoadSection({
@@ -75,6 +76,7 @@ export default function RoadSection({
   bookmarks,
   goToStore,
   openDetail,
+  openRoadDetail,
 }: RouteInputProps) {
   const [showRecent, setShowRecent] = useState<boolean>(true);
 
@@ -102,7 +104,6 @@ export default function RoadSection({
       alert(err instanceof Error ? err.message : '오류 발생');
     }
   };
-  console.log(routes);
   return (
     <div className="max-w-md mx-auto  space-y-6 bg-white min-h-dvh">
       {/* 입력창 + 액션 버튼 */}
@@ -280,7 +281,7 @@ export default function RoadSection({
               <div className="px-2 mt-2 text-sm text-gray-600 space-y-0.5">
                 {majorRoad.map((road, i) => (
                   <div key={i} className="flex flex-wrap gap-1">
-                    <div className="flex items-center space-x-1 space-y-1 w-48">
+                    <div className="flex items-center space-x-1 space-y-1 ">
                       {road.traffic && (
                         <span
                           className="text-[10px] px-2 py-0.5 rounded-full"
@@ -298,7 +299,9 @@ export default function RoadSection({
                     </div>
                   </div>
                 ))}
-                <div className="mt-1">상세보기 &gt;</div>
+                <div className="mt-1" onClick={() => openRoadDetail(route)}>
+                  상세보기 &gt;
+                </div>
               </div>
             </div>
           );

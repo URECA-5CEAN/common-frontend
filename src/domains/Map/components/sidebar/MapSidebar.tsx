@@ -9,6 +9,7 @@ import SidebarMenu from './SidebarMenu';
 import type { StoreInfo } from '../../api/store';
 import { type BottomSheetHandle } from './BottomSheet';
 import type { LocationInfo } from '../../pages/MapPage';
+import type { RouteItem } from './RoadSection';
 const SidebarPanel = lazy(() => import('./SidebarPanel'));
 const BottomSheet = lazy(() => import('./BottomSheet'));
 // 메뉴 타입
@@ -19,7 +20,8 @@ export const menuIcons = [mapImage, starImage, roadImage, benefitImage];
 // Panel 타입 (MapPage에서 관리)
 export type Panel =
   | { type: 'menu'; menu: MenuType }
-  | { type: 'detail'; menu: MenuType; item: StoreInfo };
+  | { type: 'detail'; menu: MenuType; item: StoreInfo }
+  | { type: 'road'; menu: MenuType; item: RouteItem };
 
 interface SideBarProps {
   stores: StoreInfo[];
@@ -29,13 +31,12 @@ interface SideBarProps {
   onClose: (index: number) => void; //  패널 닫기 콜백
   changeKeyword?: ChangeEventHandler<HTMLInputElement>; //키워드 바꿔주는 콜백
   keyword?: string;
-  startValue?: LocationInfo; //출발지
-  endValue?: LocationInfo; // 도착지
+  startValue: LocationInfo; //출발지
+  endValue: LocationInfo; // 도착지
   onStartChange: (v: LocationInfo) => void;
   onEndChange: (v: LocationInfo) => void;
   onSwap: () => void;
   onReset: () => void;
-  onNavigate: () => void; // 길찾기
   bookmarks: StoreInfo[];
   toggleBookmark: (store: StoreInfo) => void;
   bookmarkIds: Set<string>; // 즐겨찾기인지 확인
@@ -44,6 +45,8 @@ interface SideBarProps {
   onSheetPositionChange: (y: number) => void; // 바텀시트 y좌표 콜백
   sheetDetail: React.RefObject<BottomSheetHandle | null>;
   onDetailSheetPositionChange: (y: number) => void;
+  openRoadDetail: (route: RouteItem) => void;
+  index: number;
 }
 
 export default function MapSidebar({
@@ -60,7 +63,6 @@ export default function MapSidebar({
   onEndChange,
   onSwap,
   onReset,
-  onNavigate,
   bookmarks,
   toggleBookmark,
   bookmarkIds,
@@ -69,6 +71,8 @@ export default function MapSidebar({
   onSheetPositionChange,
   sheetDetail,
   onDetailSheetPositionChange,
+  openRoadDetail,
+  index,
 }: SideBarProps) {
   if (!panel) return;
 
@@ -110,34 +114,35 @@ export default function MapSidebar({
             onEndChange={onEndChange}
             onSwap={onSwap}
             onReset={onReset}
-            onNavigate={onNavigate}
             bookmarks={bookmarks}
             toggleBookmark={toggleBookmark}
             bookmarkIds={bookmarkIds}
             goToStore={goToStore}
+            openRoadDetail={openRoadDetail}
           />
 
           {/* 상세 패널 (panel.type이 'detail'일 때만) */}
-          {panel?.type === 'detail' && panel.item && (
-            <Suspense fallback={<div>로딩 중…</div>}>
-              <SidebarPanel
-                key="detail"
-                index={1}
-                bookmarks={bookmarks}
-                panel={panel}
-                stores={stores}
-                openDetail={openDetail}
-                onClose={onClose}
-                changeKeyword={changeKeyword}
-                keyword={keyword}
-                onStartChange={onStartChange}
-                onEndChange={onEndChange}
-                toggleBookmark={toggleBookmark}
-                bookmarkIds={bookmarkIds}
-                goToStore={goToStore}
-              />
-            </Suspense>
-          )}
+          {(panel?.type === 'detail' || panel.type === 'road') &&
+            panel.item && (
+              <Suspense fallback={<div>로딩 중…</div>}>
+                <SidebarPanel
+                  key="detail"
+                  index={index}
+                  bookmarks={bookmarks}
+                  panel={panel}
+                  stores={stores}
+                  openDetail={openDetail}
+                  onClose={onClose}
+                  changeKeyword={changeKeyword}
+                  keyword={keyword}
+                  onStartChange={onStartChange}
+                  onEndChange={onEndChange}
+                  toggleBookmark={toggleBookmark}
+                  bookmarkIds={bookmarkIds}
+                  goToStore={goToStore}
+                />
+              </Suspense>
+            )}
         </AnimatePresence>
       </div>
       <div className="block md:hidden">
@@ -167,7 +172,6 @@ export default function MapSidebar({
                 onEndChange={onEndChange}
                 onSwap={onSwap}
                 onReset={onReset}
-                onNavigate={onNavigate}
                 bookmarks={bookmarks}
                 toggleBookmark={toggleBookmark}
                 bookmarkIds={bookmarkIds}

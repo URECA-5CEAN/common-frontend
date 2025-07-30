@@ -32,6 +32,7 @@ import MyLocationBtn from '../components/MyLocationBtn';
 import SearchHereBtn from '../components/SearchHearBtn';
 import { fetchAiRecommendedStore } from '../api/ai';
 import { extractBouns, type InternalBounds } from '../utils/extractBouns';
+import type { RouteItem } from '../components/sidebar/RoadSection';
 
 //bounds 타입에러 방지
 
@@ -87,7 +88,8 @@ export default function MapPage() {
     type: 'menu',
     menu: '지도',
   });
-
+  //detail,road 열고 닫힐 때 사용
+  const [panelIndex, setPanelIndex] = useState<number>(0);
   //검색 디바운스
   const [isCategory, SetIsCategory] = useState<string>('');
 
@@ -308,6 +310,15 @@ export default function MapPage() {
   const openDetail = useCallback(
     (store: StoreInfo) => {
       setPanel({ type: 'detail', menu: panel.menu, item: store });
+      setPanelIndex(1);
+    },
+    [panel.menu],
+  );
+  // 길찾기 상세보기
+  const openRoadDetail = useCallback(
+    (route: RouteItem) => {
+      setPanel({ type: 'road', menu: panel.menu, item: route });
+      setPanelIndex(1);
     },
     [panel.menu],
   );
@@ -315,6 +326,7 @@ export default function MapPage() {
   //상세 닫기
   const closePanel = useCallback(() => {
     setPanel({ type: 'menu', menu: panel.menu });
+    setPanelIndex(0);
   }, [panel.menu]);
 
   //키워드 변경 시 카테고리 초기화
@@ -350,13 +362,10 @@ export default function MapPage() {
   };
   // 출발지 도착지 리셋
   const onReset = () => {
-    setStartValue(null);
-    setEndValue(null);
+    setStartValue(undefined);
+    setEndValue(undefined);
   };
-  //길찾기
-  const onNavigate = () => {
-    console.log('길찾기 실행:', { from: startValue, to: endValue });
-  };
+
   //마운트 시 즐겨찾기 조회
   useEffect(() => {
     let imdounted = true;
@@ -421,7 +430,6 @@ export default function MapPage() {
           onEndChange={onEndChange}
           onSwap={onSwap}
           onReset={onReset}
-          onNavigate={onNavigate}
           bookmarks={bookmarks}
           toggleBookmark={toggleBookmark}
           bookmarkIds={bookmarkIds}
@@ -430,6 +438,8 @@ export default function MapPage() {
           sheetDetail={sheetDetail}
           onSheetPositionChange={(y) => setSheetY(y)}
           onDetailSheetPositionChange={(y) => setSheetY(y)}
+          openRoadDetail={openRoadDetail}
+          index={panelIndex}
         />
         {/* 내 위치 버튼 */}
         {map && myLocation && (
