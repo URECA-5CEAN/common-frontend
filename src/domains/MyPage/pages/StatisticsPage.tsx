@@ -1,8 +1,20 @@
 import { Breadcrumb } from '@/components/Breadcrumb';
+import {
+  getBrand,
+  getCategory,
+  getDaily,
+  getHourly,
+  getMonthly,
+  getRegion,
+  getSavings,
+  getStore,
+  getWeekday,
+  getWeekly,
+} from '@/domains/MyPage/api/statistics';
 import DonutChart from '@/domains/MyPage/components/statistics/DonutChart';
 import LineChart from '@/domains/MyPage/components/statistics/LineChart';
 import { useClickOutside } from '@/domains/MyPage/hooks/useClickOutside';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const STYLES = {
   container: 'w-[calc(100%-48px)] max-w-[1050px] m-6',
@@ -13,45 +25,45 @@ const STYLES = {
 } as const;
 
 // API 데이터
-const statsData = {
-  usage: { mine: 6, average: 12 },
-  savings: { mine: 60000, average: 30000 },
-};
+// const statsData = {
+//   usage: { mine: 6, average: 12 },
+//   savings: { mine: 60000, average: 30000 },
+// };
 
-const dailyUsageList = [
-  //최근 10일
-  { date: '7/17', amount: 3200 },
-  { date: '7/18', amount: 4500 },
-  { date: '7/19', amount: 3800 },
-  { date: '7/20', amount: 2900 },
-  { date: '7/21', amount: 5000 },
-  { date: '7/22', amount: 4100 },
-  { date: '7/23', amount: 3700 },
-  { date: '7/24', amount: 3700 },
-];
+// const dailyUsageList = [
+//   //최근 10일
+//   { date: '7/17', amount: 3200 },
+//   { date: '7/18', amount: 4500 },
+//   { date: '7/19', amount: 3800 },
+//   { date: '7/20', amount: 2900 },
+//   { date: '7/21', amount: 5000 },
+//   { date: '7/22', amount: 4100 },
+//   { date: '7/23', amount: 3700 },
+//   { date: '7/24', amount: 3700 },
+// ];
 
-const weeklyUsageList = [
-  //최근 10주
-  { week: '5월 5주차', amount: 2100 },
-  { week: '6월 1주차', amount: 21500 },
-  { week: '6월 2주차', amount: 11500 },
-  { week: '6월 3주차', amount: 31500 },
-  { week: '6월 4주차', amount: 61500 },
-  { week: '6월 5주차', amount: 1500 },
-  { week: '7월 1주차', amount: 21500 },
-  { week: '7월 2주차', amount: 18300 },
-  { week: '7월 3주차', amount: 19700 },
-  { week: '7월 4주차', amount: 16800 },
-];
+// const weeklyUsageList = [
+//   //최근 10주
+//   { week: '5월 5주차', amount: 2100 },
+//   { week: '6월 1주차', amount: 21500 },
+//   { week: '6월 2주차', amount: 11500 },
+//   { week: '6월 3주차', amount: 31500 },
+//   { week: '6월 4주차', amount: 61500 },
+//   { week: '6월 5주차', amount: 1500 },
+//   { week: '7월 1주차', amount: 21500 },
+//   { week: '7월 2주차', amount: 18300 },
+//   { week: '7월 3주차', amount: 19700 },
+//   { week: '7월 4주차', amount: 16800 },
+// ];
 
-const monthlyUsageList = [
-  // 최근 5개월
-  { month: '3월', amount: 85000 },
-  { month: '4월', amount: 72000 },
-  { month: '5월', amount: 88000 },
-  { month: '6월', amount: 64000 },
-  { month: '7월', amount: 69000 },
-];
+// const monthlyUsageList = [
+//   // 최근 5개월
+//   { month: '3월', amount: 85000 },
+//   { month: '4월', amount: 72000 },
+//   { month: '5월', amount: 88000 },
+//   { month: '6월', amount: 64000 },
+//   { month: '7월', amount: 69000 },
+// ];
 
 const categoryData = [
   { category: '카페', count: 60 },
@@ -173,72 +185,245 @@ const ProgressBar = ({ name, count, maxCount }: ProgressBarProps) => {
   );
 };
 
+interface SavingsType {
+  savings: {
+    mine: number;
+    average: number;
+  };
+  usage: {
+    mine: number;
+    average: number;
+  };
+}
+interface DailyType {
+  date: string;
+  amount: number;
+}
+interface WeeklyType {
+  week: string;
+  amount: number;
+}
+interface MonthlyType {
+  month: string;
+  amount: number;
+}
+interface CategoryType {
+  name: string;
+  count: number;
+}
+interface RegionType {
+  name: string;
+  count: number;
+}
+interface WeekdayType {
+  name: string;
+  count: number;
+}
+interface HourlyType {
+  name: string;
+  count: number;
+}
+interface BrandType {
+  name: string;
+  count: number;
+}
+interface StoreType {
+  name: string;
+  count: number;
+}
+
 const StatisticsPage = () => {
   const [selectedPeriod, setSelectedPeriod] = useState<
     'daily' | 'weekly' | 'monthly'
   >('daily');
   const [openDropdown, setOpenDropdown] = useState(false);
-  const [selectedRange, setSelectedRange] = useState('1주');
+  const [selectedRange, setSelectedRange] = useState('7D');
+  const [savings, setSavings] = useState<SavingsType>({
+    savings: { mine: 0, average: 0 },
+    usage: { mine: 0, average: 0 },
+  });
+  const [daily, setDaily] = useState<DailyType[]>([]);
+  const [weekly, setWeekly] = useState<WeeklyType[]>([]);
+  const [monthly, setMonthly] = useState<MonthlyType[]>([]);
+  const [category, setCategory] = useState<CategoryType[]>([]);
+  const [regions, setRegions] = useState<RegionType[]>([]);
+  const [weekday, setWeekday] = useState<WeekdayType[]>([]);
+  const [hourly, setHourly] = useState<HourlyType[]>([]);
+  const [brand, setBrand] = useState<BrandType[]>([]); // 브랜드별
+  const [store, setStore] = useState<StoreType[]>([]); // 지점별
 
   let labels: string[] = [];
   let data: number[] = [];
 
+  useEffect(() => {
+    const fetchSavings = async () => {
+      try {
+        const response = await getSavings();
+        setSavings(response.data);
+      } catch (error) {
+        console.error('비교 통계 로드 실패:', error);
+      }
+    };
+
+    const fetchDaily = async () => {
+      try {
+        const response = await getDaily();
+        setDaily(response.data);
+      } catch (error) {
+        console.error('일별 통계 로드 실패:', error);
+      }
+    };
+
+    const fetchWeekly = async () => {
+      try {
+        const response = await getWeekly();
+        setWeekly(response.data);
+      } catch (error) {
+        console.error('주별 통계 로드 실패:', error);
+      }
+    };
+
+    const fetchMonthly = async () => {
+      try {
+        const response = await getMonthly();
+        setMonthly(response.data);
+      } catch (error) {
+        console.error('주별 통계 로드 실패:', error);
+      }
+    };
+
+    fetchSavings();
+    fetchDaily();
+    fetchWeekly();
+    fetchMonthly();
+  }, []);
+
+  useEffect(() => {
+    getDetailStatsSequential(selectedRange);
+    getDetailStatsParallel(selectedRange);
+  }, [selectedRange]);
+
+  const getDetailStatsSequential = async (period: string) => {
+    const start = performance.now();
+
+    const categoryRes = await getCategory(period);
+    const regionRes = await getRegion(period);
+    const weekdayRes = await getWeekday(period);
+    const hourlyRes = await getHourly(period);
+    const brandRes = await getBrand(period);
+    const storeRes = await getStore(period);
+
+    const end = performance.now();
+    console.log(`순차 호출 소요 시간: ${(end - start).toFixed(2)} ms`);
+
+    // 상태 업데이트
+    setCategory(categoryRes.data);
+    setRegions(regionRes.data);
+    setWeekday(weekdayRes.data);
+    setHourly(hourlyRes.data);
+    setBrand(brandRes.data);
+    setStore(storeRes.data);
+  };
+
+  const getDetailStatsParallel = async (period: string) => {
+    const start = performance.now();
+
+    const [categoryRes, regionRes, weekdayRes, hourlyRes, brandRes, storeRes] =
+      await Promise.all([
+        getCategory(period),
+        getRegion(period),
+        getWeekday(period),
+        getHourly(period),
+        getBrand(period),
+        getStore(period),
+      ]);
+
+    const end = performance.now();
+    console.log(`병렬 호출 소요 시간: ${(end - start).toFixed(2)} ms`);
+
+    // 상태 업데이트
+    setCategory(categoryRes.data);
+    setRegions(regionRes.data);
+    setWeekday(weekdayRes.data);
+    setHourly(hourlyRes.data);
+    setBrand(brandRes.data);
+    setStore(storeRes.data);
+  };
+
   if (selectedPeriod === 'daily') {
-    labels = dailyUsageList.map((item) => item.date);
-    data = dailyUsageList.map((item) => item.amount);
+    labels = daily.map((item) => item.date);
+    data = daily.map((item) => item.amount);
   } else if (selectedPeriod === 'weekly') {
-    labels = weeklyUsageList.map((item) => item.week);
-    data = weeklyUsageList.map((item) => item.amount);
+    labels = weekly.map((item) => item.week);
+    data = weekly.map((item) => item.amount);
   } else if (selectedPeriod === 'monthly') {
-    labels = monthlyUsageList.map((item) => item.month);
-    data = monthlyUsageList.map((item) => item.amount);
+    labels = monthly.map((item) => item.month);
+    data = monthly.map((item) => item.amount);
   }
 
   // 비교 데이터 계산
   const comparisonData = [
     {
       label: '혜택 사용 횟수',
-      average: statsData.usage.average,
-      mine: statsData.usage.mine,
+      average: savings.usage.average,
+      mine: savings.usage.mine,
       unit: '회',
     },
     {
       label: '절약한 금액',
-      average: statsData.savings.average,
-      mine: statsData.savings.mine,
+      average: savings.savings.average,
+      mine: savings.savings.mine,
       unit: '원',
     },
   ];
 
   // 각 섹션별 최대값 계산
-  const maxUsageValue = Math.max(statsData.usage.average, statsData.usage.mine);
+  const maxUsageValue = Math.max(savings.usage.average, savings.usage.mine);
   const maxSavingsValue = Math.max(
-    statsData.savings.average,
-    statsData.savings.mine,
+    savings.savings.average,
+    savings.savings.mine,
   );
-  const maxRegionCount = Math.max(...regionUsage.map((region) => region.count));
-  const maxWeeklyCount = Math.max(...weeklyUsage.map((region) => region.count));
-  const maxHourlyCount = Math.max(...hourlyUsage.map((region) => region.count));
-  const maxPartnerCount = Math.max(
-    ...topPartners.map((region) => region.count),
-  );
-  const maxBranchCount = Math.max(...topBranches.map((region) => region.count));
+  const maxRegionCount = Math.max(...regions.map((region) => region.count));
+  const maxWeeklyCount = Math.max(...weekday.map((region) => region.count));
+  const maxHourlyCount = Math.max(...hourly.map((region) => region.count));
+  const maxPartnerCount = Math.max(...brand.map((region) => region.count));
+  const maxBranchCount = Math.max(...store.map((region) => region.count));
 
   // 지역별 데이터를 사용 횟수 기준으로 내림차순 정렬
-  const sortedRegionUsage = [...regionUsage].sort((a, b) => b.count - a.count);
+  const sortedRegionUsage = [...regions].sort((a, b) => b.count - a.count);
 
   const minValue = Math.min(...data);
   const maxValue = Math.max(...data);
 
-  // 라인 차트 퍼센트 마진 (아래로 10%, 위로 10%)
-  const minWithMargin = Math.max(0, minValue * 0.9);
-  const maxWithMargin = maxValue * 1.1;
+  // 모든 값이 0인지 확인
+  const isAllZero = data.every((v) => v === 0);
 
-  const ranges = ['1주', '1개월', '3개월', '6개월', '1년'];
+  // 조건에 따라 y축 범위 설정
+  const minWithMargin = isAllZero ? 0 : Math.max(0, minValue * 0.9);
+  const maxWithMargin = isAllZero ? 1000 : maxValue * 1.1;
+
+  const ranges = ['7D', '30D', '180D', '365D', 'ALL'];
 
   useClickOutside(openDropdown, () => {
     setOpenDropdown(false);
   });
+
+  const getRangeLabel = (range: string): string => {
+    switch (range) {
+      case '7D':
+        return '1주';
+      case '30D':
+        return '1개월';
+      case '180D':
+        return '6개월';
+      case '365D':
+        return '1년';
+      case 'ALL':
+        return '전체';
+      default:
+        return '기간 없음';
+    }
+  };
 
   return (
     <div className={STYLES.container}>
@@ -254,13 +439,18 @@ const StatisticsPage = () => {
             <br />
             <span>총 </span>
             <span className="text-primaryGreen-80">
-              {statsData.savings.mine.toLocaleString()}원{' '}
+              {savings.savings.mine.toLocaleString()}원{' '}
             </span>
             <span>아꼈어요</span>
           </div>
 
           {/* 비교 차트 */}
           <div className={STYLES.section}>
+            <div className="flex w-full justify-center text-center">
+              <p className="w-[300px]">전체 사용자 평균</p>
+              <div className="min-w-[96px]"></div>
+              <p className="w-[300px]">나</p>
+            </div>
             {comparisonData.map((item, idx) => (
               <ComparisonBar
                 key={item.label}
@@ -305,11 +495,12 @@ const StatisticsPage = () => {
               options={{
                 scales: {
                   y: {
+                    beginAtZero: true,
                     min: minWithMargin,
                     max: maxWithMargin,
                     ticks: {
                       callback: (value) =>
-                        Math.round(value as number).toLocaleString(),
+                        `${Number(value).toLocaleString()}원`,
                     },
                   },
                 },
@@ -329,27 +520,29 @@ const StatisticsPage = () => {
                   role="button"
                   onClick={() => setOpenDropdown((prev) => !prev)}
                 >
-                  최근 {selectedRange}
+                  최근 {getRangeLabel(selectedRange)}
                 </div>
                 {openDropdown && (
                   <div
                     className="absolute left-0 top-[42px] w-full flex flex-col justify-center items-center 
                     bg-white border border-gray-300 rounded-2xl p-2 z-50 shadow-lg"
                   >
-                    {ranges.map((range) => (
-                      <div
-                        key={range}
-                        className={`w-full p-1.5 cursor-pointer hover:bg-gray-200 rounded-[10px] 
+                    {ranges.map((range) => {
+                      return (
+                        <div
+                          key={range}
+                          className={`w-full p-1.5 cursor-pointer hover:bg-gray-200 rounded-[10px] 
                      flex justify-center items-center transition-colors duration-100 
                      ${selectedRange === range ? 'text-gray-400' : ''}`}
-                        onClick={() => {
-                          setSelectedRange(range);
-                          setOpenDropdown(false);
-                        }}
-                      >
-                        {range}
-                      </div>
-                    ))}
+                          onClick={() => {
+                            setSelectedRange(range);
+                            setOpenDropdown(false);
+                          }}
+                        >
+                          {getRangeLabel(range)}
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>
@@ -363,8 +556,8 @@ const StatisticsPage = () => {
                   <h3 className="text-xl mb-4">카테고리별 통계</h3>
                   <div className="h-[240px]">
                     <DonutChart
-                      labels={categoryData.map((item) => item.category)}
-                      data={categoryData.map((item) => item.count)}
+                      labels={category.map((item) => item.name)}
+                      data={category.map((item) => item.count)}
                     />
                   </div>
                 </div>
@@ -391,7 +584,7 @@ const StatisticsPage = () => {
                 <div className="flex-1 w-full md:max-w-[50%]">
                   <h3 className="text-xl mb-4">요일별 통계</h3>
                   <div className="">
-                    {weeklyUsage.map((day) => (
+                    {weekday.map((day) => (
                       <ProgressBar
                         key={day.name}
                         name={day.name}
@@ -406,7 +599,7 @@ const StatisticsPage = () => {
                 <div className="flex-1 w-full md:max-w-[50%]">
                   <h3 className="text-xl mb-4">시간대별 통계</h3>
                   <div className="space-y-2">
-                    {hourlyUsage.map((hour) => (
+                    {hourly.map((hour) => (
                       <ProgressBar
                         key={hour.name}
                         name={hour.name}
@@ -424,7 +617,7 @@ const StatisticsPage = () => {
                 <div className="flex-1 w-full md:max-w-[50%]">
                   <h3 className="text-xl mb-4">가장 많이 사용한 제휴사</h3>
                   <div className="">
-                    {topPartners.map((partner) => (
+                    {brand.map((partner) => (
                       <ProgressBar
                         key={partner.name}
                         name={partner.name}
@@ -439,7 +632,7 @@ const StatisticsPage = () => {
                 <div className="flex-1 w-full md:max-w-[50%]">
                   <h3 className="text-xl mb-4">가장 많이 사용한 지점</h3>
                   <div className="space-y-2">
-                    {topBranches.map((branch) => (
+                    {store.map((branch) => (
                       <ProgressBar
                         key={branch.name}
                         name={branch.name}
