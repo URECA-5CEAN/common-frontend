@@ -79,7 +79,7 @@ const RankingList = ({ rankList }: RankingListProps) => {
 
       {myRank && isPassedMyRank && (
         <div
-          className="sticky top-14 bg-[#BBE3E6] rounded-2xl flex sm:px-4 py-3.5 sm:py-4 justify-around items-center z-10" // Add z-10 to ensure it's above other items
+          className="sticky top-15 bg-[#BBE3E6] rounded-2xl flex sm:px-4 py-3.5 sm:py-4 justify-around items-center z-10" // Add z-10 to ensure it's above other items
         >
           <div className={columnClass.rank}>
             {rankList.indexOf(myRank) < 3 ? (
@@ -97,7 +97,7 @@ const RankingList = ({ rankList }: RankingListProps) => {
               {myRank.nickname}
             </span>
             {myRank.title && (
-              <span className="bg-red-300 px-2 py-1 rounded-2xl text-center w-fit whitespace-nowrap">
+              <span className="shimmer px-2 py-1.5 rounded-xl w-fit text-[#282ab3] transition-all duration-300 whitespace-nowrap">
                 {myRank.title}
               </span>
             )}
@@ -133,7 +133,7 @@ const RankingList = ({ rankList }: RankingListProps) => {
                 {user.nickname}
               </span>
               {user.title && (
-                <span className="bg-red-300 px-2 py-1 rounded-2xl text-center w-fit whitespace-nowrap">
+                <span className="shimmer px-2 py-1.5 rounded-xl w-fit text-[#282ab3] transition-all duration-300 whitespace-nowrap">
                   {user.title}
                 </span>
               )}
