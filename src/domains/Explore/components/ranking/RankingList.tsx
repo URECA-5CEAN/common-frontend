@@ -1,7 +1,9 @@
-import type { UserRank } from './UserTotalRanking';
+import type { UserRank } from '@/domains/Explore/components/ranking/UserTotalRanking';
 import medalGold from '@/assets/icons/medal_gold.png';
 import medalSilver from '@/assets/icons/medal_silver.png';
 import medalBronze from '@/assets/icons/medal_bronze.png';
+import { useEffect, useState } from 'react';
+import { getUserInfo } from '@/domains/MyPage/api/profile';
 
 type RankingListProps = {
   rankList: UserRank[];
@@ -19,8 +21,27 @@ const columnClass = {
 const medals = [medalGold, medalSilver, medalBronze];
 
 const RankingList = ({ rankList }: RankingListProps) => {
-  // 임의 데이터
-  const username = 'neo348_20';
+  const [myNickname, setMyNickname] = useState<string | null>(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      setMyNickname(null);
+      return;
+    }
+
+    const fetchUser = async () => {
+      try {
+        const res = await getUserInfo();
+        setMyNickname(res.data.nickname);
+      } catch (err) {
+        console.error('사용자 정보 가져오기 실패', err);
+        setMyNickname(null);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   return (
     <>
@@ -37,7 +58,7 @@ const RankingList = ({ rankList }: RankingListProps) => {
           <li
             key={index}
             className={`flex sm:px-4 py-3.5 sm:py-4 justify-around items-center ${
-              user.nickname === username
+              user.nickname === myNickname
                 ? 'sticky bottom-4 bg-[#BBE3E6] rounded-2xl'
                 : ''
             }`}
@@ -46,20 +67,29 @@ const RankingList = ({ rankList }: RankingListProps) => {
               {index < 3 ? (
                 <img src={medals[index]} alt="메달" className="mx-auto" />
               ) : (
-                <span className="text-xl">{user.rank}</span>
+                <span className="text-xl">{index + 1}</span>
               )}
             </div>
             <div className={columnClass.nickname}>
               <span className="font-bold truncate overflow-hidden whitespace-nowrap">
                 {user.nickname}
               </span>
-              <span className="bg-red-300 px-2 py-1 rounded-2xl text-center w-fit whitespace-nowrap">
-                {user.title}
-              </span>
+              {user.title && (
+                <span className="bg-red-300 px-2 py-1 rounded-2xl text-center w-fit whitespace-nowrap">
+                  {user.title}
+                </span>
+              )}
             </div>
-            <div className={columnClass.completion}>{user.completion}</div>
+            <div className={columnClass.completion}>
+              <div className={columnClass.completion}>
+                {Number(user.completePercentage)
+                  .toFixed(2)
+                  .replace(/\.00$/, '')}
+                %
+              </div>
+            </div>
             <div className={columnClass.level}>Lv. {user.level}</div>
-            <div className={columnClass.count}>{user.benefitCount}회</div>
+            <div className={columnClass.count}>{user.storeUsage}회</div>
           </li>
         ))}
       </ul>
