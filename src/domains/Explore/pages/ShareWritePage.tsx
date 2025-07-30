@@ -1,5 +1,5 @@
 import { Button } from '@/components/Button';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   getDefaultTime,
   getTodayString,
@@ -12,8 +12,11 @@ import DateTimePicker from '../components/share/DateTimePicker';
 import PlaceField from '../components/share/PlaceField';
 import { createSharePost } from '../api/share';
 import { useNavigate } from 'react-router-dom';
+import { useUnsavedChanges } from '../../../contexts/UnsavedChangesContext';
 
 const ShareWritePage = () => {
+  const navigate = useNavigate();
+
   const [category, setCategory] = useState<SelectOption | null>(null);
   const [brand, setBrand] = useState<SelectOption | null>(null);
   const [benefitType, setBenefitType] = useState<SelectOption | null>(null);
@@ -22,8 +25,49 @@ const ShareWritePage = () => {
   const [date, setDate] = useState(() => getTodayString());
   const [place, setPlace] = useState('');
   const [time, setTime] = useState<TimeValue>(() => getDefaultTime());
+  const [initialValues] = useState(() => ({
+    category: null,
+    brand: null,
+    benefitType: null,
+    title: '',
+    content: '',
+    date: getTodayString(),
+    place: '',
+    time: getDefaultTime(),
+  }));
 
-  const navigate = useNavigate();
+  const { setHasUnsavedChanges } = useUnsavedChanges();
+
+  useEffect(() => {
+    const hasChanges =
+      category !== initialValues.category ||
+      brand !== initialValues.brand ||
+      benefitType !== initialValues.benefitType ||
+      title !== initialValues.title ||
+      content !== initialValues.content ||
+      date !== initialValues.date ||
+      place !== initialValues.place ||
+      JSON.stringify(time) !== JSON.stringify(initialValues.time);
+
+    setHasUnsavedChanges(hasChanges);
+  }, [
+    category,
+    brand,
+    benefitType,
+    title,
+    content,
+    date,
+    place,
+    time,
+    initialValues,
+    setHasUnsavedChanges,
+  ]);
+
+  useEffect(() => {
+    return () => {
+      setHasUnsavedChanges(false);
+    };
+  }, [setHasUnsavedChanges]);
 
   const handleSubmit = async () => {
     if (
@@ -51,6 +95,7 @@ const ShareWritePage = () => {
 
     try {
       await createSharePost(newPost);
+      setHasUnsavedChanges(false);
       navigate('/explore/share');
     } catch (error) {
       alert('작성 실패' + error);
@@ -58,38 +103,40 @@ const ShareWritePage = () => {
   };
 
   return (
-    <div className="w-full max-w-[1050px] m-6">
-      <h2 className="text-[28px] font-bold mb-6">나눔 글 작성</h2>
+    <div className="flex justify-center mt-[62px] sm:mt-[86px]">
+      <div className="w-full max-w-[1050px] m-6">
+        <h2 className="text-[28px] font-bold mb-6">나눔 글 작성</h2>
 
-      <SelectFields
-        selectedCategory={category}
-        setSelectedCategory={setCategory}
-        selectedBrand={brand}
-        setSelectedBrand={setBrand}
-        selectedBenefitType={benefitType}
-        setSelectedBenefitType={setBenefitType}
-      />
+        <SelectFields
+          selectedCategory={category}
+          setSelectedCategory={setCategory}
+          selectedBrand={brand}
+          setSelectedBrand={setBrand}
+          selectedBenefitType={benefitType}
+          setSelectedBenefitType={setBenefitType}
+        />
 
-      <PostContentFields
-        title={title}
-        setTitle={setTitle}
-        content={content}
-        setContent={setContent}
-      />
+        <PostContentFields
+          title={title}
+          setTitle={setTitle}
+          content={content}
+          setContent={setContent}
+        />
 
-      <DateTimePicker
-        date={date}
-        setDate={setDate}
-        selectedTime={time}
-        setSelectedTime={setTime}
-      />
+        <DateTimePicker
+          date={date}
+          setDate={setDate}
+          selectedTime={time}
+          setSelectedTime={setTime}
+        />
 
-      <PlaceField place={place} setPlace={setPlace} />
+        <PlaceField place={place} setPlace={setPlace} />
 
-      <div className="flex justify-end mt-6">
-        <Button onClick={handleSubmit} size="lg">
-          등록하기
-        </Button>
+        <div className="flex justify-end mt-6">
+          <Button onClick={handleSubmit} size="lg">
+            등록하기
+          </Button>
+        </div>
       </div>
     </div>
   );

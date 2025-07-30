@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import rankingIcon from '@/assets/icons/ranking_icon.png';
 import shareIcon from '@/assets/icons/share_icon.png';
 import membershipIcon from '@/assets/icons/membership_icon.png';
@@ -7,6 +7,7 @@ import collectionIcon from '@/assets/icons/collection_icon.png';
 import missionsIcon from '@/assets/icons/missions_icon.png';
 import statisticsIcon from '@/assets/icons/statistics_icon.png';
 import favoritesIcon from '@/assets/icons/favorites_icon.png';
+import { useUnsavedChanges } from '@/contexts/UnsavedChangesContext';
 
 // 타입 정의
 interface MenuItem {
@@ -92,20 +93,29 @@ const STYLES = {
 };
 
 // 하위 컴포넌트
-const MenuItemComponent = ({ item }: { item: MenuItem }) => (
-  <NavLink
-    key={item.to}
-    to={item.to}
-    className={({ isActive }: { isActive: boolean }) =>
-      `${STYLES.linkBase} ${isActive ? STYLES.linkActive : STYLES.linkInactive}`
-    }
-  >
-    <div className={STYLES.iconContainer}>
-      <img src={item.icon} alt={item.alt} className={STYLES.icon} />
-    </div>
-    {item.label}
-  </NavLink>
-);
+const MenuItemComponent = ({ item }: { item: MenuItem }) => {
+  const location = useLocation();
+  const { handleProtectedNavigation } = useUnsavedChanges();
+
+  const isActive = location.pathname === item.to;
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    handleProtectedNavigation(item.to);
+  };
+  return (
+    <button
+      key={item.to}
+      onClick={handleClick}
+      className={`${STYLES.linkBase} ${isActive ? STYLES.linkActive : STYLES.linkInactive}`}
+    >
+      <div className={STYLES.iconContainer}>
+        <img src={item.icon} alt={item.alt} className={STYLES.icon} />
+      </div>
+      {item.label}
+    </button>
+  );
+};
 
 const MenuList = ({ items }: { items: MenuItem[] }) => (
   <div className={STYLES.menuContainer}>
