@@ -1,33 +1,28 @@
 import BadgeModal from '@/domains/MyPage/components/profile/BadgeModal';
 import UserProfile from '@/domains/MyPage/components/profile/UserProfile';
-import { BADGES } from '@/domains/MyPage/constants/profile';
-import type {
-  UsageHistoryItem,
-  UserInfo,
-  UserInfoApi,
-} from '@/domains/MyPage/types/profile';
+import type { UserInfo, UserInfoApi } from '@/domains/MyPage/types/profile';
 import { useEffect, useState } from 'react';
 import UsageHistory from '@/domains/MyPage/components/profile/UsageHistory';
 import {
-  getUsageHistory,
+  editUserInfo,
   getUserInfo,
   getUserStat,
 } from '@/domains/MyPage/api/profile';
 import { Breadcrumb } from '@/components/Breadcrumb';
 import { Button } from '@/components/Button';
 import { useNavigate } from 'react-router-dom';
+import { useUsageHistoryStore } from '@/store/useUsageHistoryStore';
 
 const ProfilePage: React.FC = () => {
   const [open, setOpen] = useState<boolean>(false);
-  const [selectedBadge, setSelectedBadge] = useState<string>('earlybird');
+  const [selectedBadge, setSelectedBadge] = useState<string>('');
   const [tempBadge, setTempBadge] = useState<string>(selectedBadge);
   const [userInfoApi, setUserInfoApi] = useState<UserInfoApi>();
-  const [usageHistory, setUsageHistory] = useState<
-    UsageHistoryItem[] | undefined
-  >();
+  const { usageHistory, fetchUsageHistory } = useUsageHistoryStore();
+  const [isConfirmLoading, setIsConfirmLoading] = useState(false);
 
   const navigate = useNavigate();
-
+  const usageHistoryLength = usageHistory.length;
   useEffect(() => {
     const fetchUserData = async () => {
       const userInfoRes = await getUserInfo();
@@ -41,15 +36,11 @@ const ProfilePage: React.FC = () => {
       setUserInfoApi(mergedData);
     };
 
-    const fetchUsageHistory = async () => {
-      const usageHistoryRes = await getUsageHistory();
-
-      setUsageHistory(usageHistoryRes.data);
-    };
-
     fetchUserData();
-    fetchUsageHistory();
-  }, []);
+    if (usageHistoryLength === 0) {
+      fetchUsageHistory();
+    }
+  }, [fetchUsageHistory, usageHistoryLength]);
 
   // 실제로는 API에서 받아올 데이터
   const userInfo: UserInfo = {
@@ -59,17 +50,28 @@ const ProfilePage: React.FC = () => {
     totalMission: 3,
   };
 
-  const selectedBadgeName =
-    BADGES.find((badge) => badge.id === selectedBadge)?.name || '';
-
   const handleBadgeClick = (): void => {
     setTempBadge(selectedBadge);
     setOpen(true);
   };
 
-  const handleConfirm = (): void => {
-    setSelectedBadge(tempBadge);
-    setOpen(false);
+  const updateTitle = async () => {
+    setIsConfirmLoading(true);
+    try {
+      await editUserInfo({ title: tempBadge });
+      setSelectedBadge(tempBadge);
+      setIsConfirmLoading(false);
+      setUserInfoApi((prev) => {
+        if (!prev) return prev;
+        return { ...prev, title: tempBadge };
+      });
+    } catch (error) {
+      console.error('사용자 정보 로드 실패:', error);
+      alert('오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    } finally {
+      setIsConfirmLoading(false);
+      setOpen(false);
+    }
   };
 
   const handleClose = (): void => {
@@ -78,7 +80,7 @@ const ProfilePage: React.FC = () => {
 
   return (
     <>
-      <div className="w-full max-w-[1050px] m-6">
+      <div className="w-[calc(100%-48px)] max-w-[1050px] m-6">
         <Breadcrumb title="마이페이지" subtitle="내 정보" />
 
         <div className="flex flex-col">
@@ -95,9 +97,9 @@ const ProfilePage: React.FC = () => {
 
           <UserProfile
             userInfo={userInfo}
-            selectedBadgeName={selectedBadgeName}
             onBadgeClick={handleBadgeClick}
             userInfoApi={userInfoApi}
+            usageHistoryLength={usageHistoryLength}
           />
         </div>
 
@@ -107,10 +109,11 @@ const ProfilePage: React.FC = () => {
       <BadgeModal
         isOpen={open}
         onClose={handleClose}
-        badges={BADGES}
+        userInfoApi={userInfoApi}
         tempBadge={tempBadge}
         setTempBadge={setTempBadge}
-        onConfirm={handleConfirm}
+        onConfirm={updateTitle}
+        isConfirmLoading={isConfirmLoading}
       />
     </>
   );

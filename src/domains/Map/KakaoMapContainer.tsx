@@ -13,6 +13,7 @@ export interface MarkerProps {
   lat: number;
   lng: number;
   imageUrl: string;
+  isRecommended?: string;
 }
 
 // 경도 위도

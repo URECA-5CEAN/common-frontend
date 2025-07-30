@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchBrands, fetchBenefits } from '../api/store';
 import type { BenefitProps, BrandProps } from '../api/store';
 
-export function useBenefitBrands(brandName?: string | null) {
+export function useBenefitBrands(brandName?: string) {
   return useQuery<BenefitProps[], Error>({
     queryKey: ['brandBenefits', brandName],
     queryFn: async () => {
@@ -17,6 +17,6 @@ export function useBenefitBrands(brandName?: string | null) {
     },
     enabled: !!brandName, // brandName이 있어야 요청 실행
     staleTime: Infinity,
-    retry: 1, // 실패 시 1회 재시도
+    retry: 1,
   });
 }

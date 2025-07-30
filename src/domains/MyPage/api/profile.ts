@@ -20,22 +20,19 @@ export const getUserInfo = async (): Promise<UserInfoResponse> => {
   return response.data;
 };
 
-export const editUserInfo = async (
-  nickname: string,
-  address: string,
-  password: string,
-  membership?: string,
-) => {
+export const editUserInfo = async (data: {
+  nickname?: string;
+  address?: string;
+  password?: string;
+  membership?: string;
+  title?: string;
+}) => {
   const token = localStorage.getItem('authToken');
-  const response = await axios.put(
-    `${baseURL}/user`,
-    { nickname, address, password, membership },
-    {
-      headers: {
-        Authorization: token,
-      },
+  const response = await axios.put(`${baseURL}/user`, data, {
+    headers: {
+      Authorization: token,
     },
-  );
+  });
 
   return response.data;
 };
@@ -54,6 +51,25 @@ export const getUserStat = async (): Promise<UserStatResponse> => {
 export const getUsageHistory = async () => {
   const token = localStorage.getItem('authToken');
   const response = await axios.get(`${baseURL}/map/usage`, {
+    headers: {
+      Authorization: token,
+    },
+  });
+
+  return response.data;
+};
+
+export const getNicknameDuplicate = async (nickname: string) => {
+  const response = await axios.get(`${baseURL}/user/isDupNickname`, {
+    params: { nickname },
+  });
+
+  return response.data;
+};
+
+export const getTitles = async () => {
+  const token = localStorage.getItem('authToken');
+  const response = await axios.get(`${baseURL}/ai/recommend/title`, {
     headers: {
       Authorization: token,
     },
