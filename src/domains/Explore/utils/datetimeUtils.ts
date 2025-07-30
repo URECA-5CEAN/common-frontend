@@ -49,6 +49,11 @@ export const getTodayString = () => {
   return `${year}-${month}-${day}`;
 };
 
+type DateTimeResult = {
+  date: string;
+  time: TimeValue;
+};
+
 export function toISOStringFromDateTime(date: string, time: TimeValue): string {
   let hour = parseInt(time.hour, 10);
   if (time.period === '오전') {
@@ -61,4 +66,35 @@ export function toISOStringFromDateTime(date: string, time: TimeValue): string {
     `${date}T${String(hour).padStart(2, '0')}:${time.minute.padStart(2, '0')}:00`,
   );
   return dateObj.toISOString();
+}
+
+export function fromISOStringToDateTime(isoString: string): DateTimeResult {
+  const dateObj = new Date(isoString);
+
+  const local = new Date(
+    dateObj.getTime() + dateObj.getTimezoneOffset() * 60000,
+  );
+
+  const year = local.getFullYear();
+  const month = String(local.getMonth() + 1).padStart(2, '0');
+  const day = String(local.getDate()).padStart(2, '0');
+  const rawHour = local.getHours();
+  const minute = String(local.getMinutes()).padStart(2, '0');
+
+  const period: TimeValue['period'] = rawHour < 12 ? '오전' : '오후';
+  const hour =
+    rawHour === 0
+      ? '12'
+      : rawHour > 12
+        ? String(rawHour - 12)
+        : String(rawHour);
+
+  return {
+    date: `${year}-${month}-${day}`,
+    time: {
+      period,
+      hour,
+      minute,
+    },
+  };
 }
