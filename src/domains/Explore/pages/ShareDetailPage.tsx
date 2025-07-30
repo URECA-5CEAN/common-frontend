@@ -35,7 +35,7 @@ const ShareDetailPage = () => {
   const dateTime = fromISOStringToDateTime(post.promiseDate);
 
   const handleStartChat = async () => {
-    const roomId = `room-${post.postId}`; // 예: postId 기반으로 roomId 생성
+    console.log(post.postId);
   };
 
   return (
