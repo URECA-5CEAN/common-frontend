@@ -225,7 +225,9 @@ const NoStatistics = ({
         <div className="w-full h-full bg-white rounded-3xl opacity-60 blur-lg"></div>
       </div>
       <div className="absolute left-0 top-0 w-full h-full flex justify-center items-center text-center text-gray-600">
-        최근 {getRangeLabel(selectedRange)} 동안 조회된 통계가 없어요!
+        {getRangeLabel(selectedRange) === '전체'
+          ? '전체 기간 동안 조회된 데이터가 없어요!'
+          : `최근 ${getRangeLabel(selectedRange)} 동안 조회된 통계가 없어요!`}
       </div>
     </div>
   );
@@ -582,7 +584,9 @@ const StatisticsPage = () => {
                   role="button"
                   onClick={() => setOpenDropdown((prev) => !prev)}
                 >
-                  최근 {getRangeLabel(selectedRange)}
+                  {getRangeLabel(selectedRange) === '전체'
+                    ? '전체 기간'
+                    : `최근 ${getRangeLabel(selectedRange)}`}
                 </div>
                 {openDropdown && (
                   <div
