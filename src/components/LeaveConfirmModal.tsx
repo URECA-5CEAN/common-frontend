@@ -48,14 +48,14 @@ const ConfirmModal = () => {
         </div>
       }
       actions={
-        <div className="flex gap-3">
+        <>
           <Button variant="secondary" fullWidth onClick={handleCancel}>
             취소
           </Button>
           <Button variant="primary" fullWidth onClick={handleConfirm}>
             나가기
           </Button>
-        </div>
+        </>
       }
     />
   );

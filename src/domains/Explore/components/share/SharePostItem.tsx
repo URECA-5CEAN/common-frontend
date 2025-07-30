@@ -13,9 +13,14 @@ const SharePostItem = ({ post }: SharePostItemProps) => {
   const { pathname } = useLocation();
 
   const handleClick = () => {
-    navigate(`/explore/share/${post.postId}`);
-  };
+    if (!post) return;
 
+    if (post.isMine) {
+      navigate(`/mypage/share/${post.postId}`);
+    } else {
+      navigate(`/explore/share/${post.postId}`);
+    }
+  };
   const dateTime = fromISOStringToDateTime(post.promiseDate);
 
   return (
