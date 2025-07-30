@@ -1,5 +1,6 @@
 import axios from 'axios';
 import type { AxiosError, AxiosInstance } from 'axios';
+import type { LatLng } from '../KakaoMapContainer';
 
 const apiClient: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL + '/map',
@@ -95,6 +96,7 @@ export interface Road {
   traffic_speed?: number;
   traffic_state: number; // 원할 , 서행, 정체
   vertexes?: number[];
+  path?: LatLng[];
 }
 
 //구간(도로)별 가이드

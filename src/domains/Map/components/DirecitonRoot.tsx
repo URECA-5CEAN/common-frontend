@@ -1,7 +1,7 @@
 import type { DirectionResponse } from '../api/road';
 import type { RouteItem } from './sidebar/RoadSection';
 
-function convertVertexesToCoords(
+export function convertVertexesToCoords(
   vertexes: number[] = [],
 ): { lat: number; lng: number }[] {
   const coords: { lat: number; lng: number }[] = [];

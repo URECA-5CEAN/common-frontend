@@ -1,6 +1,7 @@
 import type { PropsWithChildren } from 'react';
 import { Map, Polyline, useKakaoLoader } from 'react-kakao-maps-sdk';
 import type { RouteItem } from './components/sidebar/RoadSection';
+import { getTrafficInfo } from './components/getTrafficInfo';
 
 interface Props {
   center: LatLng;
@@ -24,6 +25,27 @@ export interface LatLng {
   lng: number;
 }
 
+function splitPathByRoad(
+  fullPath: LatLng[],
+  roadList: { distance: number; traffic_state: number }[],
+): { path: LatLng[]; traffic_state: number }[] {
+  const totalDistance = roadList.reduce((sum, r) => sum + r.distance, 0);
+  const totalPoints = fullPath.length;
+  let currentIdx = 0;
+  let accumulated = 0;
+
+  return roadList.map((r) => {
+    accumulated += r.distance;
+    const targetIdx = Math.round((accumulated / totalDistance) * totalPoints);
+    const segment = {
+      path: fullPath.slice(currentIdx, targetIdx),
+      traffic_state: r.traffic_state,
+    };
+    currentIdx = targetIdx;
+    return segment;
+  });
+}
+
 export default function KakaoMapContainer({
   center,
   level,
@@ -41,7 +63,6 @@ export default function KakaoMapContainer({
   if (loading) return <div>지도를 불러오는 중...</div>;
   if (error) return <div>지도를 불러올 수 없습니다.</div>;
 
-  console.log(selectedRoute);
   return (
     <Map
       center={center}
@@ -57,15 +78,22 @@ export default function KakaoMapContainer({
         onCenterChanged(c); // 부모로 콜백
       }}
     >
-      {selectedRoute && (
-        <Polyline
-          path={selectedRoute.path}
-          strokeWeight={4}
-          strokeColor="#007aff"
-          strokeOpacity={0.8}
-          strokeStyle="solid"
-        />
-      )}
+      {selectedRoute &&
+        splitPathByRoad(selectedRoute.path, selectedRoute.road).map(
+          (segment, idx) => {
+            const traffic = getTrafficInfo(segment.traffic_state);
+            return (
+              <Polyline
+                key={idx}
+                path={segment.path}
+                strokeWeight={8}
+                strokeColor={traffic.color}
+                strokeOpacity={0.8}
+                strokeStyle="solid"
+              />
+            );
+          },
+        )}
       {children} {/* Map 내부에 2D/3D 마커, 오버레이, 버튼 등을 렌더링 */}
     </Map>
   );

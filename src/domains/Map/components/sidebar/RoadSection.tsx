@@ -19,6 +19,7 @@ import {
 import { DirecitonRoot } from '../DirecitonRoot';
 import type { LocationInfo } from '../../pages/MapPage';
 import RouteCard from '../RouteCard';
+import type { LatLng } from '../../KakaoMapContainer';
 export interface TrafficInfo {
   color: string;
   label: string;
@@ -47,7 +48,13 @@ export interface RouteItem {
     rode_index: number;
   }[];
   traffic?: TrafficInfo;
-  road: Road;
+  road: {
+    name: string;
+    distance: number;
+    traffic_state: number;
+    path: LatLng[];
+  }[];
+
   section?: RouteSection[];
 }
 
