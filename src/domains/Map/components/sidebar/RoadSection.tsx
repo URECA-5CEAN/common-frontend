@@ -6,7 +6,6 @@ import {
   ChevronRight,
   ChevronDown,
   Route,
-  MoveRight,
 } from 'lucide-react';
 import type { StoreInfo } from '../../api/store';
 import StarListItem from '../StarListItem';
@@ -18,8 +17,8 @@ import {
   type RouteSection,
 } from '../../api/road';
 import { DirecitonRoot } from '../DirecitonRoot';
-import { MajorLoads } from '../MajorLoads';
 import type { LocationInfo } from '../../pages/MapPage';
+import RouteCard from '../RouteCard';
 export interface TrafficInfo {
   color: string;
   label: string;
@@ -259,53 +258,14 @@ export default function RoadSection({
         </>
       )}
       <div className="flex flex-col px-2 ">
-        {routes.map((route, idx) => {
-          const allRoads = route.section?.flatMap((s) => s.roads) || [];
-          const majorRoad = MajorLoads(allRoads);
-          return (
-            <div
-              key={route.id}
-              className="bg-primaryGreen-40 flex flex-col rounded-lg py-2 mb-2"
-            >
-              <p className="font-semibold text-xl mb-1 px-2">
-                추천경로 {idx + 1}
-              </p>
-              <div className="flex gap-4 text-sm px-2 items-center">
-                <p className="text-lg font-semibold">{route.durationText}</p>
-                <p className="text-base">{route.distanceText}</p>
-              </div>
-              <div className="flex gap-4 text-xs px-2 mt-1">
-                <p>택시비: {route.taxiFare.toLocaleString()}원</p>
-                <p>통행료: {route.tollFare.toLocaleString()}원</p>
-              </div>
-              <div className="px-2 mt-2 text-sm text-gray-600 space-y-0.5">
-                {majorRoad.map((road, i) => (
-                  <div key={i} className="flex flex-wrap gap-1">
-                    <div className="flex items-center space-x-1 space-y-1 ">
-                      {road.traffic && (
-                        <span
-                          className="text-[10px] px-2 py-0.5 rounded-full"
-                          style={{
-                            backgroundColor: road.traffic.color,
-                            color: 'white',
-                          }}
-                        >
-                          {road.traffic.label}
-                        </span>
-                      )}
-                      <span className="text-xs mt-0.5 ">{road.name}</span>
-                      <span className="text-xs mt-0.5">{road.distanceKm}</span>
-                      <MoveRight size={15} className="mb-0.5" />
-                    </div>
-                  </div>
-                ))}
-                <div className="mt-1" onClick={() => openRoadDetail(route)}>
-                  상세보기 &gt;
-                </div>
-              </div>
-            </div>
-          );
-        })}
+        {routes.map((route, idx) => (
+          <RouteCard
+            key={route.id}
+            route={route}
+            idx={idx}
+            onClick={() => openRoadDetail(route)}
+          />
+        ))}
       </div>
     </div>
   );

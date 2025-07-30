@@ -86,7 +86,7 @@ export default function SidebarPanel({
 
   const left = 64 + index * 345;
   const isDetail = panel.type === 'detail';
-
+  const isRoad = panel.type === 'road';
   if (!userInfo) return;
   return (
     <motion.div
@@ -163,16 +163,12 @@ export default function SidebarPanel({
           />
         )}
         {index === 1 && panel.type === 'road' && panel.item && (
-          <RoadDetailSection
-            route={panel.item}
-            start={startValue}
-            end={endValue}
-          />
+          <RoadDetailSection route={panel.item} />
         )}
       </div>
 
       {/* 패널 닫기 버튼 */}
-      {index === 1 && isDetail && (
+      {index === 1 && (isDetail || isRoad) && (
         <button
           onClick={() => onClose(index)}
           className="absolute active:scale-95 active:opacity-80 z-10 left-2  md:left-[100%] top-8  w-10 md:h-12 md:border-l-0 h-10 md:top-[43%] cursor-pointer hover:bg-gray-100 focus:outline-none bg-white border-1  md:rounded-lg rounded-full border-gray-200"
