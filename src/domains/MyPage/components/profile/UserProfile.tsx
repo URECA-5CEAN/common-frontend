@@ -1,9 +1,6 @@
 import UserInfo from '@/domains/MyPage/components/profile/UserInfo';
 import UserStats from '@/domains/MyPage/components/profile/UserStats';
-import type {
-  UserInfoApi,
-  UserInfo as UserInfoType,
-} from '@/domains/MyPage/types/profile';
+import type { UserInfoApi } from '@/domains/MyPage/types/profile';
 import excellentIcon from '@/assets/icons/excellent_icon.png';
 import vipIcon from '@/assets/icons/vip_icon.png';
 import vvipIcon from '@/assets/icons/vvip_icon.png';
@@ -28,17 +25,17 @@ const ProfileImage: React.FC<ProfileImageProps> = ({ src, alt }) => (
 );
 
 interface UserProfileProps {
-  userInfo: UserInfoType;
   onBadgeClick: () => void;
   userInfoApi?: UserInfoApi;
   usageHistoryLength: number;
+  progressText: string;
 }
 
 const UserProfile: React.FC<UserProfileProps> = ({
-  userInfo,
   onBadgeClick,
   userInfoApi,
   usageHistoryLength,
+  progressText,
 }) => {
   const membershipIconMap: Record<string, string> = {
     우수: excellentIcon,
@@ -54,7 +51,10 @@ const UserProfile: React.FC<UserProfileProps> = ({
         <ProfileImage src={iconSrc} alt="우수아이콘" />
         <UserInfo onBadgeClick={onBadgeClick} userInfoApi={userInfoApi} />
       </div>
-      <UserStats userInfo={userInfo} usageHistoryLength={usageHistoryLength} />
+      <UserStats
+        usageHistoryLength={usageHistoryLength}
+        progressText={progressText}
+      />
     </div>
   );
 };

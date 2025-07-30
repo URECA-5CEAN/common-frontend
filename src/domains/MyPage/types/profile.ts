@@ -10,13 +10,6 @@ export interface UsageHistoryItem {
   benefitAmount: number;
 }
 
-export interface UserInfo {
-  collectionCount: number;
-  totalCollection: number;
-  missionCount: number;
-  totalMission: number;
-}
-
 export interface UserInfoApi {
   address: string;
   email: string;

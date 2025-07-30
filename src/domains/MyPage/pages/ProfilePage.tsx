@@ -1,6 +1,6 @@
 import BadgeModal from '@/domains/MyPage/components/profile/BadgeModal';
 import UserProfile from '@/domains/MyPage/components/profile/UserProfile';
-import type { UserInfo, UserInfoApi } from '@/domains/MyPage/types/profile';
+import type { UserInfoApi } from '@/domains/MyPage/types/profile';
 import { useEffect, useState } from 'react';
 import UsageHistory from '@/domains/MyPage/components/profile/UsageHistory';
 import {
@@ -12,6 +12,15 @@ import { Breadcrumb } from '@/components/Breadcrumb';
 import { Button } from '@/components/Button';
 import { useNavigate } from 'react-router-dom';
 import { useUsageHistoryStore } from '@/store/useUsageHistoryStore';
+import { getMyMission } from '@/domains/MyPage/api/mission';
+
+interface MissionType {
+  id: string;
+  missionName: string;
+  completed: boolean;
+  current: number;
+  goal: number;
+}
 
 const ProfilePage: React.FC = () => {
   const [open, setOpen] = useState<boolean>(false);
@@ -20,6 +29,7 @@ const ProfilePage: React.FC = () => {
   const [userInfoApi, setUserInfoApi] = useState<UserInfoApi>();
   const { usageHistory, fetchUsageHistory } = useUsageHistoryStore();
   const [isConfirmLoading, setIsConfirmLoading] = useState(false);
+  const [myMission, setMyMission] = useState<MissionType[]>([]);
 
   const navigate = useNavigate();
   const usageHistoryLength = usageHistory.length;
@@ -42,13 +52,24 @@ const ProfilePage: React.FC = () => {
     }
   }, [fetchUsageHistory, usageHistoryLength]);
 
-  // 실제로는 API에서 받아올 데이터
-  const userInfo: UserInfo = {
-    collectionCount: 3,
-    totalCollection: 105,
-    missionCount: 0,
-    totalMission: 3,
-  };
+  useEffect(() => {
+    const fetchMyMission = async () => {
+      try {
+        const response = await getMyMission();
+        setMyMission(response.data);
+      } catch (error) {
+        console.error('미션 로드 실패:', error);
+      }
+    };
+    fetchMyMission();
+  }, []);
+
+  const missionTotal = myMission.length;
+  const missionCompleted = myMission.filter(
+    (mission) => mission.completed,
+  ).length;
+
+  const progressText = `${missionCompleted}/${missionTotal}`;
 
   const handleBadgeClick = (): void => {
     setTempBadge(selectedBadge);
@@ -96,10 +117,10 @@ const ProfilePage: React.FC = () => {
           </div>
 
           <UserProfile
-            userInfo={userInfo}
             onBadgeClick={handleBadgeClick}
             userInfoApi={userInfoApi}
             usageHistoryLength={usageHistoryLength}
+            progressText={progressText}
           />
         </div>
 
