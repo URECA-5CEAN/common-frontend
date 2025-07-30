@@ -1,28 +1,5 @@
 import type { DirectionResponse } from '../api/road';
-
-interface ParsedRoute {
-  id: string;
-  from: string;
-  to: string;
-  waypointNames: string[];
-  distanceText: string;
-  durationText: string;
-  tollFare: number;
-  taxiFare: number;
-  path: {
-    lat: number;
-    lng: number;
-  }[];
-  guide: {
-    name: string;
-    description: string;
-    point: { lat: number; lng: number };
-    type: string;
-    duration: number;
-    distance: number;
-    rode_index: number;
-  }[];
-}
+import type { RouteItem } from './sidebar/RoadSection';
 
 function convertVertexesToCoords(
   vertexes: number[] = [],
@@ -36,7 +13,7 @@ function convertVertexesToCoords(
   return coords;
 }
 
-export function DirecitonRoot(response: DirectionResponse): ParsedRoute[] {
+export function DirecitonRoot(response: DirectionResponse): RouteItem[] {
   const { routes, trans_id } = response.data;
 
   return (routes ?? []).map((route, idx) => {
@@ -52,23 +29,32 @@ export function DirecitonRoot(response: DirectionResponse): ParsedRoute[] {
     const taxiFare = route.summary.fare?.taxi ?? 0;
 
     const path =
-      route.sections?.flatMap(
-        (section) =>
-          section.roads?.flatMap((road) =>
-            convertVertexesToCoords(road.vertexes),
-          ) ?? [],
+      route.sections?.flatMap((section) =>
+        section.roads?.flatMap((road) =>
+          convertVertexesToCoords(road.vertexes),
+        ),
       ) ?? [];
-
-    const guide = (route.guides ?? []).map((g) => ({
-      name: g.name ?? '',
-      description: g.guidance ?? '',
-      point: { lat: g.y, lng: g.x },
-      distance: g.distance,
-      duration: g.duration,
-      type: String(g.type),
-      rode_index: g.road_index,
-    }));
-
+    const road = route.sections?.flatMap((section) =>
+      section.roads?.map((road) => ({
+        name: road.name,
+        distance: road.distance,
+        duration: road.duration,
+        traffic_state: road.traffic_state,
+      })),
+    );
+    const guide =
+      route.sections?.flatMap((section) =>
+        section.guides?.map((g) => ({
+          name: g.name ?? '',
+          description: g.guidance ?? '',
+          point: { lat: g.y, lng: g.x },
+          distance: g.distance,
+          duration: g.duration,
+          type: String(g.type),
+          rode_index: g.road_index,
+        })),
+      ) ?? [];
+    const section = route.sections || [];
     return {
       id,
       from,
@@ -79,7 +65,9 @@ export function DirecitonRoot(response: DirectionResponse): ParsedRoute[] {
       tollFare,
       taxiFare,
       path,
+      road,
       guide,
+      section,
     };
   });
 }

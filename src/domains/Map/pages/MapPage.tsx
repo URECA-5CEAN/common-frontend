@@ -50,6 +50,12 @@ const Category: CategoryType[] = [
   '문화시설',
   '렌터카',
 ];
+export interface LocationInfo {
+  name: string; // 사용자 입력 혹은 장소명
+  lat: number;
+  lng: number;
+}
+
 export default function MapPage() {
   //도 + 3D 캔버스 감쌀 div
   const containerRef = useRef<HTMLDivElement>(null);
@@ -86,9 +92,9 @@ export default function MapPage() {
   const [isCategory, SetIsCategory] = useState<string>('');
 
   //출발지
-  const [startValue, setStartValue] = useState<string>('');
+  const [startValue, setStartValue] = useState<LocationInfo | null>(null);
   //선택지
-  const [endValue, setEndValue] = useState<string>('');
+  const [endValue, setEndValue] = useState<LocationInfo | null>(null);
 
   //즐겨찾기
   const [bookmarks, setBookmarks] = useState<StoreInfo[]>([]);
@@ -111,7 +117,7 @@ export default function MapPage() {
   const peekHeight = 30;
 
   const [idleCount, setIdleCount] = useState(0);
-
+  //AI 추천 제휴처
   const [recommendedStore, setRecommendedStore] = useState<StoreInfo>();
 
   // 제휴처 목록 조회 함수
@@ -324,14 +330,14 @@ export default function MapPage() {
   };
 
   // 출발 도착 change
-  const onStartChange = (v: string) => {
-    setStartValue(v);
+  const onStartChange = (store: LocationInfo) => {
+    setStartValue(store);
     openMenu('길찾기');
   };
 
   // 도착지 변경
-  const onEndChange = (v: string) => {
-    setEndValue(v);
+  const onEndChange = (store: LocationInfo) => {
+    setEndValue(store);
     openMenu('길찾기');
   };
 
@@ -344,8 +350,8 @@ export default function MapPage() {
   };
   // 출발지 도착지 리셋
   const onReset = () => {
-    setStartValue('');
-    setEndValue('');
+    setStartValue(null);
+    setEndValue(null);
   };
   //길찾기
   const onNavigate = () => {

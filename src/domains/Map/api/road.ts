@@ -1,7 +1,6 @@
 import axios from 'axios';
 import type { AxiosError, AxiosInstance } from 'axios';
 
-// axios 인스턴스 설정
 const apiClient: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL + '/map',
   headers: { 'Content-Type': 'application/json' },
@@ -50,7 +49,6 @@ export interface Route {
   result_msg: string;
   summary: RouteSummary;
   sections: RouteSection[];
-  guides: Guide[];
 }
 
 //길찾기 모든 값
@@ -94,9 +92,9 @@ export interface Road {
   name: string;
   distance: number;
   duration: number;
-  traffic_speed: number;
+  traffic_speed?: number;
   traffic_state: number; // 원할 , 서행, 정체
-  vertexes: number[];
+  vertexes?: number[];
 }
 
 //구간(도로)별 가이드
@@ -126,6 +124,7 @@ export async function findDirectionPath(
         },
       },
     );
+
     return response.data;
   } catch (error: unknown) {
     const axiosErr = error as AxiosError<{ message: string }>;

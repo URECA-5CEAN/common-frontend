@@ -8,6 +8,7 @@ import benefitImage from '@/assets/image/BenefitImage.svg';
 import SidebarMenu from './SidebarMenu';
 import type { StoreInfo } from '../../api/store';
 import { type BottomSheetHandle } from './BottomSheet';
+import type { LocationInfo } from '../../pages/MapPage';
 const SidebarPanel = lazy(() => import('./SidebarPanel'));
 const BottomSheet = lazy(() => import('./BottomSheet'));
 // 메뉴 타입
@@ -28,10 +29,10 @@ interface SideBarProps {
   onClose: (index: number) => void; //  패널 닫기 콜백
   changeKeyword?: ChangeEventHandler<HTMLInputElement>; //키워드 바꿔주는 콜백
   keyword?: string;
-  startValue: string; //출발지
-  endValue: string; // 도착지
-  onStartChange: (v: string) => void;
-  onEndChange: (v: string) => void;
+  startValue: LocationInfo; //출발지
+  endValue: LocationInfo; // 도착지
+  onStartChange: (v: LocationInfo) => void;
+  onEndChange: (v: LocationInfo) => void;
   onSwap: () => void;
   onReset: () => void;
   onNavigate: () => void; // 길찾기

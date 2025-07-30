@@ -10,10 +10,11 @@ import goldMedal from '@/assets/image/gold_medal.png';
 import diamondMedal from '@/assets/image/diamond_medal.png';
 import { Button } from '@/components/Button';
 import { useBenefitBrands } from '../../hooks/useBenefitBrands';
+import type { LocationInfo } from '../../pages/MapPage';
 interface DetailSectionProps {
   store: StoreInfo;
-  onStartChange: (v: string) => void;
-  onEndChange: (v: string) => void;
+  onStartChange: (v: LocationInfo) => void;
+  onEndChange: (v: LocationInfo) => void;
   bookmarkIds: Set<string>;
   goToStore: (store: StoreInfo) => void;
   toggleBookmark: (store: StoreInfo) => void;

@@ -1,34 +1,65 @@
 import { useState } from 'react';
 import {
   Star,
-  Trash2,
   RefreshCcw,
   ArrowUpDown,
   ChevronRight,
   ChevronDown,
   Route,
+  MoveRight,
 } from 'lucide-react';
 import type { StoreInfo } from '../../api/store';
-import OnOffBtn from '../OnOffBtn';
 import StarListItem from '../StarListItem';
 import { Button } from '@/components/Button';
-import { findDirectionPath, type DirectionRequestBody } from '../../api/road';
+import {
+  findDirectionPath,
+  type DirectionRequestBody,
+  type Road,
+  type RouteSection,
+} from '../../api/road';
 import { DirecitonRoot } from '../DirecitonRoot';
+import { MajorLoads } from '../MajorLoads';
+import type { LocationInfo } from '../../pages/MapPage';
+export interface TrafficInfo {
+  color: string;
+  label: string;
+}
 
-interface RouteItem {
+export interface RouteItem {
   id: string;
   from: string;
   to: string;
-  waypointNames?: string[];
+  waypointNames: string[];
+  distanceText: string;
+  durationText: string;
+  tollFare: number;
+  taxiFare: number;
+  path: {
+    lat: number;
+    lng: number;
+  }[];
+  guide: {
+    name: string;
+    description: string;
+    point: { lat: number; lng: number };
+    type: string;
+    duration: number;
+    distance: number;
+    rode_index: number;
+  }[];
+  traffic?: TrafficInfo;
+  road: Road;
+  section?: RouteSection[];
 }
+
 interface RouteInputProps {
   openDetail: (store: StoreInfo) => void;
   onStar: () => void;
   isShowStar: boolean;
-  startValue?: string;
-  endValue?: string;
-  onStartChange: (v: string) => void;
-  onEndChange: (v: string) => void;
+  startValue?: LocationInfo;
+  endValue?: LocationInfo;
+  onStartChange: (v: LocationInfo) => void;
+  onEndChange: (v: LocationInfo) => void;
   onSwap?: () => void;
   onReset?: () => void;
   onNavigate?: () => void;
@@ -49,29 +80,21 @@ export default function RoadSection({
   goToStore,
   openDetail,
 }: RouteInputProps) {
-  const [savedRoutes, setSavedRoutes] = useState<RouteItem[]>([
-    { id: '1', from: '할리스 OO점', to: '할리스 OO점' },
-    { id: '2', from: '할리스 OO점', to: '할리스 OO점' },
-    { id: '3', from: '할리스 OO점', to: '할리스 OO점' },
-  ]);
   const [showRecent, setShowRecent] = useState<boolean>(true);
-  const [recentRoutes] = useState<RouteItem[]>([
-    { id: '11', from: '할리스 OO점', to: '할리스 OO점' },
-    { id: '12', from: '할리스 OO점', to: '할리스 OO점' },
-    { id: '13', from: '할리스 OO점', to: '할리스 OO점' },
-  ]);
+
   const inputStyle = 'w-full px-4 py-2 text-sm focus:outline-none';
   const [routes, setRoutes] = useState<RouteItem[]>([]);
+  console.log(startValue, endValue);
   const handleNavigate = async () => {
     try {
       const body: DirectionRequestBody = {
-        origin: { x: 127.11024, y: 37.39434, angle: 270 },
+        origin: { x: 127.21024, y: 37.89434, angle: 270 },
         destination: { x: 127.11024, y: 37.39434, angle: 270 },
         waypoints: [{ name: '잠실역', x: 127.101, y: 37.402 }],
         priority: 'RECOMMEND',
         car_fuel: 'GASOLINE',
         car_hipass: false,
-        alternatives: false,
+        alternatives: true,
         road_details: false,
         summary: false,
       };
@@ -95,9 +118,9 @@ export default function RoadSection({
             {/* 출발지 */}
             <input
               type="text"
-              value={startValue}
-              onChange={(e) => onStartChange(e.target.value)}
-              placeholder="출발지를 입력하세요"
+              value={startValue?.name || ''}
+              readOnly
+              placeholder="출발지를 선택하세요"
               className={inputStyle}
             />
             {/* 구분선 */}
@@ -105,9 +128,9 @@ export default function RoadSection({
             {/* 도착지 */}
             <input
               type="text"
-              value={endValue}
-              onChange={(e) => onEndChange(e.target.value)}
-              placeholder="도착지를 입력하세요"
+              value={endValue?.name || ''}
+              readOnly
+              placeholder="도착지를 선택하세요"
               className={inputStyle}
             />
           </div>
@@ -193,7 +216,7 @@ export default function RoadSection({
       ) : (
         <>
           {/* 저장한 경로 */}
-          <div className="space-y-2 px-2">
+          {/* <div className="space-y-2 px-2">
             <p className="text-xl font-semibold text-gray-600">저장한 경로</p>
             <ul className="space-y-1">
               {savedRoutes.map((r) => (
@@ -213,9 +236,9 @@ export default function RoadSection({
                 </li>
               ))}
             </ul>
-          </div>
+          </div> */}
           {/* 최근 경로 토글 */}
-          <div className="space-y-2 px-2">
+          {/* <div className="space-y-2 px-2">
             <div className="flex items-center justify-between">
               <p className="text-xl font-semibold text-gray-600">최근 경로</p>
               <OnOffBtn setShowRecent={setShowRecent} showRecent={showRecent} />
@@ -235,9 +258,56 @@ export default function RoadSection({
                 ))}
               </ul>
             )}
-          </div>
+          </div> */}
         </>
       )}
+      <div className="flex flex-col px-2 ">
+        {routes.map((route, idx) => {
+          const allRoads = route.section?.flatMap((s) => s.roads) || [];
+          const majorRoad = MajorLoads(allRoads);
+          console.log(majorRoad);
+
+          return (
+            <div
+              key={route.id}
+              className="bg-primaryGreen-40 flex flex-col rounded-lg py-2 mb-2"
+            >
+              <p className="font-semibold text-sm mb-1">추천경로 {idx + 1}</p>
+              <div className="flex justify-between text-sm px-2">
+                <p>{route.durationText}</p>
+                <p>{route.distanceText}</p>
+              </div>
+              <div className="flex justify-between text-sm px-2 mt-1">
+                <p>택시비: {route.taxiFare.toLocaleString()}원</p>
+                <p>통행료: {route.tollFare.toLocaleString()}원</p>
+              </div>
+              <div className="px-2 mt-1 text-sm  text-gray-600 space-y-0.5">
+                {majorRoad.map((road, i) => (
+                  <div key={i} className="flex">
+                    <div className="flex space-x-2 ">
+                      {road.traffic && (
+                        <span
+                          className="text-xs px-2 py-0.5 rounded-full"
+                          style={{
+                            backgroundColor: road.traffic.color,
+                            color: 'white',
+                          }}
+                        >
+                          {road.traffic.label}
+                        </span>
+                      )}
+                      <span className="text-xs mt-0.5 ">{road.name}</span>
+                      <span className="text-xs mt-0.5">{road.distanceKm}</span>
+                      <MoveRight size={15} className="mt-0.5" />
+                    </div>
+                  </div>
+                ))}
+                <div className="mt-1">상세보기 &gt;</div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

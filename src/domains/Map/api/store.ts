@@ -154,6 +154,7 @@ export const fetchStores = async (
 
 //즐겨찾기 조회
 export async function fetchBookmark(category?: string): Promise<StoreInfo[]> {
+  if (!token) return [];
   try {
     const response: AxiosResponse<FetchStoresResponse> = await apiClient.get(
       '/bookmark',

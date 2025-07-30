@@ -11,6 +11,7 @@ import type { StoreInfo } from '../../api/store';
 import type { MenuType } from './MapSidebar';
 import { getUserInfo, getUserStat } from '@/domains/MyPage/api/profile';
 import type { UserInfoApi } from '@/domains/MyPage/types/profile';
+import type { LocationInfo } from '../../pages/MapPage';
 
 interface SidebarPanelProps {
   index: number; // 0 = 메뉴, 1 = 상세
@@ -22,10 +23,10 @@ interface SidebarPanelProps {
   changeKeyword?: ChangeEventHandler<HTMLInputElement>;
   //키워드
   keyword?: string;
-  startValue?: string;
-  endValue?: string;
-  onStartChange: (v: string) => void;
-  onEndChange: (v: string) => void;
+  startValue?: LocationInfo;
+  endValue?: LocationInfo;
+  onStartChange: (v: LocationInfo) => void;
+  onEndChange: (v: LocationInfo) => void;
   onSwap?: () => void;
   onReset?: () => void;
   onNavigate?: () => void;

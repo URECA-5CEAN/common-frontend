@@ -16,6 +16,11 @@ export interface AiRecommendResult {
 export async function fetchAiRecommendedStore(
   params: FetchStoresParams,
 ): Promise<AiRecommendResult> {
+  if (!token) {
+    throw new Error(
+      '토큰이 존재하지 않아 AI 제휴처 추천 요청을 보낼 수 없습니다.',
+    );
+  }
   try {
     const { data } = await apiClient.post<{ data: AiRecommendResult }>(
       '/recommend/store',

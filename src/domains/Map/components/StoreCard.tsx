@@ -2,12 +2,13 @@ import { Info, Star } from 'lucide-react';
 import StartEndBtn from './StartEndBtn';
 import type { StoreInfo } from '../api/store';
 import clsx from 'clsx';
+import type { LocationInfo } from '../pages/MapPage';
 
 interface StoreCardProps {
   store: StoreInfo;
   openDetail: (store: StoreInfo) => void;
-  onStartChange: (v: string) => void;
-  onEndChange: (v: string) => void;
+  onStartChange: (v: LocationInfo) => void;
+  onEndChange: (v: LocationInfo) => void;
   toggleBookmark: (store: StoreInfo) => void;
   isBookmark: boolean;
 }
