@@ -1,4 +1,3 @@
-import type { UserInfo } from '@/domains/MyPage/types/profile';
 import { Link } from 'react-router-dom';
 
 interface StatCardProps {
@@ -20,13 +19,13 @@ const StatCard: React.FC<StatCardProps> = ({ to, title, value }) => (
 );
 
 interface UserStatsProps {
-  userInfo: UserInfo;
   usageHistoryLength: number;
+  progressText: string;
 }
 
 const UserStats: React.FC<UserStatsProps> = ({
-  userInfo,
   usageHistoryLength,
+  progressText,
 }) => (
   <div className="flex justify-center items-center gap-5 w-full lg:w-fit">
     <StatCard
@@ -34,11 +33,7 @@ const UserStats: React.FC<UserStatsProps> = ({
       title="도감"
       value={`${usageHistoryLength}/420`}
     />
-    <StatCard
-      to="/mypage/missions"
-      title="미션"
-      value={`${userInfo.missionCount}/${userInfo.totalMission}`}
-    />
+    <StatCard to="/mypage/missions" title="미션" value={progressText} />
   </div>
 );
 
