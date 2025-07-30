@@ -584,7 +584,9 @@ const StatisticsPage = () => {
                   role="button"
                   onClick={() => setOpenDropdown((prev) => !prev)}
                 >
-                  최근 {getRangeLabel(selectedRange)}
+                  {getRangeLabel(selectedRange) === '전체'
+                    ? '전체 기간'
+                    : `최근 ${getRangeLabel(selectedRange)}`}
                 </div>
                 {openDropdown && (
                   <div
