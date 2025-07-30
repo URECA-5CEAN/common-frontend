@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import UserTotalRanking from '@/domains/Explore/components/ranking/UserTotalRanking';
 import StoreRanking from '@/domains/Explore/components/ranking/StoreRanking';
+import { Breadcrumb } from '@/components/Breadcrumb';
 
 type Tab = {
   title: string;
@@ -17,8 +18,9 @@ const RankingPage = () => {
 
   return (
     <div className="w-full max-w-[1050px] m-6">
+      <Breadcrumb title="혜택탐험" subtitle="혜택 순위" />
       {/* 탭 버튼 */}
-      <div>
+      <div className="mt-3">
         {tabs.map((item, i) => (
           <button
             key={i}

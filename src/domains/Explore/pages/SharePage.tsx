@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect, useState, useMemo } from 'react';
 import { getBrands, getShareLocations, getSharePostList } from '../api/share';
 import CustomSelect from '../components/CustomSelect';
+import { Breadcrumb } from '@/components/Breadcrumb';
 
 const SharePage = () => {
   const [postList, setPostList] = useState<Post[]>([]);
@@ -137,7 +138,9 @@ const SharePage = () => {
 
   return (
     <div className="w-full max-w-[1050px] m-6">
-      <h2 className="text-[32px] font-bold mb-4">혜택 나누기</h2>
+      <Breadcrumb title="혜택탐험" subtitle="혜택 나누기" />
+
+      <h2 className="text-[32px] font-bold mt-3 mb-4">혜택 나누기</h2>
 
       <div className="flex justify-between gap-4">
         <div className="flex gap-2 flex-1">
