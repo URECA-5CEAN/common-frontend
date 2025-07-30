@@ -176,6 +176,7 @@ export default function MapSidebar({
                 toggleBookmark={toggleBookmark}
                 bookmarkIds={bookmarkIds}
                 goToStore={goToStore}
+                openRoadDetail={openRoadDetail}
               />
             </BottomSheet>
           )}

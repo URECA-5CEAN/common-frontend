@@ -94,9 +94,17 @@ export default function MapPage() {
   const [isCategory, SetIsCategory] = useState<string>('');
 
   //출발지
-  const [startValue, setStartValue] = useState<LocationInfo>();
+  const [startValue, setStartValue] = useState<LocationInfo>({
+    name: '',
+    lat: 0,
+    lng: 0,
+  });
   //선택지
-  const [endValue, setEndValue] = useState<LocationInfo>();
+  const [endValue, setEndValue] = useState<LocationInfo>({
+    name: '',
+    lat: 0,
+    lng: 0,
+  });
 
   //즐겨찾기
   const [bookmarks, setBookmarks] = useState<StoreInfo[]>([]);
@@ -362,8 +370,8 @@ export default function MapPage() {
   };
   // 출발지 도착지 리셋
   const onReset = () => {
-    setStartValue(undefined);
-    setEndValue(undefined);
+    setStartValue({ name: '', lat: 0, lng: 0 });
+    setEndValue({ name: '', lat: 0, lng: 0 });
   };
 
   //마운트 시 즐겨찾기 조회

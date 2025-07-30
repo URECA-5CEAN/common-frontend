@@ -163,7 +163,11 @@ export default function SidebarPanel({
           />
         )}
         {index === 1 && panel.type === 'road' && panel.item && (
-          <RoadDetailSection route={panel.item} />
+          <RoadDetailSection
+            route={panel.item}
+            start={startValue}
+            end={endValue}
+          />
         )}
       </div>
 
