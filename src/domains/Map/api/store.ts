@@ -222,10 +222,8 @@ export async function deleteBookmark(storeId: string): Promise<string> {
 }
 
 export async function uploadReceiptImage(file: File): Promise<BenefitData> {
-  console.log(file);
   const formData = new FormData();
   formData.append('imageFile', file);
-  console.log(formData);
   try {
     const response: AxiosResponse<{ data: BenefitData }> = await apiClient.post(
       '/ocr',

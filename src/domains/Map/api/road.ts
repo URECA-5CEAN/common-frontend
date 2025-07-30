@@ -39,6 +39,7 @@ export interface DirectionResponse {
   statusCode: number;
   message: string;
   data: {
+    id: string;
     trans_id: string;
     routes: Route[];
   };
@@ -126,7 +127,7 @@ export async function findDirectionPath(
         },
       },
     );
-
+    console.log(response.data);
     return response.data;
   } catch (error: unknown) {
     const axiosErr = error as AxiosError<{ message: string }>;
@@ -135,5 +136,65 @@ export async function findDirectionPath(
       axiosErr.message ??
       '경로 탐색 요청 중 오류가 발생했습니다.';
     throw new Error(`경로 요청 실패: ${message}`);
+  }
+}
+
+export interface DirectionBookmarkResponse {
+  statusCode: number;
+  message: string;
+  data: DirectionBookmark[];
+}
+
+export interface DirectionBookmark {
+  id: string;
+  trans_id: string;
+  routes: Route[];
+  userId: string;
+  bookmark: boolean;
+}
+
+export async function fetchDirectionBookmarks(): Promise<DirectionBookmark[]> {
+  try {
+    const response = await apiClient.get<DirectionBookmarkResponse>(
+      '/direction/bookmark',
+      {
+        headers: {
+          Authorization: token,
+        },
+      },
+    );
+    return response.data.data;
+  } catch (error: unknown) {
+    const axiosErr = error as AxiosError<{ message: string }>;
+    const message =
+      axiosErr.response?.data?.message ??
+      axiosErr.message ??
+      '즐겨찾기 목록을 불러오는 중 오류가 발생했습니다.';
+    throw new Error(`즐겨찾기 조회 실패: ${message}`);
+  }
+}
+
+export async function updateBookmarkStatus(
+  id: string,
+  bookmark: boolean,
+): Promise<void> {
+  try {
+    await apiClient.put(
+      `/direction`,
+      {},
+      {
+        headers: {
+          Authorization: token,
+        },
+        params: { id, bookmark },
+      },
+    );
+  } catch (error) {
+    const axiosErr = error as AxiosError<{ message: string }>;
+    const message =
+      axiosErr.response?.data?.message ??
+      axiosErr.message ??
+      '즐겨찾기 수정 중 오류가 발생했습니다.';
+    throw new Error(`즐겨찾기 수정 실패: ${message}`);
   }
 }

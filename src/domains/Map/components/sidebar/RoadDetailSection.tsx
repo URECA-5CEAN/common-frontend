@@ -19,7 +19,12 @@ export default function RoadDetailSection({ route }: RoadProps) {
 
   return (
     <div className="space-y-2 text-sm text-gray-700 h-screen mt-10">
-      <RouteCard key={route.id} route={route} idx={0} isDetail={true} />
+      <RouteCard
+        key={route.directionid}
+        route={route}
+        idx={0}
+        isDetail={true}
+      />
       <div className="mt-10">
         {/* 필요시 주요 도로 정보 등도 렌더링 가능 */}
         {route.guide.map((g, idx) => {

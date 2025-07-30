@@ -2,6 +2,8 @@ import { MoveRight } from 'lucide-react';
 import { MajorLoads } from './MajorLoads';
 import type { RouteItem } from './sidebar/RoadSection';
 import clsx from 'clsx';
+import { Button } from '@/components/Button';
+import { updateBookmarkStatus } from '../api/road';
 
 interface Props {
   route: RouteItem;
@@ -18,6 +20,17 @@ export default function RouteCard({
 }: Props) {
   const allRoads = route.section?.flatMap((s) => s.roads) || [];
   const majorRoad = MajorLoads(allRoads);
+  console.log(route);
+
+  const routeBookmark = async () => {
+    try {
+      await updateBookmarkStatus(route.directionid, true);
+      alert('경로가 즐겨찾기에 저장되었습니다.');
+    } catch (err) {
+      console.error(err);
+      alert('저장 중 오류가 발생했습니다.');
+    }
+  };
 
   return (
     <div
@@ -57,8 +70,16 @@ export default function RouteCard({
           </div>
         ))}
         {!isDetail && (
-          <div className="mt-1 cursor-pointer" onClick={() => onClick?.(route)}>
-            상세보기 &gt;
+          <div className="flex justify-between items-center mt-1 cursor-pointer">
+            <p onClick={() => onClick?.(route)}>상세보기 &gt;</p>
+            <Button
+              size="sm"
+              variant="primary"
+              className="py-1! px-2! "
+              onClick={routeBookmark}
+            >
+              경로 저장
+            </Button>
           </div>
         )}
       </div>

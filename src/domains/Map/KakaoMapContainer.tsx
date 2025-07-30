@@ -86,7 +86,7 @@ export default function KakaoMapContainer({
               <Polyline
                 key={idx}
                 path={segment.path}
-                strokeWeight={8}
+                strokeWeight={10}
                 strokeColor={traffic.color}
                 strokeOpacity={0.8}
                 strokeStyle="solid"

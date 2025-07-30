@@ -32,7 +32,6 @@ export default function BenefitModal({
     }
     try {
       const result = await uploadReceiptImage(file);
-      console.log(result);
       if (result) setIsResult(true);
       if (!result) return;
       const response = await saveBenefitData(
@@ -47,7 +46,6 @@ export default function BenefitModal({
         'test@test.com',
       );
       setAmount(0);
-      console.log(response);
     } catch (err) {
       console.error(err);
     }

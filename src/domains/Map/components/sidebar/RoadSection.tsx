@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Star,
   RefreshCcw,
@@ -6,14 +6,16 @@ import {
   ChevronRight,
   ChevronDown,
   Route,
+  Trash2,
 } from 'lucide-react';
 import type { StoreInfo } from '../../api/store';
 import StarListItem from '../StarListItem';
 import { Button } from '@/components/Button';
 import {
+  fetchDirectionBookmarks,
   findDirectionPath,
+  type DirectionBookmark,
   type DirectionRequestBody,
-  type Road,
   type RouteSection,
 } from '../../api/road';
 import { DirecitonRoot } from '../DirecitonRoot';
@@ -26,7 +28,7 @@ export interface TrafficInfo {
 }
 
 export interface RouteItem {
-  id: string;
+  directionid: string;
   from: string;
   to: string;
   waypointNames?: string[];
@@ -80,12 +82,12 @@ export default function RoadSection({
   openDetail,
   openRoadDetail,
 }: RouteInputProps) {
-  //const [showRecent, setShowRecent] = useState<boolean>(true);
+  const [showBookmark, setShowBookmark] = useState<boolean>(true);
   const [ShowStar, SetShowStar] = useState<boolean>(false);
   const [showRoute, setShowRoute] = useState<boolean>(false);
   const inputStyle = 'w-full px-4 py-2 text-sm focus:outline-none';
   const [routes, setRoutes] = useState<RouteItem[]>([]);
-
+  const [savedRoutes, setSavedRoutes] = useState<RouteItem[]>([]);
   // 즐겨찾기 토글
   const onStar = () => {
     SetShowStar((prev) => !prev);
@@ -113,6 +115,19 @@ export default function RoadSection({
       alert(err instanceof Error ? err.message : '오류 발생');
     }
   };
+
+  useEffect(() => {
+    const fetchBookmark = async () => {
+      try {
+        const data = await fetchDirectionBookmarks();
+        console.log(data);
+        setSavedRoutes(data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchBookmark();
+  }, []);
   return (
     <div className="max-w-md mx-auto  space-y-6 bg-white min-h-dvh">
       {/* 입력창 + 액션 버튼 */}
@@ -222,27 +237,29 @@ export default function RoadSection({
       ) : (
         <>
           {/* 저장한 경로 */}
-          {/* <div className="space-y-2 px-2">
+          <div className="space-y-2 px-2">
             <p className="text-xl font-semibold text-gray-600">저장한 경로</p>
             <ul className="space-y-1">
-              {savedRoutes.map((r) => (
-                <li
-                  key={r.id}
-                  className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-full"
-                >
-                  <span className="text-sm">{`${r.from} → ${r.to}`}</span>
-                  <button
-                    onClick={() =>
-                      setSavedRoutes((s) => s.filter((x) => x.id !== r.id))
-                    }
-                    className="p-1 text-gray-400 hover:text-red-500"
+              {savedRoutes &&
+                savedRoutes.map((r) => (
+                  <li
+                    key={r.id}
+                    className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-full"
+                    onClick={() => openRoadDetail(r.routes[0])}
                   >
-                    <Trash2 size={16} className="cursor-pointer" />
-                  </button>
-                </li>
-              ))}
+                    <span className="text-sm">{`${r.routes[0].summary.origin.name} → ${r.routes[0].summary.destination.name}`}</span>
+                    <button
+                      onClick={() =>
+                        setSavedRoutes((s) => s.filter((x) => x.id !== r.id))
+                      }
+                      className="p-1 text-gray-400 hover:text-red-500"
+                    >
+                      <Trash2 size={16} className="cursor-pointer" />
+                    </button>
+                  </li>
+                ))}
             </ul>
-          </div> */}
+          </div>
           {/* 최근 경로 토글 */}
           {/* <div className="space-y-2 px-2">
             <div className="flex items-center justify-between">
@@ -271,7 +288,7 @@ export default function RoadSection({
         <div className="flex flex-col px-2 ">
           {routes.map((route, idx) => (
             <RouteCard
-              key={route.id}
+              key={route.directionid}
               route={route}
               idx={idx}
               onClick={() => openRoadDetail(route)}

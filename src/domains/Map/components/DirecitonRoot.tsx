@@ -14,10 +14,10 @@ export function convertVertexesToCoords(
 }
 
 export function DirecitonRoot(response: DirectionResponse): RouteItem[] {
-  const { routes, trans_id } = response.data;
+  const { routes, id } = response.data;
 
   return (routes ?? []).map((route, idx) => {
-    const id = `${trans_id}-${idx}`;
+    const directionid = id;
     const from = route.summary.origin.name;
     const to = route.summary.destination.name;
     const waypointNames = route.summary.waypoints?.map((w) => w.name) || [];
@@ -56,7 +56,7 @@ export function DirecitonRoot(response: DirectionResponse): RouteItem[] {
       ) ?? [];
     const section = route.sections || [];
     return {
-      id,
+      directionid,
       from,
       to,
       waypointNames,
