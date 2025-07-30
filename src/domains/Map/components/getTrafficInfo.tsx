@@ -12,6 +12,6 @@ export function getTrafficInfo(state: number): {
     case 1:
       return { color: '#300101', label: '매우정체' };
     default:
-      return { color: '#F9F9F9', label: '정보없음' };
+      return { color: '#474646', label: '정보없음' };
   }
 }

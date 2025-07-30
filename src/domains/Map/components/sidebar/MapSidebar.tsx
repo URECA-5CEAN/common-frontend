@@ -29,8 +29,8 @@ interface SideBarProps {
   onClose: (index: number) => void; //  패널 닫기 콜백
   changeKeyword?: ChangeEventHandler<HTMLInputElement>; //키워드 바꿔주는 콜백
   keyword?: string;
-  startValue: LocationInfo; //출발지
-  endValue: LocationInfo; // 도착지
+  startValue?: LocationInfo; //출발지
+  endValue?: LocationInfo; // 도착지
   onStartChange: (v: LocationInfo) => void;
   onEndChange: (v: LocationInfo) => void;
   onSwap: () => void;

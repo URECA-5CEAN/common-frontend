@@ -23,8 +23,8 @@ interface SidebarPanelProps {
   changeKeyword?: ChangeEventHandler<HTMLInputElement>;
   //키워드
   keyword?: string;
-  startValue?: LocationInfo;
-  endValue?: LocationInfo;
+  startValue: LocationInfo;
+  endValue: LocationInfo;
   onStartChange: (v: LocationInfo) => void;
   onEndChange: (v: LocationInfo) => void;
   onSwap?: () => void;
@@ -138,8 +138,6 @@ export default function SidebarPanel({
           <RoadSection
             startValue={startValue}
             endValue={endValue}
-            onStartChange={onStartChange}
-            onEndChange={onEndChange}
             onSwap={onSwap}
             onReset={onReset}
             onNavigate={onNavigate}

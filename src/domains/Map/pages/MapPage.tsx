@@ -92,9 +92,9 @@ export default function MapPage() {
   const [isCategory, SetIsCategory] = useState<string>('');
 
   //출발지
-  const [startValue, setStartValue] = useState<LocationInfo | null>(null);
+  const [startValue, setStartValue] = useState<LocationInfo>();
   //선택지
-  const [endValue, setEndValue] = useState<LocationInfo | null>(null);
+  const [endValue, setEndValue] = useState<LocationInfo>();
 
   //즐겨찾기
   const [bookmarks, setBookmarks] = useState<StoreInfo[]>([]);

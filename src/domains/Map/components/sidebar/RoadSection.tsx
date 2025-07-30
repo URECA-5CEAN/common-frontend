@@ -29,7 +29,7 @@ export interface RouteItem {
   id: string;
   from: string;
   to: string;
-  waypointNames: string[];
+  waypointNames?: string[];
   distanceText: string;
   durationText: string;
   tollFare: number;
@@ -56,10 +56,8 @@ interface RouteInputProps {
   openDetail: (store: StoreInfo) => void;
   onStar: () => void;
   isShowStar: boolean;
-  startValue?: LocationInfo;
-  endValue?: LocationInfo;
-  onStartChange: (v: LocationInfo) => void;
-  onEndChange: (v: LocationInfo) => void;
+  startValue: LocationInfo;
+  endValue: LocationInfo;
   onSwap?: () => void;
   onReset?: () => void;
   onNavigate?: () => void;
@@ -70,8 +68,6 @@ interface RouteInputProps {
 export default function RoadSection({
   startValue,
   endValue,
-  onStartChange,
-  onEndChange,
   onSwap,
   onReset,
   onStar,
@@ -84,22 +80,22 @@ export default function RoadSection({
 
   const inputStyle = 'w-full px-4 py-2 text-sm focus:outline-none';
   const [routes, setRoutes] = useState<RouteItem[]>([]);
-  console.log(startValue, endValue);
   const handleNavigate = async () => {
     try {
       const body: DirectionRequestBody = {
-        origin: { x: 127.21024, y: 37.89434, angle: 270 },
-        destination: { x: 127.11024, y: 37.39434, angle: 270 },
-        waypoints: [{ name: '잠실역', x: 127.101, y: 37.402 }],
+        origin: { x: startValue.lng, y: startValue.lat, angle: 270 },
+        destination: { x: endValue.lng, y: endValue.lat, angle: 270 },
+        waypoints: [],
         priority: 'RECOMMEND',
         car_fuel: 'GASOLINE',
         car_hipass: false,
-        alternatives: true,
+        alternatives: false,
         road_details: false,
         summary: false,
       };
 
       const res = await findDirectionPath(body);
+      console.log(res);
       const routeItems = DirecitonRoot(res);
       setRoutes(routeItems);
     } catch (err) {
@@ -265,29 +261,29 @@ export default function RoadSection({
         {routes.map((route, idx) => {
           const allRoads = route.section?.flatMap((s) => s.roads) || [];
           const majorRoad = MajorLoads(allRoads);
-          console.log(majorRoad);
-
           return (
             <div
               key={route.id}
               className="bg-primaryGreen-40 flex flex-col rounded-lg py-2 mb-2"
             >
-              <p className="font-semibold text-sm mb-1">추천경로 {idx + 1}</p>
-              <div className="flex justify-between text-sm px-2">
-                <p>{route.durationText}</p>
-                <p>{route.distanceText}</p>
+              <p className="font-semibold text-xl mb-1 px-2">
+                추천경로 {idx + 1}
+              </p>
+              <div className="flex gap-4 text-sm px-2 items-center">
+                <p className="text-lg font-semibold">{route.durationText}</p>
+                <p className="text-base">{route.distanceText}</p>
               </div>
-              <div className="flex justify-between text-sm px-2 mt-1">
+              <div className="flex gap-4 text-xs px-2 mt-1">
                 <p>택시비: {route.taxiFare.toLocaleString()}원</p>
                 <p>통행료: {route.tollFare.toLocaleString()}원</p>
               </div>
-              <div className="px-2 mt-1 text-sm  text-gray-600 space-y-0.5">
+              <div className="px-2 mt-2 text-sm text-gray-600 space-y-0.5">
                 {majorRoad.map((road, i) => (
-                  <div key={i} className="flex">
-                    <div className="flex space-x-2 ">
+                  <div key={i} className="flex flex-wrap gap-1">
+                    <div className="flex items-center space-x-1 space-y-1 w-48">
                       {road.traffic && (
                         <span
-                          className="text-xs px-2 py-0.5 rounded-full"
+                          className="text-[10px] px-2 py-0.5 rounded-full"
                           style={{
                             backgroundColor: road.traffic.color,
                             color: 'white',
@@ -298,7 +294,7 @@ export default function RoadSection({
                       )}
                       <span className="text-xs mt-0.5 ">{road.name}</span>
                       <span className="text-xs mt-0.5">{road.distanceKm}</span>
-                      <MoveRight size={15} className="mt-0.5" />
+                      <MoveRight size={15} className="mb-0.5" />
                     </div>
                   </div>
                 ))}
