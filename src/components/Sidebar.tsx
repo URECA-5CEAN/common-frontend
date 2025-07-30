@@ -1,7 +1,6 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import rankingIcon from '@/assets/icons/ranking_icon.png';
 import shareIcon from '@/assets/icons/share_icon.png';
-import membershipIcon from '@/assets/icons/membership_icon.png';
 import profileIcon from '@/assets/icons/profile_icon.png';
 import collectionIcon from '@/assets/icons/collection_icon.png';
 import missionsIcon from '@/assets/icons/missions_icon.png';
@@ -30,12 +29,6 @@ const EXPLORE_MENU_ITEMS: MenuItem[] = [
     icon: shareIcon,
     label: '혜택 나누기',
     alt: '혜택나누기 아이콘',
-  },
-  {
-    to: '/explore/membership',
-    icon: membershipIcon,
-    label: '멤버십 혜택',
-    alt: '멤버십 아이콘',
   },
 ];
 

@@ -30,7 +30,6 @@ const MENU_CONFIG = {
         subItems: [
           { to: '/explore/rankings', label: '혜택 순위' },
           { to: '/explore/share', label: '혜택 나누기' },
-          { to: '/explore/membership', label: '멤버십 혜택' },
         ],
       },
     ],

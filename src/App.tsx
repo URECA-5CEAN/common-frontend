@@ -15,7 +15,6 @@ import RankingPage from './domains/Explore/pages/RankingPage';
 import SharePage from './domains/Explore/pages/SharePage';
 import ShareWritePage from './domains/Explore/pages/ShareWritePage';
 import ShareDetailPage from './domains/Explore/pages/ShareDetailPage';
-import MembershipPage from './domains/Explore/pages/MembershipPage';
 import ProfilePage from './domains/MyPage/pages/ProfilePage';
 import CollectionPage from './domains/MyPage/pages/CollectionPage';
 import MissionPage from './domains/MyPage/pages/MissionPage';
@@ -115,7 +114,6 @@ function App() {
                 path="/explore/share/:postId"
                 element={<ShareDetailPage />}
               />
-              <Route path="/explore/membership" element={<MembershipPage />} />
             </Route>
 
             {/* 로그인 필요 */}
