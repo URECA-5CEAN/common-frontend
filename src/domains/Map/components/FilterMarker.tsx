@@ -28,6 +28,8 @@ interface Props {
   toggleBookmark: (store: StoreInfo) => void;
   bookmarkIds: Set<string>;
   center: LatLng;
+  selectedCardId: string;
+  setSelectedCardId: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export default function FilterMarker({
@@ -42,12 +44,14 @@ export default function FilterMarker({
   toggleBookmark,
   bookmarkIds,
   center,
+  selectedCardId,
+  setSelectedCardId,
 }: Props) {
   // hover 해제 지연용 타이머 ID 저장
   const hoverOutRef = useRef<number | null>(null);
   //2d마커
   const [Markers, SetMarkers] = useState<MarkerProps[]>([]);
-  const [clickedMarkerId, setClickedMarkerId] = useState<string | null>(null);
+
   // 오버레이 위치와 스토어 정보 저장
   const [overlay, setOverlay] = useState<{
     x: number;
@@ -146,7 +150,7 @@ export default function FilterMarker({
     (id: string) => {
       const store = storeMap.get(id);
       if (store) {
-        setClickedMarkerId(id);
+        setSelectedCardId(id);
         openDetail(store);
       }
     },
@@ -177,13 +181,13 @@ export default function FilterMarker({
                 position: 'relative',
                 zIndex: shouldCluster ? 2 : 3,
                 boxShadow:
-                  m.id === clickedMarkerId
+                  m.id === selectedCardId
                     ? '0 10px 20px rgba(18, 158, 223, 0.35), 0 6px 6px rgba(0, 0, 0, 0.12)'
                     : '0 2px 4px rgba(0, 0, 0, 0.15)',
                 animation:
-                  m.id === clickedMarkerId ? 'floatY   0.8s ease' : undefined,
+                  m.id === selectedCardId ? 'floatY   0.8s ease' : undefined,
                 transform:
-                  m.id === clickedMarkerId ? 'scale(1.3)' : 'scale(1.0)',
+                  m.id === selectedCardId ? 'scale(1.3)' : 'scale(1.0)',
 
                 transition: 'all 0.8s ease',
               }}

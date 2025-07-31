@@ -56,6 +56,7 @@ interface SideBarProps {
   setStartValue: Dispatch<SetStateAction<LocationInfo>>;
   setEndValue: Dispatch<SetStateAction<LocationInfo>>;
   resetKeyword: () => void;
+  selectedCardId: string;
 }
 
 export default function MapSidebar({
@@ -85,6 +86,7 @@ export default function MapSidebar({
   setStartValue,
   setEndValue,
   resetKeyword,
+  selectedCardId,
 }: SideBarProps) {
   if (!panel) return;
 
@@ -134,6 +136,7 @@ export default function MapSidebar({
             setStartValue={setStartValue}
             setEndValue={setEndValue}
             resetKeyword={resetKeyword}
+            selectedCardId={selectedCardId}
           />
 
           {/* 상세 패널 (panel.type이 'detail'일 때만) */}
@@ -163,6 +166,7 @@ export default function MapSidebar({
                   setStartValue={setStartValue}
                   setEndValue={setEndValue}
                   resetKeyword={resetKeyword}
+                  selectedCardId={selectedCardId}
                 />
               </Suspense>
             )}
@@ -203,6 +207,7 @@ export default function MapSidebar({
                 setStartValue={setStartValue}
                 setEndValue={setEndValue}
                 resetKeyword={resetKeyword}
+                selectedCardId={selectedCardId}
               />
             </BottomSheet>
           )}
@@ -239,6 +244,7 @@ export default function MapSidebar({
                   setStartValue={setStartValue}
                   setEndValue={setEndValue}
                   resetKeyword={resetKeyword}
+                  selectedCardId={selectedCardId}
                 />
               </BottomSheet>
             </Suspense>

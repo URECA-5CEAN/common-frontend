@@ -15,6 +15,7 @@ interface MapSectionProps {
   toggleBookmark: (store: StoreInfo) => void;
   bookmarkIds: Set<string>;
   resetKeyword: () => void;
+  selectedCardId: string;
 }
 
 export default function MapSection({
@@ -27,6 +28,7 @@ export default function MapSection({
   toggleBookmark,
   bookmarkIds,
   resetKeyword,
+  selectedCardId,
 }: MapSectionProps) {
   return (
     <div className="px-2 py-3 space-y-3 h-screen ">
@@ -52,6 +54,7 @@ export default function MapSection({
           onEndChange={onEndChange}
           toggleBookmark={toggleBookmark}
           isBookmark={bookmarkIds.has(store.id)}
+          isSelected={selectedCardId === store.id}
         />
       ))}
     </div>

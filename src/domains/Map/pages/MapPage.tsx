@@ -164,6 +164,8 @@ export default function MapPage() {
   const [recommendedStore, setRecommendedStore] = useState<StoreInfo>();
   // 선택한 길찾기
   const [selectedRoute, setSelectedRoute] = useState<RouteItem | null>(null);
+  // 선택한 카드
+  const [selectedCardId, setSelectedCardId] = useState<string>('');
 
   // 제휴처 목록 조회 함수
   const searchHere = useCallback(async () => {
@@ -356,6 +358,7 @@ export default function MapPage() {
     (store: StoreInfo) => {
       setPanel({ type: 'detail', menu: panel.menu, item: store });
       setPanelIndex(1);
+      setSelectedCardId(store.id);
     },
     [panel.menu],
   );
@@ -390,6 +393,10 @@ export default function MapPage() {
   const closePanel = useCallback(() => {
     setPanel({ type: 'menu', menu: panel.menu });
     setPanelIndex(0);
+    setSelectedRoute(null);
+    setSelectedCardId('');
+    setStartValue({ name: '', lat: 0, lng: 0 });
+    setEndValue({ name: '', lat: 0, lng: 0 });
   }, [panel.menu]);
 
   //키워드 변경 시 카테고리 초기화
@@ -521,6 +528,7 @@ export default function MapPage() {
           setStartValue={setStartValue}
           setEndValue={setEndValue}
           resetKeyword={resetKeyword}
+          selectedCardId={selectedCardId}
         />
         {/* 내 위치 버튼 */}
         {map && myLocation && (
@@ -575,6 +583,8 @@ export default function MapPage() {
               onEndChange={onEndChange}
               toggleBookmark={toggleBookmark}
               bookmarkIds={bookmarkIds}
+              selectedCardId={selectedCardId}
+              setSelectedCardId={setSelectedCardId}
             />
 
             <div className="absolute  w-full md:ml-10 ml-6 top-28 md:top-24 z-2  overflow-x-auto">

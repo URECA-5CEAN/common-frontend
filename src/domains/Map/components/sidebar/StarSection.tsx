@@ -9,6 +9,7 @@ interface MapSectionProps {
   onEndChange: (v: LocationInfo) => void;
   toggleBookmark: (store: StoreInfo) => void;
   bookmarkIds: Set<string>;
+  selectedCardId: string;
 }
 
 export default function StarSection({
@@ -18,6 +19,7 @@ export default function StarSection({
   onEndChange,
   toggleBookmark,
   bookmarkIds,
+  selectedCardId,
 }: MapSectionProps) {
   return (
     <div className="px-2 py-3 space-y-3 h-screen ">
@@ -31,6 +33,7 @@ export default function StarSection({
           onEndChange={onEndChange}
           toggleBookmark={toggleBookmark}
           isBookmark={bookmarkIds.has(bookmark.id)}
+          isSelected={selectedCardId === bookmark.id}
         />
       ))}
     </div>

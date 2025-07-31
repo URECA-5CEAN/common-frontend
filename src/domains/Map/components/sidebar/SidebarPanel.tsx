@@ -45,6 +45,7 @@ interface SidebarPanelProps {
   setStartValue: Dispatch<SetStateAction<LocationInfo>>;
   setEndValue: Dispatch<SetStateAction<LocationInfo>>;
   resetKeyword: () => void;
+  selectedCardId: string;
 }
 
 export default function SidebarPanel({
@@ -70,6 +71,7 @@ export default function SidebarPanel({
   setStartValue,
   setEndValue,
   resetKeyword,
+  selectedCardId,
 }: SidebarPanelProps) {
   const [userInfo, setUserInfo] = useState<UserInfoApi>();
   const token = localStorage.getItem('authToken');
@@ -132,6 +134,7 @@ export default function SidebarPanel({
             toggleBookmark={toggleBookmark}
             bookmarkIds={bookmarkIds}
             resetKeyword={resetKeyword}
+            selectedCardId={selectedCardId}
           />
         )}
         {index === 0 && panel.menu === '즐겨찾기' && (
@@ -142,6 +145,7 @@ export default function SidebarPanel({
             onEndChange={onEndChange}
             toggleBookmark={toggleBookmark}
             bookmarkIds={bookmarkIds}
+            selectedCardId={selectedCardId}
           />
         )}
         {index === 0 && panel.menu === '길찾기' && (
