@@ -305,9 +305,9 @@ export default function RoadSection({
           <p className="text-xl font-semibold text-gray-600">저장한 경로</p>
           <ul className="space-y-1">
             {savedRoutes &&
-              savedRoutes.map((route) => (
+              savedRoutes.map((route, idx) => (
                 <li
-                  key={route.directionid}
+                  key={`${route.directionid}-${idx}`}
                   className="flex cursor-pointer items-center justify-between px-3 py-2 bg-gray-50 rounded-full"
                   onClick={() => openRoadDetail(route)}
                 >

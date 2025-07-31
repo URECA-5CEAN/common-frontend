@@ -120,7 +120,7 @@ export default function DetailSection({
         <ul>
           {benefits.map((benefit, idx) => (
             <li
-              key={benefit.id}
+              key={benefit.id?.trim() || `benefit-${idx}`}
               className="flex items-center justify-between p-1 rounded-md"
             >
               <div className="flex flex-col justify-center ">
@@ -141,7 +141,7 @@ export default function DetailSection({
         <div className="flex justify-between">
           <ul className="flex -space-x-3 items-end">
             {allMedals.map((medal, idx) => (
-              <li key={idx}>
+              <li key={`${medal}-${idx}`}>
                 <img src={medal} alt="medal" className="w-[50px] md:w-[35px]" />
               </li>
             ))}

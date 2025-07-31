@@ -167,14 +167,14 @@ export default function MapPage() {
   // 선택한 카드
   const [selectedCardId, setSelectedCardId] = useState<string>('');
 
-  // 제휴처 목록 조회 함수
-  const searchHere = useCallback(async () => {
+  const searchStoresWithAI = useCallback(async () => {
     if (!map) return;
     const bounds = extractBouns(map);
     if (!bounds) return;
 
     try {
-      const data = await fetchStores({
+      // 1. 매장 목록 가져오기
+      const storeList = await fetchStores({
         keyword: debouncedKeyword,
         category: isCategory,
         ...bounds,
@@ -182,16 +182,40 @@ export default function MapPage() {
         centerLng: center.lng,
       });
 
-      setStores(data);
-      fetchAI();
-    } catch {
+      // 2. AI 추천 매장 가져오기
+      let aiStore: StoreInfo | null = null;
+      try {
+        const aiResult = await fetchAiRecommendedStore({
+          keyword: debouncedKeyword,
+          category: isCategory,
+          ...bounds,
+          centerLat: center.lat,
+          centerLng: center.lng,
+        });
+
+        if (aiResult?.store?.id) {
+          aiStore = { ...aiResult.store, isRecommended: aiResult.reason };
+          setRecommendedStore(aiStore);
+        }
+      } catch (e) {
+        console.warn('AI 제휴처 로딩 실패', e);
+      }
+
+      // 3. AI 매장이 storeList에 있으면 제거하고 맨 앞에 추가
+      const finalStores = aiStore
+        ? [aiStore, ...storeList.filter((s) => s.id !== aiStore.id)]
+        : storeList;
+
+      setStores(finalStores);
+    } catch (err) {
+      console.error('전체 매장 로딩 실패:', err);
       setStores([]);
     }
-  }, [map, debouncedKeyword, isCategory]);
+  }, [map, debouncedKeyword, isCategory, center]);
 
   useEffect(() => {
-    searchHere();
-  }, [searchHere]);
+    searchStoresWithAI();
+  }, [searchStoresWithAI]);
 
   // 초기 바텀시트 위치 계산
   useEffect(() => {
@@ -203,38 +227,6 @@ export default function MapPage() {
     const handler = window.setTimeout(() => setDebouncedKeyword(keyword), 300);
     return () => clearTimeout(handler);
   }, [keyword]);
-
-  const fetchAI = useCallback(async () => {
-    if (!map) return;
-
-    const bounds = extractBouns(map);
-    if (!bounds) return;
-
-    try {
-      const result = await fetchAiRecommendedStore({
-        keyword: debouncedKeyword,
-        category: isCategory,
-        ...bounds,
-        centerLat: center.lat,
-        centerLng: center.lng,
-      });
-      if (!result || !result.store || !result.store.id) return;
-
-      const recommended = { ...result.store, isRecommended: result.reason };
-      setRecommendedStore(recommended);
-
-      setStores((prev) => {
-        const exists = prev.some((store) => store.id === recommended.id);
-        return exists ? prev : [recommended, ...prev];
-      });
-    } catch (err) {
-      console.log('AI 제휴처 추천 실패:', err);
-    }
-  }, [map, debouncedKeyword, isCategory]);
-
-  useEffect(() => {
-    fetchAI();
-  }, [fetchAI]);
 
   //화면 내 매장만 filter해 sidebar 및 marker적용
   const filterStoresInView = useCallback(() => {
@@ -326,9 +318,9 @@ export default function MapPage() {
       map.panTo(loc);
       setCenter({ lat: store.latitude, lng: store.longitude });
       openMenu('지도');
-      searchHere();
+      searchStoresWithAI();
     },
-    [map, searchHere],
+    [map, searchStoresWithAI],
   );
 
   //즐겨찾기 사이드바 클릭 시 즐겨찾기만 보이도록 +AI 추천 제휴처 추가
@@ -400,41 +392,44 @@ export default function MapPage() {
   }, [panel.menu]);
 
   //키워드 변경 시 카테고리 초기화
-  const changeKeyword = (e: ChangeEvent<HTMLInputElement>) => {
+  const changeKeyword = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     SetKeyword(e.target.value);
     SetIsCategory('');
-  };
+  }, []);
   //카테고리 변경 시 키워드 변경
-  const changeCategory = (category: string) => {
-    SetIsCategory(category);
-    SetKeyword(category);
-    openMenu('지도');
-  };
+  const changeCategory = useCallback(
+    (category: string) => {
+      SetIsCategory(category);
+      SetKeyword(category);
+      openMenu('지도');
+    },
+    [openMenu],
+  );
 
   // 출발지 변경
-  const onStartChange = (store: LocationInfo) => {
+  const onStartChange = useCallback((store: LocationInfo) => {
     setStartValue(store);
     openMenu('길찾기');
-  };
+  }, []);
 
   // 도착지 변경
-  const onEndChange = (store: LocationInfo) => {
+  const onEndChange = useCallback((store: LocationInfo) => {
     setEndValue(store);
     openMenu('길찾기');
-  };
+  }, []);
 
-  const onSwap = () => {
+  const onSwap = useCallback(() => {
     // 출발/도착 교환
     setStartValue((prev) => {
       setEndValue(prev);
       return endValue;
     });
-  };
+  }, [endValue]);
   // 출발지 도착지 리셋
-  const onReset = () => {
+  const onReset = useCallback(() => {
     setStartValue({ name: '', lat: 0, lng: 0 });
     setEndValue({ name: '', lat: 0, lng: 0 });
-  };
+  }, []);
 
   //마운트 시 즐겨찾기 조회
   useEffect(() => {
@@ -545,7 +540,7 @@ export default function MapPage() {
             myLocation={myLocation}
             show={showSearchBtn}
             sheetY={sheetY}
-            onClick={searchHere}
+            onClick={searchStoresWithAI}
           />
         )}
       </aside>

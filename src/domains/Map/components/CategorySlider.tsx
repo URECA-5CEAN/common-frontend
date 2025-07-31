@@ -26,10 +26,13 @@ export default function CategorySlider({
 
   return (
     <div ref={sliderRef} className="keen-slider flex">
-      {Category.map((cate) => {
+      {Category.map((cate, idx) => {
         const { icon: Icon, color, size, className } = categoryIconMap[cate];
         return (
-          <div key={cate} className=" keen-slider__slide pr-24 md:hidden">
+          <div
+            key={`${cate}+${idx}`}
+            className=" keen-slider__slide pr-24 md:hidden"
+          >
             <button
               className={clsx(
                 'text-xs px-4 py-1 gap-2 flex w-24  items-center justify-center rounded-2xl border-2 border-gray-200 cursor-pointer whitespace-nowrap',

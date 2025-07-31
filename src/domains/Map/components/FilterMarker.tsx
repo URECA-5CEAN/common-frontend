@@ -6,6 +6,7 @@ import React, {
   useCallback,
   Suspense,
   lazy,
+  memo,
 } from 'react';
 import { CustomOverlayMap, MarkerClusterer } from 'react-kakao-maps-sdk';
 import { useMedia } from 'react-use';
@@ -32,7 +33,7 @@ interface Props {
   setSelectedCardId: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export default function FilterMarker({
+function FilterMarker({
   hoveredMarkerId,
   setHoveredMarkerId,
   stores,
@@ -161,7 +162,9 @@ export default function FilterMarker({
   const renderFarMarkers = () =>
     Markers.map((m, idx) => {
       return (
-        <React.Fragment key={`${m.id}-${idx}`}>
+        <React.Fragment
+          key={m.id && m.id.trim() !== '' ? m.id : `unknown-${idx}`}
+        >
           {/* 기본 마커 커스텀*/}
           <CustomOverlayMap
             position={{ lat: m.lat, lng: m.lng }}
@@ -286,3 +289,5 @@ export default function FilterMarker({
     </>
   );
 }
+
+export default memo(FilterMarker);

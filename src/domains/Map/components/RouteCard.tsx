@@ -49,7 +49,7 @@ export default function RouteCard({
       </div>
       <div className="px-2 mt-2 text-sm text-gray-600 space-y-0.5">
         {majorRoad.map((road, i) => (
-          <div key={i} className="flex flex-wrap gap-1">
+          <div key={`${road.name}-${i}`} className="flex flex-wrap gap-1">
             <div className="flex items-center space-x-1 space-y-1">
               {road.traffic && (
                 <span

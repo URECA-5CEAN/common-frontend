@@ -33,7 +33,7 @@ function PolylineRenderer({ route }: { route: RouteItem }) {
         const traffic = getTrafficInfo(segment.traffic_state);
         return (
           <Polyline
-            key={idx}
+            key={`${route.directionid}-${idx}`}
             path={segment.path}
             strokeWeight={10}
             strokeColor={traffic.color}

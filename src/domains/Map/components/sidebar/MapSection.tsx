@@ -47,7 +47,7 @@ export default function MapSection({
       {/* 리스트 아이템 반복 */}
       {stores.map((store, idx) => (
         <StoreCard
-          key={`${store.id}-${idx}`}
+          key={store.id?.trim() || `unknown-${store.name}-${idx}`}
           store={store}
           openDetail={openDetail}
           onStartChange={onStartChange}
