@@ -1,4 +1,4 @@
-import { Search } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import StoreCard from '../StoreCard';
 import type { StoreInfo } from '../../api/store';
 import type { ChangeEventHandler } from 'react';
@@ -14,6 +14,7 @@ interface MapSectionProps {
   onEndChange: (v: LocationInfo) => void;
   toggleBookmark: (store: StoreInfo) => void;
   bookmarkIds: Set<string>;
+  resetKeyword: () => void;
 }
 
 export default function MapSection({
@@ -25,6 +26,7 @@ export default function MapSection({
   onEndChange,
   toggleBookmark,
   bookmarkIds,
+  resetKeyword,
 }: MapSectionProps) {
   return (
     <div className="px-2 py-3 space-y-3 h-screen ">
@@ -37,6 +39,7 @@ export default function MapSection({
           debounceTime={300}
           placeholder="검색"
         />
+        <X onClick={resetKeyword} className="cursor-pointer" />
       </div>
 
       {/* 리스트 아이템 반복 */}

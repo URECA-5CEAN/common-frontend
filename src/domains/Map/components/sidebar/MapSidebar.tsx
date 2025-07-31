@@ -55,6 +55,7 @@ interface SideBarProps {
   index: number;
   setStartValue: Dispatch<SetStateAction<LocationInfo>>;
   setEndValue: Dispatch<SetStateAction<LocationInfo>>;
+  resetKeyword: () => void;
 }
 
 export default function MapSidebar({
@@ -83,6 +84,7 @@ export default function MapSidebar({
   index,
   setStartValue,
   setEndValue,
+  resetKeyword,
 }: SideBarProps) {
   if (!panel) return;
 
@@ -131,6 +133,7 @@ export default function MapSidebar({
             openRoadDetail={openRoadDetail}
             setStartValue={setStartValue}
             setEndValue={setEndValue}
+            resetKeyword={resetKeyword}
           />
 
           {/* 상세 패널 (panel.type이 'detail'일 때만) */}
@@ -159,6 +162,7 @@ export default function MapSidebar({
                   openRoadDetail={openRoadDetail}
                   setStartValue={setStartValue}
                   setEndValue={setEndValue}
+                  resetKeyword={resetKeyword}
                 />
               </Suspense>
             )}
@@ -198,6 +202,7 @@ export default function MapSidebar({
                 openRoadDetail={openRoadDetail}
                 setStartValue={setStartValue}
                 setEndValue={setEndValue}
+                resetKeyword={resetKeyword}
               />
             </BottomSheet>
           )}
@@ -233,6 +238,7 @@ export default function MapSidebar({
                   openRoadDetail={openRoadDetail}
                   setStartValue={setStartValue}
                   setEndValue={setEndValue}
+                  resetKeyword={resetKeyword}
                 />
               </BottomSheet>
             </Suspense>

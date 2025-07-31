@@ -12,7 +12,7 @@ import MapSidebar, {
   type MenuType,
   type Panel,
 } from '../components/sidebar/MapSidebar';
-import { Search } from 'lucide-react';
+import { Clapperboard, Search, Utensils, type LucideIcon } from 'lucide-react';
 import type { LatLng } from '../KakaoMapContainer';
 
 import {
@@ -33,6 +33,7 @@ import SearchHereBtn from '../components/SearchHearBtn';
 import { fetchAiRecommendedStore } from '../api/ai';
 import { extractBouns, type InternalBounds } from '../utils/extractBouns';
 import type { RouteItem } from '../components/sidebar/RoadSection';
+import { Coffee, ShoppingBag, ShoppingCart, Car } from 'lucide-react';
 
 //bounds 타입에러 방지
 
@@ -43,14 +44,46 @@ type CategoryType =
   | '대형마트'
   | '문화시설'
   | '렌터카';
-const Category: CategoryType[] = [
-  '음식점',
-  '카페',
-  '편의점',
-  '대형마트',
-  '문화시설',
-  '렌터카',
-];
+export interface CategoryIconMeta {
+  icon: LucideIcon;
+  className?: string;
+  color?: string;
+  size?: number;
+}
+
+export const categoryIconMap: Record<CategoryType, CategoryIconMeta> = {
+  음식점: {
+    icon: Utensils,
+    color: '#FF7043',
+    size: 20,
+  },
+  카페: {
+    icon: Coffee,
+    color: '#6D4C41',
+    size: 21,
+    className: 'mb-0.5',
+  },
+  편의점: {
+    icon: ShoppingBag,
+    color: '#0ecc17',
+    size: 20,
+  },
+  대형마트: {
+    icon: ShoppingCart,
+    color: '#db2f18',
+    size: 20,
+  },
+  문화시설: {
+    icon: Clapperboard,
+    color: '#8E24AA',
+    size: 20,
+  },
+  렌터카: {
+    icon: Car,
+    color: '#F4511E',
+    size: 22,
+  },
+};
 export interface LocationInfo {
   name: string;
   lat: number;
@@ -452,6 +485,10 @@ export default function MapPage() {
     }
   }, [selectedRoute]);
 
+  const resetKeyword = () => {
+    SetKeyword('');
+  };
+
   return (
     <div className="flex h-screen flex-col-reverse md:flex-row overflow-y-hidden ">
       {/* 사이드바 */}
@@ -482,6 +519,7 @@ export default function MapPage() {
           index={panelIndex}
           setStartValue={setStartValue}
           setEndValue={setEndValue}
+          resetKeyword={resetKeyword}
         />
         {/* 내 위치 버튼 */}
         {map && myLocation && (
@@ -540,14 +578,16 @@ export default function MapPage() {
 
             <div className="absolute  w-full md:ml-10 ml-6 top-28 md:top-24 z-2  overflow-x-auto">
               <CategorySlider
-                Category={Category}
+                Category={Object.keys(categoryIconMap) as CategoryType[]}
                 isCategory={isCategory}
                 changeCategory={changeCategory}
+                categoryIconMap={categoryIconMap}
               />
               <DeskTopBtns
-                Category={Category}
+                Category={Object.keys(categoryIconMap) as CategoryType[]}
                 isCategory={isCategory}
                 changeCategory={changeCategory}
+                categoryIconMap={categoryIconMap}
               />
             </div>
 
