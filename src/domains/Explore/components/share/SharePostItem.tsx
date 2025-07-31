@@ -33,8 +33,11 @@ const SharePostItem = ({ post }: SharePostItemProps) => {
       </button>
       <div className="flex gap-2 sm:gap-4">
         <div className="relative w-16 h-16 sm:w-32 sm:h-32 flex items-center justify-center flex-shrink-0">
-          {/* <img /> */}
-          <div className={`bg-gray-400 w-full h-full rounded-2xl`}></div>
+          <img
+            src={post.brandImgUrl}
+            alt="브랜드 이미지"
+            className="rounded-2xl"
+          />
           {/* {post.isClosed && (
             <span className="absolute text-xs font-semibold text-white">
               모집 완료
