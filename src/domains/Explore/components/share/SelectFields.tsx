@@ -50,7 +50,11 @@ const SelectFields = ({
   }, []);
 
   useEffect(() => {
-    if (!location.pathname.startsWith('/mypage/share/edit/')) return;
+    const isEdit =
+      location.pathname.startsWith('/mypage/share/edit/') ||
+      location.pathname.startsWith('/explore/share/edit/');
+
+    if (!isEdit) return;
     const fetchData = async () => {
       setIsLoading(true);
 

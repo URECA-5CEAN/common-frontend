@@ -4,13 +4,14 @@ import IconActionGroup from './IconActionGroup';
 import type { StoreInfo } from '../api/store';
 import clsx from 'clsx';
 import { useBenefitBrands } from '../hooks/useBenefitBrands';
+import type { LocationInfo } from '../pages/MapPage';
 
 interface OverlayProps {
   lat: number;
   lng: number;
   store: StoreInfo;
-  onStartChange: (v: string) => void;
-  onEndChange: (v: string) => void;
+  onStartChange: (v: LocationInfo) => void;
+  onEndChange: (v: LocationInfo) => void;
   toggleBookmark: (store: StoreInfo) => void;
   isBookmark: boolean;
 }
