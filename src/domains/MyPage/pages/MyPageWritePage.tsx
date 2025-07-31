@@ -1,20 +1,24 @@
 import { Button } from '@/components/Button';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useUnsavedChanges } from '../../../contexts/UnsavedChangesContext';
+import type {
+  PostWriteRequest,
+  SelectOption,
+  TimeValue,
+} from '@/domains/Explore/types/share';
 import {
   getDefaultTime,
   getTodayString,
   toISOStringFromDateTime,
-} from '../utils/datetimeUtils';
-import type { PostWriteRequest, SelectOption, TimeValue } from '../types/share';
-import SelectFields from '../components/share/SelectFields';
-import PostContentFields from '../components/share/PostContentFields';
-import DateTimePicker from '../components/share/DateTimePicker';
-import PlaceField from '../components/share/PlaceField';
-import { createSharePost } from '../api/share';
-import { useNavigate } from 'react-router-dom';
-import { useUnsavedChanges } from '../../../contexts/UnsavedChangesContext';
+} from '@/domains/Explore/utils/datetimeUtils';
+import { createSharePost } from '@/domains/Explore/api/share';
+import SelectFields from '@/domains/Explore/components/share/SelectFields';
+import PostContentFields from '@/domains/Explore/components/share/PostContentFields';
+import DateTimePicker from '@/domains/Explore/components/share/DateTimePicker';
+import PlaceField from '@/domains/Explore/components/share/PlaceField';
 
-const ShareWritePage = () => {
+const MyPageWritePage = () => {
   const navigate = useNavigate();
 
   const [category, setCategory] = useState<SelectOption | null>(null);
@@ -140,4 +144,4 @@ const ShareWritePage = () => {
   );
 };
 
-export default ShareWritePage;
+export default MyPageWritePage;

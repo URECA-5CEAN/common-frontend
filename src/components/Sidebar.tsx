@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import rankingIcon from '@/assets/icons/ranking_icon.png';
 import shareIcon from '@/assets/icons/share_icon.png';
 import membershipIcon from '@/assets/icons/membership_icon.png';
@@ -71,7 +71,7 @@ const MYPAGE_MENU_ITEMS: MenuItem[] = [
     alt: '즐겨찾기 아이콘',
   },
   {
-    to: '/mypage/sharing',
+    to: '/mypage/share',
     icon: shareIcon,
     label: '내 나눔',
     alt: '내 나눔 아이콘',
@@ -94,26 +94,26 @@ const STYLES = {
 
 // 하위 컴포넌트
 const MenuItemComponent = ({ item }: { item: MenuItem }) => {
-  const location = useLocation();
   const { handleProtectedNavigation } = useUnsavedChanges();
-
-  const isActive = location.pathname === item.to;
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     handleProtectedNavigation(item.to);
   };
   return (
-    <button
+    <NavLink
       key={item.to}
+      to={item.to}
       onClick={handleClick}
-      className={`${STYLES.linkBase} ${isActive ? STYLES.linkActive : STYLES.linkInactive}`}
+      className={({ isActive }) =>
+        `${STYLES.linkBase} ${isActive ? STYLES.linkActive : STYLES.linkInactive}`
+      }
     >
       <div className={STYLES.iconContainer}>
         <img src={item.icon} alt={item.alt} className={STYLES.icon} />
       </div>
       {item.label}
-    </button>
+    </NavLink>
   );
 };
 

@@ -47,10 +47,16 @@ export const UnsavedChangesProvider: React.FC<{
     if (location.pathname === path) return;
 
     // 글쓰기 페이지들 정의 (필요에 따라 추가)
-    const writePages = ['/explore/share/write'];
+    const writePages = [
+      '/explore/share/write',
+      '/mypage/share/edit',
+      '/mypage/share/write',
+    ];
     const isCurrentlyWritePage = writePages.some(
       (page) =>
-        location.pathname === page || location.pathname.includes('/write'),
+        location.pathname === page ||
+        location.pathname.includes('/write') ||
+        location.pathname.includes('/edit'),
     );
 
     if (isCurrentlyWritePage && hasUnsavedChanges) {

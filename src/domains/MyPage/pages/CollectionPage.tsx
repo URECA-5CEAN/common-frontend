@@ -29,9 +29,7 @@ const CollectionPage = () => {
       }
     };
     fetchAllBrandList();
-    if (usageHistory.length === 0) {
-      fetchUsageHistory();
-    }
+    fetchUsageHistory();
   }, [fetchUsageHistory, usageHistory.length]);
 
   // 브랜드명만 추출 (지점명 제거)

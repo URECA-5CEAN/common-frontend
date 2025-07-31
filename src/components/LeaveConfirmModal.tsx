@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useUnsavedChanges } from '@/contexts/UnsavedChangesContext';
 import { Modal } from '@/components/Modal';
 import { Button } from '@/components/Button';
@@ -6,6 +6,7 @@ import dolphin from '@/assets/image/dolphin_normal.png';
 
 const ConfirmModal = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const {
     showConfirmModal,
     setShowConfirmModal,
@@ -30,17 +31,21 @@ const ConfirmModal = () => {
     setPendingNavigation(null);
   };
 
+  const isEditPage = location.pathname.includes('/mypage/share/edit')
+    ? true
+    : false;
+
   return (
     <Modal
       isOpen={showConfirmModal}
       onClose={handleCancel}
-      title="작성을 중단하시겠어요?"
+      title={isEditPage ? '수정을 그만두시겠어요?' : '작성을 그만두시겠어요?'}
       description={
-        <>
-          페이지를 나가면 작성한 내용은
-          <br />
-          저장되지 않고 모두 사라져요
-        </>
+        isEditPage ? (
+          <>페이지를 나가면 수정한 내용은 반영되지 않아요</>
+        ) : (
+          <>페이지를 나가면 작성한 내용은 저장되지 않고 모두 사라져요</>
+        )
       }
       img={
         <div className="w-full flex justify-center">
@@ -48,14 +53,14 @@ const ConfirmModal = () => {
         </div>
       }
       actions={
-        <div className="flex gap-3">
+        <>
           <Button variant="secondary" fullWidth onClick={handleCancel}>
             취소
           </Button>
           <Button variant="primary" fullWidth onClick={handleConfirm}>
-            나가기
+            그만두기
           </Button>
-        </div>
+        </>
       }
     />
   );
