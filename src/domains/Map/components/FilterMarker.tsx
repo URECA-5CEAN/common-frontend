@@ -47,6 +47,7 @@ export default function FilterMarker({
   const hoverOutRef = useRef<number | null>(null);
   //2d마커
   const [Markers, SetMarkers] = useState<MarkerProps[]>([]);
+  const [clickedMarkerId, setClickedMarkerId] = useState<string | null>(null);
   // 오버레이 위치와 스토어 정보 저장
   const [overlay, setOverlay] = useState<{
     x: number;
@@ -144,7 +145,10 @@ export default function FilterMarker({
   const handleClick = useCallback(
     (id: string) => {
       const store = storeMap.get(id);
-      if (store) openDetail(store);
+      if (store) {
+        setClickedMarkerId(id);
+        openDetail(store);
+      }
     },
     [openDetail, storeMap],
   );
@@ -168,11 +172,20 @@ export default function FilterMarker({
                 height: 35,
                 borderRadius: '50%',
                 overflow: 'hidden',
-                boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
                 backgroundColor: '#fff',
                 cursor: 'pointer',
                 position: 'relative',
                 zIndex: shouldCluster ? 2 : 3,
+                boxShadow:
+                  m.id === clickedMarkerId
+                    ? '0 10px 20px rgba(18, 158, 223, 0.35), 0 6px 6px rgba(0, 0, 0, 0.12)'
+                    : '0 2px 4px rgba(0, 0, 0, 0.15)',
+                animation:
+                  m.id === clickedMarkerId ? 'floatY   0.8s ease' : undefined,
+                transform:
+                  m.id === clickedMarkerId ? 'scale(1.3)' : 'scale(1.0)',
+
+                transition: 'all 0.8s ease',
               }}
             >
               <img
