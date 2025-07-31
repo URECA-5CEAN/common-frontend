@@ -60,7 +60,7 @@ export const MissionList: React.FC<MissionListProps> = ({
                   <p
                     className={`text-sm ${item.completed ? 'text-primaryGreen' : 'text-primaryGreen-80'}`}
                   >
-                    <p>경험치 +{item.expReward}</p>
+                    경험치 +{item.expReward}
                   </p>
                 </p>
                 <p className="flex justify-center items-center">
