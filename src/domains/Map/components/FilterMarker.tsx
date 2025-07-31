@@ -208,7 +208,7 @@ export default function FilterMarker({
               zIndex={2}
             >
               <div className="relative">
-                <div className="w-14 h-14 rounded-full bg-primaryGreen opacity-80 animate-ping " />
+                <div className="w-12 h-12 rounded-full bg-primaryGreen opacity-80 animate-ping " />
               </div>
             </CustomOverlayMap>
           )}
@@ -227,7 +227,7 @@ export default function FilterMarker({
       {shouldCluster ? (
         <MarkerClusterer
           averageCenter
-          minLevel={6}
+          minLevel={7}
           gridSize={50}
           styles={[
             {

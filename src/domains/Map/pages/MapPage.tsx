@@ -487,6 +487,7 @@ export default function MapPage() {
 
   const resetKeyword = () => {
     SetKeyword('');
+    SetIsCategory('');
   };
 
   return (

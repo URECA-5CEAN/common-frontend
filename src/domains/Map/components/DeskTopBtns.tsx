@@ -18,7 +18,7 @@ export default function DeskTopBtns({
             className={clsx(
               'flex items-center justify-center gap-2 w-[100px] text-sm px-2 py-1.5  cursor-pointer rounded-2xl border-2 border-gray-200 transition-colors',
               isCategory === cate
-                ? 'text-black bg-primaryGreen '
+                ? 'text-black bg-primaryGreen border-primaryGreen '
                 : 'bg-white hover:text-primaryGreen',
             )}
             onClick={() => changeCategory(cate)}
