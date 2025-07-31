@@ -341,7 +341,8 @@ export default function RoadSection({
               {recentRoutes.map((route) => (
                 <li
                   key={route.directionid}
-                  className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-full"
+                  className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-full cursor-pointer"
+                  onClick={() => openRoadDetail(route)}
                 >
                   <span className="text-sm">{`${route.from} → ${route.to}`}</span>
                   <button
@@ -350,7 +351,8 @@ export default function RoadSection({
                       setRecentRoutes((s) =>
                         s.filter((x) => x.directionid !== route.directionid),
                       );
-                      routeDeleteBookmark(route);
+
+                      deleteRoutes(route.directionid);
                     }}
                     className="p-1 text-gray-400 hover:text-red-500"
                   >
