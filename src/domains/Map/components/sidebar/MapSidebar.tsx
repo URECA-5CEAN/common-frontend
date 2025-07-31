@@ -249,6 +249,80 @@ export default function MapSidebar({
               </BottomSheet>
             </Suspense>
           )}
+          {panel?.type === 'detail' && panel.item && (
+            <Suspense fallback={<div>로딩 중…</div>}>
+              <BottomSheet
+                key="detail-mobile"
+                ref={sheetDetail}
+                isOpen={panel.type === 'detail'}
+                onClose={onCloseSheet}
+                onPositionChange={onDetailSheetPositionChange}
+              >
+                <SidebarPanel
+                  key="detail"
+                  index={1}
+                  panel={panel}
+                  stores={stores}
+                  openDetail={openDetail}
+                  onClose={onClose}
+                  changeKeyword={changeKeyword}
+                  keyword={keyword}
+                  startValue={startValue}
+                  endValue={endValue}
+                  onStartChange={onStartChange}
+                  onEndChange={onEndChange}
+                  onSwap={onSwap}
+                  onReset={onReset}
+                  bookmarks={bookmarks}
+                  toggleBookmark={toggleBookmark}
+                  bookmarkIds={bookmarkIds}
+                  goToStore={goToStore}
+                  openRoadDetail={openRoadDetail}
+                  setStartValue={setStartValue}
+                  setEndValue={setEndValue}
+                  resetKeyword={resetKeyword}
+                  selectedCardId={selectedCardId}
+                />
+              </BottomSheet>
+            </Suspense>
+          )}
+          {panel?.type === 'road' && panel.item && (
+            <Suspense fallback={<div>로딩 중…</div>}>
+              <BottomSheet
+                key="detail-mobile"
+                ref={sheetDetail}
+                isOpen={panel.type === 'road'}
+                onClose={onCloseSheet}
+                onPositionChange={onDetailSheetPositionChange}
+              >
+                <SidebarPanel
+                  key="road"
+                  index={1}
+                  panel={panel}
+                  stores={stores}
+                  openDetail={openDetail}
+                  onClose={onClose}
+                  changeKeyword={changeKeyword}
+                  keyword={keyword}
+                  startValue={startValue}
+                  endValue={endValue}
+                  onStartChange={onStartChange}
+                  onEndChange={onEndChange}
+                  onSwap={onSwap}
+                  onReset={onReset}
+                  bookmarks={bookmarks}
+                  toggleBookmark={toggleBookmark}
+                  bookmarkIds={bookmarkIds}
+                  goToStore={goToStore}
+                  openRoadDetail={openRoadDetail}
+                  setStartValue={setStartValue}
+                  setEndValue={setEndValue}
+                  resetKeyword={resetKeyword}
+                  selectedCardId={selectedCardId}
+                />
+              </BottomSheet>
+            </Suspense>
+          )}
         </AnimatePresence>
       </div>
     </>
