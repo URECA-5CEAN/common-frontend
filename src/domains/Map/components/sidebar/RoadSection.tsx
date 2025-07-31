@@ -311,7 +311,15 @@ export default function RoadSection({
                   className="flex cursor-pointer items-center justify-between px-3 py-2 bg-gray-50 rounded-full"
                   onClick={() => openRoadDetail(route)}
                 >
-                  <span className="text-sm w-60">{`${route.from} → ${route.to}`}</span>
+                  <div className="flex items-center space-x-2 overflow-hidden">
+                    <span className="text-sm font-medium text-gray-800 truncate max-w-[250px]">
+                      {route.from}
+                    </span>
+                    <span className="text-gray-400">→</span>
+                    <span className="text-sm font-medium text-gray-800 truncate max-w-[250px]">
+                      {route.to}
+                    </span>
+                  </div>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -322,7 +330,7 @@ export default function RoadSection({
                     }}
                     className="p-1 text-gray-400 hover:text-red-500"
                   >
-                    <Trash2 size={16} className="cursor-pointer" />
+                    <Trash2 size={18} className="cursor-pointer" />
                   </button>
                 </li>
               ))}
@@ -344,7 +352,15 @@ export default function RoadSection({
                   className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-full cursor-pointer"
                   onClick={() => openRoadDetail(route)}
                 >
-                  <span className="text-sm">{`${route.from} → ${route.to}`}</span>
+                  <div className="flex items-center space-x-2 overflow-hidden">
+                    <span className="text-sm font-medium text-gray-800 truncate max-w-[250px]">
+                      {route.from}
+                    </span>
+                    <span className="text-gray-400">→</span>
+                    <span className="text-sm font-medium text-gray-800 truncate max-w-[250px]">
+                      {route.to}
+                    </span>
+                  </div>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -356,7 +372,7 @@ export default function RoadSection({
                     }}
                     className="p-1 text-gray-400 hover:text-red-500"
                   >
-                    <Trash2 size={16} className="cursor-pointer" />
+                    <Trash2 size={18} className="cursor-pointer" />
                   </button>
                 </li>
               ))}
