@@ -50,7 +50,7 @@ export default function BenefitModal({
       console.error('OCR 업로드 실패:', err);
     }
   };
-
+  console.log(ocrResult);
   const handleFinalSubmit = async () => {
     if (!ocrResult || !userInfo) return;
     try {
@@ -137,9 +137,14 @@ export default function BenefitModal({
                   const value = e.target.value;
                   setAmount(value === '' ? null : Number(value));
                 }}
-                className="my-4 text-sm border border-gray-200 py-2 px-2 w-full"
+                className="my-4  text-sm border border-gray-200 py-2 px-2 w-full"
               />
-              <Button variant="primary" fullWidth onClick={handleFinalSubmit}>
+              <Button
+                variant="primary"
+                fullWidth={true}
+                size="md"
+                onClick={handleFinalSubmit}
+              >
                 최종 제출
               </Button>
             </>
@@ -154,10 +159,11 @@ export default function BenefitModal({
         setOcrResult(null);
       }}
       actions={
-        <div className="flex gap-3">
+        <div className="ml-10 w-[83%] ">
           <Button
             variant="secondary"
-            fullWidth
+            size="md"
+            fullWidth={true}
             onClick={() => {
               openmenu('지도');
               setSelectedFile(null);

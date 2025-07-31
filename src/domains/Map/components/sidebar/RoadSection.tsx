@@ -162,8 +162,6 @@ export default function RoadSection({
     const fetchRecentRoute = async () => {
       try {
         const res = await getDirectionPath();
-        console.log('🧾 전체 길이:', res.data.length);
-
         // routes 배열 안에 있는 일부 route는 summary 또는 sections가 undefined 또는 누락된거 filter
         const convertedResponses = res.data
           .filter(
@@ -189,7 +187,6 @@ export default function RoadSection({
     }
   };
 
-  console.log(recentRoutes);
   return (
     <div className="max-w-md mx-auto  space-y-6 bg-white min-h-dvh">
       {/* 입력창 + 액션 버튼 */}
@@ -351,7 +348,7 @@ export default function RoadSection({
                   <span className="text-sm">{`${route.from} → ${route.to}`}</span>
                   <button
                     onClick={() =>
-                      setSavedRoutes((s) =>
+                      setRecentRoutes((s) =>
                         s.filter((x) => x.directionid !== route.directionid),
                       )
                     }

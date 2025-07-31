@@ -11,6 +11,8 @@ import diamondMedal from '@/assets/image/diamond_medal.png';
 import { Button } from '@/components/Button';
 import { useBenefitBrands } from '../../hooks/useBenefitBrands';
 import type { LocationInfo } from '../../pages/MapPage';
+import { useUsageHistoryStore } from '@/store/useUsageHistoryStore';
+import { useEffect } from 'react';
 interface DetailSectionProps {
   store: StoreInfo;
   onStartChange: (v: LocationInfo) => void;
@@ -38,6 +40,15 @@ export default function DetailSection({
     isError,
     error,
   } = useBenefitBrands(store.brandName);
+  const { usageHistory, fetchUsageHistory } = useUsageHistoryStore();
+
+  useEffect(() => {
+    fetchUsageHistory();
+  }, [fetchUsageHistory]);
+
+  const storeUsageCount = usageHistory.filter((u) =>
+    u.storeId.startsWith(store.brandName),
+  ).length;
 
   if (isLoading) return 'Loading...';
   if (isError) return `Error: ${error.message}`;
@@ -133,7 +144,7 @@ export default function DetailSection({
               </li>
             ))}
           </ul>
-          <p className="self-end">0/20</p>
+          <p className="self-end">{storeUsageCount}/20</p>
         </div>
 
         <div className="self-end">
