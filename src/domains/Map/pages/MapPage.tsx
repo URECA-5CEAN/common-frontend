@@ -414,6 +414,7 @@ export default function MapPage() {
     };
   }, []);
 
+  //즐겨찾기 토글
   const toggleBookmark = async (store: StoreInfo) => {
     try {
       if (bookmarks.some((bookmark) => bookmark.id === store.id)) {

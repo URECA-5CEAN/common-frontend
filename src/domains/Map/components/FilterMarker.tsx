@@ -154,7 +154,7 @@ export default function FilterMarker({
     Markers.map((m, idx) => {
       return (
         <React.Fragment key={`${m.id}-${idx}`}>
-          {/* 기본 마커 */}
+          {/* 기본 마커 커스텀*/}
           <CustomOverlayMap
             position={{ lat: m.lat, lng: m.lng }}
             zIndex={shouldCluster ? 2 : 3}
@@ -164,8 +164,8 @@ export default function FilterMarker({
               onMouseEnter={() => handleMouseOver(m.id)}
               onMouseLeave={handleMouseOut}
               style={{
-                width: 30,
-                height: 30,
+                width: 35,
+                height: 35,
                 borderRadius: '50%',
                 overflow: 'hidden',
                 boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
@@ -245,7 +245,7 @@ export default function FilterMarker({
               position: 'fixed',
               left: overlay.x,
               top: overlay.y,
-              transform: 'translate(-50%, -120%)',
+              transform: 'translate(-48%, -110%)',
               pointerEvents: 'auto',
               zIndex: 2,
             }}

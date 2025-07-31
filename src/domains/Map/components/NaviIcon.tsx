@@ -37,12 +37,10 @@ enum NaviGuideType {
   ROTARY_1H = 30,
   ROTARY_2H = 31,
   ROTARY_3H = 32,
-  // ...
   FERRY_IN = 61,
   FERRY_OUT = 62,
   ROTARY_CIRCLE_1H = 70,
   ROTARY_CIRCLE_2H = 71,
-  // ...
   START = 100,
   END = 101,
   VIA = 1000,
@@ -73,8 +71,6 @@ export const NaviGuideIconMap: Record<number, LucideIcon> = {
   [NaviGuideType.END]: MapPin,
   [NaviGuideType.VIA]: MapPin,
   [NaviGuideType.SERVICE_AREA]: ParkingCircle,
-
-  // 회전 교차로는 단일 아이콘으로 처리 (시계 위치로 구분)
   [NaviGuideType.ROTARY_1H]: RotateCcw,
   [NaviGuideType.ROTARY_2H]: RotateCcw,
   [NaviGuideType.ROTARY_3H]: RotateCcw,

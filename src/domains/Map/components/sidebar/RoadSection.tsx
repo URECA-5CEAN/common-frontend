@@ -183,7 +183,7 @@ export default function RoadSection({
 
   const deleteRoutes = async (id: string) => {
     try {
-      const res = await deleteDirectionPath(id);
+      await deleteDirectionPath(id);
     } catch (error) {
       console.log(error);
     }
