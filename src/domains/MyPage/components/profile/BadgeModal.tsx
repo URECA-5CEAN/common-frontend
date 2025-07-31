@@ -76,7 +76,7 @@ const BadgeModal: React.FC<BadgeModalProps> = ({
     >
       <div className="flex flex-col gap-3">
         {isLoading ? (
-          <div className="px-4 py-4 w-full md:w-[482px] h-[150px] flex flex-col items-center justify-center gap-2 rounded-xl text-center">
+          <div className="px-4 py-4 w-full md:w-[460px] h-[150px] flex flex-col items-center justify-center gap-2 rounded-xl text-center">
             <div className="w-10 h-10">
               <LoadingSpinner />
             </div>
@@ -97,7 +97,7 @@ const BadgeModal: React.FC<BadgeModalProps> = ({
             />
           </>
         ) : (
-          <div className="flex flex-col items-center justify-center h-[150px] text-gray-500 w-full md:w-[482px]">
+          <div className="flex flex-col items-center justify-center h-[150px] text-gray-500 w-full md:w-[460px]">
             <Button onClick={fetchTitle} size="sm">
               칭호 생성하기
             </Button>
