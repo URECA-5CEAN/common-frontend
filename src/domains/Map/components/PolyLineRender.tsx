@@ -1,3 +1,5 @@
+// components/PolylineRenderer.tsx
+import { memo } from 'react';
 import { Polyline } from 'react-kakao-maps-sdk';
 import { getTrafficInfo } from './getTrafficInfo';
 import type { RouteItem } from './sidebar/RoadSection';
@@ -24,7 +26,7 @@ function splitPathByRoad(
   });
 }
 
-export default function PolyLineRender({ route }: { route: RouteItem }) {
+function PolylineRenderer({ route }: { route: RouteItem }) {
   return (
     <>
       {splitPathByRoad(route.path, route.road).map((segment, idx) => {
@@ -43,3 +45,5 @@ export default function PolyLineRender({ route }: { route: RouteItem }) {
     </>
   );
 }
+
+export default memo(PolylineRenderer);
