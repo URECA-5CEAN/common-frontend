@@ -10,10 +10,13 @@ import goldMedal from '@/assets/image/gold_medal.png';
 import diamondMedal from '@/assets/image/diamond_medal.png';
 import { Button } from '@/components/Button';
 import { useBenefitBrands } from '../../hooks/useBenefitBrands';
+import type { LocationInfo } from '../../pages/MapPage';
+import { useUsageHistoryStore } from '@/store/useUsageHistoryStore';
+import { useEffect } from 'react';
 interface DetailSectionProps {
   store: StoreInfo;
-  onStartChange: (v: string) => void;
-  onEndChange: (v: string) => void;
+  onStartChange: (v: LocationInfo) => void;
+  onEndChange: (v: LocationInfo) => void;
   bookmarkIds: Set<string>;
   goToStore: (store: StoreInfo) => void;
   toggleBookmark: (store: StoreInfo) => void;
@@ -37,10 +40,20 @@ export default function DetailSection({
     isError,
     error,
   } = useBenefitBrands(store.brandName);
+  const { usageHistory, fetchUsageHistory } = useUsageHistoryStore();
+
+  useEffect(() => {
+    fetchUsageHistory();
+  }, [fetchUsageHistory]);
+
+  const storeUsageCount = usageHistory.filter((u) =>
+    u.storeId.startsWith(store.brandName),
+  ).length;
 
   if (isLoading) return 'Loading...';
   if (isError) return `Error: ${error.message}`;
   if (benefits.length === 0) return '해당 브랜드 혜택이 없습니다.';
+
   return (
     <div className="space-y-2  h-screen md:min-h-[800px] z-10 ">
       {/* 헤더 */}
@@ -131,7 +144,7 @@ export default function DetailSection({
               </li>
             ))}
           </ul>
-          <p className="self-end">0/20</p>
+          <p className="self-end">{storeUsageCount}/20</p>
         </div>
 
         <div className="self-end">
@@ -146,31 +159,6 @@ export default function DetailSection({
       </section>
 
       <div className="w-full border border-gray-200  my-6"></div>
-      {/* 혜택 순위 */}
-
-      <section>
-        <p className="text-lg font-semibold mb-2">혜택 순위</p>
-        {/* <ul className="space-y-1">
-          {store.ranking.map((r: RankingItem) => (
-            <li
-              key={r.benefitId}
-              className="flex justify-between px-3 py-2 bg-gray-50 rounded-md"
-            >
-              <span>
-                {r.rank}. {r.benefitId}
-              </span>
-              <span className="font-medium">{r.usedCount}회</span>
-            </li>
-          ))}
-        </ul> */}
-        <Button
-          variant="secondary"
-          size="sm"
-          className="h-6 w-[75px] flex justify-end items-center"
-        >
-          <p className="text-xs">더보기</p> <ChevronRight size={15} />
-        </Button>
-      </section>
     </div>
   );
 }

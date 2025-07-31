@@ -9,7 +9,7 @@ export default function OnOffBtn({ showRecent, setShowRecent }: ToggleProps) {
       {/* ON 버튼 */}
       <button
         onClick={() => setShowRecent(true)}
-        className={`px-3 py-1 text-xs rounded-full transition-colors ${
+        className={`px-3 py-1 text-xs rounded-full transition-colors cursor-pointer ${
           showRecent
             ? 'bg-primaryGreen text-white'
             : 'text-gray-200 hover:bg-white'
@@ -21,7 +21,7 @@ export default function OnOffBtn({ showRecent, setShowRecent }: ToggleProps) {
       {/* OFF 버튼 */}
       <button
         onClick={() => setShowRecent(false)}
-        className={`px-3 py-1 text-xs rounded-full transition-colors ml-1 ${
+        className={`px-3 py-1 text-xs rounded-full transition-colors ml-1 cursor-pointer ${
           !showRecent
             ? 'bg-primaryGreen text-white'
             : 'text-gray-200 hover:bg-white'

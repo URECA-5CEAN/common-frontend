@@ -7,15 +7,12 @@ import React, {
   Suspense,
   lazy,
 } from 'react';
-import {
-  CustomOverlayMap,
-  MapMarker,
-  MarkerClusterer,
-} from 'react-kakao-maps-sdk';
+import { CustomOverlayMap, MarkerClusterer } from 'react-kakao-maps-sdk';
 import { useMedia } from 'react-use';
 import type { LatLng, MarkerProps } from '../KakaoMapContainer';
 import type { StoreInfo } from '../api/store';
 import { getDistance } from '../utils/getDistance';
+import type { LocationInfo } from '../pages/MapPage';
 
 const StoreOverlay = lazy(() => import('./StoreOverlay'));
 
@@ -26,8 +23,8 @@ interface Props {
   map?: kakao.maps.Map | null; // Kakao Map 인스턴스
   containerRef?: React.RefObject<HTMLDivElement | null>; // 지도+캔버스 컨테이너
   openDetail: (store: StoreInfo) => void; // 클릭 시 상세 열기
-  onStartChange: (v: string) => void; // 출발지 변경
-  onEndChange: (v: string) => void; // 도착지 변경
+  onStartChange: (v: LocationInfo) => void; // 출발지 변경
+  onEndChange: (v: LocationInfo) => void; // 도착지 변경
   toggleBookmark: (store: StoreInfo) => void;
   bookmarkIds: Set<string>;
   center: LatLng;
@@ -92,7 +89,7 @@ export default function FilterMarker({
     };
   }, [map, center, stores]);
 
-  // 2) stores 배열을 Map으로 변환
+  // stores 배열을 Map으로 변환
   const storeMap = useMemo(() => {
     const m = new Map<string, StoreInfo>();
     stores.forEach((s) => m.set(s.id, s));
@@ -152,35 +149,44 @@ export default function FilterMarker({
     [openDetail, storeMap],
   );
 
-  // MarkerImage 생성 함수 useMemo로 메모이제이션
-  const createMarkerImage = useMemo(() => {
-    return (imageUrl: string) => {
-      const src = imageUrl;
-      return {
-        src,
-        size: { width: 40, height: 40 },
-        options: {
-          offset: { x: 20, y: 40 },
-        },
-      } as const;
-    };
-  }, []);
   // 2D 마커 렌더링 함수 분리
   const renderFarMarkers = () =>
     Markers.map((m, idx) => {
-      const markerImage = createMarkerImage(m.imageUrl);
-
       return (
         <React.Fragment key={`${m.id}-${idx}`}>
-          {/* 기본 마커 */}
-          <MapMarker
+          {/* 기본 마커 커스텀*/}
+          <CustomOverlayMap
             position={{ lat: m.lat, lng: m.lng }}
-            image={markerImage}
             zIndex={shouldCluster ? 2 : 3}
-            onClick={() => handleClick(m.id)}
-            onMouseOver={() => handleMouseOver(m.id)}
-            onMouseOut={handleMouseOut}
-          />
+          >
+            <div
+              onClick={() => handleClick(m.id)}
+              onMouseEnter={() => handleMouseOver(m.id)}
+              onMouseLeave={handleMouseOut}
+              style={{
+                width: 35,
+                height: 35,
+                borderRadius: '50%',
+                overflow: 'hidden',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+                backgroundColor: '#fff',
+                cursor: 'pointer',
+                position: 'relative',
+                zIndex: shouldCluster ? 2 : 3,
+              }}
+            >
+              <img
+                src={m.imageUrl || '/default.png'}
+                alt="store"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  display: 'block',
+                }}
+              />
+            </div>
+          </CustomOverlayMap>
 
           {/* AI추천 마커 애니메이션 효과 */}
           {m.isRecommended && (
@@ -239,7 +245,7 @@ export default function FilterMarker({
               position: 'fixed',
               left: overlay.x,
               top: overlay.y,
-              transform: 'translate(-50%, -120%)',
+              transform: 'translate(-48%, -110%)',
               pointerEvents: 'auto',
               zIndex: 2,
             }}

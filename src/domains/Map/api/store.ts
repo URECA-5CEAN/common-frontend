@@ -154,6 +154,7 @@ export const fetchStores = async (
 
 //즐겨찾기 조회
 export async function fetchBookmark(category?: string): Promise<StoreInfo[]> {
+  if (!token) return [];
   try {
     const response: AxiosResponse<FetchStoresResponse> = await apiClient.get(
       '/bookmark',
@@ -220,11 +221,12 @@ export async function deleteBookmark(storeId: string): Promise<string> {
   }
 }
 
-export async function uploadReceiptImage(file: File): Promise<BenefitData> {
-  console.log(file);
+export async function uploadReceiptImage(
+  file: File,
+  userEmail: string,
+): Promise<BenefitData> {
   const formData = new FormData();
   formData.append('imageFile', file);
-  console.log(formData);
   try {
     const response: AxiosResponse<{ data: BenefitData }> = await apiClient.post(
       '/ocr',
@@ -233,6 +235,7 @@ export async function uploadReceiptImage(file: File): Promise<BenefitData> {
         headers: {
           Authorization: token,
           'Content-Type': 'multipart/form-data',
+          'X-User-email': userEmail,
         },
       },
     );

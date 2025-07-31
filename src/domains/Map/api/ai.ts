@@ -15,7 +15,10 @@ export interface AiRecommendResult {
 
 export async function fetchAiRecommendedStore(
   params: FetchStoresParams,
-): Promise<AiRecommendResult> {
+): Promise<AiRecommendResult | null> {
+  if (!token) {
+    return null;
+  }
   try {
     const { data } = await apiClient.post<{ data: AiRecommendResult }>(
       '/recommend/store',

@@ -48,7 +48,7 @@ const MySharingPage = () => {
             variant="primary"
             size="lg"
             className="sm:flex whitespace-nowrap px-4 py-2 rounded-md items-center gap-1"
-            onClick={() => navigate('/explore/share/write')}
+            onClick={() => navigate('/mypage/share/write')}
           >
             <Plus size={18} />
             <span className="hidden sm:flex">글 작성</span>

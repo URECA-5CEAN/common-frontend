@@ -5,16 +5,24 @@ import MapSection from './MapSection';
 import StarSection from './StarSection';
 import DetailSection from './DetailSection';
 import { ChevronLeft } from 'lucide-react';
-import RoadSection from './RoadSection';
-import { useEffect, useState, type ChangeEventHandler } from 'react';
+import RoadSection, { type RouteItem } from './RoadSection';
+import {
+  useEffect,
+  useState,
+  type ChangeEventHandler,
+  type Dispatch,
+  type SetStateAction,
+} from 'react';
 import type { StoreInfo } from '../../api/store';
-import type { MenuType } from './MapSidebar';
+import type { Panel } from './MapSidebar';
 import { getUserInfo, getUserStat } from '@/domains/MyPage/api/profile';
 import type { UserInfoApi } from '@/domains/MyPage/types/profile';
+import type { LocationInfo } from '../../pages/MapPage';
+import RoadDetailSection from './RoadDetailSection';
 
 interface SidebarPanelProps {
   index: number; // 0 = 메뉴, 1 = 상세
-  panel: { type: 'menu' | 'detail'; menu: MenuType; item?: StoreInfo }; //현재 보여줄 메뉴
+  panel: Panel; //현재 보여줄 메뉴
   stores: StoreInfo[];
   openDetail: (store: StoreInfo) => void;
   onClose: (idx: number) => void;
@@ -22,10 +30,10 @@ interface SidebarPanelProps {
   changeKeyword?: ChangeEventHandler<HTMLInputElement>;
   //키워드
   keyword?: string;
-  startValue?: string;
-  endValue?: string;
-  onStartChange: (v: string) => void;
-  onEndChange: (v: string) => void;
+  startValue: LocationInfo;
+  endValue: LocationInfo;
+  onStartChange: (v: LocationInfo) => void;
+  onEndChange: (v: LocationInfo) => void;
   onSwap?: () => void;
   onReset?: () => void;
   onNavigate?: () => void;
@@ -33,6 +41,9 @@ interface SidebarPanelProps {
   toggleBookmark: (store: StoreInfo) => void;
   bookmarkIds: Set<string>;
   goToStore: (store: StoreInfo) => void;
+  openRoadDetail: (route: RouteItem) => void;
+  setStartValue: Dispatch<SetStateAction<LocationInfo>>;
+  setEndValue: Dispatch<SetStateAction<LocationInfo>>;
 }
 
 export default function SidebarPanel({
@@ -54,12 +65,14 @@ export default function SidebarPanel({
   toggleBookmark,
   bookmarkIds,
   goToStore,
+  openRoadDetail,
+  setStartValue,
+  setEndValue,
 }: SidebarPanelProps) {
-  const [ShowStar, SetShowStar] = useState<boolean>(false);
-
   const [userInfo, setUserInfo] = useState<UserInfoApi>();
-
+  const token = localStorage.getItem('authToken');
   useEffect(() => {
+    if (!token) return;
     const fetchUserData = async () => {
       const userInfoRes = await getUserInfo();
       const userStatRes = await getUserStat();
@@ -73,16 +86,11 @@ export default function SidebarPanel({
     };
 
     fetchUserData();
-  }, []);
-
-  // 즐겨찾기 토글
-  const onStar = () => {
-    SetShowStar((prev) => !prev);
-  };
+  }, [token]);
 
   const left = 64 + index * 345;
   const isDetail = panel.type === 'detail';
-
+  const isRoad = panel.type === 'road';
   if (!userInfo) return;
   return (
     <motion.div
@@ -137,16 +145,15 @@ export default function SidebarPanel({
           <RoadSection
             startValue={startValue}
             endValue={endValue}
-            onStartChange={onStartChange}
-            onEndChange={onEndChange}
             onSwap={onSwap}
             onReset={onReset}
             onNavigate={onNavigate}
-            onStar={onStar}
             bookmarks={bookmarks}
             openDetail={openDetail}
-            isShowStar={ShowStar}
             goToStore={goToStore}
+            openRoadDetail={openRoadDetail}
+            setStartValue={setStartValue}
+            setEndValue={setEndValue}
           />
         )}
         {index === 1 && panel.type === 'detail' && panel.item && (
@@ -159,10 +166,13 @@ export default function SidebarPanel({
             goToStore={goToStore}
           />
         )}
+        {index === 1 && panel.type === 'road' && panel.item && (
+          <RoadDetailSection route={panel.item} />
+        )}
       </div>
 
       {/* 패널 닫기 버튼 */}
-      {index === 1 && isDetail && (
+      {index === 1 && (isDetail || isRoad) && (
         <button
           onClick={() => onClose(index)}
           className="absolute active:scale-95 active:opacity-80 z-10 left-2  md:left-[100%] top-8  w-10 md:h-12 md:border-l-0 h-10 md:top-[43%] cursor-pointer hover:bg-gray-100 focus:outline-none bg-white border-1  md:rounded-lg rounded-full border-gray-200"

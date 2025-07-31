@@ -19,6 +19,8 @@ export default function StoreCard({
         alt={store.name}
         className="w-[80px] h-[80px] rounded-md mr-3 self-center"
         loading="lazy"
+        width={80}
+        height={80}
       />
       {/* 텍스트 영역 */}
       <div className="flex flex-1 mt-2 flex-col justify-between space-y-2">

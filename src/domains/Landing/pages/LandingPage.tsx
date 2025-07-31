@@ -1,10 +1,61 @@
+import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useState, useEffect } from 'react';
+import { ArrowUpToLine } from 'lucide-react';
 import MotionPathAnimation from '@/domains/Landing/pages/MotionPathAnimation';
 import beach from '@/assets/image/beach.png';
 import wave2 from '@/assets/image/LandingWave.svg';
+import HeroSection from '@/domains/Landing/components/HeroSection';
+import MapSection from '@/domains/Landing/components/MapSection';
+import ExploreSection from '@/domains/Landing/components/ExploreSection';
+import GameificationSection from '@/domains/Landing/components/GameificationSection';
+import StoreSection from '@/domains/Landing/components/StoreSection';
+import NavigationSection from '@/domains/Landing/components/NavigationSection';
 
 const LandingPage = () => {
+  const navigate = useNavigate();
+  const { isLoggedIn } = useAuthStore();
+  const [showTopButton, setShowTopButton] = useState(false);
+
+  // 스크롤 감지
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowTopButton(true);
+      } else {
+        setShowTopButton(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const handleMapClick = () => {
+    navigate('/map');
+  };
+
+  const handleExploreClick = () => {
+    navigate('/explore/rankings');
+  };
+
+  const handleMyPageClick = () => {
+    if (isLoggedIn) {
+      navigate('/mypage/profile');
+    } else {
+      navigate('/login');
+    }
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
+
   return (
-    <div className="">
+    <div className="h-[600vh]">
       <img
         src={beach}
         alt="모래사장"
@@ -12,21 +63,42 @@ const LandingPage = () => {
       />
 
       <div className="absolute top-[130px] h-full overflow-hidden w-full">
-        <img src={wave2} alt="파도" className=" h-full min-w-[1654px]" />
+        <img src={wave2} alt="파도" className=" h-full min-w-[1654px] " />
       </div>
       <MotionPathAnimation />
-      <div className="absolute top-0 h-full w-full">
-        <div className="w-full flex flex-col items-center text-center mt-[140px]">
-          <h1 className="text-[82px] text-[#744B07] font-bold">지중해</h1>
-          <h2 className="text-[48px] text-[#FFBF41] font-bold mb-10">
-            지도 안의 중요한 혜택
-          </h2>
-          <p className="text-[40px] text-[#744B07]">
-            숨겨진 보물 같은 멤버십 혜택들, <br />
-            지도 위를 지금 항해해보세요!
-          </p>
-        </div>
-      </div>
+
+      {/* 첫 번째 섹션 - 메인 타이틀 */}
+      <HeroSection />
+
+      {/* 두 번째 섹션 - 멤버십 지도 */}
+      <MapSection />
+
+      {/* 세 번째 섹션 - 멤버십 혜택 탐험 */}
+      <ExploreSection />
+
+      {/* 네 번째 섹션 - 게이미피케이션 섹션 */}
+      <GameificationSection />
+
+      {/* 다섯 번째 섹션 - 제휴처 정보 */}
+      <StoreSection />
+
+      {/* 여섯 번째 섹션 - 페이지 이동 */}
+      <NavigationSection
+        onMapClick={handleMapClick}
+        onExploreClick={handleExploreClick}
+        onMyPageClick={handleMyPageClick}
+      />
+
+      {/* 탑 버튼 */}
+      {showTopButton && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-8 right-8 w-14 h-14 bg-primaryGreen-60 hover:bg-primaryGreen-80 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-50 flex items-center justify-center"
+          aria-label="맨 위로 이동"
+        >
+          <ArrowUpToLine size={24} />
+        </button>
+      )}
     </div>
   );
 };
