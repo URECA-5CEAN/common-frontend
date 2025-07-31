@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { createChatRoom, getSharePostById } from '../api/share';
-import { getSharePostById } from '../api/share';
 import type { Post } from '../types/share';
 import { Calendar, MapPin, Pencil, Trash2 } from 'lucide-react';
 import { fromISOStringToDateTime } from '../utils/datetimeUtils';
