@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import dolphinShip from '@/assets/image/dolphin-ship.svg';
 
 // GSAP types (basic ones we need)
@@ -130,7 +130,7 @@ const MotionPathAnimation: React.FC = () => {
     };
   };
 
-  const initializeAnimation = () => {
+  const initializeAnimation = useCallback(() => {
     const gsap = window.gsap;
     const ScrollTrigger = window.ScrollTrigger;
     const MotionPathPlugin = window.MotionPathPlugin;
@@ -145,6 +145,7 @@ const MotionPathAnimation: React.FC = () => {
 
       let prevDirection = 0;
 
+      // 경로 애니메이션 설정
       gsap.to(motionDivRef.current, {
         scrollTrigger: {
           trigger: motionPathRef.current,
@@ -167,9 +168,9 @@ const MotionPathAnimation: React.FC = () => {
         },
       });
     }
-  };
+  }, []);
 
-  const loadGSAP = () => {
+  const loadGSAP = useCallback(() => {
     if (gsapLoadedRef.current) {
       initializeAnimation();
       return;
@@ -204,7 +205,7 @@ const MotionPathAnimation: React.FC = () => {
       .catch((error) => {
         console.error('Failed to load GSAP:', error);
       });
-  };
+  }, [initializeAnimation]);
 
   useEffect(() => {
     loadGSAP();
@@ -215,7 +216,7 @@ const MotionPathAnimation: React.FC = () => {
         window.ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
       }
     };
-  }, []);
+  }, [loadGSAP]);
 
   return (
     <div
@@ -230,7 +231,7 @@ const MotionPathAnimation: React.FC = () => {
         xmlnsXlink="http://www.w3.org/1999/xlink"
         x="0px"
         y="0px"
-        viewBox="0 0 869 4000"
+        viewBox="0 0 869 3000"
         xmlSpace="preserve"
         preserveAspectRatio="xMidYMax meet"
       >
@@ -238,8 +239,9 @@ const MotionPathAnimation: React.FC = () => {
           {`
             .st0 {
               fill: none;
-              stroke: red;
-              stroke-width: 10;
+              stroke: white;
+              stroke-width: 8;
+              stroke-opacity: 0.2;
               stroke-linecap: round;
               stroke-linejoin: round;
               stroke-miterlimit: 10;
@@ -247,16 +249,14 @@ const MotionPathAnimation: React.FC = () => {
           `}
         </style>
 
+        {/* 이동 경로 */}
         <path
           ref={motionPathRef}
           id="motionPath"
           className="st0"
-          d="M1 54C39.3102 54.9861 57.2261 105.638 66.1411 188.474C72.8614 250.918 79.0336 600.772 320.372 595.931C523.808 591.85 770.705 706.299 770.705 917.862C770.705 1097.79 634.5 1155.88 454.273 1198.64C274.047 1241.41 70.8909 1292.11 70.8909 1513.58C70.8909 1766.93 360.017 1765.05 420.346 1765.05C479.38 1765.05 805.99 1828.07 805.99 2018.4C805.99 2238.94 771.35 2323.96 350.455 2386.59C148.02 2416.71 35.7964 2579.96 76.9979 2696.15C163.256 2862.91 238.493 2893.82 467.392 2948.42"
-          stroke="white"
-          strokeOpacity="0.2"
-          strokeWidth="6"
+          d="M1 40.5C39.3102 41.24 57.2261 79.23 66.1411 141.36C72.8614 188.19 79.0336 450.58 320.372 446.95C523.808 443.88 770.705 529.72 770.705 688.4C770.705 823.34 634.5 866.91 454.273 898.98C274.047 931.06 70.8909 969.08 70.8909 1135.19C70.8909 1325.2 360.017 1323.79 420.346 1323.79C479.38 1323.79 805.99 1371.05 805.99 1513.8C805.99 1679.21 771.35 1742.97 350.455 1789.94C148.02 1812.53 35.7964 1934.97 76.9979 2022.11C163.256 2147.18 238.493 2170.37 350 2175"
         />
-
+        {/* 이미지 실제로 화면에 나타나는 부분 */}
         <foreignObject x="0" y="0" width="100%" height="100%">
           <div
             ref={motionDivRef}
