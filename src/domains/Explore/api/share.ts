@@ -44,8 +44,16 @@ export const createSharePost = async (postData: PostWriteRequest) => {
   });
 };
 
-export const getSharePostList = async (): Promise<Post[]> => {
-  const response = await axios.get(`${baseURL}/user/article`);
+export const getSharePostList = async (
+  page: number,
+  location?: string,
+): Promise<Post[]> => {
+  const token = localStorage.getItem('authToken');
+
+  const response = await axios.get(`${baseURL}/user/article`, {
+    params: { page, location },
+    headers: { Authorization: token },
+  });
 
   return response.data.data.postList;
 };
