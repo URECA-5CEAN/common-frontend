@@ -18,15 +18,25 @@ import PostContentFields from '@/domains/Explore/components/share/PostContentFie
 import DateTimePicker from '@/domains/Explore/components/share/DateTimePicker';
 import PlaceField from '@/domains/Explore/components/share/PlaceField';
 import { updateMySharePost } from '@/domains/MyPage/api/myShare';
+import { LoadingSpinner } from '@/domains/MyPage/components/LoadingSpinner';
 
 const MyShareEditPage = () => {
-  const { postId } = useParams();
+  const { postId = '' } = useParams();
 
   const navigate = useNavigate();
 
-  const [category, setCategory] = useState<SelectOption | null>(null);
-  const [brand, setBrand] = useState<SelectOption | null>(null);
-  const [benefitType, setBenefitType] = useState<SelectOption | null>(null);
+  const [category, setCategory] = useState<SelectOption | null>({
+    label: '',
+    value: '',
+  });
+  const [brand, setBrand] = useState<SelectOption | null>({
+    label: '',
+    value: '',
+  });
+  const [benefitType, setBenefitType] = useState<SelectOption | null>({
+    label: '',
+    value: '',
+  });
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [date, setDate] = useState(() => getTodayString());
@@ -42,6 +52,7 @@ const MyShareEditPage = () => {
     place: '',
     time: getDefaultTime(),
   }));
+  const [isConfirmLoading, setIsConfirmLoading] = useState(false);
 
   const { setHasUnsavedChanges } = useUnsavedChanges();
 
@@ -64,13 +75,11 @@ const MyShareEditPage = () => {
 
   useEffect(() => {
     const fetchPost = async () => {
-      if (!postId) return;
-
       try {
         const data = await getSharePostById(postId);
         setCategory({ label: data.category, value: data.category });
-        setBrand({ label: data.brandName, value: data.brandName });
-        setBenefitType({ label: data.benefitName, value: data.benefitName });
+        setBrand({ label: data.brandName, value: '' });
+        setBenefitType({ label: data.benefitName, value: '' });
         setTitle(data.title);
         setContent(data.content);
         setDate(data.promiseDate.split('T')[0]);
@@ -83,7 +92,7 @@ const MyShareEditPage = () => {
     };
 
     fetchPost();
-  }, [postId]);
+  }, []);
 
   useEffect(() => {
     const hasChanges =
@@ -140,50 +149,62 @@ const MyShareEditPage = () => {
       location: place || '미정',
     };
 
+    setIsConfirmLoading(true);
     try {
-      await updateMySharePost(newPost);
+      await updateMySharePost(newPost, postId);
       setHasUnsavedChanges(false);
-      navigate('/explore/share');
+      navigate(`/mypage/share/${postId}`);
     } catch (error) {
       alert('수정 실패' + error);
+    } finally {
+      setIsConfirmLoading(false);
     }
   };
 
   return (
-    <div className="flex justify-center mt-[62px] sm:mt-[86px]">
-      <div className="w-full max-w-[1050px] m-6">
-        <h2 className="text-[28px] font-bold mb-6">나눔 글 작성</h2>
+    <div className="w-[calc(100%-48px)] max-w-[1050px] m-6">
+      <h2 className="text-[28px] font-bold mb-6">나눔 글 작성</h2>
 
-        <SelectFields
-          selectedCategory={category}
-          setSelectedCategory={setCategory}
-          selectedBrand={brand}
-          setSelectedBrand={setBrand}
-          selectedBenefitType={benefitType}
-          setSelectedBenefitType={setBenefitType}
-        />
+      <SelectFields
+        selectedCategory={category}
+        setSelectedCategory={setCategory}
+        selectedBrand={brand}
+        setSelectedBrand={setBrand}
+        selectedBenefitType={benefitType}
+        setSelectedBenefitType={setBenefitType}
+      />
 
-        <PostContentFields
-          title={title}
-          setTitle={setTitle}
-          content={content}
-          setContent={setContent}
-        />
+      <PostContentFields
+        title={title}
+        setTitle={setTitle}
+        content={content}
+        setContent={setContent}
+      />
 
-        <DateTimePicker
-          date={date}
-          setDate={setDate}
-          selectedTime={time}
-          setSelectedTime={setTime}
-        />
+      <DateTimePicker
+        date={date}
+        setDate={setDate}
+        selectedTime={time}
+        setSelectedTime={setTime}
+      />
 
-        <PlaceField place={place} setPlace={setPlace} />
+      <PlaceField place={place} setPlace={setPlace} />
 
-        <div className="flex justify-end mt-6">
-          <Button onClick={handleSubmit} size="lg">
-            수정하기
-          </Button>
-        </div>
+      <div className="flex justify-end mt-6">
+        <Button
+          onClick={handleSubmit}
+          size="lg"
+          disabled={isConfirmLoading}
+          width={'106px'}
+        >
+          {isConfirmLoading ? (
+            <div className="w-6 h-6">
+              <LoadingSpinner />
+            </div>
+          ) : (
+            '수정하기'
+          )}
+        </Button>
       </div>
     </div>
   );

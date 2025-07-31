@@ -14,9 +14,23 @@ export const getMyPostList = async () => {
   return response.data;
 };
 
-export const updateMySharePost = async (postData: PostWriteRequest) => {
+export const updateMySharePost = async (
+  postData: PostWriteRequest,
+  postId: string,
+) => {
   const token = localStorage.getItem('authToken');
   await axios.put(`${baseURL}/user/article`, postData, {
+    params: { postId },
+    headers: {
+      Authorization: token,
+    },
+  });
+};
+
+export const deleteMySharePost = async (postId: string) => {
+  const token = localStorage.getItem('authToken');
+  await axios.delete(`${baseURL}/user/article`, {
+    params: { postId },
     headers: {
       Authorization: token,
     },

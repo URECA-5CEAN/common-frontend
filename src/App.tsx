@@ -29,6 +29,7 @@ import LeaveConfirmModal from '@/components/LeaveConfirmModal';
 import { UnsavedChangesProvider } from '@/contexts/UnsavedChangesContext';
 import MyShareDetailPage from '@/domains/MyPage/pages/MyShareDetailPage';
 import MyShareEditPage from '@/domains/MyPage/pages/MyShareEditPage';
+import MyPageWritePage from '@/domains/MyPage/pages/MyPageWritePage';
 
 const AppLayout = () => {
   return (
@@ -120,12 +121,12 @@ function App() {
 
             {/* 로그인 필요 */}
             <Route element={<ProtectedRoute />}>
-              <Route path="/explore/share/write" element={<ShareWritePage />} />
-            </Route>
-
-            {/* 로그인 필요 */}
-            <Route element={<ProtectedRoute />}>
               <Route element={<SidebarLayout />}>
+                <Route
+                  path="/explore/share/write"
+                  element={<ShareWritePage />}
+                />
+
                 <Route path="/mypage/profile" element={<ProfilePage />} />
                 <Route path="/mypage/edit" element={<EditProfilePage />} />
                 <Route path="/mypage/collection" element={<CollectionPage />} />
@@ -140,6 +141,10 @@ function App() {
                 <Route
                   path="/mypage/share/edit/:postId"
                   element={<MyShareEditPage />}
+                />
+                <Route
+                  path="/mypage/share/write"
+                  element={<MyPageWritePage />}
                 />
               </Route>
             </Route>
