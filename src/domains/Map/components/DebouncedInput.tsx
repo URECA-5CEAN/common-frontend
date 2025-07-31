@@ -7,6 +7,7 @@ interface DebouncedInputProps {
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   debounceTime?: number;
   placeholder?: string;
+  className?: string;
 }
 
 //제휴처 검색 시 입력중에 검색이 자동으로 진행되어 결과값 업을 경우 에러발생하여 만듬
@@ -15,6 +16,7 @@ export default function DebouncedInput({
   onChange,
   debounceTime = 500,
   placeholder = '검색어를 입력하세요',
+  className = '',
 }: DebouncedInputProps) {
   const [internalValue, setInternalValue] = useState<string>(value);
   // 한글 조합 중 여부
@@ -53,7 +55,7 @@ export default function DebouncedInput({
       type="text"
       value={internalValue}
       placeholder={placeholder}
-      className="flex-1 bg-transparent outline-none ml-2 text-sm w-full"
+      className={`flex-1 bg-transparent outline-none ml-2 text-sm w-full ${className}`}
       onChange={handleChange}
       onCompositionStart={() => setIsComposing(true)}
       onCompositionEnd={(e) => {

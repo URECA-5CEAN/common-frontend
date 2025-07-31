@@ -32,6 +32,7 @@ import MyLocationBtn from '../components/MyLocationBtn';
 import SearchHereBtn from '../components/SearchHearBtn';
 import { fetchAiRecommendedStore } from '../api/ai';
 import { extractBouns, type InternalBounds } from '../utils/extractBouns';
+import type { RouteItem } from '../components/sidebar/RoadSection';
 
 //bounds 타입에러 방지
 
@@ -50,6 +51,12 @@ const Category: CategoryType[] = [
   '문화시설',
   '렌터카',
 ];
+export interface LocationInfo {
+  name: string;
+  lat: number;
+  lng: number;
+}
+
 export default function MapPage() {
   //도 + 3D 캔버스 감쌀 div
   const containerRef = useRef<HTMLDivElement>(null);
@@ -81,14 +88,23 @@ export default function MapPage() {
     type: 'menu',
     menu: '지도',
   });
-
+  //detail,road 열고 닫힐 때 사용
+  const [panelIndex, setPanelIndex] = useState<number>(0);
   //검색 디바운스
   const [isCategory, SetIsCategory] = useState<string>('');
 
   //출발지
-  const [startValue, setStartValue] = useState<string>('');
+  const [startValue, setStartValue] = useState<LocationInfo>({
+    name: '',
+    lat: 0,
+    lng: 0,
+  });
   //선택지
-  const [endValue, setEndValue] = useState<string>('');
+  const [endValue, setEndValue] = useState<LocationInfo>({
+    name: '',
+    lat: 0,
+    lng: 0,
+  });
 
   //즐겨찾기
   const [bookmarks, setBookmarks] = useState<StoreInfo[]>([]);
@@ -111,8 +127,10 @@ export default function MapPage() {
   const peekHeight = 30;
 
   const [idleCount, setIdleCount] = useState(0);
-
+  //AI 추천 제휴처
   const [recommendedStore, setRecommendedStore] = useState<StoreInfo>();
+  // 선택한 길찾기
+  const [selectedRoute, setSelectedRoute] = useState<RouteItem | null>(null);
 
   // 제휴처 목록 조회 함수
   const searchHere = useCallback(async () => {
@@ -165,6 +183,8 @@ export default function MapPage() {
         centerLat: center.lat,
         centerLng: center.lng,
       });
+      if (!result || !result.store || !result.store.id) return;
+
       const recommended = { ...result.store, isRecommended: result.reason };
       setRecommendedStore(recommended);
 
@@ -283,7 +303,7 @@ export default function MapPage() {
     const list = [...filteredStores];
 
     if (recommendedStore) {
-      // 이미 있는 경우도 일단 제외하고 맨 앞에 다시 삽입 (표식 포함)
+      // 이미 있는 경우도 일단 제외하고 맨 앞에 다시 삽입
       const listWithoutRecommended = list.filter(
         (store) => store.id !== recommendedStore.id,
       );
@@ -302,13 +322,41 @@ export default function MapPage() {
   const openDetail = useCallback(
     (store: StoreInfo) => {
       setPanel({ type: 'detail', menu: panel.menu, item: store });
+      setPanelIndex(1);
     },
+    [panel.menu],
+  );
+  // 길찾기 상세보기
+  const openRoadDetail = useCallback(
+    (route: RouteItem) => {
+      setPanel({ type: 'road', menu: panel.menu, item: route });
+      setPanelIndex(1);
+      setSelectedRoute(route);
+
+      const startPoint = route.path?.[0];
+      const endPoint = route.path?.[route.path.length - 1];
+      if (startPoint && endPoint) {
+        setStartValue({
+          name: route.from || '출발지',
+          lat: startPoint.lat,
+          lng: startPoint.lng,
+        });
+        setEndValue({
+          name: route.to || '도착지',
+          lat: endPoint.lat,
+          lng: endPoint.lng,
+        });
+      }
+      console.log(startPoint, endPoint);
+    },
+
     [panel.menu],
   );
 
   //상세 닫기
   const closePanel = useCallback(() => {
     setPanel({ type: 'menu', menu: panel.menu });
+    setPanelIndex(0);
   }, [panel.menu]);
 
   //키워드 변경 시 카테고리 초기화
@@ -323,15 +371,15 @@ export default function MapPage() {
     openMenu('지도');
   };
 
-  // 출발 도착 change
-  const onStartChange = (v: string) => {
-    setStartValue(v);
+  // 출발지 변경
+  const onStartChange = (store: LocationInfo) => {
+    setStartValue(store);
     openMenu('길찾기');
   };
 
   // 도착지 변경
-  const onEndChange = (v: string) => {
-    setEndValue(v);
+  const onEndChange = (store: LocationInfo) => {
+    setEndValue(store);
     openMenu('길찾기');
   };
 
@@ -344,13 +392,10 @@ export default function MapPage() {
   };
   // 출발지 도착지 리셋
   const onReset = () => {
-    setStartValue('');
-    setEndValue('');
+    setStartValue({ name: '', lat: 0, lng: 0 });
+    setEndValue({ name: '', lat: 0, lng: 0 });
   };
-  //길찾기
-  const onNavigate = () => {
-    console.log('길찾기 실행:', { from: startValue, to: endValue });
-  };
+
   //마운트 시 즐겨찾기 조회
   useEffect(() => {
     let imdounted = true;
@@ -369,6 +414,7 @@ export default function MapPage() {
     };
   }, []);
 
+  //즐겨찾기 토글
   const toggleBookmark = async (store: StoreInfo) => {
     try {
       if (bookmarks.some((bookmark) => bookmark.id === store.id)) {
@@ -397,6 +443,15 @@ export default function MapPage() {
     setSelectedFile(file);
   };
 
+  //길찾기 시 그 중심으로 이동
+  useEffect(() => {
+    if (selectedRoute?.path.length) {
+      const centerIdx = Math.floor(selectedRoute.path.length / 2);
+      const center = selectedRoute.path[centerIdx];
+      map?.setCenter(new kakao.maps.LatLng(center.lat, center.lng));
+    }
+  }, [selectedRoute]);
+
   return (
     <div className="flex h-screen flex-col-reverse md:flex-row overflow-y-hidden ">
       {/* 사이드바 */}
@@ -415,7 +470,6 @@ export default function MapPage() {
           onEndChange={onEndChange}
           onSwap={onSwap}
           onReset={onReset}
-          onNavigate={onNavigate}
           bookmarks={bookmarks}
           toggleBookmark={toggleBookmark}
           bookmarkIds={bookmarkIds}
@@ -424,6 +478,10 @@ export default function MapPage() {
           sheetDetail={sheetDetail}
           onSheetPositionChange={(y) => setSheetY(y)}
           onDetailSheetPositionChange={(y) => setSheetY(y)}
+          openRoadDetail={openRoadDetail}
+          index={panelIndex}
+          setStartValue={setStartValue}
+          setEndValue={setEndValue}
         />
         {/* 내 위치 버튼 */}
         {map && myLocation && (
@@ -453,6 +511,17 @@ export default function MapPage() {
             level={5}
             onMapCreate={setMap}
             onCenterChanged={setCenter}
+            selectedRoute={selectedRoute}
+            start={
+              startValue.lat !== 0 && startValue.lng !== 0
+                ? { lat: startValue.lat, lng: startValue.lng }
+                : undefined
+            }
+            end={
+              endValue.lat !== 0 && endValue.lng !== 0
+                ? { lat: endValue.lat, lng: endValue.lng }
+                : undefined
+            }
           >
             {/* 2D 마커/오버레이 */}
             <FilterMarker

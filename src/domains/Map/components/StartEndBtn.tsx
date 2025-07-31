@@ -1,9 +1,10 @@
 import type { StoreInfo } from '../api/store';
+import type { LocationInfo } from '../pages/MapPage';
 
 interface StartEndProps {
   isSmall?: boolean;
-  onStartChange: (v: string) => void;
-  onEndChange: (v: string) => void;
+  onStartChange: (v: LocationInfo) => void;
+  onEndChange: (v: LocationInfo) => void;
   store: StoreInfo;
 }
 
@@ -15,13 +16,18 @@ export default function StartEndBtn({
 }: StartEndProps) {
   const pyClass = isSmall ? 'py-1' : 'py-2';
   const lineClass = isSmall ? 'h-4' : 'h-6';
+
   return (
     <div className="inline-flex  items-center bg-white border border-gray-200 rounded-full shadow-sm overflow-hidden">
       <button
         className={`px-3 ${pyClass} text-sm  hover:bg-primaryGreen hover:text-white focus:outline-none cursor-pointer`}
         onClick={(e) => {
           e.stopPropagation();
-          onStartChange(store.name);
+          onStartChange({
+            name: store.name,
+            lat: store.latitude,
+            lng: store.longitude,
+          });
         }}
       >
         출발
@@ -31,7 +37,11 @@ export default function StartEndBtn({
         className={`px-3 ${pyClass} text-sm  text-primaryGreen hover:bg-primaryGreen hover:text-white focus:outline-none cursor-pointer`}
         onClick={(e) => {
           e.stopPropagation();
-          onEndChange(store.name);
+          onEndChange({
+            name: store.name,
+            lat: store.latitude,
+            lng: store.longitude,
+          });
         }}
       >
         도착
