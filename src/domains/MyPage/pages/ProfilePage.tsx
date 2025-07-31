@@ -47,9 +47,7 @@ const ProfilePage: React.FC = () => {
     };
 
     fetchUserData();
-    if (usageHistoryLength === 0) {
-      fetchUsageHistory();
-    }
+    fetchUsageHistory();
   }, [fetchUsageHistory, usageHistoryLength]);
 
   useEffect(() => {

@@ -8,12 +8,15 @@ import { Modal } from '@/components/Modal';
 import { Button } from '@/components/Button';
 import dolphinImg from '@/assets/image/dolphin_normal.png';
 import dolphinFind from '@/assets/image/dolphin_find.png';
+import { deleteMySharePost } from '@/domains/MyPage/api/myShare';
+import { LoadingSpinner } from '@/domains/MyPage/components/LoadingSpinner';
 
 const MyShareDetailPage = () => {
-  const { postId } = useParams();
+  const { postId = '' } = useParams();
   const [post, setPost] = useState<Post | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
+  const [isConfirmLoading, setIsConfirmLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -38,6 +41,17 @@ const MyShareDetailPage = () => {
 
   const handleEditClick = () => {
     navigate(`/mypage/share/edit/${postId}`);
+  };
+  const handleDeleteClick = async () => {
+    try {
+      setIsConfirmLoading(true);
+      await deleteMySharePost(postId);
+      navigate(`/mypage/share`);
+    } catch (error) {
+      console.error('게시글 삭제 실패:', error);
+    } finally {
+      setIsConfirmLoading(false);
+    }
   };
 
   if (isLoading) return <div className="m-6">로딩 중...</div>;
@@ -65,7 +79,9 @@ const MyShareDetailPage = () => {
         <div className="flex gap-4 sm:items-center">
           <div className="relative w-16 h-16 sm:w-32 sm:h-32 flex items-center justify-center flex-shrink-0">
             {/* <img /> */}
-            <div className={`bg-gray-400 w-full h-full rounded-2xl`}></div>
+            <div className={`bg-gray-400 w-full h-full rounded-2xl`}>
+              <img src={post.brandImgUrl} alt={post.brandName + ' 이미지'} />
+            </div>
             {/* {post.isClosed && (
             <span className="absolute text-xs font-semibold text-white">
               모집 완료
@@ -128,7 +144,19 @@ const MyShareDetailPage = () => {
             >
               취소
             </Button>
-            <Button fullWidth>삭제</Button>
+            <Button
+              fullWidth
+              onClick={() => handleDeleteClick()}
+              disabled={isConfirmLoading}
+            >
+              {isConfirmLoading ? (
+                <div className="w-6 h-6">
+                  <LoadingSpinner />
+                </div>
+              ) : (
+                '삭제하기'
+              )}
+            </Button>
           </>
         }
       ></Modal>
