@@ -45,15 +45,13 @@ export const getMyMission = async () => {
 
 export const setMissionCompleted = async (id: string) => {
   const token = localStorage.getItem('authToken');
-  const response = await axios.post(
-    `${baseURL}/user/mission/complete`,
-    { id },
-    {
-      headers: {
-        Authorization: token,
-      },
+
+  const response = await axios.get(`${baseURL}/user/mission/complete`, {
+    params: { missionId: id },
+    headers: {
+      Authorization: token,
     },
-  );
+  });
 
   return response.data;
 };
