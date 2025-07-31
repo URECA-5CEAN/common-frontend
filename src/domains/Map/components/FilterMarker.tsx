@@ -93,7 +93,7 @@ export default function FilterMarker({
     };
   }, [map, center, stores]);
 
-  // 2) stores 배열을 Map으로 변환
+  // stores 배열을 Map으로 변환
   const storeMap = useMemo(() => {
     const m = new Map<string, StoreInfo>();
     stores.forEach((s) => m.set(s.id, s));
@@ -174,14 +174,37 @@ export default function FilterMarker({
       return (
         <React.Fragment key={`${m.id}-${idx}`}>
           {/* 기본 마커 */}
-          <MapMarker
+          <CustomOverlayMap
             position={{ lat: m.lat, lng: m.lng }}
-            image={markerImage}
             zIndex={shouldCluster ? 2 : 3}
-            onClick={() => handleClick(m.id)}
-            onMouseOver={() => handleMouseOver(m.id)}
-            onMouseOut={handleMouseOut}
-          />
+          >
+            <div
+              onClick={() => handleClick(m.id)}
+              onMouseEnter={() => handleMouseOver(m.id)}
+              onMouseLeave={handleMouseOut}
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: '50%',
+                overflow: 'hidden',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+                cursor: 'pointer',
+                position: 'relative',
+                zIndex: shouldCluster ? 2 : 3,
+              }}
+            >
+              <img
+                src={m.imageUrl || '/default.png'}
+                alt="store"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  display: 'block',
+                }}
+              />
+            </div>
+          </CustomOverlayMap>
 
           {/* AI추천 마커 애니메이션 효과 */}
           {m.isRecommended && (

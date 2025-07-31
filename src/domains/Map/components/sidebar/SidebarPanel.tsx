@@ -6,7 +6,13 @@ import StarSection from './StarSection';
 import DetailSection from './DetailSection';
 import { ChevronLeft } from 'lucide-react';
 import RoadSection, { type RouteItem } from './RoadSection';
-import { useEffect, useState, type ChangeEventHandler } from 'react';
+import {
+  useEffect,
+  useState,
+  type ChangeEventHandler,
+  type Dispatch,
+  type SetStateAction,
+} from 'react';
 import type { StoreInfo } from '../../api/store';
 import type { Panel } from './MapSidebar';
 import { getUserInfo, getUserStat } from '@/domains/MyPage/api/profile';
@@ -36,6 +42,8 @@ interface SidebarPanelProps {
   bookmarkIds: Set<string>;
   goToStore: (store: StoreInfo) => void;
   openRoadDetail: (route: RouteItem) => void;
+  setStartValue: Dispatch<SetStateAction<LocationInfo>>;
+  setEndValue: Dispatch<SetStateAction<LocationInfo>>;
 }
 
 export default function SidebarPanel({
@@ -58,6 +66,8 @@ export default function SidebarPanel({
   bookmarkIds,
   goToStore,
   openRoadDetail,
+  setStartValue,
+  setEndValue,
 }: SidebarPanelProps) {
   const [userInfo, setUserInfo] = useState<UserInfoApi>();
   const token = localStorage.getItem('authToken');
@@ -142,6 +152,8 @@ export default function SidebarPanel({
             openDetail={openDetail}
             goToStore={goToStore}
             openRoadDetail={openRoadDetail}
+            setStartValue={setStartValue}
+            setEndValue={setEndValue}
           />
         )}
         {index === 1 && panel.type === 'detail' && panel.item && (

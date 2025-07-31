@@ -1,4 +1,10 @@
-import { lazy, Suspense, type ChangeEventHandler } from 'react';
+import {
+  lazy,
+  Suspense,
+  type ChangeEventHandler,
+  type Dispatch,
+  type SetStateAction,
+} from 'react';
 import { AnimatePresence } from 'framer-motion';
 import mapImage from '@/assets/image/MapImage.svg';
 import starImage from '@/assets/image/StarImage.svg';
@@ -47,6 +53,8 @@ interface SideBarProps {
   onDetailSheetPositionChange: (y: number) => void;
   openRoadDetail: (route: RouteItem) => void;
   index: number;
+  setStartValue: Dispatch<SetStateAction<LocationInfo>>;
+  setEndValue: Dispatch<SetStateAction<LocationInfo>>;
 }
 
 export default function MapSidebar({
@@ -73,6 +81,8 @@ export default function MapSidebar({
   onDetailSheetPositionChange,
   openRoadDetail,
   index,
+  setStartValue,
+  setEndValue,
 }: SideBarProps) {
   if (!panel) return;
 
@@ -119,6 +129,8 @@ export default function MapSidebar({
             bookmarkIds={bookmarkIds}
             goToStore={goToStore}
             openRoadDetail={openRoadDetail}
+            setStartValue={setStartValue}
+            setEndValue={setEndValue}
           />
 
           {/* 상세 패널 (panel.type이 'detail'일 때만) */}
@@ -145,6 +157,8 @@ export default function MapSidebar({
                   bookmarkIds={bookmarkIds}
                   goToStore={goToStore}
                   openRoadDetail={openRoadDetail}
+                  setStartValue={setStartValue}
+                  setEndValue={setEndValue}
                 />
               </Suspense>
             )}
@@ -182,6 +196,8 @@ export default function MapSidebar({
                 bookmarkIds={bookmarkIds}
                 goToStore={goToStore}
                 openRoadDetail={openRoadDetail}
+                setStartValue={setStartValue}
+                setEndValue={setEndValue}
               />
             </BottomSheet>
           )}
@@ -215,6 +231,8 @@ export default function MapSidebar({
                   bookmarkIds={bookmarkIds}
                   goToStore={goToStore}
                   openRoadDetail={openRoadDetail}
+                  setStartValue={setStartValue}
+                  setEndValue={setEndValue}
                 />
               </BottomSheet>
             </Suspense>

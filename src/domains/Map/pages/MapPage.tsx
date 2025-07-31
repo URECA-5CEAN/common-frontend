@@ -52,7 +52,7 @@ const Category: CategoryType[] = [
   '렌터카',
 ];
 export interface LocationInfo {
-  name: string; // 사용자 입력 혹은 장소명
+  name: string;
   lat: number;
   lng: number;
 }
@@ -316,9 +316,6 @@ export default function MapPage() {
   // 사이드바 메뉴 Open
   const openMenu = (menu: MenuType) => {
     setPanel({ type: 'menu', menu });
-    setSelectedRoute(null);
-    setStartValue({ name: '', lat: 0, lng: 0 });
-    setEndValue({ name: '', lat: 0, lng: 0 });
   };
 
   //매장 선택 시 상세열기
@@ -335,7 +332,24 @@ export default function MapPage() {
       setPanel({ type: 'road', menu: panel.menu, item: route });
       setPanelIndex(1);
       setSelectedRoute(route);
+
+      const startPoint = route.path?.[0];
+      const endPoint = route.path?.[route.path.length - 1];
+      if (startPoint && endPoint) {
+        setStartValue({
+          name: route.from || '출발지',
+          lat: startPoint.lat,
+          lng: startPoint.lng,
+        });
+        setEndValue({
+          name: route.to || '도착지',
+          lat: endPoint.lat,
+          lng: endPoint.lng,
+        });
+      }
+      console.log(startPoint, endPoint);
     },
+
     [panel.menu],
   );
 
@@ -357,7 +371,7 @@ export default function MapPage() {
     openMenu('지도');
   };
 
-  // 출발 도착 change
+  // 출발지 변경
   const onStartChange = (store: LocationInfo) => {
     setStartValue(store);
     openMenu('길찾기');
@@ -465,6 +479,8 @@ export default function MapPage() {
           onDetailSheetPositionChange={(y) => setSheetY(y)}
           openRoadDetail={openRoadDetail}
           index={panelIndex}
+          setStartValue={setStartValue}
+          setEndValue={setEndValue}
         />
         {/* 내 위치 버튼 */}
         {map && myLocation && (

@@ -42,6 +42,7 @@ export default function DetailSection({
   if (isLoading) return 'Loading...';
   if (isError) return `Error: ${error.message}`;
   if (benefits.length === 0) return '해당 브랜드 혜택이 없습니다.';
+
   return (
     <div className="space-y-2  h-screen md:min-h-[800px] z-10 ">
       {/* 헤더 */}

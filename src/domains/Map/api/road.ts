@@ -9,6 +9,7 @@ const apiClient: AxiosInstance = axios.create({
 
 //도착, 출발지
 interface Coordinate {
+  name: string;
   x: number;
   y: number;
   angle?: number;

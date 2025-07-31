@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type Dispatch, type SetStateAction } from 'react';
 import {
   Star,
   RefreshCcw,
@@ -72,6 +72,8 @@ interface RouteInputProps {
   bookmarks: StoreInfo[];
   goToStore: (store: StoreInfo) => void;
   openRoadDetail: (route: RouteItem) => void;
+  setStartValue: Dispatch<SetStateAction<LocationInfo>>;
+  setEndValue: Dispatch<SetStateAction<LocationInfo>>;
 }
 type ViewMode = 'bookmark' | 'saved' | 'route';
 export default function RoadSection({
@@ -83,6 +85,8 @@ export default function RoadSection({
   goToStore,
   openDetail,
   openRoadDetail,
+  setStartValue,
+  setEndValue,
 }: RouteInputProps) {
   const [showRecent, setShowRecent] = useState<boolean>(true);
   const [mode, setMode] = useState<ViewMode>('saved');
@@ -97,8 +101,18 @@ export default function RoadSection({
   const handleNavigate = async () => {
     try {
       const body: DirectionRequestBody = {
-        origin: { x: startValue.lng, y: startValue.lat, angle: 270 },
-        destination: { x: endValue.lng, y: endValue.lat, angle: 270 },
+        origin: {
+          name: startValue?.name,
+          x: startValue.lng,
+          y: startValue.lat,
+          angle: 270,
+        },
+        destination: {
+          name: endValue?.name,
+          x: endValue.lng,
+          y: endValue.lat,
+          angle: 270,
+        },
         waypoints: [],
         priority: 'RECOMMEND',
         car_fuel: 'GASOLINE',
@@ -107,7 +121,7 @@ export default function RoadSection({
         road_details: false,
         summary: false,
       };
-
+      console.log(startValue, endValue);
       const res = await findDirectionPath(body);
       const routeItems = DirecitonRoot(res);
       setMode('route');
@@ -152,8 +166,10 @@ export default function RoadSection({
             <input
               type="text"
               value={startValue?.name || ''}
-              readOnly
               placeholder="출발지를 선택하세요"
+              onChange={(e) =>
+                setStartValue((prev) => ({ ...prev, name: e.target.value }))
+              }
               className={inputStyle}
             />
             {/* 구분선 */}
@@ -162,7 +178,9 @@ export default function RoadSection({
             <input
               type="text"
               value={endValue?.name || ''}
-              readOnly
+              onChange={(e) =>
+                setEndValue((prev) => ({ ...prev, name: e.target.value }))
+              }
               placeholder="도착지를 선택하세요"
               className={inputStyle}
             />
@@ -260,7 +278,7 @@ export default function RoadSection({
                   className="flex cursor-pointer items-center justify-between px-3 py-2 bg-gray-50 rounded-full"
                   onClick={() => openRoadDetail(route)}
                 >
-                  <span className="text-sm">{`${route.to} → ${route.from}`}</span>
+                  <span className="text-sm w-60">{`${route.from} → ${route.to}`}</span>
                   <button
                     onClick={() =>
                       setSavedRoutes((s) =>

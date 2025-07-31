@@ -88,7 +88,7 @@ export default function KakaoMapContainer({
       }}
     >
       {start && (
-        <CustomOverlayMap position={start} yAnchor={2.8}>
+        <CustomOverlayMap position={start} xAnchor={0.2} yAnchor={1.0}>
           <div
             style={{
               background: '#34c759',
@@ -98,6 +98,7 @@ export default function KakaoMapContainer({
               fontSize: '10px',
               fontWeight: 600,
               boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+              transform: 'translate(-50%, -100%)',
             }}
           >
             출발
@@ -105,7 +106,7 @@ export default function KakaoMapContainer({
         </CustomOverlayMap>
       )}
       {end && (
-        <CustomOverlayMap position={end} yAnchor={2.8}>
+        <CustomOverlayMap position={end} xAnchor={0.2} yAnchor={1.0}>
           <div
             style={{
               background: '#ff3b30',
@@ -115,6 +116,7 @@ export default function KakaoMapContainer({
               fontSize: '10px',
               fontWeight: 600,
               boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+              transform: 'translate(-50%, -100%)',
             }}
           >
             도착
