@@ -17,7 +17,6 @@ export async function fetchAiRecommendedStore(
   params: FetchStoresParams,
 ): Promise<AiRecommendResult | null> {
   if (!token) {
-    console.warn('❗ 토큰이 없어 추천 요청을 생략합니다.');
     return null;
   }
   try {
