@@ -11,6 +11,7 @@ import {
 } from '@/domains/MyPage/api/mission';
 import type { MissionType } from '@/domains/MyPage/types/mission';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 const STYLES = {
   container: 'w-[calc(100%-48px)] max-w-[1050px] m-6',
@@ -35,6 +36,8 @@ const MissionPage = () => {
   const [myMission, setMyMission] = useState<MissionType[]>([]);
   const [loadingMissionIds, setLoadingMissionIds] = useState<string[]>([]);
 
+  const navigate = useNavigate();
+
   const fetchMyMission = async () => {
     try {
       const response = await getMyMission();
@@ -53,7 +56,9 @@ const MissionPage = () => {
     setLoadingMissionIds((prev) => [...prev, id]);
     try {
       await setMissionCompleted(id);
-      await increaseUserExp(expReward);
+      const res = await increaseUserExp(expReward);
+      console.log(res.data.level);
+
       fetchMyMission();
       toast.success(
         <span>
@@ -63,6 +68,7 @@ const MissionPage = () => {
           </span>
         </span>,
         {
+          duration: 2000,
           style: {
             border: '1px solid #ebebeb',
             padding: '16px',
@@ -74,6 +80,52 @@ const MissionPage = () => {
           },
         },
       );
+
+      if (res.data.levelUpdated) {
+        toast.success(
+          (t) => (
+            <div>
+              <div className="flex justify-between">
+                <p>축하해요!</p>
+                <p className="font-bold">&nbsp;{res.data.level}</p>
+                <p>&nbsp;달성!</p>
+              </div>
+
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'end',
+                  gap: '8px',
+                  marginTop: '4px',
+                }}
+              >
+                <button
+                  onClick={() => {
+                    toast.dismiss(t.id);
+                    navigate('/mypage/profile');
+                  }}
+                  className="font-bold cursor-pointer"
+                >
+                  확인하러 가기
+                </button>
+              </div>
+            </div>
+          ),
+          {
+            duration: 5000,
+            style: {
+              border: '1px solid #6fc3d1',
+              padding: '16px',
+              color: '#ffffff',
+              background: '#6fc3d1',
+            },
+            iconTheme: {
+              primary: '#158c9f',
+              secondary: '#FFFAEE',
+            },
+          },
+        );
+      }
     } catch (error) {
       console.error('미션 완료 로드 실패:', error);
       toast.error(<span>잠시 후 다시 시도해주세요.</span>, {

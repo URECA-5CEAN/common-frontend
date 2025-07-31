@@ -50,20 +50,20 @@ export const MissionList: React.FC<MissionListProps> = ({
               className={
                 item.completed
                   ? STYLES.MissionCompletedBox
-                  : `${STYLES.MissionBox} ${canComplete ? 'cursor-pointer' : ''}`
+                  : `${STYLES.MissionBox}`
               }
               // 완료 가능한 경우에만 클릭 핸들러 적용
             >
               <div className="flex justify-between w-full">
-                <p className="flex justify-center items-center">
+                <p className="flex flex-col md:flex-row justify-center md:items-center gap-1">
                   {item.name}
                   <p
                     className={`text-sm ${item.completed ? 'text-primaryGreen' : 'text-primaryGreen-80'}`}
                   >
-                    &nbsp;+{item.expReward}
+                    <p>경험치 +{item.expReward}</p>
                   </p>
                 </p>
-                <p>
+                <p className="flex justify-center items-center">
                   {item.myValue}/{item.requireValue}
                 </p>
               </div>
