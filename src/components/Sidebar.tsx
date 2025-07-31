@@ -7,6 +7,7 @@ import collectionIcon from '@/assets/icons/collection_icon.png';
 import missionsIcon from '@/assets/icons/missions_icon.png';
 import statisticsIcon from '@/assets/icons/statistics_icon.png';
 import favoritesIcon from '@/assets/icons/favorites_icon.png';
+import { useUnsavedChanges } from '@/contexts/UnsavedChangesContext';
 
 // 타입 정의
 interface MenuItem {
@@ -70,7 +71,7 @@ const MYPAGE_MENU_ITEMS: MenuItem[] = [
     alt: '즐겨찾기 아이콘',
   },
   {
-    to: '/mypage/sharing',
+    to: '/mypage/share',
     icon: shareIcon,
     label: '내 나눔',
     alt: '내 나눔 아이콘',
@@ -85,27 +86,36 @@ const STYLES = {
   iconContainer: 'w-6 h-6 mr-2 flex items-center',
   icon: 'w-full h-full object-contain',
   linkBase:
-    'h-12 flex items-center px-4 rounded-lg transition-[background-color] duration-300 border-2',
+    'h-12 flex items-center px-4 rounded-lg transition-[background-color] duration-100 border-2',
   linkActive:
     'font-bold bg-[#DDF4FF] border-[#84D8FF] text-[#1CB0F7] hover:bg-[#cee8f5]',
-  linkInactive: 'hover:bg-[#DDF4FF] border-transparent text-gray-500',
+  linkInactive: 'hover:bg-[#f0f0f0] border-transparent text-gray-500',
 };
 
 // 하위 컴포넌트
-const MenuItemComponent = ({ item }: { item: MenuItem }) => (
-  <NavLink
-    key={item.to}
-    to={item.to}
-    className={({ isActive }: { isActive: boolean }) =>
-      `${STYLES.linkBase} ${isActive ? STYLES.linkActive : STYLES.linkInactive}`
-    }
-  >
-    <div className={STYLES.iconContainer}>
-      <img src={item.icon} alt={item.alt} className={STYLES.icon} />
-    </div>
-    {item.label}
-  </NavLink>
-);
+const MenuItemComponent = ({ item }: { item: MenuItem }) => {
+  const { handleProtectedNavigation } = useUnsavedChanges();
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    handleProtectedNavigation(item.to);
+  };
+  return (
+    <NavLink
+      key={item.to}
+      to={item.to}
+      onClick={handleClick}
+      className={({ isActive }) =>
+        `${STYLES.linkBase} ${isActive ? STYLES.linkActive : STYLES.linkInactive}`
+      }
+    >
+      <div className={STYLES.iconContainer}>
+        <img src={item.icon} alt={item.alt} className={STYLES.icon} />
+      </div>
+      {item.label}
+    </NavLink>
+  );
+};
 
 const MenuList = ({ items }: { items: MenuItem[] }) => (
   <div className={STYLES.menuContainer}>

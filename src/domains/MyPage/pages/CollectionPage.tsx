@@ -6,20 +6,18 @@ import goldMedal from '@/assets/image/gold_medal.png';
 import diamondMedal from '@/assets/image/diamond_medal.png';
 import { getAllBrandList } from '@/domains/MyPage/api/collection';
 import { useEffect, useState } from 'react';
+import { useUsageHistoryStore } from '@/store/useUsageHistoryStore';
 
 interface Brand {
   name: string;
   image_url: string;
+  count: number;
 }
 
 const CollectionPage = () => {
-  // 전체 도감 카운트
-  const collectionInfo = {
-    collectionCount: 400,
-    totalCollection: 500,
-  };
   const allMedals = [bronzeMedal, silverMedal, goldMedal, diamondMedal];
   const [brandList, setBrandList] = useState<Brand[]>([]);
+  const { usageHistory, fetchUsageHistory } = useUsageHistoryStore();
 
   useEffect(() => {
     const fetchAllBrandList = async () => {
@@ -30,14 +28,54 @@ const CollectionPage = () => {
         console.error('사용자 정보 로드 실패:', error);
       }
     };
-
     fetchAllBrandList();
-  }, []);
+    fetchUsageHistory();
+  }, [fetchUsageHistory, usageHistory.length]);
 
-  const progressPercentage = (
-    (collectionInfo.collectionCount / collectionInfo.totalCollection) *
-    100
-  ).toFixed(2);
+  // 브랜드명만 추출 (지점명 제거)
+  function extractBrand(storeId: string, brandNames: string[]) {
+    return brandNames.find((brand) => storeId.startsWith(brand)) || '기타';
+  }
+
+  const brandVisitCountMap = new Map<string, number>();
+  brandList.forEach((brand) => {
+    brandVisitCountMap.set(brand.name, 0);
+  });
+
+  usageHistory.forEach((item) => {
+    const brandName = extractBrand(
+      item.storeId,
+      brandList.map((b) => b.name),
+    );
+    const currentCount = brandVisitCountMap.get(brandName) || 0;
+    if (currentCount < 20) {
+      brandVisitCountMap.set(brandName, currentCount + 1);
+    }
+  });
+
+  // 결과 배열 생성
+  const result = Array.from(brandVisitCountMap.entries()).map(
+    ([name, count]) => {
+      const brand = brandList.find((b) => b.name === name);
+      return {
+        name,
+        image_url: brand?.image_url || '',
+        count,
+      };
+    },
+  );
+
+  const sortedResult = result.sort((a, b) => b.count - a.count);
+
+  // 전체 방문 횟수 (제한 적용 후 합계)
+  const totalVisitCount = result.reduce((acc, cur) => acc + cur.count, 0);
+
+  // 총 가능한 방문 횟수
+  const maxVisitCount = 420;
+
+  const progressPercentage = ((totalVisitCount / maxVisitCount) * 100).toFixed(
+    2,
+  );
 
   const getMedalCount = (current?: number): number => {
     if (!current) return 0;
@@ -65,13 +103,12 @@ const CollectionPage = () => {
               />
             </div>
             <p className="relative z-1 flex justify-end items-center text-xs text-gray-600">
-              {collectionInfo.collectionCount}/{collectionInfo.totalCollection}{' '}
-              ({progressPercentage}%)
+              {totalVisitCount}/{maxVisitCount} ({progressPercentage}%)
             </p>
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full">
-            {brandList.map((brand, index) => {
-              const earnedMedalCount = getMedalCount(20);
+            {sortedResult.map((brand, index) => {
+              const earnedMedalCount = getMedalCount(brand.count);
               const medalsToShow = allMedals.slice(0, earnedMedalCount);
 
               return (
@@ -80,7 +117,7 @@ const CollectionPage = () => {
                   className="border-1 border-gray-200 rounded-xl p-4 flex md:flex-row flex-col gap-3 w-full items-center justify-around"
                 >
                   <div className="max-w-[129px] flex items-center">
-                    <img src={brand.image_url} alt={brand.name} />
+                    <img src={brand.image_url || undefined} alt={brand.name} />
                   </div>
                   <div className="w-full md:w-[100px] flex flex-col gap-2 items-center">
                     <div className="break-words break-keep text-center h-[48px] w-full flex justify-center items-center">
@@ -97,7 +134,7 @@ const CollectionPage = () => {
                       ))}
                     </div>
                     <div className="w-full">
-                      <ProgressBar current={20} max={20} />
+                      <ProgressBar current={brand.count} max={20} />
                     </div>
                   </div>
                 </div>

@@ -22,9 +22,14 @@ import MissionPage from './domains/MyPage/pages/MissionPage';
 import StatisticsPage from './domains/MyPage/pages/StatisticsPage';
 import FavoritesPage from './domains/MyPage/pages/FavoritesPage';
 import EditProfilePage from '@/domains/MyPage/pages/EditProfilePage';
-import MySharingPage from '@/domains/MyPage/pages/MySharingPage';
+import MySharePage from '@/domains/MyPage/pages/MySharePage';
 import { useAuthStore } from '@/store/useAuthStore';
 import dolphinFind from '@/assets/image/dolphin_find.png';
+import LeaveConfirmModal from '@/components/LeaveConfirmModal';
+import { UnsavedChangesProvider } from '@/contexts/UnsavedChangesContext';
+import MyShareDetailPage from '@/domains/MyPage/pages/MyShareDetailPage';
+import MyShareEditPage from '@/domains/MyPage/pages/MyShareEditPage';
+import MyPageWritePage from '@/domains/MyPage/pages/MyPageWritePage';
 
 const AppLayout = () => {
   return (
@@ -90,50 +95,65 @@ export const PublicRoute = () => {
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route element={<AppLayout />}>
-          {/* 로그인 안 된 사람도 접근 가능한 기본 페이지들 */}
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/map" element={<MapPage />} />
+      <UnsavedChangesProvider>
+        <Routes>
+          <Route element={<AppLayout />}>
+            {/* 로그인 안 된 사람도 접근 가능한 기본 페이지들 */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/map" element={<MapPage />} />
 
-          {/* 로그인 되어 있으면 못 가도록 설정 (로그인/회원가입) */}
-          <Route element={<PublicRoute />}>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignUpPage />} />
-          </Route>
-
-          {/* 인증 필요 없는 explore 메뉴 */}
-          <Route element={<SidebarLayout />}>
-            <Route path="/explore/rankings" element={<RankingPage />} />
-            <Route path="/explore/share" element={<SharePage />} />
-            <Route
-              path="/explore/share/:postId"
-              element={<ShareDetailPage />}
-            />
-            <Route path="/explore/membership" element={<MembershipPage />} />
-          </Route>
-
-          {/* 로그인 필요 */}
-          <Route element={<ProtectedRoute />}>
-            <Route path="/explore/share/write" element={<ShareWritePage />} />
-          </Route>
-
-          {/* 로그인 필요 */}
-          <Route element={<ProtectedRoute />}>
-            <Route element={<SidebarLayout />}>
-              <Route path="/mypage/profile" element={<ProfilePage />} />
-              <Route path="/mypage/edit" element={<EditProfilePage />} />
-              <Route path="/mypage/collection" element={<CollectionPage />} />
-              <Route path="/mypage/missions" element={<MissionPage />} />
-              <Route path="/mypage/statistics" element={<StatisticsPage />} />
-              <Route path="/mypage/favorites" element={<FavoritesPage />} />
-              <Route path="/mypage/sharing" element={<MySharingPage />} />
+            {/* 로그인 되어 있으면 못 가도록 설정 (로그인/회원가입) */}
+            <Route element={<PublicRoute />}>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignUpPage />} />
             </Route>
-          </Route>
 
-          <Route path="*" element={<NotFoundPage />} />
-        </Route>
-      </Routes>
+            {/* 인증 필요 없는 explore 메뉴 */}
+            <Route element={<SidebarLayout />}>
+              <Route path="/explore/rankings" element={<RankingPage />} />
+              <Route path="/explore/share" element={<SharePage />} />
+              <Route
+                path="/explore/share/:postId"
+                element={<ShareDetailPage />}
+              />
+              <Route path="/explore/membership" element={<MembershipPage />} />
+            </Route>
+
+            {/* 로그인 필요 */}
+            <Route element={<ProtectedRoute />}>
+              <Route element={<SidebarLayout />}>
+                <Route
+                  path="/explore/share/write"
+                  element={<ShareWritePage />}
+                />
+
+                <Route path="/mypage/profile" element={<ProfilePage />} />
+                <Route path="/mypage/edit" element={<EditProfilePage />} />
+                <Route path="/mypage/collection" element={<CollectionPage />} />
+                <Route path="/mypage/missions" element={<MissionPage />} />
+                <Route path="/mypage/statistics" element={<StatisticsPage />} />
+                <Route path="/mypage/favorites" element={<FavoritesPage />} />
+                <Route path="/mypage/share" element={<MySharePage />} />
+                <Route
+                  path="/mypage/share/:postId"
+                  element={<MyShareDetailPage />}
+                />
+                <Route
+                  path="/mypage/share/edit/:postId"
+                  element={<MyShareEditPage />}
+                />
+                <Route
+                  path="/mypage/share/write"
+                  element={<MyPageWritePage />}
+                />
+              </Route>
+            </Route>
+
+            <Route path="*" element={<NotFoundPage />} />
+          </Route>
+        </Routes>
+        <LeaveConfirmModal />
+      </UnsavedChangesProvider>
     </BrowserRouter>
   );
 }

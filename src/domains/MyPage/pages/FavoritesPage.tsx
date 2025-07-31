@@ -106,9 +106,7 @@ const FavoritesPage = () => {
   // 카테고리 토글 처리
   const handleToggleCategory = (category: string) => {
     setSelectedCategories((prev) =>
-      prev.includes(category)
-        ? prev.filter((c) => c !== category)
-        : [...prev, category],
+      prev.includes(category) ? [] : [category],
     );
   };
 
@@ -157,7 +155,7 @@ const FavoritesPage = () => {
             key={category}
             className={`h-[42px] px-3 py-2 rounded-full border cursor-pointer transition ${
               isSelected
-                ? 'bg-primaryGreen-80 text-white border-white hover:bg-primaryGreen-80'
+                ? 'bg-primaryGreen text-white border-white hover:bg-[#5ea6b3]'
                 : 'text-gray-700 border-gray-200 hover:bg-primaryGreen-40'
             }`}
             onClick={() => handleToggleCategory(category)}

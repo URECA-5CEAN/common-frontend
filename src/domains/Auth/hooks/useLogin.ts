@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { login, kakaoLogin } from '../api/loginApi';
+import { login } from '../api/loginApi';
 import type { LoginData } from '../api/loginApi';
 
 export const useLogin = () => {
@@ -40,44 +40,9 @@ export const useLogin = () => {
     }
   };
 
-  const handleKakaoLogin = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const result = await kakaoLogin();
-
-      if (result.statusCode === 200) {
-        // 토큰을 로컬 스토리지에 저장
-        if (result.data.token) {
-          localStorage.setItem('authToken', result.data.token);
-        }
-
-        // userDto가 있다면 사용자 정보 저장
-        if (result.data.userDto) {
-          localStorage.setItem('userInfo', JSON.stringify(result.data.userDto));
-        }
-
-        return result;
-      } else {
-        throw new Error(result.message || '카카오 로그인에 실패했습니다.');
-      }
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : '카카오 로그인 중 오류가 발생했습니다.';
-      setError(errorMessage);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return {
     loading,
     error,
     login: handleLogin,
-    kakaoLogin: handleKakaoLogin,
   };
 };

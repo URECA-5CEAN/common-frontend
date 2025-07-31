@@ -1,13 +1,27 @@
-export interface Post {
+export interface Author {
   id: string;
+  name: string;
+  email: string;
+  address: string;
+  gender: 'male' | 'female' | string;
+  title: string;
+  membership: string;
+  nickname: string;
+}
+
+export interface Post {
+  postId: string;
   title: string;
   content: string;
+  author: Author;
   category: string;
-  brand: string;
-  type: string;
-  date: string;
-  place: string;
-  isClosed: boolean;
+  brandName: string;
+  benefitName: string;
+  promiseDate: string; // ISO 문자열 (예: "2025-07-29T06:10:00")
+  location: string;
+  brandImgUrl: string;
+  // isClosed: boolean;
+  isMine?: boolean;
 }
 
 export interface PostWriteRequest {

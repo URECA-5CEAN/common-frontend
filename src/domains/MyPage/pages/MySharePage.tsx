@@ -2,48 +2,39 @@ import { Breadcrumb } from '@/components/Breadcrumb';
 import { Button } from '@/components/Button';
 import SharePostList from '@/domains/Explore/components/share/SharePostList';
 import type { Post } from '@/domains/Explore/types/share';
+import { getMyPostList } from '@/domains/MyPage/api/myShare';
+import { getUserInfo } from '@/domains/MyPage/api/profile';
 import { Plus } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// 임의 데이터
-const postList: Post[] = [
-  {
-    id: '1',
-    title: '롯데월드 자유이용권 1+1 나눠요!',
-    content: '혼자 가기 아쉬워서 같이 가실 분 구해요 :)',
-    category: '테마파크',
-    brand: '롯데월드',
-    type: '1+1 나눔',
-    date: '7/12, 17:00',
-    place: '롯데월드 정문 앞',
-    isClosed: false,
-  },
-  {
-    id: 'b11703b5-b31d-465f-8234-1d2fccf3383f',
-    title: 'CGV 영화 티켓 1장 나눔',
-    content: '시간 맞는 분께 드릴게요. 선착순!',
-    category: '영화',
-    brand: 'CGV',
-    type: '티켓 나눔',
-    date: '7/13, 19:00',
-    place: 'CGV 강남점',
-    isClosed: false,
-  },
-  {
-    id: '3',
-    title: '메가박스 팝콘 교환권 같이 쓰실 분!',
-    content: '영화 볼 분 없어도 괜찮아요, 팝콘 나눔 원해요!',
-    category: '영화',
-    brand: '메가박스',
-    type: '혜택 공유',
-    date: '7/14, 15:00',
-    place: '메가박스 코엑스점',
-    isClosed: false,
-  },
-];
-
 const MySharingPage = () => {
+  const [myPostList, setMyPostList] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchPostList = async () => {
+      try {
+        const [postListData, userData] = await Promise.all([
+          getMyPostList(),
+          getUserInfo(),
+        ]);
+
+        const userEmail = userData.data.email;
+
+        const modifiedPostList = postListData.data.map((post: Post) => ({
+          ...post,
+          isMine: post.author.email === userEmail,
+        }));
+
+        setMyPostList(modifiedPostList);
+      } catch (error) {
+        console.error('내 나눔 로드 실패:', error);
+      }
+    };
+
+    fetchPostList();
+  }, []);
 
   return (
     <div className="w-[calc(100%-48px)] max-w-[1050px] m-6">
@@ -57,7 +48,7 @@ const MySharingPage = () => {
             variant="primary"
             size="lg"
             className="sm:flex whitespace-nowrap px-4 py-2 rounded-md items-center gap-1"
-            onClick={() => navigate('/explore/share/write')}
+            onClick={() => navigate('/mypage/share/write')}
           >
             <Plus size={18} />
             <span className="hidden sm:flex">글 작성</span>
@@ -65,7 +56,7 @@ const MySharingPage = () => {
         </div>
       </div>
 
-      <SharePostList posts={postList} />
+      <SharePostList posts={myPostList} />
     </div>
   );
 };

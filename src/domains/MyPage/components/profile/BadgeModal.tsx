@@ -53,7 +53,7 @@ const BadgeModal: React.FC<BadgeModalProps> = ({
         </>
       }
       actions={
-        <div className="flex gap-3">
+        <>
           <Button variant="secondary" fullWidth onClick={onClose}>
             취소
           </Button>
@@ -71,7 +71,7 @@ const BadgeModal: React.FC<BadgeModalProps> = ({
               '칭호 바꾸기'
             )}
           </Button>
-        </div>
+        </>
       }
     >
       <div className="flex flex-col gap-3">

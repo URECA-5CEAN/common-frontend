@@ -1,9 +1,10 @@
-import { NavLink, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import menuIcon from '@/assets/icons/menu-hamburger.svg';
 import arrowIcon from '@/assets/icons/arrow_icon.svg';
-import headerWaveImg from '@/assets/image/header-wave.png';
+import headerWaveImg from '@/assets/image/header-wave.svg';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useUnsavedChanges } from '@/contexts/UnsavedChangesContext';
 
 // 타입 정의
 type MenuItem = {
@@ -42,6 +43,7 @@ const MENU_CONFIG = {
           { to: '/mypage/missions', label: '미션' },
           { to: '/mypage/statistics', label: '통계' },
           { to: '/mypage/favorites', label: '즐겨찾기' },
+          { to: '/mypage/sharing', label: '내 나눔' },
         ],
       },
     ],
@@ -52,23 +54,23 @@ const MENU_CONFIG = {
 // 스타일 상수
 const STYLES = {
   header: {
-    base: 'z-100 fixed top-0 w-full h-[42px] md:h-[52px] px-6 md:px-12 flex items-end justify-between text-white',
+    base: 'z-1000 fixed top-0 w-full h-[42px] md:h-[48px] py-2 px-6 md:px-10 flex items-end justify-between text-white',
     transparent: 'bg-transparent',
     default: 'bg-primaryGreen',
   },
-  logo: 'text-xl md:text-[2rem] px-3 md:px-2 py-3 md:py-2 font-bold z-1000',
-  desktopNav: 'text-xl hidden md:flex',
+  logo: 'text-xl md:text-2xl px-3 md:px-2 py-3 md:py-2 font-bold z-1000',
+  desktopNav: 'text-lg hidden md:flex',
   desktopLogin:
-    'p-[0.625rem] text-xl absolute right-[38px] top-[18px] hidden md:block transition-[background-color] duration-300 hover:bg-black/5 rounded-xl z-1000 cursor-pointer',
-  mobileMenuButton: 'absolute right-6 top-0 p-3 cursor-pointer md:hidden',
+    'py-[7px] px-3 text-lg absolute right-[38px] top-2 hidden md:block transition-[background-color] duration-100 hover:bg-black/5 rounded-xl z-1000 cursor-pointer',
+  mobileMenuButton: 'absolute right-6 top-[-5px] p-3 cursor-pointer md:hidden',
   mobileMenuContainer: `
-    transition-[max-height,padding-top,padding-bottom] duration-300 ease-in-out z-10
-    overflow-hidden absolute top-[62px] left-0 w-full bg-white text-gray-500 shadow-md px-5 rounded-b-2xl
+    transition-[max-height,padding-top,padding-bottom] duration-300 ease-in-out z-100
+    overflow-hidden absolute top-[42px] left-0 w-full bg-white text-gray-500 shadow-md px-5 rounded-b-2xl
   `,
   activeMenuItem:
     'font-bold bg-[#DDF4FF] border-2 border-[#84D8FF] rounded-lg text-[#1CB0F7]',
   headerWave:
-    'absolute top-[42px] md:top-[52px] left-0 w-full h-5 md:h-[34px] z-100',
+    'absolute top-[40px] md:top-[50px] w-full min-w-[1150px] left-0 h-5 md:h-[34px] z-200',
 };
 
 // 유틸리티 함수
@@ -115,20 +117,27 @@ const Logo = ({
   isSignUpPage: boolean;
   isLoginPage: boolean;
 }) => {
+  const { handleProtectedNavigation } = useUnsavedChanges();
+
   const textColorClass = isSignUpPage
     ? 'text-primaryGreen'
     : isLoginPage
       ? 'text-primaryGreen md:text-white'
       : '';
 
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    onMenuClose();
+    handleProtectedNavigation('/');
+  };
+
   return (
-    <NavLink
-      to="/"
+    <button
       className={`${STYLES.logo} ${textColorClass}`}
-      onClick={onMenuClose}
+      onClick={handleClick}
     >
       지중해
-    </NavLink>
+    </button>
   );
 };
 
@@ -140,12 +149,18 @@ const DesktopNavigation = ({
   menu: MenuItem[];
 }) => {
   const location = useLocation();
+  const { handleProtectedNavigation } = useUnsavedChanges();
 
   const isMenuItemActive = (to: string) => {
     if (to.startsWith('/explore')) {
       return location.pathname.startsWith('/explore');
     }
     return location.pathname === to;
+  };
+
+  const handleClick = (to: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    handleProtectedNavigation(to);
   };
 
   return (
@@ -157,13 +172,13 @@ const DesktopNavigation = ({
         const textColorClass = isSignUpPage ? 'text-primaryGreen' : '';
 
         return (
-          <NavLink
+          <button
             key={to}
-            to={to}
-            className={`p-[0.625rem] z-1000 transition-[background-color] duration-300 hover:bg-black/5 rounded-xl ${isActive ? 'font-bold' : ''} ${textColorClass}`}
+            onClick={handleClick(to)}
+            className={`py-[7px] px-3 z-1000 transition-[background-color] duration-100 hover:bg-black/5 rounded-xl ${isActive ? 'font-bold' : ''} ${textColorClass}`}
           >
             {label}
-          </NavLink>
+          </button>
         );
       })}
     </nav>
@@ -179,7 +194,13 @@ const DesktopAuth = ({
   isLoggedIn: boolean;
   onLogout: () => void;
 }) => {
+  const { handleProtectedNavigation } = useUnsavedChanges();
   const textColorClass = isLoginPage ? 'text-primaryGreen' : '';
+
+  const handleLoginClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    handleProtectedNavigation('/login');
+  };
 
   if (isLoggedIn) {
     return (
@@ -193,14 +214,12 @@ const DesktopAuth = ({
   }
 
   return (
-    <NavLink
-      to="/login"
-      className={({ isActive }) =>
-        `${STYLES.desktopLogin} ${isActive ? 'font-bold' : ''} ${textColorClass}`
-      }
+    <button
+      onClick={handleLoginClick}
+      className={`${STYLES.desktopLogin} ${textColorClass}`}
     >
       로그인
-    </NavLink>
+    </button>
   );
 };
 
@@ -247,17 +266,25 @@ const SubMenuItem = ({
 }: {
   item: { to: string; label: string };
   onClose: () => void;
-}) => (
-  <NavLink
-    to={item.to}
-    onClick={onClose}
-    className={({ isActive }) =>
-      `py-1 pl-8 h-9 flex items-center ${isActive ? STYLES.activeMenuItem : ''}`
-    }
-  >
-    {item.label}
-  </NavLink>
-);
+}) => {
+  const location = useLocation();
+  const { handleProtectedNavigation } = useUnsavedChanges();
+  const isActive = location.pathname === item.to;
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    onClose();
+    handleProtectedNavigation(item.to);
+  };
+  return (
+    <button
+      onClick={handleClick}
+      className={`py-1 pl-8 h-9 flex items-center ${isActive ? STYLES.activeMenuItem : ''}`}
+    >
+      {item.label}
+    </button>
+  );
+};
 
 const MenuItemWithSubItems = ({
   item,
@@ -283,12 +310,12 @@ const MenuItemWithSubItems = ({
       <img
         src={arrowIcon}
         alt="화살표 아이콘"
-        className={`w-6 transition-transform duration-300 ${isSubOpen ? 'rotate-180' : ''}`}
+        className={`w-6 transition-transform duration-100 ${isSubOpen ? 'rotate-180' : ''}`}
       />
     </button>
 
     <div
-      className={`overflow-hidden transition-[max-height] duration-300 ${isSubOpen ? 'max-h-[400px]' : 'max-h-0'}`}
+      className={`overflow-hidden transition-[max-height] duration-100 ${isSubOpen ? 'max-h-[400px]' : 'max-h-0'}`}
     >
       <div className="flex flex-col gap-[10px] py-1">
         {item.subItems?.map((subItem) => (
@@ -306,18 +333,28 @@ const SimpleMenuItem = ({
   item: MenuItem;
   onClose: () => void;
 }) => {
+  const location = useLocation();
+  const { handleProtectedNavigation } = useUnsavedChanges();
+
   if (!item.to) return null;
 
+  const isActive = location.pathname === item.to;
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    onClose();
+    if (item.to) {
+      handleProtectedNavigation(item.to);
+    }
+  };
+
   return (
-    <NavLink
-      to={item.to}
-      onClick={onClose}
-      className={({ isActive }) =>
-        `px-4 py-2 h-10 flex items-center ${isActive ? STYLES.activeMenuItem : ''}`
-      }
+    <button
+      onClick={handleClick}
+      className={`px-4 py-2 h-10 flex items-center ${isActive ? STYLES.activeMenuItem : ''}`}
     >
       {item.label}
-    </NavLink>
+    </button>
   );
 };
 
@@ -341,7 +378,7 @@ const MobileMenu = ({
   <div
     className={`${STYLES.mobileMenuContainer} ${isOpen ? 'max-h-[700px] md:max-h-0' : 'max-h-0'}`}
   >
-    <div className="w-full flex flex-col gap-3 py-5">
+    <div className="w-full flex flex-col gap-3 py-5 pt-7">
       {menu.map((item, index) =>
         item.subItems ? (
           <MenuItemWithSubItems
@@ -370,7 +407,10 @@ const MobileMenu = ({
 );
 
 const HeaderWave = () => (
-  <img src={headerWaveImg} alt="헤더" className={STYLES.headerWave} />
+  <div className="absolute top-[40px] md:top-[34px] w-full min-w-[1150px] left-0 h-5 md:h-[34px] z-200 flex">
+    <img src={headerWaveImg} alt="헤더" className="" />
+    <img src={headerWaveImg} alt="헤더" className="" />
+  </div>
 );
 
 // 메인 컴포넌트
@@ -408,7 +448,7 @@ const Header = () => {
     <>
       <header className={`${STYLES.header.base} ${pageStyles.bgClass}`}>
         {/* 로고 + 데스크탑 네비게이션 */}
-        <div className="flex items-center absolute left-3 md:left-10 top-1 md:top-3 gap-2">
+        <div className="flex items-center absolute left-3 md:left-10 top-[-2px] md:top-1 gap-2">
           <Logo
             onMenuClose={handleMenuClose}
             isSignUpPage={pageStyles.isSignUpPage}

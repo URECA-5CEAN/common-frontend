@@ -17,9 +17,11 @@ const BadgeButton: React.FC<BadgeButtonProps> = ({ title, onClick }) => {
       {title}
     </div>
   ) : (
-    <Button onClick={onClick} className="" variant="secondary" height="30px">
-      칭호 생성하기
-    </Button>
+    <div>
+      <Button onClick={onClick} className="" variant="secondary" height="30px">
+        칭호 생성하기
+      </Button>
+    </div>
   );
 };
 
@@ -29,7 +31,7 @@ interface UserLevelProps {
 }
 
 const UserLevel: React.FC<UserLevelProps> = ({ nickname, level }) => (
-  <div className="flex sm:items-end font-bold gap-1 flex-col sm:flex-row">
+  <div className="flex items-end font-bold gap-1">
     <p className="text-2xl">{nickname}</p>
     <p>Lv.{level}</p>
   </div>
@@ -55,7 +57,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ onBadgeClick, userInfoApi }) => {
     return <div>로딩 중...</div>;
   }
   return (
-    <div className="flex flex-col justify-between">
+    <div className="flex flex-col justify-between w-full max-w-[200px]">
       <div className="flex flex-col gap-1 w-full">
         <BadgeButton title={userInfoApi.title} onClick={onBadgeClick} />
         <UserLevel nickname={userInfoApi.nickname} level={userInfoApi.level} />

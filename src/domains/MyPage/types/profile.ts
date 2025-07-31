@@ -5,19 +5,9 @@ export interface Badge {
 
 export interface UsageHistoryItem {
   id: number;
-  store: string;
-  date: string;
-  time: string;
-  benefit: string;
-  experience: number;
+  storeId: string;
   visitedAt: string;
-}
-
-export interface UserInfo {
-  collectionCount: number;
-  totalCollection: number;
-  missionCount: number;
-  totalMission: number;
+  benefitAmount: number;
 }
 
 export interface UserInfoApi {
