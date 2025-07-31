@@ -20,7 +20,10 @@ const MENU_CONFIG = {
       { to: '/map', label: '지도' },
       { to: '/explore/rankings', label: '혜택탐험' },
     ],
-    loggedIn: [{ to: '/mypage/profile', label: '마이페이지' }],
+    loggedIn: [
+      { to: '/chat', label: '채팅' },
+      { to: '/mypage/profile', label: '마이페이지' },
+    ],
   },
   mobile: {
     common: [
@@ -34,6 +37,7 @@ const MENU_CONFIG = {
       },
     ],
     loggedIn: [
+      { to: '/chat', label: '채팅' },
       {
         label: '마이페이지',
         subItems: [
