@@ -1,5 +1,4 @@
 import type { StoreInfo } from '@/domains/Map/api/store';
-import type { px } from 'framer-motion';
 import { Star } from 'lucide-react';
 
 interface StoreCardProps {
