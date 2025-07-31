@@ -32,6 +32,8 @@ import ChatPage from '@/domains/Chat/pages/ChatPage';
 import MyPageWritePage from '@/domains/MyPage/pages/MyPageWritePage';
 import ShareEditPage from '@/domains/Explore/pages/ShareEditPage';
 
+import { Toaster } from 'react-hot-toast';
+
 const AppLayout = () => {
   return (
     <>
@@ -96,6 +98,7 @@ export const PublicRoute = () => {
 function App() {
   return (
     <BrowserRouter>
+      <Toaster position="bottom-center" reverseOrder={false} />
       <UnsavedChangesProvider>
         <Routes>
           <Route element={<AppLayout />}>

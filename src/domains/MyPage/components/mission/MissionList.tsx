@@ -2,37 +2,29 @@ import { CircleCheck } from 'lucide-react';
 import dolphinFind from '@/assets/image/dolphin_find.png';
 import { Button } from '@/components/Button';
 import type { MissionType } from '@/domains/MyPage/types/mission';
+import { LoadingSpinner } from '@/domains/MyPage/components/LoadingSpinner';
 
 const STYLES = {
   subtitle: 'text-2xl font-bold mb-2',
-  todayMissionBox:
-    'w-full md:max-w-[463px] bg-gray-100 text-gray-300 py-4 px-5 rounded-xl flex justify-between',
-  todayMissionIcon: 'text-primaryGreen',
-  encyclopediaBox:
-    'w-full md:max-w-[463px] bg-white border border-primaryGreen-60 py-4 px-5 rounded-xl flex justify-between',
-  encyclopediaIcon: 'text-gray-200',
-  weeklyMissionBox:
-    'w-full md:max-w-[463px] bg-white border border-primaryGreen-60 py-4 px-5 rounded-xl flex justify-between mb-3',
-  weeklyMissionRight: 'flex gap-2',
-  weeklyMissionIcon: 'text-gray-200',
-
   MissionBox:
     'w-full md:max-w-[463px] bg-white border border-primaryGreen-60 py-4 px-4 rounded-xl flex justify-between gap-3 items-center',
   MissionRight: 'text-gray-200 w-full max-w-[62px] flex justify-center',
   MissionCompletedBox:
-    'w-full md:max-w-[463px] bg-gray-100 text-gray-300 py-4 px-4 rounded-xl flex justify-between gap-3 items-center',
+    'w-full md:max-w-[463px] bg-gray-100 border border-gray-100 text-gray-300 py-4 px-4 rounded-xl flex justify-between gap-3 items-center',
   MissionCompletedRight:
     'text-primaryGreen w-full max-w-[62px] flex justify-center',
 };
 
 interface MissionListProps {
   mission: MissionType[];
-  completeMission: (id: string) => void;
+  completeMission: (id: string, expReward: number) => void;
+  loadingMissionIds: string[];
 }
 
 export const MissionList: React.FC<MissionListProps> = ({
   mission,
   completeMission,
+  loadingMissionIds,
 }) => {
   return (
     <div className="mb-3 flex flex-col gap-2">
@@ -63,7 +55,14 @@ export const MissionList: React.FC<MissionListProps> = ({
               // 완료 가능한 경우에만 클릭 핸들러 적용
             >
               <div className="flex justify-between w-full">
-                {item.name}
+                <p className="flex justify-center items-center">
+                  {item.name}
+                  <p
+                    className={`text-sm ${item.completed ? 'text-primaryGreen' : 'text-primaryGreen-80'}`}
+                  >
+                    &nbsp;+{item.expReward}
+                  </p>
+                </p>
                 <p>
                   {item.myValue}/{item.requireValue}
                 </p>
@@ -76,8 +75,21 @@ export const MissionList: React.FC<MissionListProps> = ({
                 }
               >
                 {canComplete ? (
-                  <Button onClick={() => completeMission(item.missionId)}>
-                    완료
+                  <Button
+                    onClick={() =>
+                      completeMission(item.missionId, item.expReward)
+                    }
+                    height={'24px'}
+                    width={'62px'}
+                    disabled={loadingMissionIds.includes(item.missionId)}
+                  >
+                    {loadingMissionIds.includes(item.missionId) ? (
+                      <div className="w-4 h-4">
+                        <LoadingSpinner />
+                      </div>
+                    ) : (
+                      '완료'
+                    )}
                   </Button>
                 ) : (
                   <CircleCheck strokeWidth={2} />
