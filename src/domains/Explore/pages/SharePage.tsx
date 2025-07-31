@@ -29,30 +29,63 @@ const SharePage = () => {
 
   const [searchKeyword, setSearchKeyword] = useState('');
 
+  const [page, setPage] = useState(0);
+  const [hasNextPage, setHasNextPage] = useState(true);
+
   const navigate = useNavigate();
+
+  const fetchPostList = async (page: number, location?: string) => {
+    try {
+      const [currentPagePosts, nextPagePosts] = await Promise.all([
+        getSharePostList(page, location),
+        getSharePostList(page + 1, location),
+      ]);
+
+      setPostList((prev) => {
+        const newIds = new Set(prev.map((p) => p.postId));
+        const filteredNewPosts = currentPagePosts.filter(
+          (p) => !newIds.has(p.postId),
+        );
+        return [...prev, ...filteredNewPosts];
+      });
+
+      setHasNextPage(nextPagePosts.length > 0);
+    } catch (error) {
+      console.error('게시글 불러오기 실패:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
         setIsLoading(true);
-        const postListData = await getSharePostList();
         const locationsData = (await getShareLocations()).map((item) => ({
           label: item,
           value: item,
         }));
 
-        setPostList(postListData);
         setLocations(locationsData);
         setLocation(locationsData[0] || null);
       } catch (error) {
         console.error('데이터 불러오기 실패:', error);
-      } finally {
-        setIsLoading(false);
       }
     };
 
     fetchInitialData();
   }, []);
+
+  useEffect(() => {
+    if (!location) return;
+
+    // 초기화 및 첫 페이지 로드
+    setPostList([]);
+    setPage(0);
+    setHasNextPage(true);
+    setIsLoading(true);
+    fetchPostList(0, location.value);
+  }, [location]);
 
   useEffect(() => {
     if (!location) return;
@@ -203,7 +236,23 @@ const SharePage = () => {
       {isLoading ? (
         <div className="py-10 text-center text-gray-400">불러오는 중...</div>
       ) : (
-        <SharePostList posts={filteredPostList} />
+        <>
+          <SharePostList posts={filteredPostList} />
+          {hasNextPage && (
+            <div className="text-center mt-6">
+              <button
+                className="bg-blue-500 text-white px-4 py-2 rounded"
+                onClick={() => {
+                  const nextPage = page + 1;
+                  setPage(nextPage);
+                  fetchPostList(nextPage, location?.value);
+                }}
+              >
+                더보기
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

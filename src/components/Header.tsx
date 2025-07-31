@@ -20,7 +20,10 @@ const MENU_CONFIG = {
       { to: '/map', label: '지도' },
       { to: '/explore/rankings', label: '혜택탐험' },
     ],
-    loggedIn: [{ to: '/mypage/profile', label: '마이페이지' }],
+    loggedIn: [
+      { to: '/chat', label: '채팅' },
+      { to: '/mypage/profile', label: '마이페이지' },
+    ],
   },
   mobile: {
     common: [
@@ -30,11 +33,11 @@ const MENU_CONFIG = {
         subItems: [
           { to: '/explore/rankings', label: '혜택 순위' },
           { to: '/explore/share', label: '혜택 나누기' },
-          { to: '/explore/membership', label: '멤버십 혜택' },
         ],
       },
     ],
     loggedIn: [
+      { to: '/chat', label: '채팅' },
       {
         label: '마이페이지',
         subItems: [

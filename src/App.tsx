@@ -15,7 +15,6 @@ import RankingPage from './domains/Explore/pages/RankingPage';
 import SharePage from './domains/Explore/pages/SharePage';
 import ShareWritePage from './domains/Explore/pages/ShareWritePage';
 import ShareDetailPage from './domains/Explore/pages/ShareDetailPage';
-import MembershipPage from './domains/Explore/pages/MembershipPage';
 import ProfilePage from './domains/MyPage/pages/ProfilePage';
 import CollectionPage from './domains/MyPage/pages/CollectionPage';
 import MissionPage from './domains/MyPage/pages/MissionPage';
@@ -29,6 +28,7 @@ import LeaveConfirmModal from '@/components/LeaveConfirmModal';
 import { UnsavedChangesProvider } from '@/contexts/UnsavedChangesContext';
 import MyShareDetailPage from '@/domains/MyPage/pages/MyShareDetailPage';
 import MyShareEditPage from '@/domains/MyPage/pages/MyShareEditPage';
+import ChatPage from '@/domains/Chat/pages/ChatPage';
 import MyPageWritePage from '@/domains/MyPage/pages/MyPageWritePage';
 import ShareEditPage from '@/domains/Explore/pages/ShareEditPage';
 
@@ -117,7 +117,11 @@ function App() {
                 path="/explore/share/:postId"
                 element={<ShareDetailPage />}
               />
-              <Route path="/explore/membership" element={<MembershipPage />} />
+            </Route>
+
+            {/* 로그인 필요 */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/chat" element={<ChatPage />} />
             </Route>
 
             {/* 로그인 필요 */}
