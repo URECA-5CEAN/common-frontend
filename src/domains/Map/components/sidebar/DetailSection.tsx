@@ -159,31 +159,6 @@ export default function DetailSection({
       </section>
 
       <div className="w-full border border-gray-200  my-6"></div>
-      {/* 혜택 순위 */}
-
-      <section>
-        <p className="text-lg font-semibold mb-2">혜택 순위</p>
-        {/* <ul className="space-y-1">
-          {store.ranking.map((r: RankingItem) => (
-            <li
-              key={r.benefitId}
-              className="flex justify-between px-3 py-2 bg-gray-50 rounded-md"
-            >
-              <span>
-                {r.rank}. {r.benefitId}
-              </span>
-              <span className="font-medium">{r.usedCount}회</span>
-            </li>
-          ))}
-        </ul> */}
-        <Button
-          variant="secondary"
-          size="sm"
-          className="h-6 w-[75px] flex justify-end items-center"
-        >
-          <p className="text-xs">더보기</p> <ChevronRight size={15} />
-        </Button>
-      </section>
     </div>
   );
 }
