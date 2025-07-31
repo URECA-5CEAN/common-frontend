@@ -53,11 +53,15 @@ const ShareDetailPage = () => {
     <div className="w-full max-w-[1050px] m-6 flex flex-col gap-5">
       <div className="flex gap-4 sm:items-center">
         <div className="relative w-16 h-16 sm:w-32 sm:h-32 flex items-center justify-center flex-shrink-0">
-          <img
-            src={post.brandImgUrl}
-            alt="브랜드 이미지"
-            className="rounded-2xl"
-          />
+          {post.brandImgUrl ? (
+            <img
+              src={post.brandImgUrl}
+              alt="브랜드 이미지"
+              className="rounded-2xl"
+            />
+          ) : (
+            <div className="w-full h-full bg-gray-200 rounded-2xl" />
+          )}
           {/* {post.isClosed && (
             <span className="absolute text-xs font-semibold text-white">
               모집 완료
