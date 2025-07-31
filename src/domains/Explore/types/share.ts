@@ -20,6 +20,7 @@ export interface Post {
   promiseDate: string; // ISO 문자열 (예: "2025-07-29T06:10:00")
   location: string;
   // isClosed: boolean;
+  brandImgUrl: string;
   isMine?: boolean;
 }
 

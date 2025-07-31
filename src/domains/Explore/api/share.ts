@@ -2,9 +2,10 @@ import axios from 'axios';
 import type { Post, PostWriteRequest } from '../types/share';
 
 const baseURL = import.meta.env.VITE_API_URL;
-const token = import.meta.env.VITE_AUTH_TOKEN;
 
 export const getCategories = async () => {
+  const token = localStorage.getItem('authToken');
+
   const response = await axios.get(`${baseURL}/map/distinctCategory`, {
     headers: { Authorization: token },
   });
@@ -13,6 +14,8 @@ export const getCategories = async () => {
 };
 
 export const getBrands = async (category: string) => {
+  const token = localStorage.getItem('authToken');
+
   const response = await axios.get(`${baseURL}/map/brandByCategory`, {
     params: { category },
     headers: { Authorization: token },
@@ -22,6 +25,8 @@ export const getBrands = async (category: string) => {
 };
 
 export const getBenefitType = async (brandId: string) => {
+  const token = localStorage.getItem('authToken');
+
   const response = await axios.get(`${baseURL}/map/benefit/${brandId}`, {
     headers: { Authorization: token },
   });
@@ -30,6 +35,8 @@ export const getBenefitType = async (brandId: string) => {
 };
 
 export const createSharePost = async (postData: PostWriteRequest) => {
+  const token = localStorage.getItem('authToken');
+
   await axios.post(`${baseURL}/user/article`, postData, {
     headers: {
       Authorization: token,
@@ -38,14 +45,14 @@ export const createSharePost = async (postData: PostWriteRequest) => {
 };
 
 export const getSharePostList = async (): Promise<Post[]> => {
-  const response = await axios.get(`${baseURL}/user/article`, {
-    headers: { Authorization: token },
-  });
+  const response = await axios.get(`${baseURL}/user/article`);
 
   return response.data.data.postList;
 };
 
 export const getSharePostById = async (postId: string): Promise<Post> => {
+  const token = localStorage.getItem('authToken');
+
   const response = await axios.get(`${baseURL}/user/article/detail`, {
     params: { postId },
     headers: { Authorization: token },
@@ -55,8 +62,20 @@ export const getSharePostById = async (postId: string): Promise<Post> => {
 };
 
 export const getShareLocations = async (): Promise<string[]> => {
-  const response = await axios.get(`${baseURL}/user/article/locations`, {
-    headers: { Authorization: token },
-  });
+  const response = await axios.get(`${baseURL}/user/article/locations`);
   return response.data.data;
+};
+
+export const createChatRoom = async (postId: string) => {
+  const token = localStorage.getItem('authToken');
+
+  const response = await axios.post(
+    `${baseURL}/user/chatRoom`,
+    { postId },
+    {
+      headers: { Authorization: token },
+    },
+  );
+
+  return response.data;
 };

@@ -28,6 +28,7 @@ import LeaveConfirmModal from '@/components/LeaveConfirmModal';
 import { UnsavedChangesProvider } from '@/contexts/UnsavedChangesContext';
 import MyShareDetailPage from '@/domains/MyPage/pages/MyShareDetailPage';
 import MyShareEditPage from '@/domains/MyPage/pages/MyShareEditPage';
+import ChatPage from './domains/Chat/pages/ChatPage';
 
 const AppLayout = () => {
   return (
@@ -119,6 +120,7 @@ function App() {
             {/* 로그인 필요 */}
             <Route element={<ProtectedRoute />}>
               <Route path="/explore/share/write" element={<ShareWritePage />} />
+              <Route path="/chat" element={<ChatPage />} />
             </Route>
 
             {/* 로그인 필요 */}
