@@ -30,6 +30,7 @@ import { UnsavedChangesProvider } from '@/contexts/UnsavedChangesContext';
 import MyShareDetailPage from '@/domains/MyPage/pages/MyShareDetailPage';
 import MyShareEditPage from '@/domains/MyPage/pages/MyShareEditPage';
 import MyPageWritePage from '@/domains/MyPage/pages/MyPageWritePage';
+import ShareEditPage from '@/domains/Explore/pages/ShareEditPage';
 
 const AppLayout = () => {
   return (
@@ -125,6 +126,10 @@ function App() {
                 <Route
                   path="/explore/share/write"
                   element={<ShareWritePage />}
+                />
+                <Route
+                  path="/explore/share/edit/:postId"
+                  element={<ShareEditPage />}
                 />
 
                 <Route path="/mypage/profile" element={<ProfilePage />} />
