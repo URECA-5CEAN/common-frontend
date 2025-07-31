@@ -13,8 +13,10 @@ import StarListItem from '../StarListItem';
 import { Button } from '@/components/Button';
 import {
   convertBookmarkToDirectionResponse,
+  deleteDirectionPath,
   fetchDirectionBookmarks,
   findDirectionPath,
+  getDirectionPath,
   updateBookmarkStatus,
   type DirectionRequestBody,
   type RouteSection,
@@ -93,6 +95,7 @@ export default function RoadSection({
   const inputStyle = 'w-full px-4 py-2 text-sm focus:outline-none';
   const [routes, setRoutes] = useState<RouteItem[]>([]);
   const [savedRoutes, setSavedRoutes] = useState<RouteItem[]>([]);
+  const [recentRoutes, setRecentRoutes] = useState<RouteItem[]>([]);
 
   // 리스트 토글
   const toggleMode = () => {
@@ -121,7 +124,7 @@ export default function RoadSection({
         road_details: false,
         summary: false,
       };
-      console.log(startValue, endValue);
+
       const res = await findDirectionPath(body);
       const routeItems = DirecitonRoot(res);
       setMode('route');
@@ -154,6 +157,39 @@ export default function RoadSection({
       alert('저장 중 오류가 발생했습니다.');
     }
   };
+
+  useEffect(() => {
+    const fetchRecentRoute = async () => {
+      try {
+        const res = await getDirectionPath();
+        console.log('🧾 전체 길이:', res.data.length);
+
+        // routes 배열 안에 있는 일부 route는 summary 또는 sections가 undefined 또는 누락된거 filter
+        const convertedResponses = res.data
+          .filter(
+            (bookmark) =>
+              bookmark.routes?.[0]?.summary && bookmark.routes?.[0]?.sections,
+          )
+          .map((bookmark) => convertBookmarkToDirectionResponse(bookmark));
+        const routeItems = convertedResponses.flatMap((r) => DirecitonRoot(r));
+        setRecentRoutes(routeItems);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchRecentRoute();
+  }, []);
+
+  const deleteRoutes = async (id: string) => {
+    try {
+      const res = await deleteDirectionPath(id);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  console.log(recentRoutes);
   return (
     <div className="max-w-md mx-auto  space-y-6 bg-white min-h-dvh">
       {/* 입력창 + 액션 버튼 */}
@@ -307,14 +343,25 @@ export default function RoadSection({
           </div>
           {showRecent && (
             <ul className="space-y-1">
-              {savedRoutes.map((r) => (
+              {recentRoutes.map((route) => (
                 <li
-                  key={r.directionid}
+                  key={route.directionid}
                   className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-full"
                 >
-                  <span className="text-sm">{`${r.from} → ${r.to}`}</span>
-                  <button className="p-1 text-gray-400 hover:text-red-500">
-                    <Trash2 size={16} className="cursor-pointer" />
+                  <span className="text-sm">{`${route.from} → ${route.to}`}</span>
+                  <button
+                    onClick={() =>
+                      setSavedRoutes((s) =>
+                        s.filter((x) => x.directionid !== route.directionid),
+                      )
+                    }
+                    className="p-1 text-gray-400 hover:text-red-500"
+                  >
+                    <Trash2
+                      size={16}
+                      className="cursor-pointer"
+                      onClick={() => deleteRoutes(route.directionid)}
+                    />
                   </button>
                 </li>
               ))}

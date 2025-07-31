@@ -7,11 +7,7 @@ import React, {
   Suspense,
   lazy,
 } from 'react';
-import {
-  CustomOverlayMap,
-  MapMarker,
-  MarkerClusterer,
-} from 'react-kakao-maps-sdk';
+import { CustomOverlayMap, MarkerClusterer } from 'react-kakao-maps-sdk';
 import { useMedia } from 'react-use';
 import type { LatLng, MarkerProps } from '../KakaoMapContainer';
 import type { StoreInfo } from '../api/store';
@@ -153,24 +149,9 @@ export default function FilterMarker({
     [openDetail, storeMap],
   );
 
-  // MarkerImage 생성 함수 useMemo로 메모이제이션
-  const createMarkerImage = useMemo(() => {
-    return (imageUrl: string) => {
-      const src = imageUrl;
-      return {
-        src,
-        size: { width: 40, height: 40 },
-        options: {
-          offset: { x: 20, y: 40 },
-        },
-      } as const;
-    };
-  }, []);
   // 2D 마커 렌더링 함수 분리
   const renderFarMarkers = () =>
     Markers.map((m, idx) => {
-      const markerImage = createMarkerImage(m.imageUrl);
-
       return (
         <React.Fragment key={`${m.id}-${idx}`}>
           {/* 기본 마커 */}
@@ -183,11 +164,12 @@ export default function FilterMarker({
               onMouseEnter={() => handleMouseOver(m.id)}
               onMouseLeave={handleMouseOut}
               style={{
-                width: 40,
-                height: 40,
+                width: 30,
+                height: 30,
                 borderRadius: '50%',
                 overflow: 'hidden',
                 boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+                backgroundColor: '#fff',
                 cursor: 'pointer',
                 position: 'relative',
                 zIndex: shouldCluster ? 2 : 3,

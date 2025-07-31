@@ -34,6 +34,7 @@ export function DirecitonRoot(response: DirectionResponse): RouteItem[] {
           convertVertexesToCoords(road.vertexes),
         ),
       ) ?? [];
+
     const road = route.sections?.flatMap((section) =>
       section.roads?.map((road) => ({
         name: road.name,

@@ -141,14 +141,17 @@ export async function findDirectionPath(
   }
 }
 
-export async function getDirectionPath() {
+export async function getDirectionPath(): Promise<DirectionBookmarkResponse> {
   try {
-    const response = await apiClient.get<DirectionResponse>('/direction', {
-      headers: {
-        Authorization: token,
+    const response = await apiClient.get<DirectionBookmarkResponse>(
+      '/direction',
+      {
+        headers: {
+          Authorization: token,
+        },
       },
-    });
-    console.log(response.data);
+    );
+
     return response.data;
   } catch (error: unknown) {
     const axiosErr = error as AxiosError<{ message: string }>;
@@ -184,7 +187,7 @@ export async function fetchDirectionBookmarks(): Promise<DirectionBookmark[]> {
         },
       },
     );
-    console.log(response.data.data);
+
     return response.data.data;
   } catch (error: unknown) {
     const axiosErr = error as AxiosError<{ message: string }>;
@@ -211,6 +214,23 @@ export async function updateBookmarkStatus(
         params: { id, bookmark },
       },
     );
+  } catch (error) {
+    const axiosErr = error as AxiosError<{ message: string }>;
+    const message =
+      axiosErr.response?.data?.message ??
+      axiosErr.message ??
+      '즐겨찾기 수정 중 오류가 발생했습니다.';
+    throw new Error(`즐겨찾기 수정 실패: ${message}`);
+  }
+}
+
+export async function deleteDirectionPath(id: string): Promise<void> {
+  try {
+    await apiClient.delete(`/direction/${id}`, {
+      headers: {
+        Authorization: token,
+      },
+    });
   } catch (error) {
     const axiosErr = error as AxiosError<{ message: string }>;
     const message =
