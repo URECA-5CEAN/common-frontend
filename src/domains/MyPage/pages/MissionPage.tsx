@@ -8,6 +8,7 @@ import {
   getMyMission,
   setMissionCompleted,
 } from '@/domains/MyPage/api/mission';
+import type { MissionType } from '@/domains/MyPage/types/mission';
 
 const STYLES = {
   container: 'w-[calc(100%-48px)] max-w-[1050px] m-6',
@@ -15,14 +16,6 @@ const STYLES = {
   subtitle: 'text-2xl font-bold mb-2',
   dolphinImg: 'fixed top-20 right-0 w-[700px] -z-1 hidden lg:block',
 } as const;
-
-interface MissionType {
-  id: string;
-  missionName: string;
-  completed: boolean;
-  current: number;
-  goal: number;
-}
 
 const MissionPage = () => {
   const {
@@ -39,26 +32,31 @@ const MissionPage = () => {
 
   const [myMission, setMyMission] = useState<MissionType[]>([]);
 
+  const fetchMyMission = async () => {
+    try {
+      const response = await getMyMission();
+      setMyMission(response.data);
+    } catch (error) {
+      console.error('미션 로드 실패:', error);
+    }
+  };
+
   useEffect(() => {
-    const fetchMyMission = async () => {
-      try {
-        const response = await getMyMission();
-        setMyMission(response.data);
-      } catch (error) {
-        console.error('미션 로드 실패:', error);
-      }
-    };
     fetchMyMission();
   }, []);
 
   const completeMission = async (id: string) => {
-    console.log(id);
     try {
-      const response = await setMissionCompleted(id);
-      console.log(response.data);
+      await setMissionCompleted(id);
+      fetchMyMission();
     } catch (error) {
       console.error('미션 완료 로드 실패:', error);
     }
+  };
+
+  const onCheckIn = () => {
+    fetchMyMission();
+    handleCheckIn();
   };
 
   return (
@@ -77,7 +75,7 @@ const MissionPage = () => {
         formatDate={formatDate}
         onCalendarChange={handleCalendarChange}
         onActiveStartDateChange={handleActiveStartDateChange}
-        onCheckIn={handleCheckIn}
+        onCheckIn={onCheckIn}
       />
 
       <MissionList mission={myMission} completeMission={completeMission} />

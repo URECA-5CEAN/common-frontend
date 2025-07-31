@@ -1,6 +1,7 @@
 import { CircleCheck } from 'lucide-react';
 import dolphinFind from '@/assets/image/dolphin_find.png';
 import { Button } from '@/components/Button';
+import type { MissionType } from '@/domains/MyPage/types/mission';
 
 const STYLES = {
   subtitle: 'text-2xl font-bold mb-2',
@@ -24,49 +25,10 @@ const STYLES = {
     'text-primaryGreen w-full max-w-[62px] flex justify-center',
 };
 
-interface MissionType {
-  id: string;
-  missionName: string;
-  completed: boolean;
-  current: number;
-  goal: number;
-}
-
 interface MissionListProps {
   mission: MissionType[];
   completeMission: (id: string) => void;
 }
-
-// const dummyMissions: MissionType[] = [
-//   {
-//     id: '12034123',
-//     missionName: '오늘 출석체크하기',
-//     completed: false,
-//     current: 0,
-//     goal: 1,
-//   },
-//   {
-//     id: '49345343',
-//     missionName: '도감 현황 확인하기',
-//     completed: false,
-//     current: 1,
-//     goal: 1,
-//   },
-//   {
-//     id: '68456456',
-//     missionName: '멤버십 혜택 10회 이용하기',
-//     completed: false,
-//     current: 2,
-//     goal: 10,
-//   },
-//   {
-//     id: '89756756',
-//     missionName: '친구 초대하고 보상받기',
-//     completed: true,
-//     current: 5,
-//     goal: 5,
-//   },
-// ];
 
 export const MissionList: React.FC<MissionListProps> = ({
   mission,
@@ -82,7 +44,13 @@ export const MissionList: React.FC<MissionListProps> = ({
         </div>
       ) : (
         mission.map((item, index) => {
-          const canComplete = item.current === item.goal && !item.completed;
+          let canComplete = false;
+
+          if (item.myValue === item.requireValue) {
+            if (!item.completed) {
+              canComplete = true;
+            }
+          }
 
           return (
             <div
@@ -95,9 +63,9 @@ export const MissionList: React.FC<MissionListProps> = ({
               // 완료 가능한 경우에만 클릭 핸들러 적용
             >
               <div className="flex justify-between w-full">
-                {item.missionName}
+                {item.name}
                 <p>
-                  {item.current}/{item.goal}
+                  {item.myValue}/{item.requireValue}
                 </p>
               </div>
               <div
@@ -108,7 +76,9 @@ export const MissionList: React.FC<MissionListProps> = ({
                 }
               >
                 {canComplete ? (
-                  <Button onClick={() => completeMission(item.id)}>완료</Button>
+                  <Button onClick={() => completeMission(item.missionId)}>
+                    완료
+                  </Button>
                 ) : (
                   <CircleCheck strokeWidth={2} />
                 )}

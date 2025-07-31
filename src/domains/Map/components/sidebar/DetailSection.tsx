@@ -13,6 +13,7 @@ import { useBenefitBrands } from '../../hooks/useBenefitBrands';
 import type { LocationInfo } from '../../pages/MapPage';
 import { useUsageHistoryStore } from '@/store/useUsageHistoryStore';
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 interface DetailSectionProps {
   store: StoreInfo;
   onStartChange: (v: LocationInfo) => void;
@@ -33,6 +34,7 @@ export default function DetailSection({
   goToStore,
   toggleBookmark,
 }: DetailSectionProps) {
+  const navigate = useNavigate();
   const isBookmark = bookmarkIds.has(store.id);
   const {
     data: benefits = [],
@@ -152,6 +154,7 @@ export default function DetailSection({
             variant="secondary"
             size="sm"
             className="h-6 w-[75px] flex justify-end items-center"
+            onClick={() => navigate('/mypage/collection')}
           >
             <p className="text-xs">더보기</p> <ChevronRight size={15} />
           </Button>

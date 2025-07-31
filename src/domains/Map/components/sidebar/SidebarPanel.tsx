@@ -91,7 +91,7 @@ export default function SidebarPanel({
   const left = 64 + index * 345;
   const isDetail = panel.type === 'detail';
   const isRoad = panel.type === 'road';
-  if (!userInfo) return;
+
   return (
     <motion.div
       key={index}
@@ -108,7 +108,7 @@ export default function SidebarPanel({
       <div className="p-4 pr-2 bg-white relative md:shadow-lg rounded-lg scrollbar-custom overflow-y-auto h-auto  md:max-h-[calc(100vh-78px)] z-10 ">
         {/* 첫 번째 패널: 사용자 정보 */}
         <div className="hidden md:block">
-          {index === 0 && (
+          {index === 0 && userInfo && (
             <UserSection
               membership={userInfo.membership}
               username={userInfo.nickname}

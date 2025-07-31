@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import menuIcon from '@/assets/icons/menu-hamburger.svg';
 import arrowIcon from '@/assets/icons/arrow_icon.svg';
@@ -61,7 +61,7 @@ const STYLES = {
     transparent: 'bg-transparent',
     default: 'bg-primaryGreen',
   },
-  logo: 'text-xl md:text-2xl px-3 md:px-2 py-3 md:py-2 font-bold z-1000',
+  logo: 'text-xl md:text-2xl px-3 md:px-2 py-3 md:py-2 font-bold z-1000 cursor-pointer',
   desktopNav: 'text-lg hidden md:flex',
   desktopLogin:
     'py-[7px] px-3 text-lg absolute right-[38px] top-2 hidden md:block transition-[background-color] duration-100 hover:bg-black/5 rounded-xl z-1000 cursor-pointer',
@@ -175,13 +175,14 @@ const DesktopNavigation = ({
         const textColorClass = isSignUpPage ? 'text-primaryGreen' : '';
 
         return (
-          <button
+          <NavLink
             key={to}
+            to={to}
             onClick={handleClick(to)}
             className={`py-[7px] px-3 z-1000 transition-[background-color] duration-100 hover:bg-black/5 rounded-xl ${isActive ? 'font-bold' : ''} ${textColorClass}`}
           >
             {label}
-          </button>
+          </NavLink>
         );
       })}
     </nav>
@@ -410,10 +411,12 @@ const MobileMenu = ({
 );
 
 const HeaderWave = () => (
-  <div className="absolute top-[40px] md:top-[34px] w-full min-w-[1150px] left-0 h-5 md:h-[34px] z-200 flex">
-    <img src={headerWaveImg} alt="헤더" className="" />
-    <img src={headerWaveImg} alt="헤더" className="" />
-  </div>
+  <>
+    <div className="absolute top-[40px] md:top-[34px] w-full min-w-[1150px] left-0 h-5 md:h-[34px] z-200 flex">
+      <img src={headerWaveImg} alt="헤더" className="" />
+      <img src={headerWaveImg} alt="헤더" className="" />
+    </div>
+  </>
 );
 
 // 메인 컴포넌트

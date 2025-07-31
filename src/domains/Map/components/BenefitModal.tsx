@@ -50,7 +50,7 @@ export default function BenefitModal({
       console.error('OCR 업로드 실패:', err);
     }
   };
-  console.log(ocrResult);
+
   const handleFinalSubmit = async () => {
     if (!ocrResult || !userInfo) return;
     try {
