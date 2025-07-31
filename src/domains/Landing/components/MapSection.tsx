@@ -1,12 +1,21 @@
+import dolphinFinger from '@/assets/image/dolphin-finger.svg';
+
 const MapSection = () => {
   return (
     <div className="absolute top-[110vh] w-full">
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
-        <h2 className="text-[40px] text-white font-bold mb-12">
-          멤버십 제휴 매장을
-          <br />
-          지도를 통해 확인해보세요!
-        </h2>
+        <div className="flex items-center justify-center mb-12">
+          <h2 className="text-[40px] text-white font-bold mr-4">
+            멤버십 제휴 매장을
+            <br />
+            지도를 통해 확인해보세요!
+          </h2>
+          <img
+            src={dolphinFinger}
+            alt="돌고래 손가락"
+            className="w-12 h-12 object-contain"
+          />
+        </div>
 
         {/* 지도와 설명 박스들 */}
         <div className="relative flex items-center justify-between w-full max-w-7xl mt-20">

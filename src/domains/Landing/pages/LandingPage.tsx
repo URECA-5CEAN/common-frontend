@@ -55,7 +55,7 @@ const LandingPage = () => {
   };
 
   return (
-    <div className="h-[600vh]">
+    <div className="">
       <img
         src={beach}
         alt="모래사장"
