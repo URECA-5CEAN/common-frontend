@@ -103,40 +103,38 @@ const ShareWritePage = () => {
   };
 
   return (
-    <div className="flex justify-center mt-[62px] sm:mt-[86px]">
-      <div className="w-full max-w-[1050px] m-6">
-        <h2 className="text-[28px] font-bold mb-6">나눔 글 작성</h2>
+    <div className="w-[calc(100%-48px)] max-w-[1050px] m-6">
+      <h2 className="text-[28px] font-bold mb-6">나눔 글 작성</h2>
 
-        <SelectFields
-          selectedCategory={category}
-          setSelectedCategory={setCategory}
-          selectedBrand={brand}
-          setSelectedBrand={setBrand}
-          selectedBenefitType={benefitType}
-          setSelectedBenefitType={setBenefitType}
-        />
+      <SelectFields
+        selectedCategory={category}
+        setSelectedCategory={setCategory}
+        selectedBrand={brand}
+        setSelectedBrand={setBrand}
+        selectedBenefitType={benefitType}
+        setSelectedBenefitType={setBenefitType}
+      />
 
-        <PostContentFields
-          title={title}
-          setTitle={setTitle}
-          content={content}
-          setContent={setContent}
-        />
+      <PostContentFields
+        title={title}
+        setTitle={setTitle}
+        content={content}
+        setContent={setContent}
+      />
 
-        <DateTimePicker
-          date={date}
-          setDate={setDate}
-          selectedTime={time}
-          setSelectedTime={setTime}
-        />
+      <DateTimePicker
+        date={date}
+        setDate={setDate}
+        selectedTime={time}
+        setSelectedTime={setTime}
+      />
 
-        <PlaceField place={place} setPlace={setPlace} />
+      <PlaceField place={place} setPlace={setPlace} />
 
-        <div className="flex justify-end mt-6">
-          <Button onClick={handleSubmit} size="lg">
-            등록하기
-          </Button>
-        </div>
+      <div className="flex justify-end mt-6">
+        <Button onClick={handleSubmit} size="lg">
+          등록하기
+        </Button>
       </div>
     </div>
   );
