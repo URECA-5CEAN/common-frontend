@@ -1,12 +1,7 @@
 import type { PropsWithChildren } from 'react';
-import {
-  CustomOverlayMap,
-  Map,
-  Polyline,
-  useKakaoLoader,
-} from 'react-kakao-maps-sdk';
+import { CustomOverlayMap, Map, useKakaoLoader } from 'react-kakao-maps-sdk';
 import type { RouteItem } from './components/sidebar/RoadSection';
-import { getTrafficInfo } from './components/getTrafficInfo';
+import PolyLineRender from './components/PolyLineRender';
 
 interface Props {
   center: LatLng;
@@ -30,27 +25,6 @@ export interface MarkerProps {
 export interface LatLng {
   lat: number;
   lng: number;
-}
-
-function splitPathByRoad(
-  fullPath: LatLng[],
-  roadList: { distance: number; traffic_state: number }[],
-): { path: LatLng[]; traffic_state: number }[] {
-  const totalDistance = roadList.reduce((sum, r) => sum + r.distance, 0);
-  const totalPoints = fullPath.length;
-  let currentIdx = 0;
-  let accumulated = 0;
-
-  return roadList.map((r) => {
-    accumulated += r.distance;
-    const targetIdx = Math.round((accumulated / totalDistance) * totalPoints);
-    const segment = {
-      path: fullPath.slice(currentIdx, Math.max(targetIdx, currentIdx + 2)),
-      traffic_state: r.traffic_state,
-    };
-    currentIdx = targetIdx;
-    return segment;
-  });
 }
 
 export default function KakaoMapContainer({
@@ -123,22 +97,7 @@ export default function KakaoMapContainer({
           </div>
         </CustomOverlayMap>
       )}
-      {selectedRoute &&
-        splitPathByRoad(selectedRoute.path, selectedRoute.road).map(
-          (segment, idx) => {
-            const traffic = getTrafficInfo(segment.traffic_state);
-            return (
-              <Polyline
-                key={idx}
-                path={segment.path}
-                strokeWeight={10}
-                strokeColor={traffic.color}
-                strokeOpacity={0.8}
-                strokeStyle="solid"
-              />
-            );
-          },
-        )}
+      {selectedRoute && <PolyLineRender route={selectedRoute} />}
       {children} {/* Map 내부에 2D/3D 마커, 오버레이, 버튼 등을 렌더링 */}
     </Map>
   );
