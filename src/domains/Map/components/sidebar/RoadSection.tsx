@@ -15,6 +15,7 @@ import {
   convertBookmarkToDirectionResponse,
   fetchDirectionBookmarks,
   findDirectionPath,
+  updateBookmarkStatus,
   type DirectionRequestBody,
   type RouteSection,
 } from '../../api/road';
@@ -22,6 +23,7 @@ import { DirecitonRoot } from '../DirecitonRoot';
 import type { LocationInfo } from '../../pages/MapPage';
 import RouteCard from '../RouteCard';
 import type { LatLng } from '../../KakaoMapContainer';
+import OnOffBtn from '../OnOffBtn';
 export interface TrafficInfo {
   color: string;
   label: string;
@@ -82,8 +84,7 @@ export default function RoadSection({
   openDetail,
   openRoadDetail,
 }: RouteInputProps) {
-  //const [showBookmark, setShowBookmark] = useState<boolean>(true);
-
+  const [showRecent, setShowRecent] = useState<boolean>(true);
   const [mode, setMode] = useState<ViewMode>('saved');
   const inputStyle = 'w-full px-4 py-2 text-sm focus:outline-none';
   const [routes, setRoutes] = useState<RouteItem[]>([]);
@@ -130,6 +131,15 @@ export default function RoadSection({
     fetchBookmark();
   }, []);
 
+  const routeDeleteBookmark = async (route: RouteItem) => {
+    try {
+      await updateBookmarkStatus(route.directionid, false);
+      alert('경로가 삭제되었습니다.');
+    } catch (err) {
+      console.error(err);
+      alert('저장 중 오류가 발생했습니다.');
+    }
+  };
   return (
     <div className="max-w-md mx-auto  space-y-6 bg-white min-h-dvh">
       {/* 입력창 + 액션 버튼 */}
@@ -244,22 +254,26 @@ export default function RoadSection({
           <p className="text-xl font-semibold text-gray-600">저장한 경로</p>
           <ul className="space-y-1">
             {savedRoutes &&
-              savedRoutes.map((r) => (
+              savedRoutes.map((route) => (
                 <li
-                  key={r.directionid}
-                  className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-full"
-                  onClick={() => openRoadDetail(r)}
+                  key={route.directionid}
+                  className="flex cursor-pointer items-center justify-between px-3 py-2 bg-gray-50 rounded-full"
+                  onClick={() => openRoadDetail(route)}
                 >
-                  <span className="text-sm">{`${r.to} → ${r.from}`}</span>
+                  <span className="text-sm">{`${route.to} → ${route.from}`}</span>
                   <button
                     onClick={() =>
                       setSavedRoutes((s) =>
-                        s.filter((x) => x.directionid !== r.directionid),
+                        s.filter((x) => x.directionid !== route.directionid),
                       )
                     }
                     className="p-1 text-gray-400 hover:text-red-500"
                   >
-                    <Trash2 size={16} className="cursor-pointer" />
+                    <Trash2
+                      size={16}
+                      className="cursor-pointer"
+                      onClick={() => routeDeleteBookmark(route)}
+                    />
                   </button>
                 </li>
               ))}
@@ -267,28 +281,29 @@ export default function RoadSection({
         </div>
       )}
       {/* 최근 경로 토글 */}
-      {/* <div className="space-y-2 px-2">
-            <div className="flex items-center justify-between">
-              <p className="text-xl font-semibold text-gray-600">최근 경로</p>
-              <OnOffBtn setShowRecent={setShowRecent} showRecent={showRecent} />
-            </div>
-            {showRecent && (
-              <ul className="space-y-1">
-                {recentRoutes.map((r) => (
-                  <li
-                    key={r.id}
-                    className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-full"
-                  >
-                    <span className="text-sm">{`${r.from} → ${r.to}`}</span>
-                    <button className="p-1 text-gray-400 hover:text-red-500">
-                      <Trash2 size={16} className="cursor-pointer" />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div> */}
-
+      {mode === 'saved' && (
+        <div className="space-y-2 px-2">
+          <div className="flex items-center justify-between">
+            <p className="text-xl font-semibold text-gray-600">최근 경로</p>
+            <OnOffBtn setShowRecent={setShowRecent} showRecent={showRecent} />
+          </div>
+          {showRecent && (
+            <ul className="space-y-1">
+              {savedRoutes.map((r) => (
+                <li
+                  key={r.directionid}
+                  className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-full"
+                >
+                  <span className="text-sm">{`${r.from} → ${r.to}`}</span>
+                  <button className="p-1 text-gray-400 hover:text-red-500">
+                    <Trash2 size={16} className="cursor-pointer" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
       {mode === 'route' && (
         <div className="flex flex-col px-2 ">
           {routes.map((route, idx) => (

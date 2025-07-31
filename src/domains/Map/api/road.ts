@@ -140,6 +140,25 @@ export async function findDirectionPath(
   }
 }
 
+export async function getDirectionPath() {
+  try {
+    const response = await apiClient.get<DirectionResponse>('/direction', {
+      headers: {
+        Authorization: token,
+      },
+    });
+    console.log(response.data);
+    return response.data;
+  } catch (error: unknown) {
+    const axiosErr = error as AxiosError<{ message: string }>;
+    const message =
+      axiosErr.response?.data?.message ??
+      axiosErr.message ??
+      '경로 탐색 요청 중 오류가 발생했습니다.';
+    throw new Error(`경로 요청 실패: ${message}`);
+  }
+}
+
 export interface DirectionBookmark {
   id: string;
   trans_id: string;

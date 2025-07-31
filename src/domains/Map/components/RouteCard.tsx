@@ -21,7 +21,7 @@ export default function RouteCard({
   const allRoads = route.section?.flatMap((s) => s.roads) || [];
   const majorRoad = MajorLoads(allRoads);
 
-  const routeBookmark = async () => {
+  const routeCreateBookmark = async () => {
     try {
       await updateBookmarkStatus(route.directionid, true);
       alert('경로가 즐겨찾기에 저장되었습니다.');
@@ -75,7 +75,7 @@ export default function RouteCard({
               size="sm"
               variant="primary"
               className="py-1! px-2! "
-              onClick={routeBookmark}
+              onClick={routeCreateBookmark}
             >
               경로 저장
             </Button>
