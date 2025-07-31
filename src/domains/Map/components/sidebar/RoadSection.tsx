@@ -313,18 +313,16 @@ export default function RoadSection({
                 >
                   <span className="text-sm w-60">{`${route.from} → ${route.to}`}</span>
                   <button
-                    onClick={() =>
+                    onClick={(e) => {
+                      e.stopPropagation();
                       setSavedRoutes((s) =>
                         s.filter((x) => x.directionid !== route.directionid),
-                      )
-                    }
+                      );
+                      routeDeleteBookmark(route);
+                    }}
                     className="p-1 text-gray-400 hover:text-red-500"
                   >
-                    <Trash2
-                      size={16}
-                      className="cursor-pointer"
-                      onClick={() => routeDeleteBookmark(route)}
-                    />
+                    <Trash2 size={16} className="cursor-pointer" />
                   </button>
                 </li>
               ))}
@@ -347,18 +345,16 @@ export default function RoadSection({
                 >
                   <span className="text-sm">{`${route.from} → ${route.to}`}</span>
                   <button
-                    onClick={() =>
+                    onClick={(e) => {
+                      e.stopPropagation();
                       setRecentRoutes((s) =>
                         s.filter((x) => x.directionid !== route.directionid),
-                      )
-                    }
+                      );
+                      routeDeleteBookmark(route);
+                    }}
                     className="p-1 text-gray-400 hover:text-red-500"
                   >
-                    <Trash2
-                      size={16}
-                      className="cursor-pointer"
-                      onClick={() => deleteRoutes(route.directionid)}
-                    />
+                    <Trash2 size={16} className="cursor-pointer" />
                   </button>
                 </li>
               ))}
