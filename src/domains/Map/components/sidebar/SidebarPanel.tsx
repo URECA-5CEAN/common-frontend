@@ -60,8 +60,9 @@ export default function SidebarPanel({
   openRoadDetail,
 }: SidebarPanelProps) {
   const [userInfo, setUserInfo] = useState<UserInfoApi>();
-
+  const token = localStorage.getItem('authToken');
   useEffect(() => {
+    if (!token) return;
     const fetchUserData = async () => {
       const userInfoRes = await getUserInfo();
       const userStatRes = await getUserStat();
@@ -75,7 +76,7 @@ export default function SidebarPanel({
     };
 
     fetchUserData();
-  }, []);
+  }, [token]);
 
   const left = 64 + index * 345;
   const isDetail = panel.type === 'detail';

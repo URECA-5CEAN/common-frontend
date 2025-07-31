@@ -183,6 +183,8 @@ export default function MapPage() {
         centerLat: center.lat,
         centerLng: center.lng,
       });
+      if (!result || !result.store || !result.store.id) return;
+
       const recommended = { ...result.store, isRecommended: result.reason };
       setRecommendedStore(recommended);
 
@@ -301,7 +303,7 @@ export default function MapPage() {
     const list = [...filteredStores];
 
     if (recommendedStore) {
-      // 이미 있는 경우도 일단 제외하고 맨 앞에 다시 삽입 (표식 포함)
+      // 이미 있는 경우도 일단 제외하고 맨 앞에 다시 삽입
       const listWithoutRecommended = list.filter(
         (store) => store.id !== recommendedStore.id,
       );
@@ -314,6 +316,9 @@ export default function MapPage() {
   // 사이드바 메뉴 Open
   const openMenu = (menu: MenuType) => {
     setPanel({ type: 'menu', menu });
+    setSelectedRoute(null);
+    setStartValue({ name: '', lat: 0, lng: 0 });
+    setEndValue({ name: '', lat: 0, lng: 0 });
   };
 
   //매장 선택 시 상세열기

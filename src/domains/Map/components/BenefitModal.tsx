@@ -3,12 +3,15 @@ import { Modal } from '@/components/Modal';
 import { Plus } from 'lucide-react';
 import type { MenuType, Panel } from './sidebar/MapSidebar';
 import {
+  useEffect,
   useState,
   type ChangeEvent,
   type Dispatch,
   type SetStateAction,
 } from 'react';
 import { saveBenefitData, uploadReceiptImage } from '../api/store';
+import type { UserInfoApi } from '@/domains/MyPage/types/profile';
+import { getUserInfo } from '@/domains/MyPage/api/profile';
 
 interface BenefitModalProps {
   panel: Panel;
@@ -25,33 +28,59 @@ export default function BenefitModal({
   setSelectedFile,
 }: BenefitModalProps) {
   const [isResult, setIsResult] = useState<boolean>(false);
-  const [amout, setAmount] = useState<number>(0);
+  const [amount, setAmount] = useState<number>(0);
+  const [userInfo, setUserInfo] = useState<UserInfoApi>();
+  const [ocrResult, setOcrResult] = useState<any>(null);
+  const token = localStorage.getItem('authToken');
   const handleOCRUpload = async (file: File) => {
-    if (!selectedFile) {
-      return;
-    }
+    if (!file || !userInfo) return;
     try {
-      const result = await uploadReceiptImage(file);
-      if (result) setIsResult(true);
-      if (!result) return;
-      const response = await saveBenefitData(
-        {
-          storeName: result.storeName ?? '',
-          category: result.category ?? '',
-          address: result.address ?? '',
-          visitedAt: result.visitedAt ?? new Date().toISOString(),
-          totalAmount: result.totalAmount ?? 0,
-        },
-        amout,
-        'test@test.com',
-      );
-      console.log(response);
-      setAmount(0);
+      const result = await uploadReceiptImage(file, userInfo.email);
+      if (result) {
+        setOcrResult(result);
+        setIsResult(true);
+      }
     } catch (err) {
-      console.error(err);
+      console.error('OCR 업로드 실패:', err);
     }
   };
 
+  const handleFinalSubmit = async () => {
+    if (!ocrResult || !userInfo) return;
+    try {
+      const response = await saveBenefitData(
+        {
+          storeName: ocrResult.storeName ?? '',
+          category: ocrResult.category ?? '',
+          address: ocrResult.address ?? '',
+          visitedAt: ocrResult.visitedAt ?? new Date().toISOString(),
+          totalAmount: ocrResult.totalAmount ?? 0,
+        },
+        amount,
+        userInfo.email,
+      );
+      console.log('저장 완료:', response);
+
+      // 초기화
+      setAmount(0);
+      setIsResult(false);
+      setSelectedFile(null);
+      setOcrResult(null);
+      openmenu('지도');
+    } catch (err) {
+      console.error('저장 실패:', err);
+    }
+  };
+
+  useEffect(() => {
+    if (!token) return;
+    const fetchUserData = async () => {
+      const userInfoRes = await getUserInfo();
+      setUserInfo(userInfoRes.data);
+    };
+
+    fetchUserData();
+  }, [token]);
   return (
     <>
       <Modal
@@ -88,7 +117,7 @@ export default function BenefitModal({
               <input
                 type="text"
                 placeholder="할인받은 금액 입력"
-                value={amout}
+                value={amount}
                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setAmount(Number(e.target.value))
                 }

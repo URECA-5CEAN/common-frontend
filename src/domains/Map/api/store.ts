@@ -221,7 +221,10 @@ export async function deleteBookmark(storeId: string): Promise<string> {
   }
 }
 
-export async function uploadReceiptImage(file: File): Promise<BenefitData> {
+export async function uploadReceiptImage(
+  file: File,
+  userEmail: string,
+): Promise<BenefitData> {
   const formData = new FormData();
   formData.append('imageFile', file);
   try {
@@ -232,6 +235,7 @@ export async function uploadReceiptImage(file: File): Promise<BenefitData> {
         headers: {
           Authorization: token,
           'Content-Type': 'multipart/form-data',
+          'X-User-email': userEmail,
         },
       },
     );
