@@ -45,7 +45,7 @@ function splitPathByRoad(
     accumulated += r.distance;
     const targetIdx = Math.round((accumulated / totalDistance) * totalPoints);
     const segment = {
-      path: fullPath.slice(currentIdx, targetIdx),
+      path: fullPath.slice(currentIdx, Math.max(targetIdx, currentIdx + 2)),
       traffic_state: r.traffic_state,
     };
     currentIdx = targetIdx;

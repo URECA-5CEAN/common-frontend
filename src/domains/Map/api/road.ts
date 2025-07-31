@@ -164,6 +164,7 @@ export async function fetchDirectionBookmarks(): Promise<DirectionBookmark[]> {
         },
       },
     );
+    console.log(response.data.data);
     return response.data.data;
   } catch (error: unknown) {
     const axiosErr = error as AxiosError<{ message: string }>;
@@ -174,6 +175,7 @@ export async function fetchDirectionBookmarks(): Promise<DirectionBookmark[]> {
     throw new Error(`즐겨찾기 조회 실패: ${message}`);
   }
 }
+
 export async function updateBookmarkStatus(
   id: string,
   bookmark: boolean,
@@ -197,4 +199,19 @@ export async function updateBookmarkStatus(
       '즐겨찾기 수정 중 오류가 발생했습니다.';
     throw new Error(`즐겨찾기 수정 실패: ${message}`);
   }
+}
+
+export function convertBookmarkToDirectionResponse(
+  bookmark: DirectionBookmark,
+): DirectionResponse {
+  return {
+    statusCode: 200,
+    message: 'OK',
+    data: {
+      id: bookmark.id,
+      trans_id: bookmark.trans_id,
+      routes: bookmark.routes,
+    },
+    bookmark: bookmark.bookmark,
+  };
 }

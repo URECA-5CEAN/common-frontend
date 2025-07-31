@@ -425,7 +425,6 @@ export default function MapPage() {
 
   //길찾기 시 그 중심으로 이동
   useEffect(() => {
-    console.log('📍selectedRoute.path:', selectedRoute?.path);
     if (selectedRoute?.path.length) {
       const centerIdx = Math.floor(selectedRoute.path.length / 2);
       const center = selectedRoute.path[centerIdx];

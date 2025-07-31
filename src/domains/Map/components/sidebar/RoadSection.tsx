@@ -12,6 +12,7 @@ import type { StoreInfo } from '../../api/store';
 import StarListItem from '../StarListItem';
 import { Button } from '@/components/Button';
 import {
+  convertBookmarkToDirectionResponse,
   fetchDirectionBookmarks,
   findDirectionPath,
   type DirectionRequestBody,
@@ -70,7 +71,7 @@ interface RouteInputProps {
   goToStore: (store: StoreInfo) => void;
   openRoadDetail: (route: RouteItem) => void;
 }
-
+type ViewMode = 'bookmark' | 'saved' | 'route';
 export default function RoadSection({
   startValue,
   endValue,
@@ -82,15 +83,15 @@ export default function RoadSection({
   openRoadDetail,
 }: RouteInputProps) {
   //const [showBookmark, setShowBookmark] = useState<boolean>(true);
-  const [ShowStar, SetShowStar] = useState<boolean>(false);
-  const [showRoute, setShowRoute] = useState<boolean>(false);
+
+  const [mode, setMode] = useState<ViewMode>('saved');
   const inputStyle = 'w-full px-4 py-2 text-sm focus:outline-none';
   const [routes, setRoutes] = useState<RouteItem[]>([]);
   const [savedRoutes, setSavedRoutes] = useState<RouteItem[]>([]);
-  // 즐겨찾기 토글
-  const onStar = () => {
-    SetShowStar((prev) => !prev);
-    setShowRoute(false);
+
+  // 리스트 토글
+  const toggleMode = () => {
+    setMode((prev) => (prev === 'bookmark' ? 'saved' : 'bookmark'));
   };
   const handleNavigate = async () => {
     try {
@@ -108,7 +109,7 @@ export default function RoadSection({
 
       const res = await findDirectionPath(body);
       const routeItems = DirecitonRoot(res);
-      setShowRoute(true);
+      setMode('route');
       setRoutes(routeItems);
     } catch (err) {
       alert(err instanceof Error ? err.message : '오류 발생');
@@ -118,8 +119,10 @@ export default function RoadSection({
   useEffect(() => {
     const fetchBookmark = async () => {
       try {
-        const data = await fetchDirectionBookmarks();
-        console.log(data);
+        const bookmarks = await fetchDirectionBookmarks();
+        const converted = bookmarks.map(convertBookmarkToDirectionResponse);
+        const routeItems = converted.flatMap((res) => DirecitonRoot(res));
+        setSavedRoutes(routeItems);
       } catch (error) {
         console.log(error);
       }
@@ -182,9 +185,9 @@ export default function RoadSection({
           </Button>
 
           {/* 즐겨찾기 혹은 경로목록*/}
-          {!ShowStar ? (
+          {mode === 'saved' ? (
             <Button
-              onClick={onStar}
+              onClick={toggleMode}
               variant="ghost"
               size="sm"
               className=" hover:bg-gray-100 focus:outline-none flex"
@@ -194,7 +197,7 @@ export default function RoadSection({
             </Button>
           ) : (
             <Button
-              onClick={onStar}
+              onClick={toggleMode}
               variant="ghost"
               size="sm"
               className=" hover:bg-gray-100 focus:outline-none flex"
@@ -216,7 +219,7 @@ export default function RoadSection({
         </div>
       </div>
 
-      {ShowStar ? (
+      {mode === 'bookmark' && (
         <div className="space-y-2 px-2">
           <div className=" flex justify-between">
             <p className="text-xl font-bold text-gray-600">즐겨찾기</p>
@@ -233,36 +236,38 @@ export default function RoadSection({
             />
           ))}
         </div>
-      ) : (
-        <>
-          {/* 저장한 경로 */}
-          <div className="space-y-2 px-2">
-            <p className="text-xl font-semibold text-gray-600">저장한 경로</p>
-            <ul className="space-y-1">
-              {savedRoutes &&
-                savedRoutes.map((r) => (
-                  <li
-                    key={r.directionid}
-                    className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-full"
-                    onClick={() => openRoadDetail(r)}
+      )}
+
+      {/* 저장한 경로 */}
+      {mode === 'saved' && (
+        <div className="space-y-2 px-2">
+          <p className="text-xl font-semibold text-gray-600">저장한 경로</p>
+          <ul className="space-y-1">
+            {savedRoutes &&
+              savedRoutes.map((r) => (
+                <li
+                  key={r.directionid}
+                  className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-full"
+                  onClick={() => openRoadDetail(r)}
+                >
+                  <span className="text-sm">{`${r.to} → ${r.from}`}</span>
+                  <button
+                    onClick={() =>
+                      setSavedRoutes((s) =>
+                        s.filter((x) => x.directionid !== r.directionid),
+                      )
+                    }
+                    className="p-1 text-gray-400 hover:text-red-500"
                   >
-                    <span className="text-sm">{`${r.to} → ${r.from}`}</span>
-                    <button
-                      onClick={() =>
-                        setSavedRoutes((s) =>
-                          s.filter((x) => x.directionid !== r.directionid),
-                        )
-                      }
-                      className="p-1 text-gray-400 hover:text-red-500"
-                    >
-                      <Trash2 size={16} className="cursor-pointer" />
-                    </button>
-                  </li>
-                ))}
-            </ul>
-          </div>
-          {/* 최근 경로 토글 */}
-          {/* <div className="space-y-2 px-2">
+                    <Trash2 size={16} className="cursor-pointer" />
+                  </button>
+                </li>
+              ))}
+          </ul>
+        </div>
+      )}
+      {/* 최근 경로 토글 */}
+      {/* <div className="space-y-2 px-2">
             <div className="flex items-center justify-between">
               <p className="text-xl font-semibold text-gray-600">최근 경로</p>
               <OnOffBtn setShowRecent={setShowRecent} showRecent={showRecent} />
@@ -283,9 +288,8 @@ export default function RoadSection({
               </ul>
             )}
           </div> */}
-        </>
-      )}
-      {showRoute && (
+
+      {mode === 'route' && (
         <div className="flex flex-col px-2 ">
           {routes.map((route, idx) => (
             <RouteCard
