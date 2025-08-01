@@ -326,7 +326,6 @@ export default function MapPage() {
       const loc = new kakao.maps.LatLng(store.latitude, store.longitude);
       map.panTo(loc);
       setCenter({ lat: store.latitude, lng: store.longitude });
-      openMenu('지도');
       searchStoresWithAI();
     },
     [map, searchStoresWithAI],

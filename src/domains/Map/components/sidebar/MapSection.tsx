@@ -22,6 +22,7 @@ interface MapSectionProps {
   resetKeyword: () => void;
   selectedCardId: string;
   SetKeyword: Dispatch<SetStateAction<string>>;
+  goToStore: (store: StoreInfo) => void;
 }
 
 export default function MapSection({
@@ -36,6 +37,7 @@ export default function MapSection({
   resetKeyword,
   selectedCardId,
   SetKeyword,
+  goToStore,
 }: MapSectionProps) {
   const [isFocused, setIsFocused] = useState(false);
   const keywordRequire = isFocused && stores.length > 0 && keyword.length > 0;
@@ -87,6 +89,7 @@ export default function MapSection({
           toggleBookmark={toggleBookmark}
           isBookmark={bookmarkIds.has(store.id)}
           isSelected={selectedCardId === store.id}
+          onCenter={() => goToStore(store)}
         />
       ))}
     </div>

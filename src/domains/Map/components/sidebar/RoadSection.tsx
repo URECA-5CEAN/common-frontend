@@ -246,12 +246,12 @@ export default function RoadSection({
           HOT
         </span>
       </div>
-      {/* 입력창 + 액션 버튼 */}
+      {/* 입력창 + 액션 버튼  */}
       <div className="space-y-3 py-4 px-2 bg-white ">
         {/* 입력창 영역 */}
         <div className="relative w-full max-w-md mx-auto">
           {/*인풋 컨테이너 */}
-          <div className="border border-gray-300 rounded-xl overflow-hidden">
+          <div className="border relative border-gray-300 rounded-xl overflow-hidden">
             {/* 출발지 */}
             <DebouncedInput
               value={startValue?.name || ''}
@@ -269,34 +269,35 @@ export default function RoadSection({
             />
             {/* 구분선 */}
             <div className="h-px bg-gray-200"></div>
-            {waypoints.map((point, idx) => (
-              <div key={idx} className="relative">
-                <DebouncedInput
-                  value={point.name || ''}
-                  placeholder={`경유지 ${idx + 1}`}
-                  onFocus={() => {
-                    setFocusField(idx);
-                    SetKeyword('');
-                  }}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    const updated = [...waypoints];
-                    updated[idx] = { ...updated[idx], name: value };
-                    setWaypoints(updated);
-                    SetKeyword(value);
-                  }}
-                  className={inputStyle}
-                />
-                <button
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 cursor-pointer hover:text-gray-500"
-                  onClick={() =>
-                    setWaypoints((prev) => prev.filter((_, i) => i !== idx))
-                  }
-                >
-                  <CircleMinus size={20} />
-                </button>
-              </div>
-            ))}
+            {Roadmode === 'default' &&
+              waypoints.map((point, idx) => (
+                <div key={idx} className="relative">
+                  <DebouncedInput
+                    value={point.name || ''}
+                    placeholder={`경유지 ${idx + 1}`}
+                    onFocus={() => {
+                      setFocusField(idx);
+                      SetKeyword('');
+                    }}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      const updated = [...waypoints];
+                      updated[idx] = { ...updated[idx], name: value };
+                      setWaypoints(updated);
+                      SetKeyword(value);
+                    }}
+                    className={inputStyle}
+                  />
+                  <button
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 cursor-pointer hover:text-gray-500"
+                    onClick={() =>
+                      setWaypoints((prev) => prev.filter((_, i) => i !== idx))
+                    }
+                  >
+                    <CircleMinus size={20} />
+                  </button>
+                </div>
+              ))}
             <div className="h-px bg-gray-200"></div>
             {/* 도착지 */}
             <DebouncedInput
@@ -313,57 +314,57 @@ export default function RoadSection({
               placeholder="도착지를 입력하세요"
               className={inputStyle}
             />
-            {keywordRequire && (
-              <ul className="mt-2  border border-gray-200 rounded-md shadow scrollbar-custom bg-white max-h-72 overflow-y-auto">
-                {stores.map((store) => (
-                  <li
-                    key={store.id}
-                    className="p-2 border-b border-b-gray-200 hover:bg-gray-100 cursor-pointer"
-                    onClick={() => {
-                      const selectedLocation: LocationInfo = {
-                        name: store.name,
-                        lat: store.latitude,
-                        lng: store.longitude,
-                      };
-
-                      if (focusField === 'start') {
-                        setStartValue(selectedLocation);
-                      } else if (focusField === 'end') {
-                        setEndValue(selectedLocation);
-                      } else if (typeof focusField === 'number') {
-                        const updated = [...waypoints];
-                        updated[focusField] = selectedLocation;
-                        setWaypoints(updated);
-                      }
-                      setFocusField(null); // 선택 후 닫기
-                    }}
-                  >
-                    <div className="flex flex-col">
-                      <span className="font-medium text-sm text-gray-800">
-                        {store.name}
-                      </span>
-                      <span className="text-xs text-gray-500">
-                        {store.address}
-                      </span>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-
-          {/* 2) 출발 도착 바꾸기버튼 */}
-          {waypoints.length === 0 && (
-            <button
-              onClick={onSwap}
-              aria-label="출발/도착 교환"
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 w-6 h-6
+            {/* 2) 출발 도착 바꾸기버튼 */}
+            {waypoints.length === 0 && (
+              <button
+                onClick={onSwap}
+                aria-label="출발/도착 교환"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 w-6 h-6
             bg-white border border-gray-300  
             rounded-full flex items-center justify-center 
             shadow-sm  hover:bg-gray-50 focus:outline-none cursor-pointer"
-            >
-              <ArrowUpDown size={16} />
-            </button>
+              >
+                <ArrowUpDown size={16} />
+              </button>
+            )}
+          </div>
+
+          {keywordRequire && (
+            <ul className="mt-2  border border-gray-200 rounded-md shadow scrollbar-custom bg-white max-h-72 overflow-y-auto">
+              {stores.map((store) => (
+                <li
+                  key={store.id}
+                  className="p-2 border-b border-b-gray-200 hover:bg-gray-100 cursor-pointer"
+                  onClick={() => {
+                    const selectedLocation: LocationInfo = {
+                      name: store.name,
+                      lat: store.latitude,
+                      lng: store.longitude,
+                    };
+
+                    if (focusField === 'start') {
+                      setStartValue(selectedLocation);
+                    } else if (focusField === 'end') {
+                      setEndValue(selectedLocation);
+                    } else if (typeof focusField === 'number') {
+                      const updated = [...waypoints];
+                      updated[focusField] = selectedLocation;
+                      setWaypoints(updated);
+                    }
+                    setFocusField(null); // 선택 후 닫기
+                  }}
+                >
+                  <div className="flex flex-col">
+                    <span className="font-medium text-sm text-gray-800">
+                      {store.name}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {store.address}
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
           )}
         </div>
 
@@ -413,17 +414,19 @@ export default function RoadSection({
             <ChevronRight size={16} />
           </Button>
         </div>
-        <div>
-          <button
-            type="button"
-            onClick={() => {
-              setWaypoints([...waypoints, { name: '', lat: 0, lng: 0 }]);
-            }}
-            className=" text-xs text-primaryGreen cursor-pointer hover:text-primaryGreen-80"
-          >
-            + 경유지 추가
-          </button>
-        </div>
+        {Roadmode === 'default' && (
+          <div>
+            <button
+              type="button"
+              onClick={() => {
+                setWaypoints([...waypoints, { name: '', lat: 0, lng: 0 }]);
+              }}
+              className=" text-xs text-primaryGreen cursor-pointer hover:text-primaryGreen-80"
+            >
+              + 경유지 추가
+            </button>
+          </div>
+        )}
       </div>
 
       {mode === 'bookmark' && (

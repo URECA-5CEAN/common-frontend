@@ -138,6 +138,7 @@ export default function SidebarPanel({
             resetKeyword={resetKeyword}
             selectedCardId={selectedCardId}
             SetKeyword={SetKeyword}
+            goToStore={goToStore}
           />
         )}
         {index === 0 && panel.menu === '즐겨찾기' && (
@@ -149,6 +150,7 @@ export default function SidebarPanel({
             toggleBookmark={toggleBookmark}
             bookmarkIds={bookmarkIds}
             selectedCardId={selectedCardId}
+            goToStore={goToStore}
           />
         )}
         {index === 0 && panel.menu === '길찾기' && (
