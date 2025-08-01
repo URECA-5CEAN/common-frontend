@@ -37,7 +37,7 @@ interface SideBarProps {
   openDetail: (store: StoreInfo) => void; //  상세 열기 콜백
   onClose: (index: number) => void; //  패널 닫기 콜백
   changeKeyword?: ChangeEventHandler<HTMLInputElement>; //키워드 바꿔주는 콜백
-  keyword?: string;
+  keyword: string;
   startValue: LocationInfo; //출발지
   endValue: LocationInfo; // 도착지
   onStartChange: (v: LocationInfo) => void;
@@ -58,6 +58,7 @@ interface SideBarProps {
   setEndValue: Dispatch<SetStateAction<LocationInfo>>;
   resetKeyword: () => void;
   selectedCardId: string;
+  SetKeyword: Dispatch<SetStateAction<string>>;
 }
 
 function MapSidebar({
@@ -88,6 +89,7 @@ function MapSidebar({
   setEndValue,
   resetKeyword,
   selectedCardId,
+  SetKeyword,
 }: SideBarProps) {
   if (!panel) return;
 
@@ -138,6 +140,7 @@ function MapSidebar({
             setEndValue={setEndValue}
             resetKeyword={resetKeyword}
             selectedCardId={selectedCardId}
+            SetKeyword={SetKeyword}
           />
 
           {/* 상세 패널 (panel.type이 'detail'일 때만) */}
@@ -168,6 +171,7 @@ function MapSidebar({
                   setEndValue={setEndValue}
                   resetKeyword={resetKeyword}
                   selectedCardId={selectedCardId}
+                  SetKeyword={SetKeyword}
                 />
               </Suspense>
             )}
@@ -209,6 +213,7 @@ function MapSidebar({
                 setEndValue={setEndValue}
                 resetKeyword={resetKeyword}
                 selectedCardId={selectedCardId}
+                SetKeyword={SetKeyword}
               />
             </BottomSheet>
           )}
@@ -246,6 +251,7 @@ function MapSidebar({
                   setEndValue={setEndValue}
                   resetKeyword={resetKeyword}
                   selectedCardId={selectedCardId}
+                  SetKeyword={SetKeyword}
                 />
               </BottomSheet>
             </Suspense>
@@ -284,6 +290,7 @@ function MapSidebar({
                   setEndValue={setEndValue}
                   resetKeyword={resetKeyword}
                   selectedCardId={selectedCardId}
+                  SetKeyword={SetKeyword}
                 />
               </BottomSheet>
             </Suspense>

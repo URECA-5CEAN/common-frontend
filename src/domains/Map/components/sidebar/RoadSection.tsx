@@ -172,7 +172,7 @@ export default function RoadSection({
         const routeItems = convertedResponses.flatMap((r) => DirecitonRoot(r));
         setRecentRoutes(routeItems);
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     };
 
@@ -183,7 +183,7 @@ export default function RoadSection({
     try {
       await deleteDirectionPath(id);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

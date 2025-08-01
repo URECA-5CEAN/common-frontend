@@ -29,7 +29,7 @@ interface SidebarPanelProps {
   //제휴처 검색
   changeKeyword?: ChangeEventHandler<HTMLInputElement>;
   //키워드
-  keyword?: string;
+  keyword: string;
   startValue: LocationInfo;
   endValue: LocationInfo;
   onStartChange: (v: LocationInfo) => void;
@@ -46,6 +46,7 @@ interface SidebarPanelProps {
   setEndValue: Dispatch<SetStateAction<LocationInfo>>;
   resetKeyword: () => void;
   selectedCardId: string;
+  SetKeyword: Dispatch<SetStateAction<string>>;
 }
 
 export default function SidebarPanel({
@@ -72,6 +73,7 @@ export default function SidebarPanel({
   setEndValue,
   resetKeyword,
   selectedCardId,
+  SetKeyword,
 }: SidebarPanelProps) {
   const [userInfo, setUserInfo] = useState<UserInfoApi>();
   const token = localStorage.getItem('authToken');
@@ -135,6 +137,7 @@ export default function SidebarPanel({
             bookmarkIds={bookmarkIds}
             resetKeyword={resetKeyword}
             selectedCardId={selectedCardId}
+            SetKeyword={SetKeyword}
           />
         )}
         {index === 0 && panel.menu === '즐겨찾기' && (

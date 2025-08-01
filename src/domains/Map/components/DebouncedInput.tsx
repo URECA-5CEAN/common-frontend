@@ -8,6 +8,8 @@ interface DebouncedInputProps {
   debounceTime?: number;
   placeholder?: string;
   className?: string;
+  onFocus?: () => void;
+  onBlur?: () => void;
 }
 
 //제휴처 검색 시 입력중에 검색이 자동으로 진행되어 결과값 업을 경우 에러발생하여 만듬
@@ -17,6 +19,8 @@ export default function DebouncedInput({
   debounceTime = 500,
   placeholder = '검색어를 입력하세요',
   className = '',
+  onFocus,
+  onBlur,
 }: DebouncedInputProps) {
   const [internalValue, setInternalValue] = useState<string>(value);
   // 한글 조합 중 여부
@@ -64,6 +68,8 @@ export default function DebouncedInput({
         lastEventRef.current = e as unknown as ChangeEvent<HTMLInputElement>;
         setInternalValue(e.currentTarget.value);
       }}
+      onFocus={onFocus}
+      onBlur={onBlur}
     />
   );
 }

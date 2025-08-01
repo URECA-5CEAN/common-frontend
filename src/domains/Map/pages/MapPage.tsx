@@ -183,7 +183,7 @@ export default function MapPage() {
       });
 
       // 2. AI 추천 매장 가져오기
-      let aiStore: StoreInfo | null = null;
+      let finalList = [...storeList];
       try {
         const aiResult = await fetchAiRecommendedStore({
           keyword: debouncedKeyword,
@@ -192,26 +192,34 @@ export default function MapPage() {
           centerLat: center.lat,
           centerLng: center.lng,
         });
-
+        console.log(aiResult);
         if (aiResult?.store?.id) {
-          aiStore = { ...aiResult.store, isRecommended: aiResult.reason };
+          const aiStore: StoreInfo = {
+            ...aiResult.store,
+            isRecommended: aiResult.reason,
+          };
+
           setRecommendedStore(aiStore);
+
+          const exists = storeList.some((store) => store.id === aiStore.id);
+          if (!exists) {
+            finalList = [aiStore, ...storeList];
+          }
+        } else {
+          setRecommendedStore(undefined);
         }
       } catch (e) {
-        console.warn('AI 제휴처 로딩 실패', e);
+        console.warn('AI 추천 실패:', e);
+        setRecommendedStore(undefined); // AI 추천 실패 시 undefined 처리
       }
 
-      // 3. AI 매장이 storeList에 있으면 제거하고 맨 앞에 추가
-      const finalStores = aiStore
-        ? [aiStore, ...storeList.filter((s) => s.id !== aiStore.id)]
-        : storeList;
-
-      setStores(finalStores);
+      // 3. 최종 매장 목록 반영
+      setStores(finalList);
     } catch (err) {
-      console.error('전체 매장 로딩 실패:', err);
+      console.error('매장 목록 로딩 실패:', err);
       setStores([]);
     }
-  }, [map, debouncedKeyword, isCategory, center]);
+  }, [map, debouncedKeyword, isCategory]);
 
   useEffect(() => {
     searchStoresWithAI();
@@ -524,6 +532,7 @@ export default function MapPage() {
           setEndValue={setEndValue}
           resetKeyword={resetKeyword}
           selectedCardId={selectedCardId}
+          SetKeyword={SetKeyword}
         />
         {/* 내 위치 버튼 */}
         {map && myLocation && (
