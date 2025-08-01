@@ -4,7 +4,10 @@ import { Button } from '@/components/Button';
 import BadgeSelection from './BadgeSelection';
 import { getTitles } from '@/domains/MyPage/api/profile';
 import { useState } from 'react';
-import { LoadingSpinner } from '@/domains/MyPage/components/LoadingSpinner';
+import { Grid } from 'ldrs/react';
+import 'ldrs/react/Grid.css';
+import { Ring } from 'ldrs/react';
+import 'ldrs/react/Ring.css';
 
 interface BadgeModalProps {
   isOpen: boolean;
@@ -61,11 +64,18 @@ const BadgeModal: React.FC<BadgeModalProps> = ({
             variant="primary"
             fullWidth
             onClick={onConfirm}
-            disabled={isConfirmLoading}
+            disabled={isConfirmLoading || tempBadge === ''}
+            loading={isConfirmLoading}
           >
             {isConfirmLoading ? (
-              <div className="w-6 h-6">
-                <LoadingSpinner />
+              <div className="flex">
+                <Ring
+                  size="24"
+                  stroke="3"
+                  bgOpacity="0"
+                  speed="2"
+                  color="white"
+                />
               </div>
             ) : (
               '칭호 바꾸기'
@@ -76,11 +86,9 @@ const BadgeModal: React.FC<BadgeModalProps> = ({
     >
       <div className="flex flex-col gap-3">
         {isLoading ? (
-          <div className="px-4 py-4 w-full md:w-[460px] h-[150px] flex flex-col items-center justify-center gap-2 rounded-xl text-center">
-            <div className="w-10 h-10">
-              <LoadingSpinner />
-            </div>
-            칭호 생성중
+          <div className="px-4 py-4 w-full md:w-[460px] h-[150px] flex flex-col items-center justify-center gap-4 rounded-xl text-center">
+            <Grid size="100" speed="1.5" color="#6fc3d1" />
+            <p className="text-gray-500">칭호 생성중</p>
           </div>
         ) : badges ? (
           <>

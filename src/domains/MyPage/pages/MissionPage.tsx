@@ -25,7 +25,7 @@ const MissionPage = () => {
     calendarValue,
     activeDate,
     loading,
-    attendedDates,
+    attData,
     formatDate,
     handleCalendarChange,
     handleActiveStartDateChange,
@@ -159,7 +159,7 @@ const MissionPage = () => {
       <AttendanceCalendar
         calendarValue={calendarValue}
         activeDate={activeDate}
-        attendedDates={attendedDates}
+        attData={attData}
         loading={loading}
         isTodayPresent={isTodayPresent}
         formatDate={formatDate}

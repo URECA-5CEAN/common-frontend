@@ -2,7 +2,8 @@ import { CircleCheck } from 'lucide-react';
 import dolphinFind from '@/assets/image/dolphin_find.png';
 import { Button } from '@/components/Button';
 import type { MissionType } from '@/domains/MyPage/types/mission';
-import { LoadingSpinner } from '@/domains/MyPage/components/LoadingSpinner';
+import { Ring } from 'ldrs/react';
+import 'ldrs/react/Ring.css';
 
 const STYLES = {
   subtitle: 'text-2xl font-bold mb-2',
@@ -57,11 +58,11 @@ export const MissionList: React.FC<MissionListProps> = ({
               <div className="flex justify-between w-full">
                 <p className="flex flex-col md:flex-row justify-center md:items-center gap-1">
                   {item.name}
-                  <p
+                  <span
                     className={`text-sm ${item.completed ? 'text-primaryGreen' : 'text-primaryGreen-80'}`}
                   >
                     경험치 +{item.expReward}
-                  </p>
+                  </span>
                 </p>
                 <p className="flex justify-center items-center">
                   {item.myValue}/{item.requireValue}
@@ -84,8 +85,14 @@ export const MissionList: React.FC<MissionListProps> = ({
                     disabled={loadingMissionIds.includes(item.missionId)}
                   >
                     {loadingMissionIds.includes(item.missionId) ? (
-                      <div className="w-4 h-4">
-                        <LoadingSpinner />
+                      <div className="flex">
+                        <Ring
+                          size="16"
+                          stroke="3"
+                          bgOpacity="0"
+                          speed="2"
+                          color="white"
+                        />
                       </div>
                     ) : (
                       '완료'
