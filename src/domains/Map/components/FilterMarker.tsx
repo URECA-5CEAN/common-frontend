@@ -162,100 +162,92 @@ function FilterMarker({
 
   // 2D 마커 렌더링 함수 분리
   const renderFarMarkers = () =>
-    Markers.map((m, idx) => {
-      return (
-        <React.Fragment
-          key={m.id && m.id.trim() !== '' ? m.id : `unknown-${idx}`}
+    Markers.map((m, idx) => (
+      <React.Fragment
+        key={m.id && m.id.trim() !== '' ? m.id : `unknown-${idx}`}
+      >
+        <CustomOverlayMap
+          position={{ lat: m.lat, lng: m.lng }}
+          zIndex={shouldCluster ? 2 : 3}
+          xAnchor={0.5}
+          yAnchor={1.0}
         >
-          {/* 기본 마커 커스텀*/}
+          <div
+            onClick={() => handleClick(m.id)}
+            onMouseEnter={() => handleMouseOver(m.id)}
+            onMouseLeave={handleMouseOut}
+            style={{
+              width: 40,
+              height: 56,
+              position: 'relative',
+              cursor: 'pointer',
+              transform: m.id === selectedCardId ? 'scale(1.3)' : 'scale(1.0)',
+              transition: 'transform 0.25s ease',
+              animation:
+                m.id === selectedCardId
+                  ? 'floatY 2.0s ease infinite'
+                  : undefined,
+            }}
+          >
+            <div
+              style={{
+                position: 'absolute',
+                top: 38,
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: 0,
+                height: 0,
+                zIndex: 1,
+                borderLeft: '10px solid transparent',
+                borderRight: '10px solid transparent',
+                borderTop: '15px solid white',
+                filter: 'drop-shadow(0 -1px 2px rgba(0,0,0,0.2))',
+              }}
+            />
+            <div
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: '50%',
+                overflow: 'hidden',
+                backgroundColor: '#fff',
+                border: '2px solid #fff',
+                boxShadow:
+                  m.id === selectedCardId
+                    ? '0 10px 20px rgba(18, 158, 223, 0.35), 0 6px 6px rgba(0, 0, 0, 0.12)'
+                    : '0 2px 4px rgba(0, 0, 0, 0.15)',
+                position: 'relative',
+                zIndex: 2,
+              }}
+            >
+              <img
+                src={m.imageUrl}
+                alt="store"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  display: 'block',
+                }}
+              />
+            </div>
+          </div>
+        </CustomOverlayMap>
+
+        {m.isRecommended && (
           <CustomOverlayMap
             position={{ lat: m.lat, lng: m.lng }}
-            zIndex={shouldCluster ? 2 : 3}
+            zIndex={2}
             xAnchor={0.5}
             yAnchor={1.0}
           >
-            <div
-              onClick={() => handleClick(m.id)}
-              onMouseEnter={() => handleMouseOver(m.id)}
-              onMouseLeave={handleMouseOut}
-              style={{
-                width: 40,
-                height: 56,
-                position: 'relative',
-                cursor: 'pointer',
-                transform:
-                  m.id === selectedCardId ? 'scale(1.3)' : 'scale(1.0)',
-                transition: 'transform 0.25s ease',
-                animation:
-                  m.id === selectedCardId
-                    ? 'floatY 2.0s ease infinite'
-                    : undefined,
-              }}
-            >
-              {/* 꼬리 */}
-              <div
-                style={{
-                  position: 'absolute',
-                  top: 38,
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  width: 0,
-                  height: 0,
-                  zIndex: 1,
-                  borderLeft: '10px solid transparent',
-                  borderRight: '10px solid transparent',
-                  borderTop: '15px solid white', // 꼬리 색상 고정
-                  filter: 'drop-shadow(0 -1px 2px rgba(0,0,0,0.2))',
-                }}
-              />
-
-              {/* 원형 마커 */}
-              <div
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: '50%',
-                  overflow: 'hidden',
-                  backgroundColor: '#fff',
-                  border: '2px solid #fff',
-                  boxShadow:
-                    m.id === selectedCardId
-                      ? '0 10px 20px rgba(18, 158, 223, 0.35), 0 6px 6px rgba(0, 0, 0, 0.12)'
-                      : '0 2px 4px rgba(0, 0, 0, 0.15)',
-                  position: 'relative',
-                  zIndex: 2,
-                }}
-              >
-                <img
-                  src={m.imageUrl}
-                  alt="store"
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    display: 'block',
-                  }}
-                />
-              </div>
+            <div className="relative">
+              <div className="w-12 h-12 rounded-full bg-primaryGreen opacity-80 animate-ping " />
             </div>
           </CustomOverlayMap>
-
-          {/* AI추천 마커 애니메이션 효과 */}
-          {m.isRecommended && (
-            <CustomOverlayMap
-              position={{ lat: m.lat, lng: m.lng }}
-              zIndex={2}
-              xAnchor={0.5}
-              yAnchor={1.0}
-            >
-              <div className="relative">
-                <div className="w-12 h-12 rounded-full bg-primaryGreen opacity-80 animate-ping " />
-              </div>
-            </CustomOverlayMap>
-          )}
-        </React.Fragment>
-      );
-    });
+        )}
+      </React.Fragment>
+    ));
 
   // 마커 개수에 따라 클러스터링 여부 결정
   const shouldCluster = Markers.length > 20;

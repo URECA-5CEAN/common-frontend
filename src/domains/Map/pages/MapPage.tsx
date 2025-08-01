@@ -349,10 +349,12 @@ export default function MapPage() {
   }, [panel.menu, bookmarks, filteredStores, recommendedStore]);
 
   // 사이드바 메뉴 Open
-  const openMenu = (menu: MenuType) => {
+  const openMenu = useCallback((menu: MenuType) => {
     setPanel({ type: 'menu', menu });
     setSelectedCardId('');
-  };
+    SetKeyword('');
+    SetIsCategory('');
+  }, []);
 
   //매장 선택 시 상세열기
   const openDetail = useCallback(
@@ -595,23 +597,24 @@ export default function MapPage() {
             waypoints={waypoints.length > 0 ? waypoints : undefined}
           >
             {/* 2D 마커/오버레이 */}
-            <FilterMarker
-              hoveredMarkerId={hoveredId}
-              setHoveredMarkerId={setHoveredId}
-              map={map}
-              center={center}
-              containerRef={containerRef}
-              stores={displayedStores}
-              openDetail={openDetail}
-              onStartChange={onStartChange}
-              onEndChange={onEndChange}
-              toggleBookmark={toggleBookmark}
-              bookmarkIds={bookmarkIds}
-              selectedCardId={selectedCardId}
-              setSelectedCardId={setSelectedCardId}
-              goToStore={goToStore}
-            />
-
+            {panel.menu !== '길찾기' && (
+              <FilterMarker
+                hoveredMarkerId={hoveredId}
+                setHoveredMarkerId={setHoveredId}
+                map={map}
+                center={center}
+                containerRef={containerRef}
+                stores={displayedStores}
+                openDetail={openDetail}
+                onStartChange={onStartChange}
+                onEndChange={onEndChange}
+                toggleBookmark={toggleBookmark}
+                bookmarkIds={bookmarkIds}
+                selectedCardId={selectedCardId}
+                setSelectedCardId={setSelectedCardId}
+                goToStore={goToStore}
+              />
+            )}
             <div className="absolute  w-full md:ml-10 ml-6 top-28 md:top-24 z-2  overflow-x-auto">
               <CategorySlider
                 Category={Object.keys(categoryIconMap) as CategoryType[]}
