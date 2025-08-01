@@ -1,3 +1,4 @@
+import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -58,21 +59,34 @@ export const Modal: React.FC<ModalProps> = ({
       role="dialog"
       aria-modal="true"
     >
-      <div className="relative w-[90%] md:w-[500px] rounded-2xl bg-white p-5 shadow-xl flex flex-col gap-5">
-        {img && <>{img}</>}
+      <AnimatePresence>
+        <motion.div
+          className="relative w-[90%] md:w-[500px] rounded-2xl bg-white p-5 shadow-xl flex flex-col gap-5"
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{
+            duration: 0.5,
+            delay: 0,
+            ease: [0, 0.71, 0.2, 1.01],
+          }}
+        >
+          {img && <>{img}</>}
 
-        {title && <h2 className="text-2xl text-center break-keep">{title}</h2>}
+          {title && (
+            <h2 className="text-2xl text-center break-keep">{title}</h2>
+          )}
 
-        {description && (
-          <div className="text-center text-gray-500 break-keep">
-            {description}
-          </div>
-        )}
+          {description && (
+            <div className="text-center text-gray-500 break-keep">
+              {description}
+            </div>
+          )}
 
-        {children}
+          {children}
 
-        <div className="flex gap-3">{actions}</div>
-      </div>
+          <div className="flex gap-3">{actions}</div>
+        </motion.div>
+      </AnimatePresence>
     </div>,
     document.body,
   );
