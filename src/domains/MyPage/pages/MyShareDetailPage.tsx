@@ -58,7 +58,7 @@ const MyShareDetailPage = () => {
   if (isLoading) return <div className="m-6">로딩 중...</div>;
   if (!post)
     return (
-      <div className="w-full max-w-[1050px] m-6 flex flex-col gap-5">
+      <div className="w-[calc(100%-48px)] md:w-[80%] max-w-[1050px] flex flex-col gap-5  mb-50 md:mb-100">
         <div className="w-full h-[400px] flex flex-col gap-5 items-center justify-center text-center">
           <img
             src={dolphinFind}
@@ -76,7 +76,7 @@ const MyShareDetailPage = () => {
 
   return (
     <>
-      <div className="w-full max-w-[1050px] m-6 flex flex-col gap-5">
+      <div className="w-[calc(100%-48px)] md:w-[80%] max-w-[1050px] flex flex-col gap-5  mb-50 md:mb-100">
         <div className="flex gap-4 sm:items-center">
           <div className="relative w-16 h-16 sm:w-32 sm:h-32 flex items-center justify-center flex-shrink-0">
             {/* <img /> */}

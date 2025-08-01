@@ -107,7 +107,7 @@ const MyPageWritePage = () => {
   };
 
   return (
-    <div className="w-[calc(100%-48px)] max-w-[1050px] m-6">
+    <div className="w-[calc(100%-48px)] md:w-[80%] max-w-[1050px] mb-50 md:mb-100">
       <h2 className="text-[28px] font-bold mb-6">나눔 글 작성</h2>
 
       <SelectFields

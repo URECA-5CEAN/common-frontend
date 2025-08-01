@@ -28,7 +28,7 @@ const BadgeOption: React.FC<BadgeOptionProps> = ({
 }) => (
   <div
     onClick={onClick}
-    className={`px-4 py-4 w-full md:w-[150px] flex flex-col items-center justify-between 
+    className={`flex-1 p-2 md:p-4 w-full md:w-[150px] flex flex-col items-center justify-between 
                 gap-2 rounded-xl text-center cursor-pointer 
                 ${
                   isSelected
@@ -36,7 +36,7 @@ const BadgeOption: React.FC<BadgeOptionProps> = ({
                     : 'outline-1 outline-gray-200'
                 }`}
   >
-    <p>{title}</p>
+    <p className="break-words whitespace-normal">{title}</p>
     <p className="text-xs">{desc}</p>
     <RadioButton isSelected={isSelected} />
   </div>
