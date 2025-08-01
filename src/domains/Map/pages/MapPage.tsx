@@ -351,6 +351,7 @@ export default function MapPage() {
   // 사이드바 메뉴 Open
   const openMenu = (menu: MenuType) => {
     setPanel({ type: 'menu', menu });
+    setSelectedCardId('');
   };
 
   //매장 선택 시 상세열기
