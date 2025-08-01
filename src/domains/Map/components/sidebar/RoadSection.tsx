@@ -97,7 +97,7 @@ export default function RoadSection({
   stores,
   SetKeyword,
 }: RouteInputProps) {
-  const [showRecent, setShowRecent] = useState<boolean>(true);
+  const [showRecent, setShowRecent] = useState<boolean>(false);
   const [mode, setMode] = useState<ViewMode>('saved');
   const inputStyle = 'w-full px-4 py-2 text-sm focus:outline-none';
   const [routes, setRoutes] = useState<RouteItem[]>([]);
