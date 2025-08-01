@@ -175,36 +175,62 @@ function FilterMarker({
               onMouseEnter={() => handleMouseOver(m.id)}
               onMouseLeave={handleMouseOut}
               style={{
-                width: 35,
-                height: 35,
-                borderRadius: '50%',
-                overflow: 'hidden',
-                backgroundColor: '#fff',
-                cursor: 'pointer',
+                width: 40,
+                height: 56,
                 position: 'relative',
-                zIndex: shouldCluster ? 2 : 3,
-                boxShadow:
-                  m.id === selectedCardId
-                    ? '0 10px 20px rgba(18, 158, 223, 0.35), 0 6px 6px rgba(0, 0, 0, 0.12)'
-                    : '0 2px 4px rgba(0, 0, 0, 0.15)',
-                animation:
-                  m.id === selectedCardId ? 'floatY   0.8s ease' : undefined,
+                cursor: 'pointer',
                 transform:
                   m.id === selectedCardId ? 'scale(1.3)' : 'scale(1.0)',
-
-                transition: 'all 0.8s ease',
+                transition: 'transform 0.25s ease',
+                animation:
+                  m.id === selectedCardId ? 'floatY 0.8s ease' : undefined,
               }}
             >
-              <img
-                src={m.imageUrl || '/default.png'}
-                alt="store"
+              {/* 꼬리 */}
+              <div
                 style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  display: 'block',
+                  position: 'absolute',
+                  top: 38,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: 0,
+                  height: 0,
+                  zIndex: 1,
+                  borderLeft: '10px solid transparent',
+                  borderRight: '10px solid transparent',
+                  borderTop: '15px solid white', // 꼬리 색상 고정
+                  filter: 'drop-shadow(0 -1px 2px rgba(0,0,0,0.2))',
                 }}
               />
+
+              {/* 원형 마커 */}
+              <div
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: '50%',
+                  overflow: 'hidden',
+                  backgroundColor: '#fff',
+                  border: '2px solid #fff',
+                  boxShadow:
+                    m.id === selectedCardId
+                      ? '0 10px 20px rgba(18, 158, 223, 0.35), 0 6px 6px rgba(0, 0, 0, 0.12)'
+                      : '0 2px 4px rgba(0, 0, 0, 0.15)',
+                  position: 'relative',
+                  zIndex: 2,
+                }}
+              >
+                <img
+                  src={m.imageUrl}
+                  alt="store"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    display: 'block',
+                  }}
+                />
+              </div>
             </div>
           </CustomOverlayMap>
 

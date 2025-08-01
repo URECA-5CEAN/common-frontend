@@ -50,7 +50,7 @@ export default function KakaoMapContainer({
     if (level <= 3) return '45%';
     if (level <= 5) return '80%';
     if (level <= 7) return '50%';
-    return '30%';
+    return '10%';
   }
 
   if (loading) return <div>지도를 불러오는 중...</div>;
