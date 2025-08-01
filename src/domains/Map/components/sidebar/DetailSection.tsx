@@ -12,8 +12,9 @@ import { Button } from '@/components/Button';
 import { useBenefitBrands } from '../../hooks/useBenefitBrands';
 import type { LocationInfo } from '../../pages/MapPage';
 import { useUsageHistoryStore } from '@/store/useUsageHistoryStore';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import RoadviewViewer from '../RoadviewView';
 interface DetailSectionProps {
   store: StoreInfo;
   onStartChange: (v: LocationInfo) => void;
@@ -36,6 +37,7 @@ export default function DetailSection({
 }: DetailSectionProps) {
   const navigate = useNavigate();
   const isBookmark = bookmarkIds.has(store.id);
+  const [isLoad, setIsLoad] = useState<boolean>(false);
   const {
     data: benefits = [],
     isLoading,
@@ -102,7 +104,11 @@ export default function DetailSection({
               label: '즐겨찾기',
               onClick: () => toggleBookmark(store),
             },
-            { icon: <Webcam />, label: '로드뷰' },
+            {
+              icon: <Webcam />,
+              label: '로드뷰',
+              onClick: () => setIsLoad((prev) => !prev),
+            },
             { icon: <Share2 />, label: '공유' },
           ]}
         />
@@ -120,7 +126,7 @@ export default function DetailSection({
         <ul>
           {benefits.map((benefit, idx) => (
             <li
-              key={benefit.id}
+              key={benefit.id?.trim() || `benefit-${idx}`}
               className="flex items-center justify-between p-1 rounded-md"
             >
               <div className="flex flex-col justify-center ">
@@ -141,7 +147,7 @@ export default function DetailSection({
         <div className="flex justify-between">
           <ul className="flex -space-x-3 items-end">
             {allMedals.map((medal, idx) => (
-              <li key={idx}>
+              <li key={`${medal}-${idx}`}>
                 <img src={medal} alt="medal" className="w-[50px] md:w-[35px]" />
               </li>
             ))}
@@ -162,6 +168,15 @@ export default function DetailSection({
       </section>
 
       <div className="w-full border border-gray-200  my-6"></div>
+      {isLoad && (
+        <RoadviewViewer
+          location={{
+            lat: store.latitude,
+            lng: store.longitude,
+            isDetail: true,
+          }}
+        />
+      )}
     </div>
   );
 }

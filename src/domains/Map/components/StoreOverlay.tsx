@@ -5,6 +5,8 @@ import type { StoreInfo } from '../api/store';
 import clsx from 'clsx';
 import { useBenefitBrands } from '../hooks/useBenefitBrands';
 import type { LocationInfo } from '../pages/MapPage';
+import RoadviewViewer from './RoadviewView';
+import { useState } from 'react';
 
 interface OverlayProps {
   lat: number;
@@ -29,7 +31,7 @@ const StoreOverlay = ({
     isError,
     error,
   } = useBenefitBrands(store.brandName);
-
+  const [isLoad, setIsLoad] = useState<boolean>(false);
   if (isLoading) return 'Loading...';
   if (isError) return `Error: ${error.message}`;
   if (benefits.length === 0) return '해당 브랜드 혜택이 없습니다.';
@@ -75,7 +77,11 @@ const StoreOverlay = ({
               label: '즐겨찾기',
               onClick: () => toggleBookmark(store),
             },
-            { icon: <Webcam />, label: '로드뷰' },
+            {
+              icon: <Webcam />,
+              label: '로드뷰',
+              onClick: () => setIsLoad(true),
+            },
             { icon: <Share2 />, label: '공유' },
           ]}
         />
@@ -86,6 +92,11 @@ const StoreOverlay = ({
           store={store}
         />
       </div>
+      {isLoad && (
+        <RoadviewViewer
+          location={{ lat: store.latitude, lng: store.longitude }}
+        />
+      )}
     </div>
   );
 };

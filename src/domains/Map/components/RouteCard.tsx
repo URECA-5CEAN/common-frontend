@@ -1,4 +1,4 @@
-import { MoveRight } from 'lucide-react';
+import { ChevronRight, MoveRight } from 'lucide-react';
 import { MajorLoads } from './MajorLoads';
 import type { RouteItem } from './sidebar/RoadSection';
 import clsx from 'clsx';
@@ -49,7 +49,7 @@ export default function RouteCard({
       </div>
       <div className="px-2 mt-2 text-sm text-gray-600 space-y-0.5">
         {majorRoad.map((road, i) => (
-          <div key={i} className="flex flex-wrap gap-1">
+          <div key={`${road.name}-${i}`} className="flex flex-wrap gap-1">
             <div className="flex items-center space-x-1 space-y-1">
               {road.traffic && (
                 <span
@@ -70,14 +70,22 @@ export default function RouteCard({
         ))}
         {!isDetail && (
           <div className="flex justify-between items-center mt-1 cursor-pointer">
-            <p onClick={() => onClick?.(route)}>상세보기 &gt;</p>
             <Button
               size="sm"
               variant="primary"
-              className="py-1! px-2! "
+              className="text-xs"
               onClick={routeCreateBookmark}
             >
               경로 저장
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-6 w-[85px] flex justify-end items-center"
+              onClick={() => onClick?.(route)}
+            >
+              <p className="text-xs w-20">상세보기</p>
+              <ChevronRight size={20} />
             </Button>
           </div>
         )}

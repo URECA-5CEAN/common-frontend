@@ -6,6 +6,7 @@ import React, {
   useCallback,
   Suspense,
   lazy,
+  memo,
 } from 'react';
 import { CustomOverlayMap, MarkerClusterer } from 'react-kakao-maps-sdk';
 import { useMedia } from 'react-use';
@@ -28,9 +29,11 @@ interface Props {
   toggleBookmark: (store: StoreInfo) => void;
   bookmarkIds: Set<string>;
   center: LatLng;
+  selectedCardId: string;
+  setSelectedCardId: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export default function FilterMarker({
+function FilterMarker({
   hoveredMarkerId,
   setHoveredMarkerId,
   stores,
@@ -42,11 +45,14 @@ export default function FilterMarker({
   toggleBookmark,
   bookmarkIds,
   center,
+  selectedCardId,
+  setSelectedCardId,
 }: Props) {
   // hover 해제 지연용 타이머 ID 저장
   const hoverOutRef = useRef<number | null>(null);
   //2d마커
   const [Markers, SetMarkers] = useState<MarkerProps[]>([]);
+
   // 오버레이 위치와 스토어 정보 저장
   const [overlay, setOverlay] = useState<{
     x: number;
@@ -144,7 +150,10 @@ export default function FilterMarker({
   const handleClick = useCallback(
     (id: string) => {
       const store = storeMap.get(id);
-      if (store) openDetail(store);
+      if (store) {
+        setSelectedCardId(id);
+        openDetail(store);
+      }
     },
     [openDetail, storeMap],
   );
@@ -153,7 +162,9 @@ export default function FilterMarker({
   const renderFarMarkers = () =>
     Markers.map((m, idx) => {
       return (
-        <React.Fragment key={`${m.id}-${idx}`}>
+        <React.Fragment
+          key={m.id && m.id.trim() !== '' ? m.id : `unknown-${idx}`}
+        >
           {/* 기본 마커 커스텀*/}
           <CustomOverlayMap
             position={{ lat: m.lat, lng: m.lng }}
@@ -168,11 +179,20 @@ export default function FilterMarker({
                 height: 35,
                 borderRadius: '50%',
                 overflow: 'hidden',
-                boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
                 backgroundColor: '#fff',
                 cursor: 'pointer',
                 position: 'relative',
                 zIndex: shouldCluster ? 2 : 3,
+                boxShadow:
+                  m.id === selectedCardId
+                    ? '0 10px 20px rgba(18, 158, 223, 0.35), 0 6px 6px rgba(0, 0, 0, 0.12)'
+                    : '0 2px 4px rgba(0, 0, 0, 0.15)',
+                animation:
+                  m.id === selectedCardId ? 'floatY   0.8s ease' : undefined,
+                transform:
+                  m.id === selectedCardId ? 'scale(1.3)' : 'scale(1.0)',
+
+                transition: 'all 0.8s ease',
               }}
             >
               <img
@@ -195,7 +215,7 @@ export default function FilterMarker({
               zIndex={2}
             >
               <div className="relative">
-                <div className="w-14 h-14 rounded-full bg-primaryGreen opacity-80 animate-ping " />
+                <div className="w-12 h-12 rounded-full bg-primaryGreen opacity-80 animate-ping " />
               </div>
             </CustomOverlayMap>
           )}
@@ -214,7 +234,7 @@ export default function FilterMarker({
       {shouldCluster ? (
         <MarkerClusterer
           averageCenter
-          minLevel={6}
+          minLevel={7}
           gridSize={50}
           styles={[
             {
@@ -269,3 +289,5 @@ export default function FilterMarker({
     </>
   );
 }
+
+export default memo(FilterMarker);
