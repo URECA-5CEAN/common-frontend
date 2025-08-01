@@ -226,7 +226,10 @@ export default function RoadSection({
                 setStartValue((prev) => ({ ...prev, name: value }));
                 SetKeyword(value);
               }}
-              onFocus={() => setFocusField('start')}
+              onFocus={() => {
+                setFocusField('start');
+                SetKeyword(startValue.name || '');
+              }}
               className={inputStyle}
             />
             {/* 구분선 */}
@@ -236,7 +239,10 @@ export default function RoadSection({
                 <DebouncedInput
                   value={point.name || ''}
                   placeholder={`경유지 ${idx + 1}`}
-                  onFocus={() => setFocusField(idx)}
+                  onFocus={() => {
+                    setFocusField(idx);
+                    SetKeyword('');
+                  }}
                   onChange={(e) => {
                     const value = e.target.value;
                     const updated = [...waypoints];
@@ -259,7 +265,10 @@ export default function RoadSection({
             <div className="h-px bg-gray-200"></div>
             {/* 도착지 */}
             <DebouncedInput
-              onFocus={() => setFocusField('end')}
+              onFocus={() => {
+                setFocusField('end');
+                SetKeyword(endValue.name || '');
+              }}
               value={endValue?.name || ''}
               onChange={(e) => {
                 const value = e.target.value;
@@ -374,7 +383,6 @@ export default function RoadSection({
             type="button"
             onClick={() => {
               setWaypoints([...waypoints, { name: '', lat: 0, lng: 0 }]);
-              setEndValue({ name: '', lat: 0, lng: 0 });
             }}
             className=" text-xs text-primaryGreen cursor-pointer hover:text-primaryGreen-80"
           >
