@@ -61,7 +61,7 @@ export const Modal: React.FC<ModalProps> = ({
       <div className="relative w-[90%] md:w-[500px] rounded-2xl bg-white p-5 shadow-xl flex flex-col gap-5">
         {img && <>{img}</>}
 
-        {title && <h2 className="text-2xl text-center">{title}</h2>}
+        {title && <h2 className="text-2xl text-center break-keep">{title}</h2>}
 
         {description && (
           <div className="text-center text-gray-500">{description}</div>
