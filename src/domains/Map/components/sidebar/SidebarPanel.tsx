@@ -164,6 +164,8 @@ export default function SidebarPanel({
             openRoadDetail={openRoadDetail}
             setStartValue={setStartValue}
             setEndValue={setEndValue}
+            stores={stores}
+            SetKeyword={SetKeyword}
           />
         )}
         {index === 1 && panel.type === 'detail' && panel.item && (

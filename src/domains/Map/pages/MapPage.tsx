@@ -192,7 +192,7 @@ export default function MapPage() {
           centerLat: center.lat,
           centerLng: center.lng,
         });
-        console.log(aiResult);
+
         if (aiResult?.store?.id) {
           const aiStore: StoreInfo = {
             ...aiResult.store,
