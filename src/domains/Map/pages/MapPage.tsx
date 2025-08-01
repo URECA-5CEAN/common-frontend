@@ -608,6 +608,7 @@ export default function MapPage() {
               bookmarkIds={bookmarkIds}
               selectedCardId={selectedCardId}
               setSelectedCardId={setSelectedCardId}
+              goToStore={goToStore}
             />
 
             <div className="absolute  w-full md:ml-10 ml-6 top-28 md:top-24 z-2  overflow-x-auto">

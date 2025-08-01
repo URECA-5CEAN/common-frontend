@@ -31,8 +31,8 @@ interface Props {
   center: LatLng;
   selectedCardId: string;
   setSelectedCardId: React.Dispatch<React.SetStateAction<string>>;
+  goToStore: (store: StoreInfo) => void;
 }
-
 function FilterMarker({
   hoveredMarkerId,
   setHoveredMarkerId,
@@ -47,6 +47,7 @@ function FilterMarker({
   center,
   selectedCardId,
   setSelectedCardId,
+  goToStore,
 }: Props) {
   // hover 해제 지연용 타이머 ID 저장
   const hoverOutRef = useRef<number | null>(null);
@@ -153,6 +154,7 @@ function FilterMarker({
       if (store) {
         setSelectedCardId(id);
         openDetail(store);
+        goToStore(store);
       }
     },
     [openDetail, storeMap],
