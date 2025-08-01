@@ -7,8 +7,9 @@ import { useState } from 'react';
 import { Modal } from '@/components/Modal';
 import { Button } from '@/components/Button';
 import { deleteMySharePost } from '@/domains/MyPage/api/myShare';
-import { LoadingSpinner } from '@/domains/MyPage/components/LoadingSpinner';
 import dolphinImg from '@/assets/image/dolphin_normal.png';
+import { Ring } from 'ldrs/react';
+import 'ldrs/react/Ring.css';
 
 interface SharePostItemProps {
   post: Post;
@@ -127,10 +128,17 @@ const SharePostItem = ({ post }: SharePostItemProps) => {
               fullWidth
               onClick={() => handleDeleteClick()}
               disabled={isConfirmLoading}
+              loading={isConfirmLoading}
             >
               {isConfirmLoading ? (
-                <div className="w-6 h-6">
-                  <LoadingSpinner />
+                <div className="flex">
+                  <Ring
+                    size="24"
+                    stroke="3"
+                    bgOpacity="0"
+                    speed="2"
+                    color="white"
+                  />
                 </div>
               ) : (
                 '삭제하기'
