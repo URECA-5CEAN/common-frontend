@@ -55,11 +55,11 @@ export default function MapSection({
         <X onClick={resetKeyword} className="cursor-pointer" />
       </div>
       {keywordRequire && (
-        <ul className="mt-2 border border-gray-200 rounded-md shadow bg-white max-h-72 overflow-y-auto">
+        <ul className="mt-2 border border-gray-200 rounded-md shadow bg-white max-h-72 scrollbar-custom overflow-y-auto">
           {stores.map((store) => (
             <li
               key={store.id}
-              className="p-3 border-b hover:bg-gray-100 cursor-pointer"
+              className="p-2 border-b border-b-gray-200 hover:bg-gray-100 cursor-pointer"
               onClick={() => {
                 SetKeyword(store.name);
               }}
