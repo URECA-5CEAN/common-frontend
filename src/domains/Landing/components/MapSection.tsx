@@ -13,7 +13,7 @@ const MapSection = () => {
           <img
             src={dolphinFinger}
             alt="돌고래 손가락"
-            className="w-12 h-12 object-contain"
+            className="w-20 h-20 object-contain mt-8"
           />
         </div>
 
