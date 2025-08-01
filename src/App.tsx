@@ -23,7 +23,6 @@ import FavoritesPage from './domains/MyPage/pages/FavoritesPage';
 import EditProfilePage from '@/domains/MyPage/pages/EditProfilePage';
 import MySharePage from '@/domains/MyPage/pages/MySharePage';
 import { useAuthStore } from '@/store/useAuthStore';
-import dolphinFind from '@/assets/image/dolphin_find.png';
 import LeaveConfirmModal from '@/components/LeaveConfirmModal';
 import { UnsavedChangesProvider } from '@/contexts/UnsavedChangesContext';
 import MyShareDetailPage from '@/domains/MyPage/pages/MyShareDetailPage';
@@ -31,6 +30,7 @@ import MyShareEditPage from '@/domains/MyPage/pages/MyShareEditPage';
 import ChatPage from '@/domains/Chat/pages/ChatPage';
 import MyPageWritePage from '@/domains/MyPage/pages/MyPageWritePage';
 import ShareEditPage from '@/domains/Explore/pages/ShareEditPage';
+import dolphinError from '@/assets/image/dolphin-error.svg';
 
 import { Toaster } from 'react-hot-toast';
 
@@ -47,7 +47,7 @@ const SidebarLayout = () => {
   return (
     <>
       <Sidebar />
-      <main className="mt-[62px] md:ml-[240px] flex justify-center md:mt-[86px]">
+      <main className="mt-[82px] md:mt-[118px] md:ml-[240px] flex justify-center ">
         <Outlet />
       </main>
     </>
@@ -57,11 +57,7 @@ const SidebarLayout = () => {
 const NotFoundPage = () => {
   return (
     <div className="flex flex-col items-center justify-center h-screen m-6 text-center break-keep">
-      <img
-        src={dolphinFind}
-        alt="무언가를 찾는 돌고래 캐릭터"
-        className="w-40 mb-5"
-      />
+      <img src={dolphinError} alt="돌고래" className="w-40 mb-5" />
       <h1 className="text-xl md:text-2xl font-bold mb-4">
         404 - 페이지를 찾을 수 없습니다.
       </h1>
@@ -140,7 +136,10 @@ function App() {
                 />
 
                 <Route path="/mypage/profile" element={<ProfilePage />} />
-                <Route path="/mypage/edit" element={<EditProfilePage />} />
+                <Route
+                  path="/mypage/profile/edit"
+                  element={<EditProfilePage />}
+                />
                 <Route path="/mypage/collection" element={<CollectionPage />} />
                 <Route path="/mypage/missions" element={<MissionPage />} />
                 <Route path="/mypage/statistics" element={<StatisticsPage />} />
