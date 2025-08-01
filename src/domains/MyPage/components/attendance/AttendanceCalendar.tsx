@@ -1,12 +1,13 @@
 import Calendar from 'react-calendar';
 import { Button } from '@/components/Button';
 import presentIcon from '@/assets/icons/present_icon.png';
-import { LoadingSpinner } from '@/domains/MyPage/components/LoadingSpinner';
+import { Ring } from 'ldrs/react';
+import 'ldrs/react/Ring.css';
 
 interface AttendanceCalendarProps {
   calendarValue: Date | null;
   activeDate: Date;
-  attendedDates: Set<string>;
+  attData: string[];
   loading: boolean;
   isTodayPresent: boolean;
   formatDate: (date: Date) => string;
@@ -50,7 +51,7 @@ const StatusDot = ({ isPresent }: { isPresent: boolean }) => {
 export const AttendanceCalendar = ({
   calendarValue,
   activeDate,
-  attendedDates,
+  attData,
   loading,
   isTodayPresent,
   formatDate,
@@ -62,7 +63,7 @@ export const AttendanceCalendar = ({
     if (view !== 'month') return null;
 
     const dateStr = formatDate(date);
-    const isPresent = attendedDates.has(dateStr);
+    const isPresent = attData.includes(dateStr);
 
     return (
       <div className={STYLES.tileContent}>
@@ -74,9 +75,9 @@ export const AttendanceCalendar = ({
   const getButtonText = () => {
     if (loading)
       return (
-        <div className="w-5 h-5">
-          <LoadingSpinner />
-        </div>
+        <>
+          <Ring size="24" stroke="3" bgOpacity="0" speed="2" color="white" />
+        </>
       );
     if (isTodayPresent) return '오늘 출석 완료';
     return '출석 체크';
