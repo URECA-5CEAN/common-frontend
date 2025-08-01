@@ -88,19 +88,23 @@ const STYLES = {
 // 하위 컴포넌트
 const MenuItemComponent = ({ item }: { item: MenuItem }) => {
   const { handleProtectedNavigation } = useUnsavedChanges();
+  const location = useLocation();
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     handleProtectedNavigation(item.to);
   };
+
+  const isActivePath =
+    location.pathname === item.to ||
+    location.pathname.startsWith(item.to + '/');
+
   return (
     <NavLink
       key={item.to}
       to={item.to}
       onClick={handleClick}
-      className={({ isActive }) =>
-        `${STYLES.linkBase} ${isActive ? STYLES.linkActive : STYLES.linkInactive}`
-      }
+      className={`${STYLES.linkBase} ${isActivePath ? STYLES.linkActive : STYLES.linkInactive}`}
     >
       <div className={STYLES.iconContainer}>
         <img src={item.icon} alt={item.alt} className={STYLES.icon} />

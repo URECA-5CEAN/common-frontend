@@ -10,11 +10,11 @@ const StatCard: React.FC<StatCardProps> = ({ to, title, value }) => (
   <Link
     to={to}
     className="flex flex-col justify-between items-center border border-gray-200 
-               rounded-2xl w-full lg:w-[144px] px-5 py-7 transition-[background-color] 
+               rounded-2xl w-full lg:w-[144px] md:px-5 py-4 md:py-7 transition-[background-color] 
                duration-300 cursor-pointer hover:bg-gray-100"
   >
     <p>{title}</p>
-    <p className="text-2xl">{value}</p>
+    <p className="text-xl md:text-2xl break-all">{value}</p>
   </Link>
 );
 
