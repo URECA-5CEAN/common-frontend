@@ -16,7 +16,10 @@ const StoreSection = () => {
         </p>
 
         {/* 메인 카드 */}
-        <div className="bg-[#EEEEEE] rounded-2xl shadow-2xl max-w-6xl w-full overflow-hidden">
+        <div
+          className="bg-[#EEEEEE] rounded-2xl max-w-6xl w-full overflow-hidden"
+          style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)' }}
+        >
           <div className="flex h-[300px]">
             {/* 왼쪽 - 제목 */}
             <div

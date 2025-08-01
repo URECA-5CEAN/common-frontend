@@ -8,7 +8,10 @@ const ExploreSection = () => {
     <div className="absolute top-[230vh] w-full">
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center relative">
         {/* 메인 카드 */}
-        <div className="bg-[#FFBC52] rounded-2xl p-16 max-w-3xl w-full shadow-2xl min-h-[400px] flex flex-col justify-center mt-32 relative">
+        <div
+          className="bg-[#FFBC52] rounded-2xl p-16 max-w-3xl w-full shadow-2xl min-h-[400px] flex flex-col justify-center mt-32 relative"
+          style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)' }}
+        >
           <div className="absolute -top-42 left-1/2 transform -translate-x-1/2 z-10">
             <img src={rankingPodium} className="w-auto h-48 object-contain" />
           </div>

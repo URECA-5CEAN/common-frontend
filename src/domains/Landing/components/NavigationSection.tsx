@@ -28,7 +28,8 @@ const NavigationSection = ({
           {/* 멤버십 지도 */}
           <div className="flex flex-col items-center">
             <div
-              className="w-80 h-80 bg-primaryGreen-40 rounded-full flex flex-col items-center justify-between shadow-2xl hover:scale-105 transition-transform duration-300 cursor-pointer py-12"
+              className="w-80 h-80 bg-primaryGreen-40 rounded-full flex flex-col items-center justify-between hover:scale-105 transition-transform duration-300 cursor-pointer py-12"
+              style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)' }}
               onClick={onMapClick}
             >
               <div className="flex-1 flex items-center justify-center">
@@ -45,7 +46,8 @@ const NavigationSection = ({
           {/* 혜택 탐험 */}
           <div className="flex flex-col items-center">
             <div
-              className="w-80 h-80 bg-primaryGreen-40 rounded-full flex flex-col items-center justify-between shadow-2xl hover:scale-105 transition-transform duration-300 cursor-pointer py-12"
+              className="w-80 h-80 bg-primaryGreen-40 rounded-full flex flex-col items-center justify-between hover:scale-105 transition-transform duration-300 cursor-pointer py-12"
+              style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)' }}
               onClick={onExploreClick}
             >
               <div className="flex-1 flex items-center justify-center">
@@ -65,7 +67,8 @@ const NavigationSection = ({
           {/* 마이페이지 */}
           <div className="flex flex-col items-center">
             <div
-              className="w-80 h-80 bg-primaryGreen-40 rounded-full flex flex-col items-center justify-between shadow-2xl hover:scale-105 transition-transform duration-300 cursor-pointer py-12"
+              className="w-80 h-80 bg-primaryGreen-40 rounded-full flex flex-col items-center justify-between hover:scale-105 transition-transform duration-300 cursor-pointer py-12"
+              style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)' }}
               onClick={onMyPageClick}
             >
               <div className="flex-1 flex items-center justify-center">

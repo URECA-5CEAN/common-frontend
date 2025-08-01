@@ -28,8 +28,7 @@ const GameificationSection = () => {
             <div
               className="bg-primaryGreen-40 rounded-2xl p-8 flex-shrink-0"
               style={{
-                boxShadow:
-                  '0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1)',
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
                 width: '320px',
               }}
             >
@@ -50,8 +49,7 @@ const GameificationSection = () => {
             <div
               className="bg-primaryGreen-40 rounded-2xl p-8 flex-shrink-0"
               style={{
-                boxShadow:
-                  '0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1)',
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
                 width: '320px',
               }}
             >
@@ -74,8 +72,7 @@ const GameificationSection = () => {
             <div
               className="bg-primaryGreen-40 rounded-2xl p-8"
               style={{
-                boxShadow:
-                  '0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1)',
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
                 width: '320px',
               }}
             >
@@ -96,8 +93,7 @@ const GameificationSection = () => {
             <div
               className="bg-primaryGreen-40 rounded-2xl p-8"
               style={{
-                boxShadow:
-                  '0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1)',
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
                 width: '320px',
               }}
             >
@@ -118,8 +114,7 @@ const GameificationSection = () => {
             <div
               className="bg-primaryGreen-40 rounded-2xl p-8"
               style={{
-                boxShadow:
-                  '0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1)',
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
                 width: '320px',
               }}
             >

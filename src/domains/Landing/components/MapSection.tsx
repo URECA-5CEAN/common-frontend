@@ -26,7 +26,10 @@ const MapSection = () => {
 
           {/* 설명 박스들 */}
           <div className="flex flex-col space-y-8 ml-16 flex-1">
-            <div className="bg-primaryGreen-80 text-white p-8 rounded-2xl shadow-lg transform -translate-x-22 min-h-[158px] flex items-center justify-center">
+            <div
+              className="bg-primaryGreen-80 text-white p-8 rounded-2xl transform -translate-x-22 min-h-[158px] flex items-center justify-center"
+              style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)' }}
+            >
               <p
                 className="text-2xl font-medium text-center"
                 style={{ lineHeight: '42px' }}
@@ -36,7 +39,10 @@ const MapSection = () => {
                 빠르게 찾아보세요
               </p>
             </div>
-            <div className="bg-primaryGreen-80 text-white p-8 rounded-2xl shadow-lg min-h-[158px] flex items-center justify-center">
+            <div
+              className="bg-primaryGreen-80 text-white p-8 rounded-2xl min-h-[158px] flex items-center justify-center"
+              style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)' }}
+            >
               <p
                 className="text-2xl font-medium text-center"
                 style={{ lineHeight: '42px' }}
@@ -46,7 +52,10 @@ const MapSection = () => {
                 매장 및 혜택 정보를 확인해보세요
               </p>
             </div>
-            <div className="bg-primaryGreen-80 text-white p-8 rounded-2xl shadow-lg min-h-[158px] flex items-center justify-center transform translate-x-22">
+            <div
+              className="bg-primaryGreen-80 text-white p-8 rounded-2xl min-h-[158px] flex items-center justify-center transform translate-x-22"
+              style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)' }}
+            >
               <p
                 className="text-2xl font-medium text-center"
                 style={{ lineHeight: '42px' }}
