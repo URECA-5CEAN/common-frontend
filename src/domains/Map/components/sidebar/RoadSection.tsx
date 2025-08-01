@@ -7,6 +7,8 @@ import {
   ChevronDown,
   Route,
   Trash2,
+  X,
+  CircleMinus,
 } from 'lucide-react';
 import type { StoreInfo } from '../../api/store';
 import StarListItem from '../StarListItem';
@@ -96,7 +98,7 @@ export default function RoadSection({
   const [routes, setRoutes] = useState<RouteItem[]>([]);
   const [savedRoutes, setSavedRoutes] = useState<RouteItem[]>([]);
   const [recentRoutes, setRecentRoutes] = useState<RouteItem[]>([]);
-
+  const [waypoints, setWaypoints] = useState<LocationInfo[]>([]);
   // 리스트 토글
   const toggleMode = () => {
     setMode((prev) => (prev === 'bookmark' ? 'saved' : 'bookmark'));
@@ -199,13 +201,37 @@ export default function RoadSection({
             <input
               type="text"
               value={startValue?.name || ''}
-              placeholder="출발지를 선택하세요"
+              placeholder="출발지를 입력하세요"
               onChange={(e) =>
                 setStartValue((prev) => ({ ...prev, name: e.target.value }))
               }
               className={inputStyle}
             />
             {/* 구분선 */}
+            <div className="h-px bg-gray-200"></div>
+            {waypoints.map((point, idx) => (
+              <div key={idx} className="relative">
+                <input
+                  type="text"
+                  value={point.name || ''}
+                  placeholder={`경유지 ${idx + 1}`}
+                  onChange={(e) => {
+                    const updated = [...waypoints];
+                    updated[idx] = { ...updated[idx], name: e.target.value };
+                    setWaypoints(updated);
+                  }}
+                  className={inputStyle}
+                />
+                <button
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 cursor-pointer hover:text-gray-500"
+                  onClick={() =>
+                    setWaypoints((prev) => prev.filter((_, i) => i !== idx))
+                  }
+                >
+                  <CircleMinus size={20} />
+                </button>
+              </div>
+            ))}
             <div className="h-px bg-gray-200"></div>
             {/* 도착지 */}
             <input
@@ -214,22 +240,24 @@ export default function RoadSection({
               onChange={(e) =>
                 setEndValue((prev) => ({ ...prev, name: e.target.value }))
               }
-              placeholder="도착지를 선택하세요"
+              placeholder="도착지를 입력하세요"
               className={inputStyle}
             />
           </div>
 
           {/* 2) 출발 도착 바꾸기버튼 */}
-          <button
-            onClick={onSwap}
-            aria-label="출발/도착 교환"
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 w-6 h-6
+          {waypoints.length === 0 && (
+            <button
+              onClick={onSwap}
+              aria-label="출발/도착 교환"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 w-6 h-6
             bg-white border border-gray-300  
             rounded-full flex items-center justify-center 
             shadow-sm  hover:bg-gray-50 focus:outline-none cursor-pointer"
-          >
-            <ArrowUpDown size={16} />
-          </button>
+            >
+              <ArrowUpDown size={16} />
+            </button>
+          )}
         </div>
 
         {/* 액션 버튼 그룹 */}
@@ -277,6 +305,17 @@ export default function RoadSection({
             <p className="w-11 text-xs">길찾기</p>
             <ChevronRight size={16} />
           </Button>
+        </div>
+        <div>
+          <button
+            type="button"
+            onClick={() =>
+              setWaypoints([...waypoints, { name: '', lat: 0, lng: 0 }])
+            }
+            className="mt-2 text-xs text-primaryGreen cursor-pointer hover:text-primaryGreen-80"
+          >
+            + 경유지 추가
+          </button>
         </div>
       </div>
 
