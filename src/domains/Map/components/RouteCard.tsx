@@ -72,20 +72,20 @@ export default function RouteCard({
           <div className="flex justify-between items-center mt-1 cursor-pointer">
             <Button
               size="sm"
-              variant="secondary"
-              className="h-6 w-[80px] flex justify-end items-center"
+              variant="primary"
+              className="text-xs"
+              onClick={routeCreateBookmark}
+            >
+              경로 저장
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-6 w-[85px] flex justify-end items-center"
               onClick={() => onClick?.(route)}
             >
               <p className="text-xs w-20">상세보기</p>
               <ChevronRight size={20} />
-            </Button>
-            <Button
-              size="sm"
-              variant="primary"
-              className="py-1! px-2! "
-              onClick={routeCreateBookmark}
-            >
-              경로 저장
             </Button>
           </div>
         )}
