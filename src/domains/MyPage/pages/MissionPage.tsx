@@ -150,7 +150,7 @@ const MissionPage = () => {
   };
 
   return (
-    <div className={STYLES.container}>
+    <div className="w-[calc(100%-48px)] md:w-[80%] max-w-[1050px] mb-50 md:mb-100">
       <Breadcrumb title="마이페이지" subtitle="미션" />
 
       <div className={STYLES.title}>미션</div>

@@ -37,7 +37,7 @@ const MySharingPage = () => {
   }, []);
 
   return (
-    <div className="w-[calc(100%-48px)] max-w-[1050px] m-6">
+    <div className="w-[calc(100%-48px)] md:w-[80%] max-w-[1050px] mb-50 md:mb-100">
       <Breadcrumb title="마이페이지" subtitle="내 나눔" />
       <div className="text-[32px] font-bold my-3">내 나눔</div>
 
