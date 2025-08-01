@@ -354,6 +354,9 @@ export default function MapPage() {
     setSelectedCardId('');
     SetKeyword('');
     SetIsCategory('');
+    setStartValue({ name: '', lat: 0, lng: 0 });
+    setEndValue({ name: '', lat: 0, lng: 0 });
+    setSelectedRoute(null);
   }, []);
 
   //매장 선택 시 상세열기
