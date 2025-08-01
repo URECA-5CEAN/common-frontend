@@ -10,7 +10,8 @@ import {
   getUserInfo,
 } from '@/domains/MyPage/api/profile';
 import type { UserInfoApi } from '@/domains/MyPage/types/profile';
-import { LoadingSpinner } from '@/domains/MyPage/components/LoadingSpinner';
+import { Ring } from 'ldrs/react';
+import 'ldrs/react/Ring.css';
 
 // 상수 정의
 const VALIDATION_RULES = {
@@ -167,6 +168,7 @@ const NicknameField = ({
         type="button"
         onClick={onCheckNickname}
         disabled={!isNicknameValid || isNicknameLoading}
+        loading={!isNicknameValid || isNicknameLoading}
         className={`text-xs md:text-sm ${
           !isNicknameValid
             ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -174,8 +176,8 @@ const NicknameField = ({
         }`}
       >
         {isNicknameLoading ? (
-          <div className="w-4 h-4">
-            <LoadingSpinner />
+          <div className="flex">
+            <Ring size="16" stroke="3" bgOpacity="0" speed="2" color="white" />
           </div>
         ) : (
           '중복확인'
@@ -549,10 +551,21 @@ const EditProfilePage = () => {
             >
               취소
             </Button>
-            <Button fullWidth height="42px" disabled={isSubmitting}>
+            <Button
+              fullWidth
+              height="42px"
+              disabled={isSubmitting}
+              loading={isSubmitting}
+            >
               {isSubmitting ? (
-                <div className="w-5 h-5">
-                  <LoadingSpinner />
+                <div className="flex">
+                  <Ring
+                    size="20"
+                    stroke="3"
+                    bgOpacity="0"
+                    speed="2"
+                    color="white"
+                  />
                 </div>
               ) : (
                 '수정하기'

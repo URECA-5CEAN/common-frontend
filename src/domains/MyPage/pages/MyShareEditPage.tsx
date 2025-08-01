@@ -18,7 +18,8 @@ import PostContentFields from '@/domains/Explore/components/share/PostContentFie
 import DateTimePicker from '@/domains/Explore/components/share/DateTimePicker';
 import PlaceField from '@/domains/Explore/components/share/PlaceField';
 import { updateMySharePost } from '@/domains/MyPage/api/myShare';
-import { LoadingSpinner } from '@/domains/MyPage/components/LoadingSpinner';
+import { Ring } from 'ldrs/react';
+import 'ldrs/react/Ring.css';
 
 const MyShareEditPage = () => {
   const { postId = '' } = useParams();
@@ -196,10 +197,17 @@ const MyShareEditPage = () => {
           size="lg"
           disabled={isConfirmLoading}
           width={'106px'}
+          loading={isConfirmLoading}
         >
           {isConfirmLoading ? (
-            <div className="w-6 h-6">
-              <LoadingSpinner />
+            <div className="flex">
+              <Ring
+                size="24"
+                stroke="3"
+                bgOpacity="0"
+                speed="2"
+                color="white"
+              />
             </div>
           ) : (
             '수정하기'

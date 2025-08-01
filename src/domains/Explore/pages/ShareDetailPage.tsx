@@ -6,10 +6,11 @@ import { Calendar, MapPin, Pencil, Trash2 } from 'lucide-react';
 import { fromISOStringToDateTime } from '../utils/datetimeUtils';
 import { Button } from '@/components/Button';
 import { Modal } from '@/components/Modal';
-import { LoadingSpinner } from '@/domains/MyPage/components/LoadingSpinner';
 import { deleteMySharePost } from '@/domains/MyPage/api/myShare';
 import dolphinImg from '@/assets/image/dolphin_normal.png';
 import { getUserInfo } from '@/domains/MyPage/api/profile';
+import { Ring } from 'ldrs/react';
+import 'ldrs/react/Ring.css';
 
 const ShareDetailPage = () => {
   const { postId = '' } = useParams();
@@ -168,10 +169,17 @@ const ShareDetailPage = () => {
               fullWidth
               onClick={() => handleDeleteClick()}
               disabled={isConfirmLoading}
+              loading={isConfirmLoading}
             >
               {isConfirmLoading ? (
-                <div className="w-6 h-6">
-                  <LoadingSpinner />
+                <div className="flex">
+                  <Ring
+                    size="24"
+                    stroke="3"
+                    bgOpacity="0"
+                    speed="2"
+                    color="white"
+                  />
                 </div>
               ) : (
                 '삭제하기'

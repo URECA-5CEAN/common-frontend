@@ -16,11 +16,13 @@ import {
 } from '../api/store';
 import type { UserInfoApi } from '@/domains/MyPage/types/profile';
 import { getUserInfo } from '@/domains/MyPage/api/profile';
-import { LoadingSpinner } from '@/domains/MyPage/components/LoadingSpinner';
 import dolphinFind from '@/assets/image/dolphin_find.png';
 import toast from 'react-hot-toast';
 import { increaseUserExp } from '@/domains/MyPage/api/mission';
 import { useNavigate } from 'react-router-dom';
+
+import { Grid } from 'ldrs/react';
+import 'ldrs/react/Grid.css';
 
 interface BenefitModalProps {
   panel: Panel;
@@ -255,13 +257,8 @@ export default function BenefitModal({
             </label>
           ) : isLoading ? (
             <div className="min-h-[208px] flex flex-col justify-center items-center gap-5">
-              <div className="relative w-30 h-30">
-                <img
-                  src={dolphinFind}
-                  alt="돌고래"
-                  className="w-25 absolute top-1/2 left-1/2 -translate-1/2 z-10"
-                />
-                <LoadingSpinner />
+              <div className="relative w-30 h-30 flex flex-col justify-center items-center">
+                <Grid size="100" speed="1.5" color="#6fc3d1" />
               </div>
               <p className="text-gray-500 text-sm">
                 올려주신 영수증을 확인하고있어요
