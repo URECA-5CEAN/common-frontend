@@ -99,7 +99,7 @@ const ProfilePage: React.FC = () => {
 
   return (
     <>
-      <div className="w-[calc(100%-48px)] max-w-[1050px] m-6">
+      <div className="w-[calc(100%-48px)] md:w-[80%] max-w-[1050px] mb-50 md:mb-100">
         <Breadcrumb title="마이페이지" subtitle="내 정보" />
 
         <div className="flex flex-col">
@@ -108,7 +108,7 @@ const ProfilePage: React.FC = () => {
             <Button
               variant="secondary"
               height="30px"
-              onClick={() => navigate('/mypage/edit')}
+              onClick={() => navigate('/mypage/profile/edit')}
             >
               내 정보 수정
             </Button>
