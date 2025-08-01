@@ -106,7 +106,7 @@ export default function RoadSection({
   const [focusField, setFocusField] = useState<'start' | 'end' | number | null>(
     null,
   );
-
+  const [Roadmode, setRoadMode] = useState<'default' | 'ai'>('default');
   const keywordRequire =
     focusField !== null &&
     stores.length > 0 &&
@@ -210,7 +210,37 @@ export default function RoadSection({
   };
 
   return (
-    <div className="max-w-md mx-auto  space-y-6 bg-white min-h-dvh">
+    <div className="max-w-md mx-auto  space-y-4 bg-white min-h-dvh">
+      <div className="flex relative top-4 w-[95%] ml-2 py-1 rounded-xl bg-gray-100 shadow-inner">
+        <button
+          onClick={() => setRoadMode('default')}
+          className={`w-1/2 py-2 cursor-pointer text-sm font-semibold rounded-xl transition-all duration-200
+      ${
+        Roadmode === 'default'
+          ? 'bg-primaryGreen-80 text-white shadow-sm'
+          : 'text-primaryGreen-80 bg-gray-200 hover:bg-primaryGreen-80 hover:text-white'
+      }`}
+        >
+          길찾기
+        </button>
+        <button
+          onClick={() => setRoadMode('ai')}
+          className={`w-1/2 py-2 cursor-pointer text-sm font-semibold rounded-xl transition-all hover:bg-primaryGreen-80 hover:text-white 
+    ${
+      Roadmode === 'ai'
+        ? 'bg-primaryGreen-80 text-white shadow-md animate-none'
+        : 'bg-white text-primaryGreen-80 shadow-sm border border-primaryGreen-40 duration-200 animate-floatBounce'
+    }
+  `}
+        >
+          AI 길찾기
+        </button>
+        <span
+          className={`absolute -top-2 -right-2 text-[10px] bg-red-400 text-white px-1.5 py-0.5 rounded-full shadow   ${Roadmode !== 'ai' ? 'duration-200 animate-floatBounce' : 'hidden'}`}
+        >
+          HOT
+        </span>
+      </div>
       {/* 입력창 + 액션 버튼 */}
       <div className="space-y-3 py-4 px-2 bg-white ">
         {/* 입력창 영역 */}
