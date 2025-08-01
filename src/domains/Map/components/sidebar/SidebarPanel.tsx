@@ -114,7 +114,7 @@ export default function SidebarPanel({
       <div className="p-4 pr-2 bg-white relative md:shadow-lg rounded-lg scrollbar-custom overflow-y-auto h-auto  md:max-h-[calc(100vh-78px)] z-10 ">
         {/* 첫 번째 패널: 사용자 정보 */}
         <div className="hidden md:block">
-          {index === 0 && userInfo && (
+          {index === 0 && userInfo && panel.menu !== '길찾기' && (
             <UserSection
               membership={userInfo.membership}
               username={userInfo.nickname}

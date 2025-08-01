@@ -167,7 +167,7 @@ function FilterMarker({
         >
           {/* 기본 마커 커스텀*/}
           <CustomOverlayMap
-            position={{ lat: m.lat, lng: m.lng }}
+            position={{ lat: m.lat + 0.00005, lng: m.lng }}
             zIndex={shouldCluster ? 2 : 3}
           >
             <div
