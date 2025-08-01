@@ -57,7 +57,6 @@ const MissionPage = () => {
     try {
       await setMissionCompleted(id);
       const res = await increaseUserExp(expReward);
-      console.log(res.data.level);
 
       fetchMyMission();
       toast.success(
@@ -129,6 +128,7 @@ const MissionPage = () => {
     } catch (error) {
       console.error('미션 완료 로드 실패:', error);
       toast.error(<span>잠시 후 다시 시도해주세요.</span>, {
+        duration: 2000,
         style: {
           border: '1px solid #ebebeb',
           padding: '16px',

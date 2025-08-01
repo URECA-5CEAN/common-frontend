@@ -74,6 +74,17 @@ export interface BenefitData {
   address: string;
   visitedAt: string;
   totalAmount: number;
+  benefitAmount: number;
+}
+
+interface SaveBenefitDataResponse {
+  statusCode: number;
+  message: string;
+  data: {
+    statusCode: number;
+    statusCodeName: string;
+    detailMessage: string;
+  };
 }
 
 //브랜드 조회
@@ -254,18 +265,17 @@ export async function saveBenefitData(
   data: BenefitData,
   benefitAmount: number,
   userEmail: string,
-): Promise<void> {
+): Promise<SaveBenefitDataResponse> {
   try {
-    const response: AxiosResponse = await apiClient.post(
-      `/ocr/save?benefitAmount=${benefitAmount}`,
-      data,
-      {
+    const response: AxiosResponse<SaveBenefitDataResponse> =
+      await apiClient.post(`/ocr/save?benefitAmount=${benefitAmount}`, data, {
         headers: {
           Authorization: token,
           'X-User-email': userEmail,
         },
-      },
-    );
+      });
+    console.log(response.data);
+
     return response.data;
   } catch (error: unknown) {
     const axiosErr = error as AxiosError<{ message: string }>;
