@@ -1,4 +1,4 @@
-import type { PropsWithChildren } from 'react';
+import { useState, type PropsWithChildren } from 'react';
 import { CustomOverlayMap, Map, useKakaoLoader } from 'react-kakao-maps-sdk';
 import type { RouteItem } from './components/sidebar/RoadSection';
 import PolyLineRender from './components/PolyLineRender';
@@ -45,9 +45,18 @@ export default function KakaoMapContainer({
     libraries: ['services', 'clusterer'],
   });
 
+  const [mapLevel, setMapLevel] = useState(level);
+  function getTranslateY(level: number): string {
+    if (level <= 3) return '45%';
+    if (level <= 5) return '80%';
+    if (level <= 7) return '50%';
+    return '30%';
+  }
+
   if (loading) return <div>지도를 불러오는 중...</div>;
   if (error) return <div>지도를 불러올 수 없습니다.</div>;
 
+  console.log(mapLevel);
   return (
     <Map
       center={center}
@@ -60,6 +69,7 @@ export default function KakaoMapContainer({
           lat: m.getCenter().getLat(),
           lng: m.getCenter().getLng(),
         };
+        setMapLevel(m.getLevel());
         onCenterChanged(c); // 부모로 콜백
       }}
     >
@@ -74,7 +84,7 @@ export default function KakaoMapContainer({
               fontSize: '10px',
               fontWeight: 600,
               boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-              transform: 'translate(-50%, -100%)',
+              transform: `translate(-50%, ${getTranslateY(mapLevel)})`,
             }}
           >
             출발
@@ -98,7 +108,7 @@ export default function KakaoMapContainer({
                 fontSize: '10px',
                 fontWeight: 600,
                 boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-                transform: 'translate(-50%, -100%)',
+                transform: `translate(-50%, ${getTranslateY(mapLevel)})`,
               }}
             >
               경유지 {idx + 1}
@@ -116,7 +126,7 @@ export default function KakaoMapContainer({
               fontSize: '10px',
               fontWeight: 600,
               boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-              transform: 'translate(-50%, -100%)',
+              transform: `translate(-50%, ${getTranslateY(mapLevel)})`,
             }}
           >
             도착
