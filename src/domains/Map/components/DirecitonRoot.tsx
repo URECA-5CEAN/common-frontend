@@ -1,4 +1,5 @@
 import type { DirectionResponse } from '../api/road';
+import type { LocationInfo } from '../pages/MapPage';
 import type { RouteItem } from './sidebar/RoadSection';
 
 export function convertVertexesToCoords(
@@ -20,7 +21,12 @@ export function DirecitonRoot(response: DirectionResponse): RouteItem[] {
     const directionid = id;
     const from = route.summary.origin.name;
     const to = route.summary.destination.name;
-    const waypointNames = route.summary.waypoints?.map((w) => w.name) || [];
+    const waypoints: LocationInfo[] =
+      route.summary.waypoints.map((w) => ({
+        name: w.name,
+        lat: w.y,
+        lng: w.x,
+      })) || [];
 
     const distanceText = `${(route.summary.distance / 1000).toFixed(1)}km`;
     const durationMinutes = Math.round(route.summary.duration / 60);
@@ -60,7 +66,7 @@ export function DirecitonRoot(response: DirectionResponse): RouteItem[] {
       directionid,
       from,
       to,
-      waypointNames,
+      waypoints,
       distanceText,
       durationText,
       tollFare,
