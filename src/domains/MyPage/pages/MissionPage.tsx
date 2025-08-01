@@ -119,6 +119,7 @@ const MissionPage = () => {
       });
     } finally {
       setLoadingMissionIds((prev) => prev.filter((mid) => mid !== id));
+      fetchMyMission();
     }
   };
 
