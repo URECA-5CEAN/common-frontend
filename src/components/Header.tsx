@@ -1,10 +1,10 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { useMemo, useState } from 'react';
-import menuIcon from '@/assets/icons/menu-hamburger.svg';
+import { useMemo, useState, useEffect, useRef } from 'react';
 import arrowIcon from '@/assets/icons/arrow_icon.svg';
 import headerWaveImg from '@/assets/image/header-wave.svg';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useUnsavedChanges } from '@/contexts/UnsavedChangesContext';
+import { Menu, X } from 'lucide-react';
 
 // 타입 정의
 type MenuItem = {
@@ -46,7 +46,7 @@ const MENU_CONFIG = {
           { to: '/mypage/missions', label: '미션' },
           { to: '/mypage/statistics', label: '통계' },
           { to: '/mypage/favorites', label: '즐겨찾기' },
-          { to: '/mypage/sharing', label: '내 나눔' },
+          { to: '/mypage/share', label: '내 나눔' },
         ],
       },
     ],
@@ -65,11 +65,14 @@ const STYLES = {
   desktopNav: 'text-lg hidden md:flex',
   desktopLogin:
     'py-[7px] px-3 text-lg absolute right-[38px] top-2 hidden md:block transition-[background-color] duration-100 hover:bg-black/5 rounded-xl z-1000 cursor-pointer',
-  mobileMenuButton: 'absolute right-6 top-[-5px] p-3 cursor-pointer md:hidden',
+  mobileMenuButton:
+    'absolute right-6 top-[-4px] right-[8px] p-3 cursor-pointer md:hidden',
   mobileMenuContainer: `
     transition-[max-height,padding-top,padding-bottom] duration-300 ease-in-out z-100
-    overflow-hidden absolute top-[42px] left-0 w-full bg-white text-gray-500 shadow-md px-5 rounded-b-2xl
+    overflow-hidden fixed top-0 left-0 w-full bg-white text-gray-500 shadow-md rounded-b-2xl
   `,
+  // 외부 클릭 감지를 위한 오버레이 스타일 추가
+  mobileMenuOverlay: 'fixed inset-0 z-50 md:hidden',
   activeMenuItem:
     'font-bold bg-[#DDF4FF] border-2 border-[#84D8FF] rounded-lg text-[#1CB0F7]',
   headerWave:
@@ -115,10 +118,14 @@ const Logo = ({
   onMenuClose,
   isSignUpPage,
   isLoginPage,
+  isLandingPage,
+  isOpen,
 }: {
   onMenuClose: () => void;
   isSignUpPage: boolean;
   isLoginPage: boolean;
+  isLandingPage: boolean;
+  isOpen: boolean;
 }) => {
   const { handleProtectedNavigation } = useUnsavedChanges();
 
@@ -126,7 +133,9 @@ const Logo = ({
     ? 'text-primaryGreen'
     : isLoginPage
       ? 'text-primaryGreen md:text-white'
-      : '';
+      : isLandingPage && isOpen
+        ? 'text-primaryGreen'
+        : 'text-white';
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -232,34 +241,35 @@ const MobileMenuButton = ({
   onClick,
   isSignUpPage,
   isLoginPage,
+  isLandingPage,
+  buttonRef,
 }: {
   isOpen: boolean;
   onClick: () => void;
   isSignUpPage: boolean;
   isLoginPage: boolean;
+  isLandingPage: boolean;
+  buttonRef: React.RefObject<HTMLButtonElement | null>;
 }) => {
   const shouldApplyFilter = isSignUpPage || isLoginPage;
-  const textColorClass = shouldApplyFilter ? 'text-primaryGreen' : '';
+  const textColorClass = shouldApplyFilter
+    ? '#6fc3d1'
+    : isLandingPage && isOpen
+      ? '#6fc3d1'
+      : '#ffffff';
 
   return (
     <button
+      ref={buttonRef}
       onClick={onClick}
       className={`${STYLES.mobileMenuButton} ${textColorClass}`}
       aria-label={isOpen ? '메뉴 닫기' : '메뉴 열기'}
     >
-      <img
-        src={menuIcon}
-        alt="메뉴"
-        className={shouldApplyFilter ? 'filter brightness-0 saturate-100' : ''}
-        style={
-          shouldApplyFilter
-            ? {
-                filter:
-                  'invert(39%) sepia(85%) saturate(380%) hue-rotate(159deg) brightness(96%) contrast(89%)',
-              }
-            : {}
-        }
-      />
+      {isOpen ? (
+        <X size={30} color={textColorClass} />
+      ) : (
+        <Menu size={30} color={textColorClass} />
+      )}
     </button>
   );
 };
@@ -273,7 +283,7 @@ const SubMenuItem = ({
 }) => {
   const location = useLocation();
   const { handleProtectedNavigation } = useUnsavedChanges();
-  const isActive = location.pathname === item.to;
+  const isActive = location.pathname.startsWith(item.to);
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -342,7 +352,7 @@ const SimpleMenuItem = ({
 
   if (!item.to) return null;
 
-  const isActive = location.pathname === item.to;
+  const isActive = location.pathname.startsWith(item.to);
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -362,6 +372,7 @@ const SimpleMenuItem = ({
   );
 };
 
+// 수정된 MobileMenu 컴포넌트 - ref 타입 수정
 const MobileMenu = ({
   isOpen,
   isSubOpen,
@@ -370,6 +381,7 @@ const MobileMenu = ({
   menu,
   isLoggedIn,
   onLogout,
+  menuRef,
 }: {
   isOpen: boolean;
   isSubOpen: boolean[];
@@ -378,11 +390,13 @@ const MobileMenu = ({
   menu: MenuItem[];
   isLoggedIn: boolean;
   onLogout: () => void;
+  menuRef: React.RefObject<HTMLDivElement | null>;
 }) => (
   <div
-    className={`${STYLES.mobileMenuContainer} ${isOpen ? 'max-h-[700px] md:max-h-0' : 'max-h-0'}`}
+    ref={menuRef}
+    className={`${STYLES.mobileMenuContainer} ${isOpen ? 'max-h-[calc(100vh+22px)] md:max-h-0' : 'max-h-0'}`}
   >
-    <div className="w-full flex flex-col gap-3 py-5 pt-7">
+    <div className="w-full flex flex-col gap-3 pl-5 pr-2 pb-5 mt-[62px] h-full max-h-[calc(100vh-102px)] overflow-y-auto">
       {menu.map((item, index) =>
         item.subItems ? (
           <MenuItemWithSubItems
@@ -419,11 +433,15 @@ const HeaderWave = () => (
   </>
 );
 
-// 메인 컴포넌트
+// 메인 컴포넌트 - ref 타입 수정
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isLoggedIn, logout } = useAuthStore();
   const location = useLocation();
+
+  // ref 타입을 명시적으로 지정
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   // 메뉴 아이템 계산
   const menuItems = useMemo(() => getMenuItems(isLoggedIn), [isLoggedIn]);
@@ -438,6 +456,37 @@ const Header = () => {
     () => getPageStyles(location.pathname),
     [location.pathname],
   );
+
+  // 외부 클릭 감지 useEffect 수정
+  useEffect(() => {
+    const handleClickOutside = (event: Event) => {
+      const target = event.target as Node;
+
+      // 메뉴가 열려있고, 클릭한 곳이 메뉴나 햄버거 버튼이 아닌 경우
+      if (
+        isMenuOpen &&
+        mobileMenuRef.current &&
+        menuButtonRef.current &&
+        !mobileMenuRef.current.contains(target) &&
+        !menuButtonRef.current.contains(target)
+      ) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    // 모바일에서만 이벤트 리스너 추가 (md 이하)
+    const mediaQuery = window.matchMedia('(max-width: 768px)');
+
+    if (isMenuOpen && mediaQuery.matches) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('touchstart', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [isMenuOpen]);
 
   // 이벤트 핸들러
   const handleMenuToggle = () => setIsMenuOpen(!isMenuOpen);
@@ -459,6 +508,8 @@ const Header = () => {
             onMenuClose={handleMenuClose}
             isSignUpPage={pageStyles.isSignUpPage}
             isLoginPage={pageStyles.isLoginPage}
+            isLandingPage={pageStyles.isLandingPage}
+            isOpen={isMenuOpen}
           />
           <DesktopNavigation
             isSignUpPage={pageStyles.isSignUpPage}
@@ -473,12 +524,14 @@ const Header = () => {
           onLogout={logout}
         />
 
-        {/* 모바일 메뉴 버튼 */}
+        {/* 모바일 메뉴 버튼 - ref를 prop으로 전달 */}
         <MobileMenuButton
           isOpen={isMenuOpen}
           onClick={handleMenuToggle}
           isSignUpPage={pageStyles.isSignUpPage}
           isLoginPage={pageStyles.isLoginPage}
+          buttonRef={menuButtonRef}
+          isLandingPage={pageStyles.isLandingPage}
         />
 
         {/* 헤더 웨이브 */}
@@ -494,6 +547,7 @@ const Header = () => {
         menu={menuItems.mobile}
         isLoggedIn={isLoggedIn}
         onLogout={handleLogout}
+        menuRef={mobileMenuRef}
       />
     </>
   );
