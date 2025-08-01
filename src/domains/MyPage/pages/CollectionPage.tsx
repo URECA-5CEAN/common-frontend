@@ -7,6 +7,7 @@ import diamondMedal from '@/assets/image/diamond_medal.png';
 import { getAllBrandList } from '@/domains/MyPage/api/collection';
 import { useEffect, useState } from 'react';
 import { useUsageHistoryStore } from '@/store/useUsageHistoryStore';
+import FadeInUpDiv from '@/domains/MyPage/components/FadeInUpDiv';
 
 interface Brand {
   name: string;
@@ -88,7 +89,7 @@ const CollectionPage = () => {
 
   return (
     <>
-      <div className="w-[calc(100%-48px)] md:w-[80%] max-w-[1050px] mb-50 md:mb-100">
+      <div className="w-[calc(100%-48px)] max-w-[1050px] m-6">
         <Breadcrumb title="마이페이지" subtitle="혜택 도감" />
         <div>
           <div className="text-[32px] font-bold my-3">혜택 도감</div>
@@ -112,12 +113,17 @@ const CollectionPage = () => {
               const medalsToShow = allMedals.slice(0, earnedMedalCount);
 
               return (
-                <div
+                <FadeInUpDiv
+                  custom={index}
                   key={index}
                   className="border-1 border-gray-200 rounded-xl p-4 flex md:flex-row flex-col gap-3 w-full items-center justify-around"
                 >
                   <div className="max-w-[129px] flex items-center">
-                    <img src={brand.image_url || undefined} alt={brand.name} />
+                    <img
+                      src={brand.image_url || undefined}
+                      alt={brand.name}
+                      className="rounded-xl"
+                    />
                   </div>
                   <div className="w-full md:w-[100px] flex flex-col gap-2 items-center">
                     <div className="break-words break-keep text-center h-[48px] w-full flex justify-center items-center">
@@ -137,7 +143,7 @@ const CollectionPage = () => {
                       <ProgressBar current={brand.count} max={20} />
                     </div>
                   </div>
-                </div>
+                </FadeInUpDiv>
               );
             })}
           </div>
