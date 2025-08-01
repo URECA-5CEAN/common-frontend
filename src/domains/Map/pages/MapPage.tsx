@@ -415,6 +415,7 @@ export default function MapPage() {
     setSelectedCardId('');
     setStartValue({ name: '', lat: 0, lng: 0 });
     setEndValue({ name: '', lat: 0, lng: 0 });
+    setWaypoints([{ name: '', lat: 0, lng: 0 }]);
   }, [panel.menu]);
 
   //키워드 변경 시 카테고리 초기화
@@ -517,7 +518,7 @@ export default function MapPage() {
     SetKeyword('');
     SetIsCategory('');
   };
-  console.log(waypoints);
+
   return (
     <div className="flex h-screen flex-col-reverse md:flex-row overflow-y-hidden ">
       {/* 사이드바 */}

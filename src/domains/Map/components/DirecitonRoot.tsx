@@ -21,7 +21,6 @@ export function DirecitonRoot(response: DirectionResponse): RouteItem[] {
     const directionid = id;
     const from = route.summary.origin.name;
     const to = route.summary.destination.name;
-    console.log(route.summary);
     const waypoints: LocationInfo[] =
       route.summary.waypoints.map((w) => ({
         name: w.name,
