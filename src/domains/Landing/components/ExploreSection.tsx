@@ -1,4 +1,7 @@
 import rankingPodium from '@/assets/image/ranking-podium.png';
+import woosIcon from '@/assets/image/woos.svg';
+import vipIcon from '@/assets/icons/vip_icon.png';
+import vvipIcon from '@/assets/icons/vvip_icon.png';
 
 const ExploreSection = () => {
   return (
@@ -9,6 +12,37 @@ const ExploreSection = () => {
           <div className="absolute -top-42 left-1/2 transform -translate-x-1/2 z-10">
             <img src={rankingPodium} className="w-auto h-48 object-contain" />
           </div>
+
+          {/* 우측 아이콘들 */}
+          <div className="absolute -right-36 top-30 flex flex-col space-y-3">
+            {/* W 아이콘 (상단) */}
+            <div className="w-28 h-28 bg-white rounded-full shadow-lg flex items-center justify-center border-2 border-cyan-200">
+              <img
+                src={vvipIcon}
+                className="w-24 h-24 object-contain"
+                alt="vvip"
+              />
+            </div>
+
+            {/* V 아이콘 (중간 왼쪽) */}
+            <div className="w-24 h-24 bg-white rounded-full shadow-lg flex items-center justify-center border-2 border-cyan-200 -ml-10">
+              <img
+                src={vipIcon}
+                className="w-22 h-22 object-contain"
+                alt="vip"
+              />
+            </div>
+
+            {/* 우수 아이콘 (중간 오른쪽) */}
+            <div className="w-20 h-20 bg-white rounded-full shadow-lg flex items-center justify-center border-2 border-cyan-200 ml-16">
+              <img
+                src={woosIcon}
+                className="w-16 h-16 object-contain"
+                alt="우수"
+              />
+            </div>
+          </div>
+
           <h2 className="text-[40px] text-white font-bold mb-10 leading-tight">
             멤버십 혜택 탐험을 떠나요
           </h2>
