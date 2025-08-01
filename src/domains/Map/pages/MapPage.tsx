@@ -597,7 +597,7 @@ export default function MapPage() {
             waypoints={waypoints.length > 0 ? waypoints : undefined}
           >
             {/* 2D 마커/오버레이 */}
-            {panel.menu !== '길찾기' && (
+            {panel.type !== 'road' && (
               <FilterMarker
                 hoveredMarkerId={hoveredId}
                 setHoveredMarkerId={setHoveredId}
