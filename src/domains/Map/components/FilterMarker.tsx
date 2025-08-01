@@ -299,7 +299,7 @@ function FilterMarker({
               position: 'fixed',
               left: overlay.x,
               top: overlay.y,
-              transform: 'translate(-48%, -110%)',
+              transform: 'translate(-48%, -130%)',
               pointerEvents: 'auto',
               zIndex: 2,
             }}

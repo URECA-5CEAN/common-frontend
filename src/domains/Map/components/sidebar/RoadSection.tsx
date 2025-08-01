@@ -4,7 +4,6 @@ import {
   RefreshCcw,
   ArrowUpDown,
   ChevronRight,
-  ChevronDown,
   Route,
   Trash2,
   CircleMinus,
@@ -445,9 +444,6 @@ export default function RoadSection({
         <div className="space-y-2 px-2">
           <div className=" flex justify-between">
             <p className="text-xl font-bold text-gray-600">즐겨찾기</p>
-            <div className="text-sm flex ">
-              <p>추천순</p> <ChevronDown className="inline" />
-            </div>
           </div>
           {bookmarks.map((bookmark) => (
             <StarListItem
