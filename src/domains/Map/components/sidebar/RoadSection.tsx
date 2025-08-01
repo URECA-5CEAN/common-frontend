@@ -107,6 +107,13 @@ export default function RoadSection({
     null,
   );
 
+  const keywordRequire =
+    focusField !== null &&
+    stores.length > 0 &&
+    (startValue.name.length > 0 ||
+      endValue.name.length > 0 ||
+      (typeof focusField === 'number' &&
+        waypoints[focusField]?.name.length > 0));
   // 리스트 토글
   const toggleMode = () => {
     setMode((prev) => (prev === 'bookmark' ? 'saved' : 'bookmark'));
@@ -126,20 +133,11 @@ export default function RoadSection({
           y: endValue.lat,
           angle: 270,
         },
-        waypoints: waypoints.length
-          ? waypoints
-              .filter(
-                (w) =>
-                  w.name &&
-                  typeof w.lat === 'number' &&
-                  typeof w.lng === 'number',
-              )
-              .map((w) => ({
-                name: w.name,
-                x: Number(w.lng),
-                y: Number(w.lat),
-              }))
-          : undefined,
+        waypoints: waypoints.map((w) => ({
+          name: w.name,
+          x: w.lng,
+          y: w.lat,
+        })),
         priority: 'RECOMMEND',
         car_fuel: 'GASOLINE',
         car_hipass: false,
@@ -271,6 +269,43 @@ export default function RoadSection({
               placeholder="도착지를 입력하세요"
               className={inputStyle}
             />
+            {keywordRequire && (
+              <ul className="mt-2  border border-gray-200 rounded-md shadow scrollbar-custom bg-white max-h-72 overflow-y-auto">
+                {stores.map((store) => (
+                  <li
+                    key={store.id}
+                    className="p-2 border-b border-b-gray-200 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => {
+                      const selectedLocation: LocationInfo = {
+                        name: store.name,
+                        lat: store.latitude,
+                        lng: store.longitude,
+                      };
+
+                      if (focusField === 'start') {
+                        setStartValue(selectedLocation);
+                      } else if (focusField === 'end') {
+                        setEndValue(selectedLocation);
+                      } else if (typeof focusField === 'number') {
+                        const updated = [...waypoints];
+                        updated[focusField] = selectedLocation;
+                        setWaypoints(updated);
+                      }
+                      setFocusField(null); // 선택 후 닫기
+                    }}
+                  >
+                    <div className="flex flex-col">
+                      <span className="font-medium text-sm text-gray-800">
+                        {store.name}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {store.address}
+                      </span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
           {/* 2) 출발 도착 바꾸기버튼 */}
@@ -337,48 +372,17 @@ export default function RoadSection({
         <div>
           <button
             type="button"
-            onClick={() =>
-              setWaypoints([...waypoints, { name: '', lat: 0, lng: 0 }])
-            }
+            onClick={() => {
+              setWaypoints([...waypoints, { name: '', lat: 0, lng: 0 }]);
+              setEndValue({ name: '', lat: 0, lng: 0 });
+            }}
             className=" text-xs text-primaryGreen cursor-pointer hover:text-primaryGreen-80"
           >
             + 경유지 추가
           </button>
         </div>
       </div>
-      <ul className="mt-2 border border-gray-200 rounded-md shadow bg-white max-h-72 overflow-y-auto">
-        {stores.map((store) => (
-          <li
-            key={store.id}
-            className="p-2 border-b border-b-gray-200 hover:bg-gray-100 cursor-pointer"
-            onClick={() => {
-              const selectedLocation: LocationInfo = {
-                name: store.name,
-                lat: store.latitude,
-                lng: store.longitude,
-              };
 
-              if (focusField === 'start') {
-                setStartValue(selectedLocation);
-              } else if (focusField === 'end') {
-                setEndValue(selectedLocation);
-              } else if (typeof focusField === 'number') {
-                const updated = [...waypoints];
-                updated[focusField] = selectedLocation;
-                setWaypoints(updated);
-              }
-              setFocusField(null); // 선택 후 닫기
-            }}
-          >
-            <div className="flex flex-col">
-              <span className="font-medium text-sm text-gray-800">
-                {store.name}
-              </span>
-              <span className="text-xs text-gray-500">{store.address}</span>
-            </div>
-          </li>
-        ))}
-      </ul>
       {mode === 'bookmark' && (
         <div className="space-y-2 px-2">
           <div className=" flex justify-between">
