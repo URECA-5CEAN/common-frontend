@@ -1,4 +1,4 @@
-import { ChevronRight, HelpCircle, MoveRight, Sparkles } from 'lucide-react';
+import { ChevronRight, HelpCircle, MoveRight } from 'lucide-react';
 import { MajorLoads } from './MajorLoads';
 import type { RouteItem } from './sidebar/RoadSection';
 import clsx from 'clsx';
@@ -46,7 +46,7 @@ export default function RouteCard({
     >
       <div className="flex justify-between">
         <p className="font-semibold text-xl mb-1 px-2">추천경로 {idx + 1}</p>
-        {showScenario && (
+        {showScenario && scenario && (
           <button
             onClick={() => setOpen((v) => !v)}
             className={clsx(

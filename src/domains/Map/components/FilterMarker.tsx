@@ -169,8 +169,10 @@ function FilterMarker({
         >
           {/* 기본 마커 커스텀*/}
           <CustomOverlayMap
-            position={{ lat: m.lat + 0.00005, lng: m.lng }}
+            position={{ lat: m.lat, lng: m.lng }}
             zIndex={shouldCluster ? 2 : 3}
+            xAnchor={0.5}
+            yAnchor={1.0}
           >
             <div
               onClick={() => handleClick(m.id)}
@@ -241,8 +243,10 @@ function FilterMarker({
           {/* AI추천 마커 애니메이션 효과 */}
           {m.isRecommended && (
             <CustomOverlayMap
-              position={{ lat: m.lat + 0.00005, lng: m.lng }}
+              position={{ lat: m.lat, lng: m.lng }}
               zIndex={2}
+              xAnchor={0.5}
+              yAnchor={1.0}
             >
               <div className="relative">
                 <div className="w-12 h-12 rounded-full bg-primaryGreen opacity-80 animate-ping " />
