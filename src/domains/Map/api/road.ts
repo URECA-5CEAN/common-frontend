@@ -255,3 +255,67 @@ export function convertBookmarkToDirectionResponse(
     bookmark: bookmark.bookmark,
   };
 }
+
+export interface DirectionAIResponse {
+  statusCode: number;
+  message: string;
+  data: {
+    id: string;
+    trans_id: string;
+    routes: RouteAI[];
+    scenario: string;
+  };
+  bookmark?: boolean;
+}
+
+export interface RouteAI {
+  result_code: number;
+  result_msg: string;
+  summary: RouteAISummary;
+  sections: RouteSection[];
+}
+
+export interface WaypointAI {
+  name: string;
+  x: number;
+  y: number;
+  recommendReason?: string;
+}
+
+export interface RouteAISummary {
+  origin: CoordPoint;
+  destination: CoordPoint;
+  waypoints: WaypointAI[];
+  priority: string;
+  bound: BoundBox;
+  fare: {
+    taxi: number;
+    toll: number;
+  };
+  distance: number; // meters
+  duration: number; // seconds
+}
+
+export async function findDirectionPathAI(
+  body: DirectionRequestBody,
+): Promise<DirectionAIResponse> {
+  try {
+    const response = await apiClient.post<DirectionAIResponse>(
+      '/direction/pathByLLM',
+      body,
+      {
+        headers: {
+          Authorization: token,
+        },
+      },
+    );
+    return response.data;
+  } catch (error: unknown) {
+    const axiosErr = error as AxiosError<{ message: string }>;
+    const message =
+      axiosErr.response?.data?.message ??
+      axiosErr.message ??
+      '경로 탐색 요청 중 오류가 발생했습니다.';
+    throw new Error(`경로 요청 실패: ${message}`);
+  }
+}

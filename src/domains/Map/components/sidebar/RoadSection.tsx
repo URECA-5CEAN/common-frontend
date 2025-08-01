@@ -17,6 +17,7 @@ import {
   deleteDirectionPath,
   fetchDirectionBookmarks,
   findDirectionPath,
+  findDirectionPathAI,
   getDirectionPath,
   updateBookmarkStatus,
   type DirectionRequestBody,
@@ -108,6 +109,7 @@ export default function RoadSection({
     null,
   );
   const [Roadmode, setRoadMode] = useState<'default' | 'ai'>('default');
+  const [scenario, setScenario] = useState<string>('');
   const keywordRequire =
     focusField !== null &&
     stores.length > 0 &&
@@ -134,11 +136,13 @@ export default function RoadSection({
           y: endValue.lat,
           angle: 270,
         },
-        waypoints: waypoints.map((w) => ({
-          name: w.name,
-          x: w.lng,
-          y: w.lat,
-        })),
+        ...(Roadmode === 'default' && {
+          waypoints: waypoints.map((w) => ({
+            name: w.name,
+            x: w.lng,
+            y: w.lat,
+          })),
+        }),
         priority: 'RECOMMEND',
         car_fuel: 'GASOLINE',
         car_hipass: false,
@@ -147,11 +151,19 @@ export default function RoadSection({
         summary: false,
       };
 
-      const res = await findDirectionPath(body);
-
-      const routeItems = DirecitonRoot(res);
-      setMode('route');
-      setRoutes(routeItems);
+      if (Roadmode === 'default') {
+        const res = await findDirectionPath(body);
+        const routeItems = DirecitonRoot(res);
+        setRoutes(routeItems);
+        setMode('route');
+      } else {
+        // AI 길찾기
+        const res = await findDirectionPathAI(body);
+        console.log(res);
+        setRoutes(DirecitonRoot(res));
+        setScenario(res.data.scenario);
+        setMode('route');
+      }
     } catch (err) {
       alert(err instanceof Error ? err.message : '오류 발생');
     }
@@ -537,6 +549,8 @@ export default function RoadSection({
               route={route}
               idx={idx}
               onClick={() => openRoadDetail(route)}
+              showScenario={Roadmode === 'ai'}
+              scenario={scenario}
             />
           ))}
         </div>

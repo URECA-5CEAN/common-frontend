@@ -185,7 +185,9 @@ function FilterMarker({
                   m.id === selectedCardId ? 'scale(1.3)' : 'scale(1.0)',
                 transition: 'transform 0.25s ease',
                 animation:
-                  m.id === selectedCardId ? 'floatY 0.8s ease' : undefined,
+                  m.id === selectedCardId
+                    ? 'floatY 2.0s ease infinite'
+                    : undefined,
               }}
             >
               {/* 꼬리 */}

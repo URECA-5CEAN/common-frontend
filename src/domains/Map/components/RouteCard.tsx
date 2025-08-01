@@ -1,15 +1,19 @@
-import { ChevronRight, MoveRight } from 'lucide-react';
+import { ChevronRight, HelpCircle, MoveRight, Sparkles } from 'lucide-react';
 import { MajorLoads } from './MajorLoads';
 import type { RouteItem } from './sidebar/RoadSection';
 import clsx from 'clsx';
 import { Button } from '@/components/Button';
 import { updateBookmarkStatus } from '../api/road';
+import { useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 
 interface Props {
   route: RouteItem;
   idx: number;
   onClick?: (route: RouteItem) => void;
   isDetail?: boolean;
+  scenario?: string;
+  showScenario?: boolean;
 }
 
 export default function RouteCard({
@@ -17,10 +21,12 @@ export default function RouteCard({
   idx,
   onClick,
   isDetail = false,
+  showScenario,
+  scenario,
 }: Props) {
   const allRoads = route.section?.flatMap((s) => s.roads) || [];
   const majorRoad = MajorLoads(allRoads);
-
+  const [open, setOpen] = useState(false);
   const routeCreateBookmark = async () => {
     try {
       await updateBookmarkStatus(route.directionid, true);
@@ -38,7 +44,24 @@ export default function RouteCard({
         isDetail ? 'bg-white' : 'bg-primaryGreen-40',
       )}
     >
-      <p className="font-semibold text-xl mb-1 px-2">추천경로 {idx + 1}</p>
+      <div className="flex justify-between">
+        <p className="font-semibold text-xl mb-1 px-2">추천경로 {idx + 1}</p>
+        {showScenario && (
+          <button
+            onClick={() => setOpen((v) => !v)}
+            className={clsx(
+              'mt-2 flex items-center justify-center rounded-full shadow-lg',
+              'bg-primaryGreen-80 text-white w-9 h-9 hover:scale-110 transition-transform',
+              open && 'ring-2 ring-primaryGreen-50',
+            )}
+            aria-label="추천 이유 보기"
+            type="button"
+          >
+            <HelpCircle className="w-6 h-6" />
+          </button>
+        )}
+      </div>
+
       <div className="flex gap-4 text-sm px-2 items-center">
         <p className="text-lg font-semibold">{route.durationText}</p>
         <p className="text-base">{route.distanceText}</p>
@@ -87,6 +110,33 @@ export default function RouteCard({
               <p className="text-xs w-20">상세보기</p>
               <ChevronRight size={20} />
             </Button>
+          </div>
+        )}
+        {showScenario && scenario && (
+          <div>
+            <AnimatePresence>
+              {open && (
+                <motion.div
+                  key="recommend-reason"
+                  initial={{ rotate: -180, scale: 0.7, opacity: 0 }}
+                  animate={{ rotate: 0, scale: 1, opacity: 1 }}
+                  exit={{ rotate: 180, scale: 0.7, opacity: 0 }}
+                  transition={{
+                    duration: 0.6,
+                    type: 'spring',
+                    bounce: 0.3,
+                  }}
+                  className="overflow-hidden"
+                >
+                  <div className="relative inline-block mt-4 ">
+                    <div className="bg-white rounded-xl shadow-md p-4 text-gray-700">
+                      {scenario}
+                    </div>
+                    <div className="absolute left-6 -bottom-3 w-4 h-4 bg-white rotate-45 shadow-md"></div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         )}
       </div>
