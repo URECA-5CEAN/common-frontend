@@ -37,7 +37,7 @@ export interface RouteItem {
   directionid: string;
   from: string;
   to: string;
-  waypointNames?: string[];
+  waypoints: LocationInfo[];
   distanceText: string;
   durationText: string;
   tollFare: number;

@@ -59,7 +59,7 @@ export interface Route {
 export interface RouteSummary {
   origin: CoordPoint;
   destination: CoordPoint;
-  waypoints?: CoordPoint[];
+  waypoints: CoordPoint[];
   priority: string;
   bound: BoundBox;
   fare: {

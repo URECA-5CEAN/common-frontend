@@ -11,6 +11,7 @@ interface Props {
   selectedRoute?: RouteItem | null;
   start?: LatLng;
   end?: LatLng;
+  waypoints?: LatLng[];
 }
 
 export interface MarkerProps {
@@ -36,6 +37,7 @@ export default function KakaoMapContainer({
   selectedRoute,
   start,
   end,
+  waypoints,
 }: PropsWithChildren<Props>) {
   // Kakao Maps SDK 비동기 로딩 훅
   const [loading, error] = useKakaoLoader({
@@ -79,6 +81,30 @@ export default function KakaoMapContainer({
           </div>
         </CustomOverlayMap>
       )}
+      {waypoints &&
+        waypoints.map((point, idx) => (
+          <CustomOverlayMap
+            key={idx}
+            position={{ lat: point.lat, lng: point.lng }}
+            xAnchor={0.2}
+            yAnchor={1.0}
+          >
+            <div
+              style={{
+                background: '#007aff',
+                color: 'white',
+                padding: '4px 8px',
+                borderRadius: '16px',
+                fontSize: '10px',
+                fontWeight: 600,
+                boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+                transform: 'translate(-50%, -100%)',
+              }}
+            >
+              경유지 {idx + 1}
+            </div>
+          </CustomOverlayMap>
+        ))}
       {end && (
         <CustomOverlayMap position={end} xAnchor={0.2} yAnchor={1.0}>
           <div

@@ -166,7 +166,8 @@ export default function MapPage() {
   const [selectedRoute, setSelectedRoute] = useState<RouteItem | null>(null);
   // 선택한 카드
   const [selectedCardId, setSelectedCardId] = useState<string>('');
-
+  //경유지
+  const [waypoints, setWaypoints] = useState<LocationInfo[]>([]);
   const searchStoresWithAI = useCallback(async () => {
     if (!map) return;
     const bounds = extractBouns(map);
@@ -383,7 +384,24 @@ export default function MapPage() {
           lng: endPoint.lng,
         });
       }
-      console.log(startPoint, endPoint);
+
+      if (
+        route.waypoints &&
+        route.waypoints.length > 0 &&
+        route.path.length > 2
+      ) {
+        if (route.waypoints && route.waypoints.length > 0) {
+          const restoredWaypoints = route.waypoints.map((wp) => ({
+            name: wp.name,
+            lat: wp.lat,
+            lng: wp.lng,
+          }));
+
+          setWaypoints(restoredWaypoints);
+        } else {
+          setWaypoints([]);
+        }
+      }
     },
 
     [panel.menu],
@@ -499,7 +517,7 @@ export default function MapPage() {
     SetKeyword('');
     SetIsCategory('');
   };
-
+  console.log(waypoints);
   return (
     <div className="flex h-screen flex-col-reverse md:flex-row overflow-y-hidden ">
       {/* 사이드바 */}
@@ -573,6 +591,7 @@ export default function MapPage() {
                 ? { lat: endValue.lat, lng: endValue.lng }
                 : undefined
             }
+            waypoints={waypoints.length > 0 ? waypoints : undefined}
           >
             {/* 2D 마커/오버레이 */}
             <FilterMarker
