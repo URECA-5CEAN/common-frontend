@@ -29,7 +29,7 @@ interface SidebarPanelProps {
   //제휴처 검색
   changeKeyword?: ChangeEventHandler<HTMLInputElement>;
   //키워드
-  keyword?: string;
+  keyword: string;
   startValue: LocationInfo;
   endValue: LocationInfo;
   onStartChange: (v: LocationInfo) => void;
@@ -44,6 +44,9 @@ interface SidebarPanelProps {
   openRoadDetail: (route: RouteItem) => void;
   setStartValue: Dispatch<SetStateAction<LocationInfo>>;
   setEndValue: Dispatch<SetStateAction<LocationInfo>>;
+  resetKeyword: () => void;
+  selectedCardId: string;
+  SetKeyword: Dispatch<SetStateAction<string>>;
 }
 
 export default function SidebarPanel({
@@ -68,6 +71,9 @@ export default function SidebarPanel({
   openRoadDetail,
   setStartValue,
   setEndValue,
+  resetKeyword,
+  selectedCardId,
+  SetKeyword,
 }: SidebarPanelProps) {
   const [userInfo, setUserInfo] = useState<UserInfoApi>();
   const token = localStorage.getItem('authToken');
@@ -129,6 +135,9 @@ export default function SidebarPanel({
             onEndChange={onEndChange}
             toggleBookmark={toggleBookmark}
             bookmarkIds={bookmarkIds}
+            resetKeyword={resetKeyword}
+            selectedCardId={selectedCardId}
+            SetKeyword={SetKeyword}
           />
         )}
         {index === 0 && panel.menu === '즐겨찾기' && (
@@ -139,6 +148,7 @@ export default function SidebarPanel({
             onEndChange={onEndChange}
             toggleBookmark={toggleBookmark}
             bookmarkIds={bookmarkIds}
+            selectedCardId={selectedCardId}
           />
         )}
         {index === 0 && panel.menu === '길찾기' && (
@@ -154,6 +164,8 @@ export default function SidebarPanel({
             openRoadDetail={openRoadDetail}
             setStartValue={setStartValue}
             setEndValue={setEndValue}
+            stores={stores}
+            SetKeyword={SetKeyword}
           />
         )}
         {index === 1 && panel.type === 'detail' && panel.item && (

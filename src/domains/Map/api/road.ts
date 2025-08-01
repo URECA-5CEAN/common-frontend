@@ -59,7 +59,7 @@ export interface Route {
 export interface RouteSummary {
   origin: CoordPoint;
   destination: CoordPoint;
-  waypoints?: CoordPoint[];
+  waypoints: CoordPoint[];
   priority: string;
   bound: BoundBox;
   fare: {
@@ -129,7 +129,7 @@ export async function findDirectionPath(
         },
       },
     );
-    console.log(response.data);
+
     return response.data;
   } catch (error: unknown) {
     const axiosErr = error as AxiosError<{ message: string }>;

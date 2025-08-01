@@ -1,5 +1,6 @@
 import {
   lazy,
+  memo,
   Suspense,
   type ChangeEventHandler,
   type Dispatch,
@@ -36,7 +37,7 @@ interface SideBarProps {
   openDetail: (store: StoreInfo) => void; //  상세 열기 콜백
   onClose: (index: number) => void; //  패널 닫기 콜백
   changeKeyword?: ChangeEventHandler<HTMLInputElement>; //키워드 바꿔주는 콜백
-  keyword?: string;
+  keyword: string;
   startValue: LocationInfo; //출발지
   endValue: LocationInfo; // 도착지
   onStartChange: (v: LocationInfo) => void;
@@ -55,9 +56,12 @@ interface SideBarProps {
   index: number;
   setStartValue: Dispatch<SetStateAction<LocationInfo>>;
   setEndValue: Dispatch<SetStateAction<LocationInfo>>;
+  resetKeyword: () => void;
+  selectedCardId: string;
+  SetKeyword: Dispatch<SetStateAction<string>>;
 }
 
-export default function MapSidebar({
+function MapSidebar({
   stores,
   panel,
   openMenu,
@@ -83,6 +87,9 @@ export default function MapSidebar({
   index,
   setStartValue,
   setEndValue,
+  resetKeyword,
+  selectedCardId,
+  SetKeyword,
 }: SideBarProps) {
   if (!panel) return;
 
@@ -131,6 +138,9 @@ export default function MapSidebar({
             openRoadDetail={openRoadDetail}
             setStartValue={setStartValue}
             setEndValue={setEndValue}
+            resetKeyword={resetKeyword}
+            selectedCardId={selectedCardId}
+            SetKeyword={SetKeyword}
           />
 
           {/* 상세 패널 (panel.type이 'detail'일 때만) */}
@@ -159,6 +169,9 @@ export default function MapSidebar({
                   openRoadDetail={openRoadDetail}
                   setStartValue={setStartValue}
                   setEndValue={setEndValue}
+                  resetKeyword={resetKeyword}
+                  selectedCardId={selectedCardId}
+                  SetKeyword={SetKeyword}
                 />
               </Suspense>
             )}
@@ -198,6 +211,9 @@ export default function MapSidebar({
                 openRoadDetail={openRoadDetail}
                 setStartValue={setStartValue}
                 setEndValue={setEndValue}
+                resetKeyword={resetKeyword}
+                selectedCardId={selectedCardId}
+                SetKeyword={SetKeyword}
               />
             </BottomSheet>
           )}
@@ -233,6 +249,48 @@ export default function MapSidebar({
                   openRoadDetail={openRoadDetail}
                   setStartValue={setStartValue}
                   setEndValue={setEndValue}
+                  resetKeyword={resetKeyword}
+                  selectedCardId={selectedCardId}
+                  SetKeyword={SetKeyword}
+                />
+              </BottomSheet>
+            </Suspense>
+          )}
+
+          {panel?.type === 'road' && panel.item && (
+            <Suspense fallback={<div>로딩 중…</div>}>
+              <BottomSheet
+                key="detail-mobile"
+                ref={sheetDetail}
+                isOpen={panel.type === 'road'}
+                onClose={onCloseSheet}
+                onPositionChange={onDetailSheetPositionChange}
+              >
+                <SidebarPanel
+                  key="road"
+                  index={1}
+                  panel={panel}
+                  stores={stores}
+                  openDetail={openDetail}
+                  onClose={onClose}
+                  changeKeyword={changeKeyword}
+                  keyword={keyword}
+                  startValue={startValue}
+                  endValue={endValue}
+                  onStartChange={onStartChange}
+                  onEndChange={onEndChange}
+                  onSwap={onSwap}
+                  onReset={onReset}
+                  bookmarks={bookmarks}
+                  toggleBookmark={toggleBookmark}
+                  bookmarkIds={bookmarkIds}
+                  goToStore={goToStore}
+                  openRoadDetail={openRoadDetail}
+                  setStartValue={setStartValue}
+                  setEndValue={setEndValue}
+                  resetKeyword={resetKeyword}
+                  selectedCardId={selectedCardId}
+                  SetKeyword={SetKeyword}
                 />
               </BottomSheet>
             </Suspense>
@@ -242,3 +300,5 @@ export default function MapSidebar({
     </>
   );
 }
+
+export default memo(MapSidebar);

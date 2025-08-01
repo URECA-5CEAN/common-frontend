@@ -1,12 +1,7 @@
-import type { PropsWithChildren } from 'react';
-import {
-  CustomOverlayMap,
-  Map,
-  Polyline,
-  useKakaoLoader,
-} from 'react-kakao-maps-sdk';
+import { useState, type PropsWithChildren } from 'react';
+import { CustomOverlayMap, Map, useKakaoLoader } from 'react-kakao-maps-sdk';
 import type { RouteItem } from './components/sidebar/RoadSection';
-import { getTrafficInfo } from './components/getTrafficInfo';
+import PolyLineRender from './components/PolyLineRender';
 
 interface Props {
   center: LatLng;
@@ -16,6 +11,7 @@ interface Props {
   selectedRoute?: RouteItem | null;
   start?: LatLng;
   end?: LatLng;
+  waypoints?: LatLng[];
 }
 
 export interface MarkerProps {
@@ -32,27 +28,6 @@ export interface LatLng {
   lng: number;
 }
 
-function splitPathByRoad(
-  fullPath: LatLng[],
-  roadList: { distance: number; traffic_state: number }[],
-): { path: LatLng[]; traffic_state: number }[] {
-  const totalDistance = roadList.reduce((sum, r) => sum + r.distance, 0);
-  const totalPoints = fullPath.length;
-  let currentIdx = 0;
-  let accumulated = 0;
-
-  return roadList.map((r) => {
-    accumulated += r.distance;
-    const targetIdx = Math.round((accumulated / totalDistance) * totalPoints);
-    const segment = {
-      path: fullPath.slice(currentIdx, Math.max(targetIdx, currentIdx + 2)),
-      traffic_state: r.traffic_state,
-    };
-    currentIdx = targetIdx;
-    return segment;
-  });
-}
-
 export default function KakaoMapContainer({
   center,
   level,
@@ -62,12 +37,21 @@ export default function KakaoMapContainer({
   selectedRoute,
   start,
   end,
+  waypoints,
 }: PropsWithChildren<Props>) {
   // Kakao Maps SDK 비동기 로딩 훅
   const [loading, error] = useKakaoLoader({
     appkey: import.meta.env.VITE_KAKAO_API,
     libraries: ['services', 'clusterer'],
   });
+
+  const [mapLevel, setMapLevel] = useState(level);
+  function getTranslateY(level: number): string {
+    if (level <= 3) return '45%';
+    if (level <= 5) return '80%';
+    if (level <= 7) return '50%';
+    return '30%';
+  }
 
   if (loading) return <div>지도를 불러오는 중...</div>;
   if (error) return <div>지도를 불러올 수 없습니다.</div>;
@@ -84,6 +68,7 @@ export default function KakaoMapContainer({
           lat: m.getCenter().getLat(),
           lng: m.getCenter().getLng(),
         };
+        setMapLevel(m.getLevel());
         onCenterChanged(c); // 부모로 콜백
       }}
     >
@@ -98,13 +83,37 @@ export default function KakaoMapContainer({
               fontSize: '10px',
               fontWeight: 600,
               boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-              transform: 'translate(-50%, -100%)',
+              transform: `translate(-50%, ${getTranslateY(mapLevel)})`,
             }}
           >
             출발
           </div>
         </CustomOverlayMap>
       )}
+      {waypoints &&
+        waypoints.map((point, idx) => (
+          <CustomOverlayMap
+            key={idx}
+            position={{ lat: point.lat, lng: point.lng }}
+            xAnchor={0.2}
+            yAnchor={1.0}
+          >
+            <div
+              style={{
+                background: '#007aff',
+                color: 'white',
+                padding: '4px 8px',
+                borderRadius: '16px',
+                fontSize: '10px',
+                fontWeight: 600,
+                boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+                transform: `translate(-50%, ${getTranslateY(mapLevel)})`,
+              }}
+            >
+              경유지 {idx + 1}
+            </div>
+          </CustomOverlayMap>
+        ))}
       {end && (
         <CustomOverlayMap position={end} xAnchor={0.2} yAnchor={1.0}>
           <div
@@ -116,29 +125,14 @@ export default function KakaoMapContainer({
               fontSize: '10px',
               fontWeight: 600,
               boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-              transform: 'translate(-50%, -100%)',
+              transform: `translate(-50%, ${getTranslateY(mapLevel)})`,
             }}
           >
             도착
           </div>
         </CustomOverlayMap>
       )}
-      {selectedRoute &&
-        splitPathByRoad(selectedRoute.path, selectedRoute.road).map(
-          (segment, idx) => {
-            const traffic = getTrafficInfo(segment.traffic_state);
-            return (
-              <Polyline
-                key={idx}
-                path={segment.path}
-                strokeWeight={10}
-                strokeColor={traffic.color}
-                strokeOpacity={0.8}
-                strokeStyle="solid"
-              />
-            );
-          },
-        )}
+      {selectedRoute && <PolyLineRender route={selectedRoute} />}
       {children} {/* Map 내부에 2D/3D 마커, 오버레이, 버튼 등을 렌더링 */}
     </Map>
   );

@@ -11,6 +11,7 @@ interface StoreCardProps {
   onEndChange: (v: LocationInfo) => void;
   toggleBookmark: (store: StoreInfo) => void;
   isBookmark: boolean;
+  isSelected: boolean;
 }
 
 export default function StoreCard({
@@ -20,6 +21,7 @@ export default function StoreCard({
   onEndChange,
   toggleBookmark,
   isBookmark,
+  isSelected,
 }: StoreCardProps) {
   return (
     <div
@@ -29,6 +31,9 @@ export default function StoreCard({
       )}
       onClick={() => openDetail(store)}
     >
+      {isSelected && (
+        <div className="absolute -left-2 top-3 bottom-3  w-2 rounded bg-primaryGreen-60" />
+      )}
       <img
         src={store.brandImageUrl}
         alt={store.name}
