@@ -14,9 +14,9 @@ const ExploreSection = () => {
           </div>
 
           {/* 우측 아이콘들 */}
-          <div className="absolute -right-36 top-30 flex flex-col space-y-3">
+          <div className="absolute -right-36 top-36 flex flex-col space-y-2">
             {/* W 아이콘 (상단) */}
-            <div className="w-28 h-28 bg-white rounded-full shadow-lg flex items-center justify-center border-2 border-cyan-200">
+            <div className="w-28 h-28 bg-white/80 rounded-full shadow-lg flex items-center justify-center border-2 border-cyan-200 ml-8">
               <img
                 src={vvipIcon}
                 className="w-24 h-24 object-contain"
@@ -25,7 +25,7 @@ const ExploreSection = () => {
             </div>
 
             {/* V 아이콘 (중간 왼쪽) */}
-            <div className="w-24 h-24 bg-white rounded-full shadow-lg flex items-center justify-center border-2 border-cyan-200 -ml-10">
+            <div className="w-24 h-24 bg-white/80 rounded-full shadow-lg flex items-center justify-center border-2 border-cyan-200 -ml-10">
               <img
                 src={vipIcon}
                 className="w-22 h-22 object-contain"
@@ -34,7 +34,7 @@ const ExploreSection = () => {
             </div>
 
             {/* 우수 아이콘 (중간 오른쪽) */}
-            <div className="w-20 h-20 bg-white rounded-full shadow-lg flex items-center justify-center border-2 border-cyan-200 ml-16">
+            <div className="w-20 h-20 bg-white/80 rounded-full shadow-lg flex items-center justify-center border-2 border-cyan-200 ml-24 -mt-16">
               <img
                 src={woosIcon}
                 className="w-16 h-16 object-contain"
