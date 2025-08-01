@@ -129,7 +129,7 @@ export async function findDirectionPath(
         },
       },
     );
-    console.log(response.data);
+
     return response.data;
   } catch (error: unknown) {
     const axiosErr = error as AxiosError<{ message: string }>;

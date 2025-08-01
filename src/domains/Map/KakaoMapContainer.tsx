@@ -56,7 +56,6 @@ export default function KakaoMapContainer({
   if (loading) return <div>지도를 불러오는 중...</div>;
   if (error) return <div>지도를 불러올 수 없습니다.</div>;
 
-  console.log(mapLevel);
   return (
     <Map
       center={center}

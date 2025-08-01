@@ -145,7 +145,7 @@ export default function RoadSection({
         road_details: false,
         summary: false,
       };
-      console.log(body);
+
       const res = await findDirectionPath(body);
 
       const routeItems = DirecitonRoot(res);
