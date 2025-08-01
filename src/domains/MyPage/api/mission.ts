@@ -55,3 +55,19 @@ export const setMissionCompleted = async (id: string) => {
 
   return response.data;
 };
+
+export const increaseUserExp = async (expChange: number) => {
+  const token = localStorage.getItem('authToken');
+
+  const response = await axios.put(
+    `${baseURL}/user/stat`,
+    { expChange },
+    {
+      headers: {
+        Authorization: token,
+      },
+    },
+  );
+
+  return response.data;
+};

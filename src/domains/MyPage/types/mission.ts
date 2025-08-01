@@ -4,4 +4,5 @@ export interface MissionType {
   completed: boolean;
   myValue: number;
   requireValue: number;
+  expReward: number;
 }

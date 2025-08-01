@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { checkInAttendance } from '@/domains/MyPage/api/mission';
-import { useAttendanceQuery } from '@/domains/MyPage/api/queries/useAttendanceQuery';
+import {
+  checkInAttendance,
+  getUserAttendance,
+} from '@/domains/MyPage/api/mission';
 
 type CalendarValue = Date | null;
 
@@ -8,27 +10,33 @@ export const useAttendanceCalendar = () => {
   const [calendarValue, setCalendarValue] = useState<CalendarValue>(null);
   const [activeDate, setActiveDate] = useState<Date>(new Date());
   const [loading, setLoading] = useState(false);
-  const [attendedDates, setAttendedDates] = useState<Set<string>>(new Set());
   const [isTodayPresent, setIsTodayPresent] = useState(true);
+  const [attData, setAttData] = useState<string[]>([]);
 
   const year = activeDate.getFullYear();
   const month = activeDate.getMonth() + 1;
-  const { data, refetch } = useAttendanceQuery(year, month);
+
+  const loadAttData = async () => {
+    try {
+      const response = await getUserAttendance(year, month);
+      const newDates = response.data.attendance;
+      const todayStr = formatDate(new Date());
+
+      setAttData((prev) => {
+        const merged = [...prev, ...newDates];
+        const unique = Array.from(new Set(merged));
+        setIsTodayPresent(unique.includes(todayStr));
+
+        return unique;
+      });
+    } catch (error) {
+      console.error('출석체크 데이터 로드 실패:', error);
+    }
+  };
 
   useEffect(() => {
-    if (!data?.data.attendance) return;
-
-    setAttendedDates((prev) => {
-      const next = new Set(prev);
-      data.data.attendance.forEach((dateStr: string) => {
-        next.add(dateStr);
-      });
-      const todayStr = formatDate(new Date());
-      setIsTodayPresent(next.has(todayStr));
-
-      return next;
-    });
-  }, [data]);
+    loadAttData();
+  }, [year, month]);
 
   const formatDate = (date: Date): string => {
     const year = date.getFullYear();
@@ -59,7 +67,7 @@ export const useAttendanceCalendar = () => {
     setLoading(true);
     try {
       await checkInAttendance();
-      await refetch();
+      await loadAttData();
       setActiveDate(new Date());
     } catch (error) {
       alert('출석 처리에 실패했습니다. ' + error);
@@ -72,7 +80,7 @@ export const useAttendanceCalendar = () => {
     calendarValue,
     activeDate,
     loading,
-    attendedDates,
+    attData,
     formatDate,
     handleCalendarChange,
     handleActiveStartDateChange,

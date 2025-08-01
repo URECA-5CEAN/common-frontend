@@ -7,7 +7,8 @@ import { useLogin } from '../hooks/useLogin';
 import { useAuthStore } from '@/store/useAuthStore';
 import { openKakaoLogin, openKakaoSignup } from '@/domains/Auth/api/loginApi';
 import { Modal } from '@/components/Modal';
-import { LoadingSpinner } from '@/domains/MyPage/components/LoadingSpinner';
+import { Ring } from 'ldrs/react';
+import 'ldrs/react/Ring.css';
 
 const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
   const navigate = useNavigate();
@@ -339,10 +340,17 @@ const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
               fullWidth
               onClick={onConfirm}
               disabled={isConfirmLoading}
+              loading={isConfirmLoading}
             >
               {isConfirmLoading ? (
-                <div className="w-6 h-6">
-                  <LoadingSpinner />
+                <div className="flex">
+                  <Ring
+                    size="24"
+                    stroke="3"
+                    bgOpacity="0"
+                    speed="2"
+                    color="white"
+                  />
                 </div>
               ) : (
                 '회원가입 하기'
