@@ -36,8 +36,8 @@ declare global {
 }
 
 const MotionPathAnimation: React.FC = () => {
-  const svgRef = useRef<SVGSVGElement>(null);
-  const motionDivRef = useRef<HTMLDivElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null); //전체 svg
+  const motionDivRef = useRef<HTMLDivElement>(null); //움직이는 요소
   const motionPathRef = useRef<SVGPathElement>(null);
   const gsapLoadedRef = useRef(false);
 
@@ -220,8 +220,12 @@ const MotionPathAnimation: React.FC = () => {
 
   return (
     <div
-      style={{ margin: 0, minHeight: '400vh' }}
-      className="absolute w-full top-[100dvh] bg-[#4DD2EB]"
+      style={{
+        margin: 0,
+        minHeight: '490vh',
+        background: 'linear-gradient(180deg, #4DD2EB 0%, #2C6385 100%)',
+      }}
+      className="absolute w-full top-[100dvh]"
     >
       <svg
         ref={svgRef}
