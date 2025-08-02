@@ -61,6 +61,7 @@ export const Modal: React.FC<ModalProps> = ({
     >
       <AnimatePresence>
         <motion.div
+          layout
           className="relative w-[90%] md:w-[500px] rounded-2xl bg-white p-5 shadow-xl flex flex-col gap-5"
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
