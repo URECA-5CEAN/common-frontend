@@ -98,7 +98,7 @@ export default function RoadSection({
   SetKeyword,
 }: RouteInputProps) {
   const [showRecent, setShowRecent] = useState<boolean>(false);
-  const [mode, setMode] = useState<ViewMode>('saved');
+  const [viewmode, setViewMode] = useState<ViewMode>('saved');
   const inputStyle = 'w-full px-4 py-2 text-sm focus:outline-none';
   const [routes, setRoutes] = useState<RouteItem[]>([]);
   const [savedRoutes, setSavedRoutes] = useState<RouteItem[]>([]);
@@ -118,7 +118,7 @@ export default function RoadSection({
         waypoints[focusField]?.name.length > 0));
   // 리스트 토글
   const toggleMode = () => {
-    setMode((prev) => (prev === 'bookmark' ? 'saved' : 'bookmark'));
+    setViewMode((prev) => (prev === 'bookmark' ? 'saved' : 'bookmark'));
   };
   const handleNavigate = async () => {
     try {
@@ -154,14 +154,14 @@ export default function RoadSection({
         const res = await findDirectionPath(body);
         const routeItems = DirecitonRoot(res);
         setRoutes(routeItems);
-        setMode('route');
+        setViewMode('route');
       } else {
         // AI 길찾기
         const res = await findDirectionPathAI(body);
         console.log(res);
         setRoutes(DirecitonRoot(res));
         setScenario(res.data.scenario);
-        setMode('route');
+        setViewMode('route');
       }
     } catch (err) {
       alert(err instanceof Error ? err.message : '오류 발생');
@@ -220,7 +220,7 @@ export default function RoadSection({
       console.error(error);
     }
   };
-
+  console.log(startValue, endValue);
   return (
     <div className="max-w-md mx-auto  space-y-4 bg-white min-h-dvh">
       <div className="flex relative top-4 w-[95%] ml-2 py-1 rounded-xl bg-gray-100 shadow-inner">
@@ -230,8 +230,8 @@ export default function RoadSection({
             `w-1/2 py-2 cursor-pointer text-sm font-semibold rounded-xl transition-all duration-200`,
 
             Roadmode === 'default'
-              ? 'bg-primaryGreen-80 text-white shadow-sm'
-              : 'text-primaryGreen-80 bg-gray-200 hover:bg-primaryGreen-80 hover:text-white',
+              ? 'bg-primaryGreen-80 text-white shadow-sm  border border-primaryGreen-80'
+              : 'text-black bg-white hover:text-primaryGreen-80  border border-primaryGreen-40',
           )}
         >
           길찾기
@@ -239,11 +239,11 @@ export default function RoadSection({
         <button
           onClick={() => setRoadMode('ai')}
           className={clsx(
-            `w-1/2 py-2 cursor-pointer text-sm font-semibold rounded-xl transition-all hover:bg-primaryGreen-80 hover:text-white `,
+            `w-1/2 py-2 cursor-pointer text-sm font-semibold rounded-xl transition-all duration-200  `,
 
             Roadmode === 'ai'
-              ? 'bg-primaryGreen-80 text-white shadow-md animate-none'
-              : 'bg-white text-primaryGreen-80 shadow-sm border border-primaryGreen-40 duration-200 animate-floatBounce',
+              ? 'bg-primaryGreen-80 text-white shadow-md animate-none border border-primaryGreen-80'
+              : 'text-black bg-white hover:text-primaryGreen-80 shadow-sm border border-primaryGreen-40 animate-floatBounce ',
           )}
         >
           AI 길찾기
@@ -393,7 +393,7 @@ export default function RoadSection({
           </Button>
 
           {/* 즐겨찾기 혹은 경로목록*/}
-          {mode === 'saved' ? (
+          {viewmode === 'saved' ? (
             <Button
               onClick={toggleMode}
               variant="ghost"
@@ -440,7 +440,7 @@ export default function RoadSection({
         )}
       </div>
 
-      {mode === 'bookmark' && (
+      {viewmode === 'bookmark' && (
         <div className="space-y-2 px-2">
           <div className=" flex justify-between">
             <p className="text-xl font-bold text-gray-600">즐겨찾기</p>
@@ -457,7 +457,7 @@ export default function RoadSection({
       )}
 
       {/* 저장한 경로 */}
-      {mode === 'saved' && (
+      {viewmode === 'saved' && (
         <div className="space-y-2 px-2">
           <p className="text-xl font-semibold text-gray-600">저장한 경로</p>
           <ul className="space-y-1">
@@ -495,7 +495,7 @@ export default function RoadSection({
         </div>
       )}
       {/* 최근 경로 토글 */}
-      {mode === 'saved' && (
+      {viewmode === 'saved' && (
         <div className="space-y-2 px-2">
           <div className="flex items-center justify-between">
             <p className="text-xl font-semibold text-gray-600">최근 경로</p>
@@ -537,7 +537,7 @@ export default function RoadSection({
           )}
         </div>
       )}
-      {mode === 'route' && (
+      {viewmode === 'route' && (
         <div className="flex flex-col px-2 ">
           {routes.map((route, idx) => (
             <RouteCard

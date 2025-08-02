@@ -9,6 +9,7 @@ import {
 } from 'react';
 import DebouncedInput from '../DebouncedInput';
 import type { LocationInfo } from '../../pages/MapPage';
+import clsx from 'clsx';
 
 interface MapSectionProps {
   stores: StoreInfo[];
@@ -39,23 +40,65 @@ export default function MapSection({
   SetKeyword,
   goToStore,
 }: MapSectionProps) {
-  const [isFocused, setIsFocused] = useState(false);
+  const [isFocused, setIsFocused] = useState<boolean>(false);
+  const [mode, setMode] = useState<'default' | 'search'>('default');
   const keywordRequire = isFocused && stores.length > 0 && keyword.length > 0;
   return (
-    <div className="px-2 py-3 space-y-3 h-screen ">
-      {/* 검색바 */}
-      <div className="hidden sm:flex  items-center border border-gray-200 rounded-2xl px-2 py-2 mb-4">
-        <Search />
-        <DebouncedInput
-          value={keyword}
-          onChange={changeKeyword}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setTimeout(() => setIsFocused(false), 150)}
-          debounceTime={300}
-          placeholder="검색"
-        />
-        <X onClick={resetKeyword} className="cursor-pointer" />
+    <div className="px-2 space-y-8 h-screen ">
+      <div className="flex relative top-4 py-1 rounded-sm mx-auto">
+        <button
+          onClick={() => setMode('default')}
+          className={clsx(
+            `w-1/2 py-2 cursor-pointer text-sm font-semibold transition-all duration-200 rounded-l-xl rounded-r-none`,
+            mode === 'default'
+              ? 'bg-primaryGreen-80 text-white shadow-sm border-none border border-primaryGreen-80 '
+              : 'bg-white text-bloack hover:text-primaryGreen-80 border border-primaryGreen-40',
+          )}
+          style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
+        >
+          근처 제휴처
+        </button>
+        <button
+          onClick={() => setMode('search')}
+          className={clsx(
+            `w-1/2 py-2 cursor-pointer text-sm font-semibold transition-all duration-200 rounded-r-xl rounded-l-none`,
+            mode === 'search'
+              ? 'bg-primaryGreen-80 text-white shadow-sm border-none border border-primaryGreen-80'
+              : 'bg-white text-black hover:text-primaryGreen-80 border border-primaryGreen-40',
+          )}
+        >
+          전체 검색
+        </button>
       </div>
+
+      {mode === 'default' ? (
+        <div className="hidden sm:flex  items-center border border-gray-200 rounded-2xl px-2 py-2 ">
+          <Search color="gray" size={20} />
+          <DebouncedInput
+            value={keyword}
+            onChange={changeKeyword}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setTimeout(() => setIsFocused(false), 150)}
+            debounceTime={300}
+            placeholder="근처 제휴처를 검색해봐요!"
+          />
+          <X onClick={resetKeyword} className="cursor-pointer " color="gray" />
+        </div>
+      ) : (
+        <div className="hidden sm:flex  items-center border border-gray-200 rounded-2xl px-2 py-2 ">
+          <Search color="gray" size={20} />
+          <DebouncedInput
+            value={keyword}
+            onChange={changeKeyword}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setTimeout(() => setIsFocused(false), 150)}
+            debounceTime={300}
+            placeholder="전국에 있는 제휴처를 검색해봐요!"
+          />
+          <X onClick={resetKeyword} className="cursor-pointer " color="gray" />
+        </div>
+      )}
+
       {keywordRequire && (
         <ul className="mt-2 border border-gray-200 rounded-md shadow bg-white max-h-72 scrollbar-custom overflow-y-auto">
           {stores.map((store) => (

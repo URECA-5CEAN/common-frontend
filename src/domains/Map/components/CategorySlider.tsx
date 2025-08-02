@@ -39,6 +39,7 @@ export default function CategorySlider({
                 isCategory === cate
                   ? 'text-white bg-primaryGreen border-primaryGreen '
                   : 'bg-white hover:text-primaryGreen',
+                'active:scale-[0.96] ',
               )}
               onClick={() => changeCategory(cate)}
             >

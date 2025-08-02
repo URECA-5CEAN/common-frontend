@@ -12,7 +12,15 @@ import MapSidebar, {
   type MenuType,
   type Panel,
 } from '../components/sidebar/MapSidebar';
-import { Clapperboard, Search, Utensils, type LucideIcon } from 'lucide-react';
+import {
+  Clapperboard,
+  Gift,
+  Percent,
+  Search,
+  Ticket,
+  Utensils,
+  type LucideIcon,
+} from 'lucide-react';
 import type { LatLng } from '../KakaoMapContainer';
 
 import {
@@ -34,6 +42,7 @@ import { fetchAiRecommendedStore } from '../api/ai';
 import { extractBouns, type InternalBounds } from '../utils/extractBouns';
 import type { RouteItem } from '../components/sidebar/RoadSection';
 import { Coffee, ShoppingBag, ShoppingCart, Car } from 'lucide-react';
+import BenefitButton from '../components/BenefitButtons';
 
 //bounds 타입에러 방지
 
@@ -44,12 +53,35 @@ type CategoryType =
   | '대형마트'
   | '문화시설'
   | '렌터카';
+
 export interface CategoryIconMeta {
   icon: LucideIcon;
   className?: string;
   color?: string;
   size?: number;
 }
+
+// 혜택 타입 정의
+export type BenefitType = '쿠폰' | '할인' | '증정';
+
+// 아이콘 매핑
+export const benefitIconMap: Record<BenefitType, CategoryIconMeta> = {
+  쿠폰: {
+    icon: Ticket,
+    color: '#fbbc04', // 노랑 등등 원하는 색
+    size: 20,
+  },
+  할인: {
+    icon: Percent,
+    color: '#34c759', // 연두 등등 원하는 색
+    size: 20,
+  },
+  증정: {
+    icon: Gift,
+    color: '#42a5f5', // 파랑 등등 원하는 색
+    size: 20,
+  },
+};
 
 export const categoryIconMap: Record<CategoryType, CategoryIconMeta> = {
   음식점: {
@@ -116,6 +148,13 @@ export default function MapPage() {
   // 디바운스 키워드(한글 검색 시 자꾸 바로 검색 => 에러)
   const [debouncedKeyword, setDebouncedKeyword] = useState<string>(keyword);
 
+  const [mode, setMode] = useState<'default' | 'search'>('default');
+  // 검색input
+  const [searchInput, setSearchInput] = useState<string>('');
+
+  // API로 불러온 매장 리스트
+  const [searchStores, setSearchStores] = useState<StoreInfo[]>([]);
+
   // 사이드바 menu 현재 상태
   const [panel, setPanel] = useState<Panel>({
     type: 'menu',
@@ -125,6 +164,8 @@ export default function MapPage() {
   const [panelIndex, setPanelIndex] = useState<number>(0);
   //검색 디바운스
   const [isCategory, SetIsCategory] = useState<string>('');
+  //선택된 혜택 유형
+  const [selectedBenefit, setSelectedBenefit] = useState<BenefitType | ''>('');
 
   //출발지
   const [startValue, setStartValue] = useState<LocationInfo>({
@@ -178,6 +219,7 @@ export default function MapPage() {
       const storeList = await fetchStores({
         keyword: debouncedKeyword,
         category: isCategory,
+        benefit: selectedBenefit,
         ...bounds,
         centerLat: center.lat,
         centerLng: center.lng,
@@ -220,7 +262,7 @@ export default function MapPage() {
       console.error('매장 목록 로딩 실패:', err);
       setStores([]);
     }
-  }, [map, debouncedKeyword, isCategory]);
+  }, [map, debouncedKeyword, isCategory, selectedBenefit]);
 
   useEffect(() => {
     searchStoresWithAI();
@@ -353,10 +395,6 @@ export default function MapPage() {
     setPanel({ type: 'menu', menu });
     setSelectedCardId('');
     SetKeyword('');
-    SetIsCategory('');
-    setStartValue({ name: '', lat: 0, lng: 0 });
-    setEndValue({ name: '', lat: 0, lng: 0 });
-    setSelectedRoute(null);
   }, []);
 
   //매장 선택 시 상세열기
@@ -431,9 +469,8 @@ export default function MapPage() {
   //카테고리 변경 시 키워드 변경
   const changeCategory = useCallback(
     (category: string) => {
-      SetIsCategory(category);
-      SetKeyword(category);
-      openMenu('지도');
+      SetIsCategory((prev) => (prev === category ? '' : category));
+      SetKeyword((prev) => (prev === category ? '' : category));
     },
     [openMenu],
   );
@@ -618,7 +655,7 @@ export default function MapPage() {
                 goToStore={goToStore}
               />
             )}
-            <div className="absolute  w-full md:ml-10 ml-6 top-28 md:top-24 z-2  overflow-x-auto">
+            <div className="absolute  w-full md:ml-10 ml-6 top-28 md:top-20 z-2  overflow-x-auto">
               <CategorySlider
                 Category={Object.keys(categoryIconMap) as CategoryType[]}
                 isCategory={isCategory}
@@ -632,7 +669,14 @@ export default function MapPage() {
                 categoryIconMap={categoryIconMap}
               />
             </div>
-
+            <div className="absolute  w-full md:ml-10 ml-6 top-28 md:top-[120px] z-2  overflow-x-auto">
+              <BenefitButton
+                benefitList={['쿠폰', '할인', '증정']}
+                selected={selectedBenefit}
+                onSelect={setSelectedBenefit}
+                benefitIconMap={benefitIconMap}
+              />
+            </div>
             <div className="flex md:hidden  absolute top-[68px] left-6 right-6   bg-white z-2 items-center border border-gray-200 rounded-xl px-2 py-1 ">
               <Search />
               <DebouncedInput
