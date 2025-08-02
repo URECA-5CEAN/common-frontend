@@ -27,6 +27,7 @@ import {
   createBookmark,
   deleteBookmark,
   fetchBookmark,
+  fetchSearchStores,
   fetchStores,
   type StoreInfo,
 } from '../api/store';
@@ -561,6 +562,35 @@ export default function MapPage() {
     SetIsCategory('');
   };
 
+  const fetchAndSetSearchStores = useCallback(
+    async (keyword: string, category: string, benefit: BenefitType | '') => {
+      if (keyword.trim() || category || benefit) {
+        try {
+          const result = await fetchSearchStores({
+            keyword,
+            category,
+            benefit,
+          });
+          setSearchStores(result);
+        } catch (e) {
+          console.log(e);
+          setSearchStores([]);
+        }
+      } else {
+        setSearchStores([]);
+      }
+    },
+    [], // fetchSearchStores가 바깥에 고정이라면 의존성 없음
+  );
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setSearchInput(value);
+      fetchAndSetSearchStores(value, isCategory, selectedBenefit);
+    },
+    [fetchAndSetSearchStores, isCategory, selectedBenefit],
+  );
+
   return (
     <div className="flex h-screen flex-col-reverse md:flex-row overflow-y-hidden ">
       {/* 사이드바 */}
@@ -594,6 +624,11 @@ export default function MapPage() {
           resetKeyword={resetKeyword}
           selectedCardId={selectedCardId}
           SetKeyword={SetKeyword}
+          searchInput={searchInput}
+          handleSearchChange={handleSearchChange}
+          mode={mode}
+          setMode={setMode}
+          searchStores={searchStores}
         />
         {/* 내 위치 버튼 */}
         {map && myLocation && (

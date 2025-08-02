@@ -24,6 +24,11 @@ interface MapSectionProps {
   selectedCardId: string;
   SetKeyword: Dispatch<SetStateAction<string>>;
   goToStore: (store: StoreInfo) => void;
+  searchInput: string;
+  handleSearchChange: ChangeEventHandler<HTMLInputElement>;
+  mode: 'default' | 'search';
+  setMode: Dispatch<SetStateAction<'default' | 'search'>>;
+  searchStores: StoreInfo[];
 }
 
 export default function MapSection({
@@ -39,10 +44,16 @@ export default function MapSection({
   selectedCardId,
   SetKeyword,
   goToStore,
+  searchInput,
+  handleSearchChange,
+  mode,
+  setMode,
+  searchStores,
 }: MapSectionProps) {
   const [isFocused, setIsFocused] = useState<boolean>(false);
-  const [mode, setMode] = useState<'default' | 'search'>('default');
   const keywordRequire = isFocused && stores.length > 0 && keyword.length > 0;
+
+  const modeStore = mode === 'default' ? stores : searchStores;
   return (
     <div className="px-2 space-y-8 h-screen ">
       <div className="flex relative top-4 py-1 rounded-sm mx-auto">
@@ -88,8 +99,8 @@ export default function MapSection({
         <div className="hidden sm:flex  items-center border border-gray-200 rounded-2xl px-2 py-2 ">
           <Search color="gray" size={20} />
           <DebouncedInput
-            value={keyword}
-            onChange={changeKeyword}
+            value={searchInput}
+            onChange={handleSearchChange}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setTimeout(() => setIsFocused(false), 150)}
             debounceTime={300}
@@ -122,7 +133,7 @@ export default function MapSection({
         </ul>
       )}
       {/* 리스트 아이템 반복 */}
-      {stores.map((store, idx) => (
+      {modeStore.map((store, idx) => (
         <StoreCard
           key={store.id?.trim() || `unknown-${store.name}-${idx}`}
           store={store}

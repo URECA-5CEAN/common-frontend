@@ -47,6 +47,11 @@ interface SidebarPanelProps {
   resetKeyword: () => void;
   selectedCardId: string;
   SetKeyword: Dispatch<SetStateAction<string>>;
+  searchInput: string;
+  handleSearchChange: ChangeEventHandler<HTMLInputElement>;
+  mode: 'default' | 'search';
+  setMode: Dispatch<SetStateAction<'default' | 'search'>>;
+  searchStores: StoreInfo[];
 }
 
 export default function SidebarPanel({
@@ -74,6 +79,11 @@ export default function SidebarPanel({
   resetKeyword,
   selectedCardId,
   SetKeyword,
+  searchInput,
+  handleSearchChange,
+  mode,
+  setMode,
+  searchStores,
 }: SidebarPanelProps) {
   const [userInfo, setUserInfo] = useState<UserInfoApi>();
   const token = localStorage.getItem('authToken');
@@ -139,6 +149,11 @@ export default function SidebarPanel({
             selectedCardId={selectedCardId}
             SetKeyword={SetKeyword}
             goToStore={goToStore}
+            searchInput={searchInput}
+            handleSearchChange={handleSearchChange}
+            mode={mode}
+            setMode={setMode}
+            searchStores={searchStores}
           />
         )}
         {index === 0 && panel.menu === '즐겨찾기' && (

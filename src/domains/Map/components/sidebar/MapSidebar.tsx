@@ -59,8 +59,12 @@ interface SideBarProps {
   resetKeyword: () => void;
   selectedCardId: string;
   SetKeyword: Dispatch<SetStateAction<string>>;
+  searchInput: string;
+  handleSearchChange: ChangeEventHandler<HTMLInputElement>;
+  mode: 'default' | 'search';
+  setMode: Dispatch<SetStateAction<'default' | 'search'>>;
+  searchStores: StoreInfo[];
 }
-
 function MapSidebar({
   stores,
   panel,
@@ -90,6 +94,11 @@ function MapSidebar({
   resetKeyword,
   selectedCardId,
   SetKeyword,
+  searchInput,
+  handleSearchChange,
+  mode,
+  setMode,
+  searchStores,
 }: SideBarProps) {
   if (!panel) return;
 
@@ -141,6 +150,11 @@ function MapSidebar({
             resetKeyword={resetKeyword}
             selectedCardId={selectedCardId}
             SetKeyword={SetKeyword}
+            searchInput={searchInput}
+            handleSearchChange={handleSearchChange}
+            mode={mode}
+            setMode={setMode}
+            searchStores={searchStores}
           />
 
           {/* 상세 패널 (panel.type이 'detail'일 때만) */}
@@ -172,6 +186,11 @@ function MapSidebar({
                   resetKeyword={resetKeyword}
                   selectedCardId={selectedCardId}
                   SetKeyword={SetKeyword}
+                  searchInput={searchInput}
+                  handleSearchChange={handleSearchChange}
+                  mode={mode}
+                  setMode={setMode}
+                  searchStores={searchStores}
                 />
               </Suspense>
             )}
@@ -214,6 +233,11 @@ function MapSidebar({
                 resetKeyword={resetKeyword}
                 selectedCardId={selectedCardId}
                 SetKeyword={SetKeyword}
+                searchInput={searchInput}
+                handleSearchChange={handleSearchChange}
+                mode={mode}
+                setMode={setMode}
+                searchStores={searchStores}
               />
             </BottomSheet>
           )}
@@ -252,6 +276,11 @@ function MapSidebar({
                   resetKeyword={resetKeyword}
                   selectedCardId={selectedCardId}
                   SetKeyword={SetKeyword}
+                  searchInput={searchInput}
+                  handleSearchChange={handleSearchChange}
+                  mode={mode}
+                  setMode={setMode}
+                  searchStores={searchStores}
                 />
               </BottomSheet>
             </Suspense>
@@ -291,6 +320,11 @@ function MapSidebar({
                   resetKeyword={resetKeyword}
                   selectedCardId={selectedCardId}
                   SetKeyword={SetKeyword}
+                  searchInput={searchInput}
+                  handleSearchChange={handleSearchChange}
+                  mode={mode}
+                  setMode={setMode}
+                  searchStores={searchStores}
                 />
               </BottomSheet>
             </Suspense>
