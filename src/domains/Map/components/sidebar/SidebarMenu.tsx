@@ -6,6 +6,7 @@ interface SidebarMenuProps {
   icons: string[];
   activeMenu?: MenuType; //선택된 메뉴 애니메이션 위해
   onSelect: (menu: MenuType) => void; //메뉴선택
+  setIsBenefitModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function SidebarMenu({
@@ -13,13 +14,18 @@ export default function SidebarMenu({
   icons,
   activeMenu,
   onSelect,
+  setIsBenefitModalOpen,
 }: SidebarMenuProps) {
   return (
     <div className="fixed top-28 md:top-16 right-6 md:left-0  md:bottom-0 md:w-[90px] md:bg-gray-50 md:shadow text-center space-y-2 pt-10 z-1 ">
       {menus.map((menu, idx) => (
         <button
           key={`${menu}-${idx}`}
-          onClick={() => onSelect(menu)}
+          onClick={
+            menu === '혜택인증'
+              ? () => setIsBenefitModalOpen(true)
+              : () => onSelect(menu)
+          }
           className={clsx(
             'flex flex-col items-center justify-center',
             'transition-transform duration-150 ease-out',

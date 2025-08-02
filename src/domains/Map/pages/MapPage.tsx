@@ -168,6 +168,9 @@ export default function MapPage() {
   const [selectedCardId, setSelectedCardId] = useState<string>('');
   //경유지
   const [waypoints, setWaypoints] = useState<LocationInfo[]>([]);
+  //혜택 인증 모달
+  const [isBenefitModalOpen, setIsBenefitModalOpen] = useState(false);
+
   const searchStoresWithAI = useCallback(async () => {
     if (!map) return;
     const bounds = extractBouns(map);
@@ -552,6 +555,7 @@ export default function MapPage() {
           resetKeyword={resetKeyword}
           selectedCardId={selectedCardId}
           SetKeyword={SetKeyword}
+          setIsBenefitModalOpen={setIsBenefitModalOpen}
         />
         {/* 내 위치 버튼 */}
         {map && myLocation && (
@@ -637,8 +641,8 @@ export default function MapPage() {
             </div>
 
             <BenefitModal
-              panel={panel}
-              openmenu={openMenu}
+              isBenefitModalOpen={isBenefitModalOpen}
+              setIsBenefitModalOpen={setIsBenefitModalOpen}
               handleFileSelect={handleFileSelect}
               selectedFile={selectedFile}
               setSelectedFile={setSelectedFile}

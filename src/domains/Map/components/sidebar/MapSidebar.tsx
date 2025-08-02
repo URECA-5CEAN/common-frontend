@@ -59,6 +59,7 @@ interface SideBarProps {
   resetKeyword: () => void;
   selectedCardId: string;
   SetKeyword: Dispatch<SetStateAction<string>>;
+  setIsBenefitModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function MapSidebar({
@@ -90,6 +91,7 @@ function MapSidebar({
   resetKeyword,
   selectedCardId,
   SetKeyword,
+  setIsBenefitModalOpen,
 }: SideBarProps) {
   if (!panel) return;
 
@@ -110,6 +112,7 @@ function MapSidebar({
         icons={menuIcons}
         activeMenu={panel?.menu}
         onSelect={onMenuSelect}
+        setIsBenefitModalOpen={setIsBenefitModalOpen}
       />
 
       <div className="hidden md:block">
