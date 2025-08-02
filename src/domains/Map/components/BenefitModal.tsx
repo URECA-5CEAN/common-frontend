@@ -3,7 +3,6 @@ import { Modal } from '@/components/Modal';
 import { Plus } from 'lucide-react';
 import {
   useEffect,
-  useRef,
   useState,
   type ChangeEvent,
   type Dispatch,
@@ -28,6 +27,7 @@ import { ExpContent, LevelContent } from '@/components/ExpLevel';
 import type { ExpResultType } from '@/types/expResult';
 import Lottie from 'lottie-react';
 import warning from '@/assets/lottie/Warning.json';
+import success from '@/assets/lottie/Success.json';
 
 interface BenefitModalProps {
   isBenefitModalOpen: boolean;
@@ -42,7 +42,6 @@ export default function BenefitModal({
   setIsBenefitModalOpen,
   selectedFile,
   handleFileSelect,
-
   setSelectedFile,
 }: BenefitModalProps) {
   const [isResult, setIsResult] = useState<boolean>(false);
@@ -68,15 +67,39 @@ export default function BenefitModal({
 
   const token = localStorage.getItem('authToken');
 
-  const abortControllerRef = useRef<AbortController | null>(null);
+  useEffect(() => {
+    if (!token) return;
+    const fetchUserData = async () => {
+      const userInfoRes = await getUserInfo();
+      setUserInfo(userInfoRes.data);
+    };
+    fetchUserData();
+  }, [token]);
+
+  useEffect(() => {
+    if (selectedFile) {
+      handleOCRUpload(selectedFile);
+    }
+  }, [selectedFile]);
+
+  useEffect(() => {
+    if (
+      ocrResult?.address === '' ||
+      ocrResult?.benefitAmount === undefined ||
+      ocrResult?.category === '' ||
+      ocrResult?.storeName === '' ||
+      ocrResult?.totalAmount === undefined ||
+      ocrResult?.visitedAt === ''
+    ) {
+      setOcrError(true);
+    } else {
+      setOcrError(false);
+    }
+  }, [ocrResult]);
 
   const handleOCRUpload = async (file: File) => {
     if (!file || !userInfo) return;
     setIsLoading(true);
-
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
 
     try {
       const result = await uploadReceiptImage(file, userInfo.email);
@@ -131,73 +154,6 @@ export default function BenefitModal({
       if (res.data.levelUpdated) {
         setShouldShowLevelup(true);
       }
-
-      // toast.success(
-      //   <span>
-      //     혜택 인증을 완료했어요! 경험치{' '}
-      //     <span style={{ color: '#158c9f', fontWeight: 'bold' }}>
-      //       +{expReward}
-      //     </span>
-      //   </span>,
-      //   {
-      //     duration: 2000,
-      //     style: {
-      //       border: '1px solid #ebebeb',
-      //       padding: '16px',
-      //       color: '#1e1e1e',
-      //     },
-      //     iconTheme: {
-      //       primary: '#158c9f',
-      //       secondary: '#FFFAEE',
-      //     },
-      //   },
-      // );
-
-      // if (res.data.levelUpdated) {
-      //   toast.success(
-      //     (t) => (
-      //       <div>
-      //         <div className="flex justify-between">
-      //           <p>축하해요!</p>
-      //           <p className="font-bold">&nbsp;{res.data.level}</p>
-      //           <p>&nbsp;달성!</p>
-      //         </div>
-
-      //         <div
-      //           style={{
-      //             display: 'flex',
-      //             justifyContent: 'end',
-      //             gap: '8px',
-      //             marginTop: '4px',
-      //           }}
-      //         >
-      //           <button
-      //             onClick={() => {
-      //               toast.dismiss(t.id);
-      //               navigate('/mypage/profile');
-      //             }}
-      //             className="font-bold cursor-pointer"
-      //           >
-      //             확인하러 가기
-      //           </button>
-      //         </div>
-      //       </div>
-      //     ),
-      //     {
-      //       duration: 5000,
-      //       style: {
-      //         border: '1px solid #6fc3d1',
-      //         padding: '16px',
-      //         color: '#ffffff',
-      //         background: '#6fc3d1',
-      //       },
-      //       iconTheme: {
-      //         primary: '#158c9f',
-      //         secondary: '#FFFAEE',
-      //       },
-      //     },
-      //   );
-      // }
     } catch (err) {
       console.error('저장 실패:', err);
       toast.error(<span>잠시 후 다시 시도해주세요.</span>, {
@@ -214,11 +170,11 @@ export default function BenefitModal({
       });
     } finally {
       // 초기화
-      // setAmount(null);
-      // setIsResult(false);
-      // setSelectedFile(null);
-      // setOcrResult(null);
-      // openmenu('지도');
+      setAmount(null);
+      setIsResult(false);
+      setSelectedFile(null);
+      setOcrResult(null);
+      setIsBenefitModalOpen(false);
     }
   };
 
@@ -231,46 +187,11 @@ export default function BenefitModal({
     setDuplicateReceipt(false);
   };
 
-  useEffect(() => {
-    if (!token) return;
-    const fetchUserData = async () => {
-      const userInfoRes = await getUserInfo();
-      setUserInfo(userInfoRes.data);
-    };
-    fetchUserData();
-  }, [token]);
-
-  useEffect(() => {
-    if (selectedFile) {
-      handleOCRUpload(selectedFile);
-    }
-  }, [selectedFile]);
-
-  // useEffect(() => {
-  //   if (
-  //     ocrResult?.address === '' ||
-  //     ocrResult?.benefitAmount === undefined ||
-  //     ocrResult?.category === '' ||
-  //     ocrResult?.storeName === '' ||
-  //     ocrResult?.totalAmount === undefined ||
-  //     ocrResult?.visitedAt === ''
-  //   ) {
-  //     setOcrError(true);
-  //   } else {
-  //     setOcrError(false);
-  //   }
-  // }, [ocrResult]);
-
   const formattedDate = ocrResult?.visitedAt
     ? ocrResult.visitedAt.replace('T', ' ')
     : '';
 
   const cancelOCRUpload = () => {
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-      abortControllerRef.current = null;
-    }
-
     setAmount(null);
     setIsResult(false);
     setSelectedFile(null);
@@ -410,7 +331,9 @@ export default function BenefitModal({
             </Button>
             <Button
               fullWidth
-              onClick={handleFinalSubmit}
+              onClick={() => {
+                handleFinalSubmit();
+              }}
               disabled={!ocrResult || ocrError}
             >
               등록하기
@@ -418,37 +341,76 @@ export default function BenefitModal({
           </>
         }
       />
-      {duplicateReceipt && (
+      {(duplicateReceipt || finalSubmitSuccess) && (
         <Modal
-          isOpen={duplicateReceipt}
-          onClose={() => setDuplicateReceipt(false)}
-          title="이미 등록된 영수증이에요"
+          isOpen={duplicateReceipt || finalSubmitSuccess}
+          onClose={() => {
+            setDuplicateReceipt(false);
+            setFinalSubmitSuccess(false);
+          }}
+          title={
+            !duplicateReceipt ? '이미 등록된 영수증이에요' : '혜택 인증 성공'
+          }
           actions={
             <>
               <Button
                 fullWidth
                 variant="secondary"
-                onClick={() => setDuplicateReceipt(false)}
+                onClick={() => {
+                  setDuplicateReceipt(false);
+                  setFinalSubmitSuccess(false);
+                  if (shouldShowLevelup) {
+                    setLevelUpdated(true);
+                  }
+                }}
               >
                 닫기
               </Button>
-              <Button fullWidth onClick={handleReset}>
-                다시하기
-              </Button>
+              {duplicateReceipt ? (
+                <Button
+                  fullWidth
+                  onClick={() => {
+                    handleReset();
+                    setIsBenefitModalOpen(true);
+                  }}
+                >
+                  다시하기
+                </Button>
+              ) : (
+                <></>
+              )}
             </>
           }
         >
           <div className="min-h-[208px] text-gray-700 space-y-2 text-left w-full break-keep flex flex-col justify-center items-center">
-            <Lottie
-              animationData={warning}
-              loop={false}
-              className="w-30 h-30"
-            />
-            <p className="text-gray-500 text-center">
-              이미 등록된 영수증이에요.
-              <br />
-              다른 영수증으로 다시 시도하시겠어요?
-            </p>
+            {duplicateReceipt ? (
+              <>
+                <Lottie
+                  animationData={warning}
+                  loop={false}
+                  className="w-30 h-30"
+                />
+                <p className="text-gray-500 text-center">
+                  이미 등록된 영수증이에요.
+                  <br />
+                  다른 영수증으로 다시 시도하시겠어요?
+                </p>
+              </>
+            ) : (
+              <>
+                <Lottie
+                  animationData={success}
+                  loop={false}
+                  className="w-30 h-30"
+                />
+                <p className="text-gray-500 text-center">
+                  혜택 인증에 성공했어요!
+                  <span className="text-primaryGreen-80 font-bold">
+                    경험치 +10
+                  </span>
+                </p>
+              </>
+            )}
           </div>
         </Modal>
       )}
