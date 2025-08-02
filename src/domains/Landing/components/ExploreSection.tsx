@@ -17,7 +17,7 @@ const ExploreSection = () => {
           </div>
 
           {/* 우측 아이콘들 */}
-          <div className="absolute -right-36 top-36 flex flex-col space-y-2">
+          <div className="absolute -right-40 top-36 flex flex-col space-y-2">
             {/* W 아이콘 (상단) */}
             <div className="w-28 h-28 bg-white/80 rounded-full shadow-lg flex items-center justify-center border-2 border-cyan-200 ml-8">
               <img
