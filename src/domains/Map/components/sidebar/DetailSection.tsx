@@ -1,4 +1,4 @@
-import { Star, Share2, Webcam, Map, ChevronRight } from 'lucide-react';
+import { Star, Share2, Webcam, Map, ChevronRight, Info } from 'lucide-react';
 import StartEndBtn from '../StartEndBtn';
 import IconActionGroup from '../IconActionGroup';
 import { type StoreInfo } from '../../api/store';
@@ -41,6 +41,7 @@ function DetailSection({
   const navigate = useNavigate();
   const isBookmark = bookmarkIds.has(store.id);
   const [isLoad, setIsLoad] = useState<boolean>(false);
+  const [isInfo, setIsInfo] = useState<boolean>(false);
   const {
     data: benefits = [],
     isLoading,
@@ -49,6 +50,13 @@ function DetailSection({
   } = useBenefitBrands(store.brandName);
   const { usageHistory, fetchUsageHistory } = useUsageHistoryStore();
 
+  const InfoClicked = async () => {
+    setIsInfo(true);
+    const info = setTimeout(() => {
+      setIsInfo(false);
+    }, 3000);
+    return { info };
+  };
   useEffect(() => {
     fetchUsageHistory();
   }, [fetchUsageHistory]);
@@ -182,6 +190,35 @@ function DetailSection({
       {/* 내 도감 현황 */}
       <section className="relative flex flex-col">
         <p className="text-lg font-semibold mb-2">내 도감 현황</p>
+        <Info
+          size={17}
+          onClick={InfoClicked}
+          className=" cursor-pointer md:block absolute top-[4px] left-[95px] text-primaryGreen-80"
+        />
+        {isInfo && (
+          <div className="ml-3 absolute -top-3 left-28 flex items-center">
+            {/* 말풍선 */}
+            <div className="bg-white border w-[150px] border-gray-200 px-3 py-1 rounded-lg shadow text-[13px] text-gray-800 relative z-10">
+              <span className="font-semibold text-primaryGreen-80">
+                제휴처를 사용하면 <br />
+                도감을 채울 수 있어요!
+              </span>
+
+              {/* 꼬리 */}
+              <div
+                className="absolute left-[-10px] top-1/2 -translate-y-1/2 w-0 h-0 
+                                border-t-8 border-t-transparent border-b-8 border-b-transparent 
+                                border-r-8 border-r-gray-200 border-l-0 border-l-transparent"
+              ></div>
+              <div
+                className="absolute left-[-8px] top-1/2 -translate-y-1/2 w-0 h-0 
+                                border-t-7 border-t-transparent border-b-7 border-b-transparent 
+                                border-r-7 border-r-white border-l-0 border-l-transparent"
+              ></div>
+            </div>
+          </div>
+        )}
+
         <div className="flex justify-between">
           <ul className="flex -space-x-3 items-end">
             {allMedals.map((medal, idx) => (
