@@ -6,6 +6,8 @@ import { getUserInfo } from '@/domains/MyPage/api/profile';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ChatContent from './ChatContent';
 import ChatRoomList from '../components/ChatRoomList';
+import { Button } from '@/components/Button';
+import dolphinFind from '@/assets/image/dolphin_find.png';
 
 const ChatPage = () => {
   const location = useLocation();
@@ -154,12 +156,24 @@ const ChatPage = () => {
         selectedRoomId={selectedRoomId}
         onRoomSelect={handleRoomSelect}
       />
-      {selectedRoomId && (
+      {chatRooms.length === 0 ? (
+        <div className="flex-1 flex items-center justify-center">
+          <img src={dolphinFind} alt="Dolphin" className="w-32 h-32" />
+          <p className="text-gray-500">혜택 나누기에서 채팅을 시작해 보세요</p>
+          <Button onClick={() => navigate('/explore/share')}>
+            혜택 나누기 페이지로 이동
+          </Button>
+        </div>
+      ) : selectedRoomId ? (
         <ChatContent
           chatRooms={chatRooms}
           selectedRoomId={selectedRoomId}
           currentUser={currentUser}
         />
+      ) : (
+        <div className="flex-1 flex items-center justify-center">
+          <span className="text-gray-500">채팅방을 선택해주세요.</span>
+        </div>
       )}
     </div>
   );
