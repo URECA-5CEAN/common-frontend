@@ -139,7 +139,6 @@ export default function BenefitModal({
 
       const expReward = 10;
       const res = await increaseUserExp(expReward);
-      setLevelUpdated(res.data.levelUpdated);
 
       const prevExp = res.data.levelUpdated
         ? 50 - (expReward - res.data.exp)
@@ -333,6 +332,7 @@ export default function BenefitModal({
               fullWidth
               onClick={() => {
                 handleFinalSubmit();
+                setIsBenefitModalOpen(false);
               }}
               disabled={!ocrResult || ocrError}
             >
@@ -347,9 +347,12 @@ export default function BenefitModal({
           onClose={() => {
             setDuplicateReceipt(false);
             setFinalSubmitSuccess(false);
+            if (shouldShowLevelup) {
+              setLevelUpdated(true);
+            }
           }}
           title={
-            !duplicateReceipt ? '이미 등록된 영수증이에요' : '혜택 인증 성공'
+            duplicateReceipt ? '이미 등록된 영수증이에요' : '혜택 인증 성공'
           }
           actions={
             <>
@@ -372,6 +375,7 @@ export default function BenefitModal({
                   onClick={() => {
                     handleReset();
                     setIsBenefitModalOpen(true);
+                    setDuplicateReceipt(false);
                   }}
                 >
                   다시하기
@@ -414,39 +418,38 @@ export default function BenefitModal({
           </div>
         </Modal>
       )}
-      {levelUpdated && (
-        <LevelupModal
-          isOpen={levelUpdated}
-          onClose={() => setLevelUpdated(false)}
-          title="레벨이 올랐어요!"
-          actions={
-            <>
-              <Button
-                fullWidth
-                variant="secondary"
-                onClick={() => setLevelUpdated(false)}
-              >
-                닫기
-              </Button>
-              <Button fullWidth onClick={() => navigate('/mypage/profile')}>
-                마이페이지
-              </Button>
-            </>
-          }
-        >
-          <div className="my-5 md:my-10 flex flex-col justify-center items-center gap-4">
-            <LevelContent
-              startValue={expResult.level - 1}
-              endValue={expResult.level}
-            />
-            <ExpContent
-              levelUpdated={expResult.levelUpdated}
-              startValue={expResult.prevExp}
-              endValue={expResult.exp}
-            />
-          </div>
-        </LevelupModal>
-      )}
+
+      <LevelupModal
+        isOpen={levelUpdated}
+        onClose={() => setLevelUpdated(false)}
+        title="레벨이 올랐어요!"
+        actions={
+          <>
+            <Button
+              fullWidth
+              variant="secondary"
+              onClick={() => setLevelUpdated(false)}
+            >
+              닫기
+            </Button>
+            <Button fullWidth onClick={() => navigate('/mypage/profile')}>
+              마이페이지
+            </Button>
+          </>
+        }
+      >
+        <div className="my-5 md:my-10 flex flex-col justify-center items-center gap-4">
+          <LevelContent
+            startValue={expResult.level - 1}
+            endValue={expResult.level}
+          />
+          <ExpContent
+            levelUpdated={expResult.levelUpdated}
+            startValue={expResult.prevExp}
+            endValue={expResult.exp}
+          />
+        </div>
+      </LevelupModal>
     </>
   );
 }
