@@ -18,7 +18,7 @@ const NavigationSection = ({
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
         {/* 제목 */}
         <div className="flex items-center justify-center mb-20">
-          <h2 className="text-[40px] text-white font-bold">
+          <h2 className="text-[20px] md:text-[40px] text-white font-bold">
             이제 지중해로 항해를 떠나보아요!
           </h2>
         </div>
@@ -36,7 +36,7 @@ const NavigationSection = ({
                 <img src={dolphinMap} className="w-48 h-48 object-contain" />
               </div>
               <div className="text-center">
-                <h3 className="text-xl font-bold text-white">
+                <h3 className="text-[12px] md:text-xl font-bold text-white">
                   멤버십 지도 바로가기
                 </h3>
               </div>
@@ -57,7 +57,7 @@ const NavigationSection = ({
                 />
               </div>
               <div className="text-center">
-                <h3 className="text-xl font-bold text-white">
+                <h3 className="text-[12px] md:text-xl font-bold text-white">
                   혜택 탐험 바로가기
                 </h3>
               </div>
@@ -75,7 +75,7 @@ const NavigationSection = ({
                 <img src={dolphinSofa} className="w-48 h-48 object-contain" />
               </div>
               <div className="text-center">
-                <h3 className="text-xl font-bold text-white">
+                <h3 className="text-[12px] md:text-xl font-bold text-white">
                   마이페이지 바로가기
                 </h3>
               </div>

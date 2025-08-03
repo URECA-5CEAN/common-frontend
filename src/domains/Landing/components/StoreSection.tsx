@@ -4,12 +4,12 @@ const StoreSection = () => {
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
         {/* 제목 */}
         <div className="flex items-center justify-center mb-4">
-          <h2 className="text-[40px] text-white font-bold">
+          <h2 className="text-[20px] md:text-[40px] text-white font-bold">
             다양한 혜택이 준비되어 있어요
           </h2>
         </div>
         <p
-          className="text-2xl font-medium text-center text-white mb-20"
+          className="text-[12px] md:text-2xl font-medium text-center text-white mb-20"
           style={{ lineHeight: '42px' }}
         >
           전국 약 1500개의 오프라인 매장에서 혜택을 찾아보세요
@@ -26,7 +26,7 @@ const StoreSection = () => {
               className="bg-[#FFBC52] rounded-2xl flex flex-col justify-center items-center p-8"
               style={{ width: '280px' }}
             >
-              <h3 className="text-[28px] text-white font-bold mb-6">
+              <h3 className="text-[20px] md:text-[28px] text-white font-bold mb-6">
                 멤버십 제휴처
               </h3>
             </div>

@@ -46,13 +46,13 @@ const ExploreSection = () => {
             </div>
           </div>
 
-          <h2 className="text-[40px] text-white font-bold mb-10 leading-tight">
+          <h2 className="text-[20px] md:text-[40px] text-white font-bold mb-10 leading-tight">
             멤버십 혜택 탐험을 떠나요
           </h2>
-          <p className="text-2xl text-white font-medium mb-8">
+          <p className="text-[12px] md:text-2xl text-white font-medium mb-8">
             멤버십 혜택 활용 순위를 확인해보세요
           </p>
-          <p className="text-2xl text-white font-medium leading-relaxed">
+          <p className="text-[12px] md:text-2xl text-white font-medium leading-relaxed">
             혜택을 나누고 싶은 사람을 찾고
             <br />
             채팅을 통해 소통할 수 있어요
