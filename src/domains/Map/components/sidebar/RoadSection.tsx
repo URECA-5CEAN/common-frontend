@@ -228,7 +228,7 @@ export default function RoadSection({
       console.error(error);
     }
   };
-  console.log(startValue, endValue);
+
   return (
     <div className="max-w-md mx-auto  space-y-4 bg-white min-h-dvh">
       <div className="flex relative top-4 w-[95%] ml-2 py-1 rounded-xl bg-gray-100 shadow-inner">
@@ -430,19 +430,17 @@ export default function RoadSection({
             <ChevronRight size={16} />
           </Button>
         </div>
-        {Roadmode === 'default' && (
-          <div>
-            <button
-              type="button"
-              onClick={() => {
-                setWaypoints([...waypoints, { name: '', lat: 0, lng: 0 }]);
-              }}
-              className=" text-xs text-primaryGreen cursor-pointer hover:text-primaryGreen-80"
-            >
-              + 경유지 추가
-            </button>
-          </div>
-        )}
+        <div>
+          <button
+            type="button"
+            onClick={() => {
+              setWaypoints([...waypoints, { name: '', lat: 0, lng: 0 }]);
+            }}
+            className=" text-xs text-primaryGreen cursor-pointer hover:text-primaryGreen-80"
+          >
+            + 경유지 추가
+          </button>
+        </div>
       </div>
 
       {viewmode === 'bookmark' && (

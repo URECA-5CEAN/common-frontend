@@ -202,6 +202,7 @@ export default function SidebarPanel({
             bookmarkIds={bookmarkIds}
             toggleBookmark={toggleBookmark}
             goToStore={goToStore}
+            userInfo={userInfo}
           />
         )}
         {index === 1 && panel.type === 'road' && panel.item && (

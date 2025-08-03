@@ -12,9 +12,10 @@ import { Button } from '@/components/Button';
 import { useBenefitBrands } from '../../hooks/useBenefitBrands';
 import type { LocationInfo } from '../../pages/MapPage';
 import { useUsageHistoryStore } from '@/store/useUsageHistoryStore';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import RoadviewViewer from '../RoadviewView';
+import type { UserInfoApi } from '@/domains/MyPage/types/profile';
 interface DetailSectionProps {
   store: StoreInfo;
   onStartChange: (v: LocationInfo) => void;
@@ -22,18 +23,20 @@ interface DetailSectionProps {
   bookmarkIds: Set<string>;
   goToStore: (store: StoreInfo) => void;
   toggleBookmark: (store: StoreInfo) => void;
+  userInfo: UserInfoApi;
 }
 
-const BenefitLabel = ['VIP', 'VVIP', '장기고객'];
+const BenefitLabel = ['VIP', 'VVIP', '우수'];
 const allMedals = [bronzeMedal, silverMedal, goldMedal, diamondMedal];
 
-export default function DetailSection({
+function DetailSection({
   store,
   onStartChange,
   onEndChange,
   bookmarkIds,
   goToStore,
   toggleBookmark,
+  userInfo,
 }: DetailSectionProps) {
   const navigate = useNavigate();
   const isBookmark = bookmarkIds.has(store.id);
@@ -58,6 +61,7 @@ export default function DetailSection({
   if (isError) return `Error: ${error.message}`;
   if (benefits.length === 0) return '해당 브랜드 혜택이 없습니다.';
 
+  console.log(userInfo?.membership);
   return (
     <div className="space-y-2  h-screen md:min-h-[800px] z-10 ">
       {/* 헤더 */}
@@ -124,25 +128,60 @@ export default function DetailSection({
       <section>
         <p className="text-lg font-semibold mb-2">주요 혜택</p>
         <ul>
-          {benefits.map((benefit, idx) => (
-            <li
-              key={benefit.id?.trim() || `benefit-${idx}`}
-              className="flex items-center justify-between p-1 rounded-md"
-            >
-              <div className="flex flex-col justify-center ">
-                <p className="font-bold">{BenefitLabel[idx]}</p>
-                <p className="text-sm">{benefit.name}</p>
-                <p className="text-xs text-gray-500 ">
-                  ({benefit.description})
-                </p>
-              </div>
-            </li>
-          ))}
+          {benefits.map((benefit, idx) => {
+            const isMyMembership = userInfo?.membership === BenefitLabel[idx];
+            return (
+              <li
+                key={benefit.id?.trim() || `benefit-${idx}`}
+                className="flex items-center justify-between p-1 rounded-md"
+              >
+                <div className="relative flex flex-col justify-center ">
+                  <p className="font-bold">{BenefitLabel[idx]}</p>
+
+                  <p
+                    className={clsx(
+                      'text-sm inline-block  py-0.5 rounded transition',
+                      isMyMembership
+                        ? 'bg-primaryGreen text-gray-800 font-semibold'
+                        : 'bg-white text-gray-800',
+                    )}
+                  >
+                    {benefit.name}
+                  </p>
+                  <p className="text-xs text-gray-500 ">
+                    ({benefit.description})
+                  </p>
+                  {isMyMembership && (
+                    <div className="ml-3 absolute -top-2 left-8 flex items-center">
+                      {/* 말풍선 */}
+                      <div className="bg-white border w-[220px] border-gray-200 px-3 py-1 rounded-lg shadow text-[13px] text-gray-800 relative z-10">
+                        <span className="font-semibold text-primaryGreen-80">
+                          {userInfo.nickname}
+                        </span>
+                        님은 {userInfo.membership} 등급이에요!
+                        {/* 꼬리 */}
+                        <div
+                          className="absolute left-[-10px] top-1/2 -translate-y-1/2 w-0 h-0 
+                                border-t-8 border-t-transparent border-b-8 border-b-transparent 
+                                border-r-8 border-r-gray-200 border-l-0 border-l-transparent"
+                        ></div>
+                        <div
+                          className="absolute left-[-8px] top-1/2 -translate-y-1/2 w-0 h-0 
+                                border-t-7 border-t-transparent border-b-7 border-b-transparent 
+                                border-r-7 border-r-white border-l-0 border-l-transparent"
+                        ></div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </li>
+            );
+          })}
         </ul>
       </section>
       <div className="w-full border border-gray-200  my-6"></div>
       {/* 내 도감 현황 */}
-      <section className="flex flex-col">
+      <section className="relative flex flex-col">
         <p className="text-lg font-semibold mb-2">내 도감 현황</p>
         <div className="flex justify-between">
           <ul className="flex -space-x-3 items-end">
@@ -165,6 +204,28 @@ export default function DetailSection({
             <p className="text-xs">더보기</p> <ChevronRight size={15} />
           </Button>
         </div>
+        {/* 비로그인일 때 블러/딤 처리 + 안내 메시지 */}
+        {!userInfo && (
+          <div
+            className="
+        absolute top-0 left-0 w-full h-full 
+        flex flex-col items-center justify-center
+        bg-white/60 backdrop-blur-[2px] rounded-lg z-20
+      "
+            style={{ minHeight: '100px' }}
+          >
+            <p className="text-base font-semibold text-gray-600 mb-2">
+              로그인 후 도감 현황을 확인할 수 있어요!
+            </p>
+            <Button
+              size="sm"
+              variant="primary"
+              onClick={() => navigate('/login')}
+            >
+              로그인
+            </Button>
+          </div>
+        )}
       </section>
 
       <div className="w-full border border-gray-200  my-6"></div>
@@ -180,3 +241,5 @@ export default function DetailSection({
     </div>
   );
 }
+
+export default React.memo(DetailSection);
