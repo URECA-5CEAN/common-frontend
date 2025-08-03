@@ -37,14 +37,15 @@ export default function CategorySlider({
               className={clsx(
                 'text-xs px-4 py-1 gap-2 flex w-24  items-center justify-center rounded-2xl border-2 border-gray-200 cursor-pointer whitespace-nowrap',
                 isCategory === cate
-                  ? 'text-black bg-primaryGreen border-primaryGreen '
+                  ? 'text-white bg-primaryGreen border-primaryGreen '
                   : 'bg-white hover:text-primaryGreen',
+                'active:scale-[0.96] ',
               )}
               onClick={() => changeCategory(cate)}
             >
               <Icon
                 size={size ?? 20}
-                color={color ?? '#444'}
+                color={isCategory === cate ? '#fff' : (color ?? '#444')}
                 className={clsx('shrink-0', className)}
               />
               {cate}

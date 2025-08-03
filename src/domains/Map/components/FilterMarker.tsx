@@ -31,8 +31,8 @@ interface Props {
   center: LatLng;
   selectedCardId: string;
   setSelectedCardId: React.Dispatch<React.SetStateAction<string>>;
+  goToStore: (store: StoreInfo) => void;
 }
-
 function FilterMarker({
   hoveredMarkerId,
   setHoveredMarkerId,
@@ -47,6 +47,7 @@ function FilterMarker({
   center,
   selectedCardId,
   setSelectedCardId,
+  goToStore,
 }: Props) {
   // hover 해제 지연용 타이머 ID 저장
   const hoverOutRef = useRef<number | null>(null);
@@ -153,6 +154,7 @@ function FilterMarker({
       if (store) {
         setSelectedCardId(id);
         openDetail(store);
+        goToStore(store);
       }
     },
     [openDetail, storeMap],
@@ -160,43 +162,66 @@ function FilterMarker({
 
   // 2D 마커 렌더링 함수 분리
   const renderFarMarkers = () =>
-    Markers.map((m, idx) => {
-      return (
-        <React.Fragment
-          key={m.id && m.id.trim() !== '' ? m.id : `unknown-${idx}`}
+    Markers.map((m, idx) => (
+      <React.Fragment
+        key={m.id && m.id.trim() !== '' ? m.id : `unknown-${idx}`}
+      >
+        <CustomOverlayMap
+          position={{ lat: m.lat, lng: m.lng }}
+          zIndex={shouldCluster ? 2 : 3}
+          xAnchor={0.5}
+          yAnchor={1.0}
         >
-          {/* 기본 마커 커스텀*/}
-          <CustomOverlayMap
-            position={{ lat: m.lat, lng: m.lng }}
-            zIndex={shouldCluster ? 2 : 3}
+          <div
+            onClick={() => handleClick(m.id)}
+            onMouseEnter={() => handleMouseOver(m.id)}
+            onMouseLeave={handleMouseOut}
+            style={{
+              width: 40,
+              height: 56,
+              position: 'relative',
+              cursor: 'pointer',
+              transform: m.id === selectedCardId ? 'scale(1.3)' : 'scale(1.0)',
+              transition: 'transform 0.25s ease',
+              animation:
+                m.id === selectedCardId
+                  ? 'floatY 2.0s ease infinite'
+                  : undefined,
+            }}
           >
             <div
-              onClick={() => handleClick(m.id)}
-              onMouseEnter={() => handleMouseOver(m.id)}
-              onMouseLeave={handleMouseOut}
               style={{
-                width: 35,
-                height: 35,
+                position: 'absolute',
+                top: 38,
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: 0,
+                height: 0,
+                zIndex: 1,
+                borderLeft: '10px solid transparent',
+                borderRight: '10px solid transparent',
+                borderTop: '15px solid white',
+                filter: 'drop-shadow(0 -1px 2px rgba(0,0,0,0.2))',
+              }}
+            />
+            <div
+              style={{
+                width: 40,
+                height: 40,
                 borderRadius: '50%',
                 overflow: 'hidden',
                 backgroundColor: '#fff',
-                cursor: 'pointer',
-                position: 'relative',
-                zIndex: shouldCluster ? 2 : 3,
+                border: '2px solid #fff',
                 boxShadow:
                   m.id === selectedCardId
                     ? '0 10px 20px rgba(18, 158, 223, 0.35), 0 6px 6px rgba(0, 0, 0, 0.12)'
                     : '0 2px 4px rgba(0, 0, 0, 0.15)',
-                animation:
-                  m.id === selectedCardId ? 'floatY   0.8s ease' : undefined,
-                transform:
-                  m.id === selectedCardId ? 'scale(1.3)' : 'scale(1.0)',
-
-                transition: 'all 0.8s ease',
+                position: 'relative',
+                zIndex: 2,
               }}
             >
               <img
-                src={m.imageUrl || '/default.png'}
+                src={m.imageUrl}
                 alt="store"
                 style={{
                   width: '100%',
@@ -206,22 +231,23 @@ function FilterMarker({
                 }}
               />
             </div>
-          </CustomOverlayMap>
+          </div>
+        </CustomOverlayMap>
 
-          {/* AI추천 마커 애니메이션 효과 */}
-          {m.isRecommended && (
-            <CustomOverlayMap
-              position={{ lat: m.lat + 0.00005, lng: m.lng }}
-              zIndex={2}
-            >
-              <div className="relative">
-                <div className="w-12 h-12 rounded-full bg-primaryGreen opacity-80 animate-ping " />
-              </div>
-            </CustomOverlayMap>
-          )}
-        </React.Fragment>
-      );
-    });
+        {m.isRecommended && (
+          <CustomOverlayMap
+            position={{ lat: m.lat, lng: m.lng }}
+            zIndex={2}
+            xAnchor={0.5}
+            yAnchor={1.0}
+          >
+            <div className="relative">
+              <div className="w-12 h-12 rounded-full bg-primaryGreen opacity-80 animate-ping " />
+            </div>
+          </CustomOverlayMap>
+        )}
+      </React.Fragment>
+    ));
 
   // 마커 개수에 따라 클러스터링 여부 결정
   const shouldCluster = Markers.length > 20;
@@ -265,7 +291,7 @@ function FilterMarker({
               position: 'fixed',
               left: overlay.x,
               top: overlay.y,
-              transform: 'translate(-48%, -110%)',
+              transform: 'translate(-48%, -130%)',
               pointerEvents: 'auto',
               zIndex: 2,
             }}

@@ -38,7 +38,7 @@ export default function MyLocationBtn({
       </div>
 
       {/*데스크탑용 버튼 */}
-      <div className="hidden md:block fixed right-4 bottom-8 z-2">
+      <div className="hidden md:block fixed right-12 bottom-8 z-2">
         <Button
           onClick={goToMyLocation}
           variant="ghost"

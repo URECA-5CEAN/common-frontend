@@ -12,13 +12,22 @@ import MapSidebar, {
   type MenuType,
   type Panel,
 } from '../components/sidebar/MapSidebar';
-import { Clapperboard, Search, Utensils, type LucideIcon } from 'lucide-react';
+import {
+  Clapperboard,
+  Gift,
+  Percent,
+  Search,
+  Ticket,
+  Utensils,
+  type LucideIcon,
+} from 'lucide-react';
 import type { LatLng } from '../KakaoMapContainer';
 
 import {
   createBookmark,
   deleteBookmark,
   fetchBookmark,
+  fetchSearchStores,
   fetchStores,
   type StoreInfo,
 } from '../api/store';
@@ -34,6 +43,7 @@ import { fetchAiRecommendedStore } from '../api/ai';
 import { extractBouns, type InternalBounds } from '../utils/extractBouns';
 import type { RouteItem } from '../components/sidebar/RoadSection';
 import { Coffee, ShoppingBag, ShoppingCart, Car } from 'lucide-react';
+import BenefitButton from '../components/BenefitButtons';
 
 //bounds 타입에러 방지
 
@@ -44,12 +54,35 @@ type CategoryType =
   | '대형마트'
   | '문화시설'
   | '렌터카';
+
 export interface CategoryIconMeta {
   icon: LucideIcon;
   className?: string;
   color?: string;
   size?: number;
 }
+
+// 혜택 타입 정의
+export type BenefitType = '쿠폰' | '할인' | '증정';
+
+// 아이콘 매핑
+export const benefitIconMap: Record<BenefitType, CategoryIconMeta> = {
+  쿠폰: {
+    icon: Ticket,
+    color: '#fbbc04', // 노랑 등등 원하는 색
+    size: 20,
+  },
+  할인: {
+    icon: Percent,
+    color: '#34c759', // 연두 등등 원하는 색
+    size: 20,
+  },
+  증정: {
+    icon: Gift,
+    color: '#42a5f5', // 파랑 등등 원하는 색
+    size: 20,
+  },
+};
 
 export const categoryIconMap: Record<CategoryType, CategoryIconMeta> = {
   음식점: {
@@ -116,6 +149,15 @@ export default function MapPage() {
   // 디바운스 키워드(한글 검색 시 자꾸 바로 검색 => 에러)
   const [debouncedKeyword, setDebouncedKeyword] = useState<string>(keyword);
 
+  const [mode, setMode] = useState<'default' | 'search'>('default');
+  // 검색input
+  const [searchInput, setSearchInput] = useState<string>('');
+  const [, setStartInput] = useState<string>('');
+  const [, setWayInput] = useState<string>('');
+  const [, setEndInput] = useState<string>('');
+  // API로 불러온 매장 리스트
+  const [searchStores, setSearchStores] = useState<StoreInfo[]>([]);
+
   // 사이드바 menu 현재 상태
   const [panel, setPanel] = useState<Panel>({
     type: 'menu',
@@ -125,6 +167,8 @@ export default function MapPage() {
   const [panelIndex, setPanelIndex] = useState<number>(0);
   //검색 디바운스
   const [isCategory, SetIsCategory] = useState<string>('');
+  //선택된 혜택 유형
+  const [selectedBenefit, setSelectedBenefit] = useState<BenefitType | ''>('');
 
   //출발지
   const [startValue, setStartValue] = useState<LocationInfo>({
@@ -170,7 +214,7 @@ export default function MapPage() {
   const [waypoints, setWaypoints] = useState<LocationInfo[]>([]);
   //혜택 인증 모달
   const [isBenefitModalOpen, setIsBenefitModalOpen] = useState(false);
-
+  //제휴처 조회 및 AI 제휴처 조회
   const searchStoresWithAI = useCallback(async () => {
     if (!map) return;
     const bounds = extractBouns(map);
@@ -181,12 +225,12 @@ export default function MapPage() {
       const storeList = await fetchStores({
         keyword: debouncedKeyword,
         category: isCategory,
+        benefit: selectedBenefit,
         ...bounds,
         centerLat: center.lat,
         centerLng: center.lng,
       });
 
-      // 2. AI 추천 매장 가져오기
       let finalList = [...storeList];
       try {
         const aiResult = await fetchAiRecommendedStore({
@@ -223,7 +267,7 @@ export default function MapPage() {
       console.error('매장 목록 로딩 실패:', err);
       setStores([]);
     }
-  }, [map, debouncedKeyword, isCategory]);
+  }, [map, debouncedKeyword, isCategory, selectedBenefit]);
 
   useEffect(() => {
     searchStoresWithAI();
@@ -329,7 +373,6 @@ export default function MapPage() {
       const loc = new kakao.maps.LatLng(store.latitude, store.longitude);
       map.panTo(loc);
       setCenter({ lat: store.latitude, lng: store.longitude });
-      openMenu('지도');
       searchStoresWithAI();
     },
     [map, searchStoresWithAI],
@@ -353,9 +396,17 @@ export default function MapPage() {
   }, [panel.menu, bookmarks, filteredStores, recommendedStore]);
 
   // 사이드바 메뉴 Open
-  const openMenu = (menu: MenuType) => {
+  const openMenu = useCallback((menu: MenuType) => {
     setPanel({ type: 'menu', menu });
-  };
+    setSelectedCardId('');
+    SetKeyword('');
+    if (menu !== '길찾기') {
+      setStartValue({ name: '', lat: 0, lng: 0 });
+      setEndValue({ name: '', lat: 0, lng: 0 });
+      setWaypoints([]);
+      setSelectedRoute(null);
+    }
+  }, []);
 
   //매장 선택 시 상세열기
   const openDetail = useCallback(
@@ -364,6 +415,7 @@ export default function MapPage() {
       setPanelIndex(1);
       setSelectedCardId(store.id);
     },
+
     [panel.menu],
   );
   // 길찾기 상세보기
@@ -429,9 +481,8 @@ export default function MapPage() {
   //카테고리 변경 시 키워드 변경
   const changeCategory = useCallback(
     (category: string) => {
-      SetIsCategory(category);
-      SetKeyword(category);
-      openMenu('지도');
+      SetIsCategory((prev) => (prev === category ? '' : category));
+      SetKeyword((prev) => (prev === category ? '' : category));
     },
     [openMenu],
   );
@@ -517,10 +568,48 @@ export default function MapPage() {
     }
   }, [selectedRoute]);
 
-  const resetKeyword = () => {
+  const resetKeyword = useCallback(() => {
     SetKeyword('');
     SetIsCategory('');
-  };
+    setSelectedBenefit('');
+    setSearchInput('');
+  }, []);
+
+  const fetchAndSetSearchStores = useCallback(
+    async (keyword: string, category: string, benefit: BenefitType | '') => {
+      if (keyword.trim() !== '' || category || benefit) {
+        try {
+          const result = await fetchSearchStores({
+            keyword,
+            category,
+            benefit,
+          });
+          setSearchStores(result);
+        } catch (e) {
+          console.log(e);
+          setSearchStores([]);
+        }
+      } else {
+        setSearchStores([]);
+      }
+    },
+    [], // fetchSearchStores가 바깥에 고정이라면 의존성 없음
+  );
+
+  useEffect(() => {
+    SetKeyword('');
+    setSearchInput('');
+    SetIsCategory('');
+    setSelectedBenefit('');
+  }, [mode]);
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setSearchInput(value);
+      fetchAndSetSearchStores(value, isCategory, selectedBenefit);
+    },
+    [fetchAndSetSearchStores, isCategory, selectedBenefit],
+  );
 
   return (
     <div className="flex h-screen flex-col-reverse md:flex-row overflow-y-hidden ">
@@ -555,6 +644,14 @@ export default function MapPage() {
           resetKeyword={resetKeyword}
           selectedCardId={selectedCardId}
           SetKeyword={SetKeyword}
+          searchInput={searchInput}
+          handleSearchChange={handleSearchChange}
+          mode={mode}
+          setMode={setMode}
+          searchStores={searchStores}
+          setStartInput={setStartInput}
+          setEndInput={setEndInput}
+          setWayInput={setWayInput}
           setIsBenefitModalOpen={setIsBenefitModalOpen}
         />
         {/* 내 위치 버튼 */}
@@ -599,23 +696,25 @@ export default function MapPage() {
             waypoints={waypoints.length > 0 ? waypoints : undefined}
           >
             {/* 2D 마커/오버레이 */}
-            <FilterMarker
-              hoveredMarkerId={hoveredId}
-              setHoveredMarkerId={setHoveredId}
-              map={map}
-              center={center}
-              containerRef={containerRef}
-              stores={displayedStores}
-              openDetail={openDetail}
-              onStartChange={onStartChange}
-              onEndChange={onEndChange}
-              toggleBookmark={toggleBookmark}
-              bookmarkIds={bookmarkIds}
-              selectedCardId={selectedCardId}
-              setSelectedCardId={setSelectedCardId}
-            />
-
-            <div className="absolute  w-full md:ml-10 ml-6 top-28 md:top-24 z-2  overflow-x-auto">
+            {panel.type !== 'road' && (
+              <FilterMarker
+                hoveredMarkerId={hoveredId}
+                setHoveredMarkerId={setHoveredId}
+                map={map}
+                center={center}
+                containerRef={containerRef}
+                stores={displayedStores}
+                openDetail={openDetail}
+                onStartChange={onStartChange}
+                onEndChange={onEndChange}
+                toggleBookmark={toggleBookmark}
+                bookmarkIds={bookmarkIds}
+                selectedCardId={selectedCardId}
+                setSelectedCardId={setSelectedCardId}
+                goToStore={goToStore}
+              />
+            )}
+            <div className="absolute  w-full md:ml-10 ml-6 top-28 md:top-20 z-2  overflow-x-auto">
               <CategorySlider
                 Category={Object.keys(categoryIconMap) as CategoryType[]}
                 isCategory={isCategory}
@@ -629,7 +728,14 @@ export default function MapPage() {
                 categoryIconMap={categoryIconMap}
               />
             </div>
-
+            <div className="absolute  w-full md:ml-10 ml-6 top-28 md:top-[120px] z-2  overflow-x-auto">
+              <BenefitButton
+                benefitList={['쿠폰', '할인', '증정']}
+                selected={selectedBenefit}
+                onSelect={setSelectedBenefit}
+                benefitIconMap={benefitIconMap}
+              />
+            </div>
             <div className="flex md:hidden  absolute top-[68px] left-6 right-6   bg-white z-2 items-center border border-gray-200 rounded-xl px-2 py-1 ">
               <Search />
               <DebouncedInput
