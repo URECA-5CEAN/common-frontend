@@ -10,7 +10,7 @@ import {
 import DebouncedInput from '../DebouncedInput';
 import type { LocationInfo } from '../../pages/MapPage';
 import clsx from 'clsx';
-
+import NoImage from '@/assets/image/dolphin_find.png';
 interface MapSectionProps {
   stores: StoreInfo[];
   openDetail: (store: StoreInfo) => void;
@@ -133,19 +133,27 @@ export default function MapSection({
         </ul>
       )}
       {/* 리스트 아이템 반복 */}
-      {modeStore.map((store, idx) => (
-        <StoreCard
-          key={store.id?.trim() || `unknown-${store.name}-${idx}`}
-          store={store}
-          openDetail={openDetail}
-          onStartChange={onStartChange}
-          onEndChange={onEndChange}
-          toggleBookmark={toggleBookmark}
-          isBookmark={bookmarkIds.has(store.id)}
-          isSelected={selectedCardId === store.id}
-          onCenter={() => goToStore(store)}
-        />
-      ))}
+      {modeStore && modeStore.length !== 0 ? (
+        modeStore.map((store, idx) => (
+          <StoreCard
+            key={store.id?.trim() || `unknown-${store.name}-${idx}`}
+            store={store}
+            openDetail={openDetail}
+            onStartChange={onStartChange}
+            onEndChange={onEndChange}
+            toggleBookmark={toggleBookmark}
+            isBookmark={bookmarkIds.has(store.id)}
+            isSelected={selectedCardId === store.id}
+            onCenter={() => goToStore(store)}
+          />
+        ))
+      ) : (
+        <div className="text-gray-400 py-10 text-center flex flex-col justify-center items-center">
+          <p>조건에 맞는 매장을 찾을 수 없어요.</p>
+          <p>검색 조건을 변경해 다시 시도해보세요.</p>
+          <img src={NoImage} alt="노이미지" width={120} height={120} />
+        </div>
+      )}
     </div>
   );
 }

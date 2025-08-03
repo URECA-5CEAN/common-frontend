@@ -152,9 +152,9 @@ export default function MapPage() {
   const [mode, setMode] = useState<'default' | 'search'>('default');
   // 검색input
   const [searchInput, setSearchInput] = useState<string>('');
-  const [startInput, setStartInput] = useState<string>('');
-  const [wayInput, setWayInput] = useState<string>('');
-  const [endInput, setEndInput] = useState<string>('');
+  const [, setStartInput] = useState<string>('');
+  const [, setWayInput] = useState<string>('');
+  const [, setEndInput] = useState<string>('');
   // API로 불러온 매장 리스트
   const [searchStores, setSearchStores] = useState<StoreInfo[]>([]);
 
@@ -212,6 +212,8 @@ export default function MapPage() {
   const [selectedCardId, setSelectedCardId] = useState<string>('');
   //경유지
   const [waypoints, setWaypoints] = useState<LocationInfo[]>([]);
+
+  //제휴처 조회 및 AI 제휴처 조회
   const searchStoresWithAI = useCallback(async () => {
     if (!map) return;
     const bounds = extractBouns(map);
