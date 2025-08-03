@@ -67,6 +67,7 @@ interface SideBarProps {
   setStartInput: Dispatch<SetStateAction<string>>;
   setEndInput: Dispatch<SetStateAction<string>>;
   setWayInput: Dispatch<SetStateAction<string>>;
+  setIsBenefitModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 function MapSidebar({
   stores,
@@ -105,6 +106,7 @@ function MapSidebar({
   setStartInput,
   setEndInput,
   setWayInput,
+  setIsBenefitModalOpen,
 }: SideBarProps) {
   if (!panel) return;
 
@@ -125,6 +127,7 @@ function MapSidebar({
         icons={menuIcons}
         activeMenu={panel?.menu}
         onSelect={onMenuSelect}
+        setIsBenefitModalOpen={setIsBenefitModalOpen}
       />
 
       <div className="hidden md:block">

@@ -3,6 +3,7 @@ import { Button } from '@/components/Button';
 import presentIcon from '@/assets/icons/present_icon.png';
 import { Ring } from 'ldrs/react';
 import 'ldrs/react/Ring.css';
+import { motion } from 'framer-motion';
 
 interface AttendanceCalendarProps {
   calendarValue: Date | null;
@@ -31,20 +32,41 @@ const STYLES = {
   calendarWrapper: 'w-full flex justify-start mb-10',
   calendarContainer:
     'bg-white w-full h-full md:h-[648px] md:max-w-[463px] border border-gray-200 rounded-xl p-3 pb-5 md:p-[30px] flex flex-col items-center justify-between',
-  statusDotPresent: 'w-full md:max-w-9 h-full md:max-h-9 rounded-full',
-  statusDotAbsent:
-    'w-full md:max-w-9 h-full md:max-h-9 bg-gray-200 rounded-full',
-  tileContent: 'w-full max-w-9 aspect-square',
+  statusDotPresent: 'w-full md:max-w-9 h-full md:max-h-9 bg-white rounded-full',
+  statusDotAbsent: 'w-full md:max-w-9 h-full md:max-h-9 rounded-full',
+  tileContent:
+    'w-full max-w-9 aspect-square overflow-visible bg-gray-200 rounded-full',
 };
 
-const StatusDot = ({ isPresent }: { isPresent: boolean }) => {
+const StatusDot = ({
+  isPresent,
+  isToday,
+}: {
+  isPresent: boolean;
+  isToday: boolean;
+}) => {
   if (isPresent) {
+    if (isToday) {
+      // 오늘이고 출석했을 때만 모션
+      return (
+        <motion.div
+          className={STYLES.statusDotPresent}
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: [2, 1.8, 1], opacity: 1 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+        >
+          <img src={presentIcon} alt="출석" className="w-full h-full" />
+        </motion.div>
+      );
+    }
+    // 오늘이 아니고 출석한 날짜
     return (
       <div className={STYLES.statusDotPresent}>
         <img src={presentIcon} alt="출석" className="w-full h-full" />
       </div>
     );
   }
+
   return <div className={STYLES.statusDotAbsent} />;
 };
 
@@ -65,9 +87,12 @@ export const AttendanceCalendar = ({
     const dateStr = formatDate(date);
     const isPresent = attData.includes(dateStr);
 
+    const todayStr = formatDate(new Date());
+    const isToday = dateStr === todayStr;
+
     return (
       <div className={STYLES.tileContent}>
-        <StatusDot isPresent={isPresent} />
+        <StatusDot isPresent={isPresent} isToday={isToday} />
       </div>
     );
   };

@@ -21,7 +21,6 @@ export interface Post {
   location: string;
   brandImgUrl: string;
   // isClosed: boolean;
-  brandImgUrl: string;
   isMine?: boolean;
 }
 

@@ -7,6 +7,9 @@ import diamondMedal from '@/assets/image/diamond_medal.png';
 import { getAllBrandList } from '@/domains/MyPage/api/collection';
 import { useEffect, useState } from 'react';
 import { useUsageHistoryStore } from '@/store/useUsageHistoryStore';
+import FadeInUpDiv from '@/domains/MyPage/components/FadeInUpDiv';
+import dolphinFind from '@/assets/image/dolphin_find.png';
+import { Grid } from 'ldrs/react';
 
 interface Brand {
   name: string;
@@ -18,23 +21,30 @@ const CollectionPage = () => {
   const allMedals = [bronzeMedal, silverMedal, goldMedal, diamondMedal];
   const [brandList, setBrandList] = useState<Brand[]>([]);
   const { usageHistory, fetchUsageHistory } = useUsageHistoryStore();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const fetchAllBrandList = async () => {
+    const fetchAllData = async () => {
+      setLoading(true);
       try {
-        const response = await getAllBrandList();
-        setBrandList(response.data);
+        const [brandResponse] = await Promise.all([
+          getAllBrandList(),
+          fetchUsageHistory(),
+        ]);
+        setBrandList(brandResponse.data);
       } catch (error) {
         console.error('사용자 정보 로드 실패:', error);
+      } finally {
+        setLoading(false);
       }
     };
-    fetchAllBrandList();
-    fetchUsageHistory();
-  }, [fetchUsageHistory, usageHistory.length]);
+
+    fetchAllData();
+  }, []);
 
   // 브랜드명만 추출 (지점명 제거)
   function extractBrand(storeId: string, brandNames: string[]) {
-    return brandNames.find((brand) => storeId.startsWith(brand)) || '기타';
+    return brandNames.find((brand) => storeId.startsWith(brand));
   }
 
   const brandVisitCountMap = new Map<string, number>();
@@ -47,9 +57,11 @@ const CollectionPage = () => {
       item.storeId,
       brandList.map((b) => b.name),
     );
-    const currentCount = brandVisitCountMap.get(brandName) || 0;
-    if (currentCount < 20) {
-      brandVisitCountMap.set(brandName, currentCount + 1);
+    if (brandName) {
+      const currentCount = brandVisitCountMap.get(brandName) ?? 0;
+      if (currentCount < 20) {
+        brandVisitCountMap.set(brandName, currentCount + 1);
+      }
     }
   });
 
@@ -90,8 +102,8 @@ const CollectionPage = () => {
     <>
       <div className="w-[calc(100%-48px)] md:w-[80%] max-w-[1050px] mb-50 md:mb-100">
         <Breadcrumb title="마이페이지" subtitle="혜택 도감" />
+
         <div>
-          <div className="text-[32px] font-bold my-3">혜택 도감</div>
           <div className="text-2xl font-bold">도감 완성도</div>
           <div className="my-5">
             <div className="z-1 relative bg-gray-300 rounded-2xl h-10 text-xs w-full overflow-hidden mb-1">
@@ -106,41 +118,66 @@ const CollectionPage = () => {
               {totalVisitCount}/{maxVisitCount} ({progressPercentage}%)
             </p>
           </div>
-          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full">
-            {sortedResult.map((brand, index) => {
-              const earnedMedalCount = getMedalCount(brand.count);
-              const medalsToShow = allMedals.slice(0, earnedMedalCount);
+          {loading ? (
+            <div className="w-full h-100 flex flex-col justify-center items-center gap-4 text-gray-600">
+              <Grid size="100" speed="1.5" color="#6fc3d1" />
+              통계 데이터를 불러오고 있어요
+            </div>
+          ) : sortedResult.length !== 0 ? (
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full">
+              {sortedResult.map((brand, index) => {
+                const earnedMedalCount = getMedalCount(brand.count);
+                const medalsToShow = allMedals.slice(0, earnedMedalCount);
 
-              return (
-                <div
-                  key={index}
-                  className="border-1 border-gray-200 rounded-xl p-4 flex md:flex-row flex-col gap-3 w-full items-center justify-around"
-                >
-                  <div className="max-w-[129px] flex items-center">
-                    <img src={brand.image_url || undefined} alt={brand.name} />
-                  </div>
-                  <div className="w-full md:w-[100px] flex flex-col gap-2 items-center">
-                    <div className="break-words break-keep text-center h-[48px] w-full flex justify-center items-center">
-                      {brand.name}
+                return (
+                  <FadeInUpDiv
+                    custom={index}
+                    key={index}
+                    className="border-1 border-gray-200 rounded-xl p-4 flex md:flex-row flex-col gap-3 w-full items-center justify-around"
+                  >
+                    <div className="max-w-[129px] flex items-center">
+                      <img
+                        src={brand.image_url || undefined}
+                        alt={brand.name}
+                        className="rounded-xl"
+                      />
                     </div>
-                    <div className="flex h-[47px] md:h-[33px] -space-x-[24px] md:-space-x-[12%] w-full md:w-[100px] justify-center md:justify-start">
-                      {medalsToShow.map((medal, idx) => (
-                        <img
-                          key={idx}
-                          className="w-[50px] md:w-[35px]"
-                          src={medal}
-                          alt={`메달-${idx}`}
-                        />
-                      ))}
+                    <div className="w-full md:w-[100px] flex flex-col gap-2 items-center">
+                      <div className="break-words break-keep text-center h-[48px] w-full flex justify-center items-center">
+                        {brand.name}
+                      </div>
+                      <div className="flex h-[47px] md:h-[33px] -space-x-[24px] md:-space-x-[12%] w-full md:w-[100px] justify-center md:justify-start">
+                        {medalsToShow.map((medal, idx) => (
+                          <img
+                            key={idx}
+                            className="w-[50px] md:w-[35px]"
+                            src={medal}
+                            alt={`메달-${idx}`}
+                          />
+                        ))}
+                      </div>
+                      <div className="w-full">
+                        <ProgressBar current={brand.count} max={20} />
+                      </div>
                     </div>
-                    <div className="w-full">
-                      <ProgressBar current={brand.count} max={20} />
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                  </FadeInUpDiv>
+                );
+              })}
+            </div>
+          ) : (
+            <>
+              <div className="h-[320px] flex justify-center items-center flex-col text-center gap-2">
+                <img
+                  src={dolphinFind}
+                  alt="무언가를 찾는 돌고래"
+                  className="w-20"
+                />
+                통계를 불러오는 중 오류가 발생했어요.
+                <br />
+                잠시 후 다시 시도해주세요.
+              </div>
+            </>
+          )}
         </div>
       </div>
     </>

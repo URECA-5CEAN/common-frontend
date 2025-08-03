@@ -35,15 +35,33 @@ const ProfilePage: React.FC = () => {
   const usageHistoryLength = usageHistory.length;
   useEffect(() => {
     const fetchUserData = async () => {
-      const userInfoRes = await getUserInfo();
-      const userStatRes = await getUserStat();
+      try {
+        const userInfoRes = await getUserInfo();
+        const userStatRes = await getUserStat();
 
-      const mergedData = {
-        ...userInfoRes.data,
-        ...userStatRes.data,
-      };
+        const mergedData = {
+          ...userInfoRes.data,
+          ...userStatRes.data,
+          error: false,
+        };
 
-      setUserInfoApi(mergedData);
+        setUserInfoApi(mergedData);
+      } catch (error) {
+        console.error(error);
+        setUserInfoApi({
+          address: '',
+          email: '',
+          gender: '',
+          id: '',
+          membership: '',
+          name: '',
+          nickname: '',
+          title: '',
+          level: 0,
+          exp: 0,
+          error: true,
+        });
+      }
     };
 
     fetchUserData();
