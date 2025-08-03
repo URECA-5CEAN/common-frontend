@@ -157,7 +157,7 @@ const ChatPage = () => {
         onRoomSelect={handleRoomSelect}
       />
       {chatRooms.length === 0 ? (
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex-1 flex items-center flex-col gap-2 justify-center">
           <img src={dolphinFind} alt="Dolphin" className="w-32 h-32" />
           <p className="text-gray-500">혜택 나누기에서 채팅을 시작해 보세요</p>
           <Button onClick={() => navigate('/explore/share')}>
