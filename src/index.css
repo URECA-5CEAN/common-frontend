@@ -167,6 +167,10 @@
   font-size: 0.75rem;
 }
 
+.react-calendar__month-view__days__day {
+  overflow: visible !important;
+}
+
 .react-calendar__tile {
   max-width: 100%;
   width: 36px;

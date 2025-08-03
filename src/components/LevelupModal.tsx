@@ -1,6 +1,8 @@
 import { AnimatePresence, motion } from 'framer-motion';
+import Lottie from 'lottie-react';
 import React, { useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import confetti from '@/assets/lottie/Confetti.json';
 
 interface ModalProps {
   isOpen: boolean;
@@ -12,7 +14,7 @@ interface ModalProps {
   actions?: React.ReactNode;
 }
 
-export const Modal: React.FC<ModalProps> = ({
+export const LevelupModal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
   img,
@@ -54,14 +56,18 @@ export const Modal: React.FC<ModalProps> = ({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-10000 flex items-center justify-center bg-black/30"
+      className="fixed inset-0 z-10000 flex items-center justify-center bg-black/20"
       onClick={onOverlayClick}
       role="dialog"
       aria-modal="true"
     >
+      <Lottie
+        animationData={confetti}
+        loop={false}
+        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-[55%] md:-translate-y-[60%] h-[120%] w-[120%] brightness-130 contrast-125 saturate-110 z-10000 pointer-events-none"
+      />
       <AnimatePresence>
         <motion.div
-          layout
           className="relative w-[90%] md:w-[500px] rounded-2xl bg-white p-5 shadow-xl flex flex-col gap-5"
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -74,7 +80,9 @@ export const Modal: React.FC<ModalProps> = ({
           {img && <>{img}</>}
 
           {title && (
-            <h2 className="text-2xl text-center break-keep">{title}</h2>
+            <h2 className="text-2xl text-primaryGreen-80 text-center break-keep">
+              {title}
+            </h2>
           )}
 
           {description && (

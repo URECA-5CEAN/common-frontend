@@ -18,7 +18,7 @@ const STYLES = {
 
 interface MissionListProps {
   mission: MissionType[];
-  completeMission: (id: string, expReward: number) => void;
+  completeMission: (id: string, expReward: number, missionName: string) => void;
   loadingMissionIds: string[];
 }
 
@@ -78,7 +78,7 @@ export const MissionList: React.FC<MissionListProps> = ({
                 {canComplete ? (
                   <Button
                     onClick={() =>
-                      completeMission(item.missionId, item.expReward)
+                      completeMission(item.missionId, item.expReward, item.name)
                     }
                     height={'24px'}
                     width={'62px'}

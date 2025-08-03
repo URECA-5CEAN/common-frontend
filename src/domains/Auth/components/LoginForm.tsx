@@ -106,7 +106,7 @@ const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
       // 로그인 성공 시 Zustand 상태 변경
       useAuthStore.getState().setIsLoggedIn(true);
 
-      navigate('/');
+      navigate('/map');
     } catch (error) {
       console.error('로그인 실패:', error);
       setErrorMessage(

@@ -56,6 +56,15 @@ const UserInfo: React.FC<UserInfoProps> = ({ onBadgeClick, userInfoApi }) => {
   if (!userInfoApi) {
     return <div>로딩 중...</div>;
   }
+  if (userInfoApi.error) {
+    return (
+      <div className="h-full">
+        유저 정보를 불러오는데 실패했어요.
+        <br />
+        잠시 후 다시 시도해주세요.
+      </div>
+    );
+  }
   return (
     <div className="flex flex-col justify-between w-full max-w-[200px]">
       <div className="flex flex-col gap-1 w-full">
