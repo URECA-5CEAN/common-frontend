@@ -29,6 +29,7 @@ import type { LatLng } from '../../KakaoMapContainer';
 import OnOffBtn from '../OnOffBtn';
 import DebouncedInput from '../DebouncedInput';
 import clsx from 'clsx';
+import RouteLine from '../RouteLine';
 export interface TrafficInfo {
   color: string;
   label: string;
@@ -224,11 +225,13 @@ export default function RoadSection({
   const deleteRoutes = async (id: string) => {
     try {
       await deleteDirectionPath(id);
+      alert('최근 경로 삭제');
     } catch (error) {
       console.error(error);
     }
   };
 
+  console.log(routes);
   return (
     <div className="max-w-md mx-auto  space-y-4 bg-white min-h-dvh">
       <div className="flex relative top-4 w-[95%] ml-2 py-1 rounded-xl bg-gray-100 shadow-inner">
@@ -480,18 +483,14 @@ export default function RoadSection({
               {savedRoutes.map((route, idx) => (
                 <li
                   key={`${route.directionid}-${idx}`}
-                  className="flex cursor-pointer items-center justify-between px-3 py-2 bg-gray-50 rounded-full"
+                  className="flex cursor-pointer items-center justify-between px-3 py-2 bg-white rounded-2xl"
                   onClick={() => openRoadDetail(route)}
                 >
-                  <div className="flex items-center space-x-2 overflow-hidden">
-                    <span className="text-sm font-medium text-gray-800 truncate max-w-[250px]">
-                      {route.from}
-                    </span>
-                    <span className="text-gray-400">→</span>
-                    <span className="text-sm font-medium text-gray-800 truncate max-w-[250px]">
-                      {route.to}
-                    </span>
-                  </div>
+                  <RouteLine
+                    from={route.from}
+                    waypoints={route.waypoints?.map((w) => w.name) || []}
+                    to={route.to}
+                  />
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -520,28 +519,23 @@ export default function RoadSection({
           </div>
           {showRecent && (
             <ul className="space-y-1">
-              {recentRoutes.map((route) => (
+              {recentRoutes.map((route, idx) => (
                 <li
-                  key={route.directionid}
-                  className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-full cursor-pointer"
+                  key={`${route.directionid}-${idx}`}
+                  className="flex cursor-pointer items-center justify-between px-3 py-2 bg-white rounded-2xl"
                   onClick={() => openRoadDetail(route)}
                 >
-                  <div className="flex items-center space-x-2 overflow-hidden">
-                    <span className="text-sm font-medium text-gray-800 truncate max-w-[250px]">
-                      {route.from}
-                    </span>
-                    <span className="text-gray-400">→</span>
-                    <span className="text-sm font-medium text-gray-800 truncate max-w-[250px]">
-                      {route.to}
-                    </span>
-                  </div>
+                  <RouteLine
+                    from={route.from}
+                    waypoints={route.waypoints?.map((w) => w.name) || []}
+                    to={route.to}
+                  />
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       setRecentRoutes((s) =>
                         s.filter((x) => x.directionid !== route.directionid),
                       );
-
                       deleteRoutes(route.directionid);
                     }}
                     className="p-1 text-gray-400 hover:text-red-500"
