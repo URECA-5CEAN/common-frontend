@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { getUserInfo } from '@/domains/MyPage/api/profile';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ChatContent from './ChatContent';
+import ChatRoomList from '../components/ChatRoomList';
 
 const ChatPage = () => {
   const location = useLocation();
@@ -17,6 +18,23 @@ const ChatPage = () => {
 
   const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [showChatList, setShowChatList] = useState(true);
+
+  // 화면 크기 감지
+  useEffect(() => {
+    const checkScreenSize = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (!mobile) {
+        setShowChatList(true);
+      }
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   // 유저 정보 로딩
   useEffect(() => {
@@ -68,16 +86,35 @@ const ChatPage = () => {
 
       if (roomIdFromURL) {
         setSelectedRoomId(roomIdFromURL);
-      } else if (data.data.length > 0) {
-        setSelectedRoomId(data.data[0].chatRoomId);
-        navigate(`/chat?roomId=${data.data[0].chatRoomId}`);
+        if (isMobile) {
+          setShowChatList(false);
+        }
+      } else {
+        setSelectedRoomId(null);
+        if (isMobile) {
+          setShowChatList(true);
+        }
       }
     };
 
     fetchChatRooms();
-  }, [location.search, navigate]);
+  }, [location.search, navigate, isMobile]);
 
-  if (!currentUser || !selectedRoomId) {
+  const handleRoomSelect = (roomId: string) => {
+    setSelectedRoomId(roomId);
+    navigate(`/chat?roomId=${roomId}`);
+    if (isMobile) {
+      setShowChatList(false);
+    }
+  };
+
+  const handleBackToList = () => {
+    setShowChatList(true);
+    setSelectedRoomId(null);
+    navigate('/chat');
+  };
+
+  if (!currentUser) {
     return (
       <div className="flex justify-center items-center h-[calc(100vh-110px)]">
         <span className="text-gray-500">로딩중...</span>
@@ -85,13 +122,45 @@ const ChatPage = () => {
     );
   }
 
+  // 모바일 버전
+  if (isMobile) {
+    return (
+      <div className="h-[calc(100vh-60px)] w-full mt-15">
+        {showChatList ? (
+          <ChatRoomList
+            chatRooms={chatRooms}
+            selectedRoomId={selectedRoomId}
+            onRoomSelect={handleRoomSelect}
+          />
+        ) : (
+          selectedRoomId && (
+            <ChatContent
+              chatRooms={chatRooms}
+              selectedRoomId={selectedRoomId}
+              currentUser={currentUser}
+              isMobile={isMobile}
+              onBackToList={handleBackToList}
+            />
+          )
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="flex m-6 mt-[62px] sm:mt-[86px] h-[calc(100vh-110px)] w-full max-w-[1340px] mx-auto">
-      <ChatContent
+      <ChatRoomList
         chatRooms={chatRooms}
         selectedRoomId={selectedRoomId}
-        currentUser={currentUser}
+        onRoomSelect={handleRoomSelect}
       />
+      {selectedRoomId && (
+        <ChatContent
+          chatRooms={chatRooms}
+          selectedRoomId={selectedRoomId}
+          currentUser={currentUser}
+        />
+      )}
     </div>
   );
 };
