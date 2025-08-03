@@ -80,7 +80,11 @@ interface RouteInputProps {
   setStartValue: Dispatch<SetStateAction<LocationInfo>>;
   setEndValue: Dispatch<SetStateAction<LocationInfo>>;
   stores: StoreInfo[];
-  SetKeyword: Dispatch<SetStateAction<string>>;
+
+  setStartInput: Dispatch<SetStateAction<string>>;
+  setEndInput: Dispatch<SetStateAction<string>>;
+  setWayInput: Dispatch<SetStateAction<string>>;
+  searchStores: StoreInfo[];
 }
 type ViewMode = 'bookmark' | 'saved' | 'route';
 export default function RoadSection({
@@ -95,7 +99,11 @@ export default function RoadSection({
   setStartValue,
   setEndValue,
   stores,
-  SetKeyword,
+
+  setStartInput,
+  setEndInput,
+  setWayInput,
+  searchStores,
 }: RouteInputProps) {
   const [showRecent, setShowRecent] = useState<boolean>(false);
   const [viewmode, setViewMode] = useState<ViewMode>('saved');
@@ -270,11 +278,10 @@ export default function RoadSection({
               onChange={(e) => {
                 const value = e.target.value;
                 setStartValue((prev) => ({ ...prev, name: value }));
-                SetKeyword(value);
+                setStartInput(value);
               }}
               onFocus={() => {
                 setFocusField('start');
-                SetKeyword(startValue.name || '');
               }}
               className={inputStyle}
             />
@@ -288,14 +295,13 @@ export default function RoadSection({
                     placeholder={`경유지 ${idx + 1}`}
                     onFocus={() => {
                       setFocusField(idx);
-                      SetKeyword('');
                     }}
                     onChange={(e) => {
                       const value = e.target.value;
                       const updated = [...waypoints];
                       updated[idx] = { ...updated[idx], name: value };
                       setWaypoints(updated);
-                      SetKeyword(value);
+                      setWayInput(value);
                     }}
                     className={inputStyle}
                   />
@@ -314,13 +320,12 @@ export default function RoadSection({
             <DebouncedInput
               onFocus={() => {
                 setFocusField('end');
-                SetKeyword(endValue.name || '');
               }}
               value={endValue?.name || ''}
               onChange={(e) => {
                 const value = e.target.value;
                 setEndValue((prev) => ({ ...prev, name: value }));
-                SetKeyword(value);
+                setEndInput(value);
               }}
               placeholder="도착지를 입력하세요"
               className={inputStyle}
@@ -342,7 +347,7 @@ export default function RoadSection({
 
           {keywordRequire && (
             <ul className="mt-2  border border-gray-200 rounded-md shadow scrollbar-custom bg-white max-h-72 overflow-y-auto">
-              {stores.map((store) => (
+              {searchStores.map((store) => (
                 <li
                   key={store.id}
                   className="p-2 border-b border-b-gray-200 hover:bg-gray-100 cursor-pointer"

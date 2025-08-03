@@ -152,7 +152,9 @@ export default function MapPage() {
   const [mode, setMode] = useState<'default' | 'search'>('default');
   // 검색input
   const [searchInput, setSearchInput] = useState<string>('');
-
+  const [startInput, setStartInput] = useState<string>('');
+  const [wayInput, setWayInput] = useState<string>('');
+  const [endInput, setEndInput] = useState<string>('');
   // API로 불러온 매장 리스트
   const [searchStores, setSearchStores] = useState<StoreInfo[]>([]);
 
@@ -226,7 +228,6 @@ export default function MapPage() {
         centerLng: center.lng,
       });
 
-      // 2. AI 추천 매장 가져오기
       let finalList = [...storeList];
       try {
         const aiResult = await fetchAiRecommendedStore({
@@ -629,6 +630,9 @@ export default function MapPage() {
           mode={mode}
           setMode={setMode}
           searchStores={searchStores}
+          setStartInput={setStartInput}
+          setEndInput={setEndInput}
+          setWayInput={setWayInput}
         />
         {/* 내 위치 버튼 */}
         {map && myLocation && (

@@ -52,6 +52,9 @@ interface SidebarPanelProps {
   mode: 'default' | 'search';
   setMode: Dispatch<SetStateAction<'default' | 'search'>>;
   searchStores: StoreInfo[];
+  setStartInput: Dispatch<SetStateAction<string>>;
+  setEndInput: Dispatch<SetStateAction<string>>;
+  setWayInput: Dispatch<SetStateAction<string>>;
 }
 
 export default function SidebarPanel({
@@ -84,6 +87,9 @@ export default function SidebarPanel({
   mode,
   setMode,
   searchStores,
+  setStartInput,
+  setEndInput,
+  setWayInput,
 }: SidebarPanelProps) {
   const [userInfo, setUserInfo] = useState<UserInfoApi>();
   const token = localStorage.getItem('authToken');
@@ -182,7 +188,10 @@ export default function SidebarPanel({
             setStartValue={setStartValue}
             setEndValue={setEndValue}
             stores={stores}
-            SetKeyword={SetKeyword}
+            setStartInput={setStartInput}
+            setEndInput={setEndInput}
+            setWayInput={setWayInput}
+            searchStores={searchStores}
           />
         )}
         {index === 1 && panel.type === 'detail' && panel.item && (

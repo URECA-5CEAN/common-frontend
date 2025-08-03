@@ -64,6 +64,9 @@ interface SideBarProps {
   mode: 'default' | 'search';
   setMode: Dispatch<SetStateAction<'default' | 'search'>>;
   searchStores: StoreInfo[];
+  setStartInput: Dispatch<SetStateAction<string>>;
+  setEndInput: Dispatch<SetStateAction<string>>;
+  setWayInput: Dispatch<SetStateAction<string>>;
 }
 function MapSidebar({
   stores,
@@ -99,6 +102,9 @@ function MapSidebar({
   mode,
   setMode,
   searchStores,
+  setStartInput,
+  setEndInput,
+  setWayInput,
 }: SideBarProps) {
   if (!panel) return;
 
@@ -155,6 +161,9 @@ function MapSidebar({
             mode={mode}
             setMode={setMode}
             searchStores={searchStores}
+            setStartInput={setStartInput}
+            setEndInput={setEndInput}
+            setWayInput={setWayInput}
           />
 
           {/* 상세 패널 (panel.type이 'detail'일 때만) */}
@@ -191,6 +200,9 @@ function MapSidebar({
                   mode={mode}
                   setMode={setMode}
                   searchStores={searchStores}
+                  setStartInput={setStartInput}
+                  setEndInput={setEndInput}
+                  setWayInput={setWayInput}
                 />
               </Suspense>
             )}
@@ -238,6 +250,9 @@ function MapSidebar({
                 mode={mode}
                 setMode={setMode}
                 searchStores={searchStores}
+                setStartInput={setStartInput}
+                setEndInput={setEndInput}
+                setWayInput={setWayInput}
               />
             </BottomSheet>
           )}
@@ -281,6 +296,9 @@ function MapSidebar({
                   mode={mode}
                   setMode={setMode}
                   searchStores={searchStores}
+                  setStartInput={setStartInput}
+                  setEndInput={setEndInput}
+                  setWayInput={setWayInput}
                 />
               </BottomSheet>
             </Suspense>
@@ -325,6 +343,9 @@ function MapSidebar({
                   mode={mode}
                   setMode={setMode}
                   searchStores={searchStores}
+                  setStartInput={setStartInput}
+                  setEndInput={setEndInput}
+                  setWayInput={setWayInput}
                 />
               </BottomSheet>
             </Suspense>
