@@ -24,6 +24,7 @@ export interface StoreInfo {
 export interface FetchStoresParams {
   keyword?: string;
   category?: string;
+  benefit?: string;
   latMin: number;
   latMax: number;
   lngMin: number;
@@ -32,6 +33,11 @@ export interface FetchStoresParams {
   centerLng: number;
 }
 
+export interface FetchSearchParams {
+  keyword?: string;
+  category?: string;
+  benefit?: string;
+}
 interface FetchStoresResponse {
   statusCode: number;
   message: string;
@@ -160,6 +166,33 @@ export const fetchStores = async (
       axiosErr.message ??
       '제휴처 목록 조회 중 알 수 없는 오류가 발생했습니다.';
     throw new Error(`제휴처 목록 조회 실패: ${message}`);
+  }
+};
+
+//제휴처 목록 조회
+export const fetchSearchStores = async (
+  params: FetchSearchParams,
+): Promise<StoreInfo[]> => {
+  try {
+    const response: AxiosResponse<FetchStoresResponse> = await apiClient.get(
+      '/stores',
+      {
+        params: {
+          keyword: params.keyword ?? '',
+          category: params.category ?? '',
+          benefit: params.benefit ?? '',
+        },
+      },
+    );
+
+    return response.data.data;
+  } catch (error: unknown) {
+    const axiosErr = error as AxiosError<{ message: string }>;
+    const message =
+      axiosErr.response?.data?.message ??
+      axiosErr.message ??
+      '제휴처 목록 검색 중 알 수 없는 오류가 발생했습니다.';
+    throw new Error(`제휴처 목록 검색 실패: ${message}`);
   }
 };
 

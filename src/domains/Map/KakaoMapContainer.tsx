@@ -1,4 +1,4 @@
-import { useState, type PropsWithChildren } from 'react';
+import { type PropsWithChildren } from 'react';
 import { CustomOverlayMap, Map, useKakaoLoader } from 'react-kakao-maps-sdk';
 import type { RouteItem } from './components/sidebar/RoadSection';
 import PolyLineRender from './components/PolyLineRender';
@@ -45,14 +45,6 @@ export default function KakaoMapContainer({
     libraries: ['services', 'clusterer'],
   });
 
-  const [mapLevel, setMapLevel] = useState(level);
-  function getTranslateY(level: number): string {
-    if (level <= 3) return '45%';
-    if (level <= 5) return '80%';
-    if (level <= 7) return '50%';
-    return '30%';
-  }
-
   if (loading) return <div>지도를 불러오는 중...</div>;
   if (error) return <div>지도를 불러올 수 없습니다.</div>;
 
@@ -68,25 +60,56 @@ export default function KakaoMapContainer({
           lat: m.getCenter().getLat(),
           lng: m.getCenter().getLng(),
         };
-        setMapLevel(m.getLevel());
-        onCenterChanged(c); // 부모로 콜백
+        onCenterChanged(c);
       }}
     >
       {start && (
-        <CustomOverlayMap position={start} xAnchor={0.2} yAnchor={1.0}>
+        <CustomOverlayMap position={start} xAnchor={0.5} yAnchor={1.0}>
           <div
             style={{
-              background: '#34c759',
-              color: 'white',
-              padding: '4px 8px',
-              borderRadius: '16px',
-              fontSize: '10px',
-              fontWeight: 600,
-              boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-              transform: `translate(-50%, ${getTranslateY(mapLevel)})`,
+              position: 'relative',
+              width: 30,
+              height: 42,
+              pointerEvents: 'auto',
             }}
           >
-            출발
+            {/* 꼬리 */}
+            <div
+              style={{
+                position: 'absolute',
+                top: 28,
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: 0,
+                height: 0,
+                borderLeft: '7px solid transparent',
+                borderRight: '7px solid transparent',
+                borderTop: '12px solid #34c759', // 꼬리 색상 (마커와 맞춤)
+                zIndex: 1,
+              }}
+            />
+            {/* 동그란 마커 */}
+            <div
+              style={{
+                width: 30,
+                height: 30,
+                background: '#34c759',
+                color: 'white',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 700,
+                fontSize: 12,
+                boxShadow: '0 2px 10px rgba(0,0,0,0.25)',
+                zIndex: 2,
+                position: 'absolute',
+                top: 0,
+                left: 0,
+              }}
+            >
+              출발
+            </div>
           </div>
         </CustomOverlayMap>
       )}
@@ -95,40 +118,89 @@ export default function KakaoMapContainer({
           <CustomOverlayMap
             key={idx}
             position={{ lat: point.lat, lng: point.lng }}
-            xAnchor={0.2}
+            xAnchor={0.5}
             yAnchor={1.0}
           >
-            <div
-              style={{
-                background: '#007aff',
-                color: 'white',
-                padding: '4px 8px',
-                borderRadius: '16px',
-                fontSize: '10px',
-                fontWeight: 600,
-                boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-                transform: `translate(-50%, ${getTranslateY(mapLevel)})`,
-              }}
-            >
-              경유지 {idx + 1}
+            <div style={{ position: 'relative', width: 30, height: 42 }}>
+              {/* 꼬리 */}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 26,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: 0,
+                  height: 0,
+                  borderLeft: '10px solid transparent',
+                  borderRight: '10px solid transparent',
+                  borderTop: '16px solid #007aff',
+                  zIndex: 1,
+                }}
+              />
+              {/* 동그란 마커 */}
+              <div
+                style={{
+                  width: 30,
+                  height: 30,
+                  background: '#007aff',
+                  color: 'white',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: 700,
+                  fontSize: 10,
+                  boxShadow: '0 2px 10px rgba(0,0,0,0.25)',
+                  zIndex: 2,
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                }}
+              >
+                {`경유${idx + 1}`}
+              </div>
             </div>
           </CustomOverlayMap>
         ))}
       {end && (
-        <CustomOverlayMap position={end} xAnchor={0.2} yAnchor={1.0}>
-          <div
-            style={{
-              background: '#ff3b30',
-              color: 'white',
-              padding: '4px 8px',
-              borderRadius: '16px',
-              fontSize: '10px',
-              fontWeight: 600,
-              boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-              transform: `translate(-50%, ${getTranslateY(mapLevel)})`,
-            }}
-          >
-            도착
+        <CustomOverlayMap position={end} xAnchor={0.5} yAnchor={1.0}>
+          <div style={{ position: 'relative', width: 30, height: 42 }}>
+            {/* 꼬리 */}
+            <div
+              style={{
+                position: 'absolute',
+                top: 28,
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: 0,
+                height: 0,
+                borderLeft: '7px solid transparent',
+                borderRight: '7px solid transparent',
+                borderTop: '12px solid #ff3b30', // 도착색
+                zIndex: 1,
+              }}
+            />
+            <div
+              style={{
+                width: 30,
+                height: 30,
+                background: '#ff3b30',
+                color: 'white',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 700,
+                fontSize: 10,
+                boxShadow: '0 2px 10px rgba(0,0,0,0.25)',
+                zIndex: 2,
+                position: 'absolute',
+                top: 0,
+                left: 0,
+              }}
+            >
+              도착
+            </div>
           </div>
         </CustomOverlayMap>
       )}

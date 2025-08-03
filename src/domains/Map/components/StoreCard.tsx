@@ -12,6 +12,7 @@ interface StoreCardProps {
   toggleBookmark: (store: StoreInfo) => void;
   isBookmark: boolean;
   isSelected: boolean;
+  onCenter: () => void;
 }
 
 export default function StoreCard({
@@ -22,6 +23,7 @@ export default function StoreCard({
   toggleBookmark,
   isBookmark,
   isSelected,
+  onCenter,
 }: StoreCardProps) {
   return (
     <div
@@ -29,7 +31,10 @@ export default function StoreCard({
         'relative flex items-stretch  cursor-pointer py-2 rounded-lg',
         store.isRecommended ? 'bg-primaryGreen-40 pt-6' : 'bg-white',
       )}
-      onClick={() => openDetail(store)}
+      onClick={() => {
+        openDetail(store);
+        onCenter();
+      }}
     >
       {isSelected && (
         <div className="absolute -left-2 top-3 bottom-3  w-2 rounded bg-primaryGreen-60" />

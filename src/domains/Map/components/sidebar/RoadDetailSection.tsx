@@ -16,7 +16,7 @@ export default function RoadDetailSection({ route }: RoadProps) {
     const Icon = NaviGuideIconMap[type] ?? Clock;
     return <Icon size={25} strokeWidth={2} className="text-primaryGreen-80" />;
   };
-
+  console.log(route);
   return (
     <div className="space-y-2 text-sm text-gray-700 h-screen mt-10">
       <RouteCard
@@ -26,11 +26,16 @@ export default function RoadDetailSection({ route }: RoadProps) {
         isDetail={true}
       />
       <div className="mt-10">
+        <div className="flex ml-2 gap-4 items-center border-t border-t-gray-200 py-4">
+          <p className="text-primaryGreen-80 text-sm font-semibold">출발</p>
+          <p className="font-semibold">{route.from}</p>
+        </div>
         {/* 필요시 주요 도로 정보 등도 렌더링 가능 */}
         {route.guide.map((g, idx) => {
           const distanceKm = (g.distance / 1000).toFixed(1);
           const durationHour = Math.floor(g.duration / 60);
           const durationMinute = g.duration % 60;
+
           return (
             <div
               className="flex justify-between items-center border-t border-t-gray-200 py-1"
@@ -53,6 +58,10 @@ export default function RoadDetailSection({ route }: RoadProps) {
             </div>
           );
         })}
+        <div className="flex ml-2 gap-4 items-center border-t border-t-gray-200 py-4">
+          <p className="text-primaryGreen-80 text-sm font-semibold">도착</p>
+          <p className="font-semibold">{route.to}</p>
+        </div>
       </div>
     </div>
   );

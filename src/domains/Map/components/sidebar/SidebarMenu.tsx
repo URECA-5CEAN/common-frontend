@@ -38,9 +38,10 @@ export default function SidebarMenu({
             activeMenu === menu && 'bg-primaryGreen-60 shadow-lg ',
 
             // 데스크탑(mdall 이상)
-            'md:w-20 md:h-20 md:rounded-none md:shadow-none  md:hover:shadow-none ml-1.5',
-            ' md:hover:bg-[#DDF4FF] md:active:scale-100 md:active:opacity-100',
-            activeMenu === menu && 'md:bg-[#DDF4FF] ',
+            'md:w-20 md:h-20 md:rounded-lg md:shadow-none  md:hover:shadow-none ml-1.5',
+            ' md:hover:bg-[#DDF4FF] md:active:scale-100 md:active:opacity-100  ',
+            activeMenu === menu &&
+              'md:bg-[#DDF4FF]  md:border-2 md:border-[#84D8FF] ',
           )}
         >
           <img

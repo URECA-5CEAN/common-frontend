@@ -47,6 +47,14 @@ interface SidebarPanelProps {
   resetKeyword: () => void;
   selectedCardId: string;
   SetKeyword: Dispatch<SetStateAction<string>>;
+  searchInput: string;
+  handleSearchChange: ChangeEventHandler<HTMLInputElement>;
+  mode: 'default' | 'search';
+  setMode: Dispatch<SetStateAction<'default' | 'search'>>;
+  searchStores: StoreInfo[];
+  setStartInput: Dispatch<SetStateAction<string>>;
+  setEndInput: Dispatch<SetStateAction<string>>;
+  setWayInput: Dispatch<SetStateAction<string>>;
 }
 
 export default function SidebarPanel({
@@ -74,6 +82,14 @@ export default function SidebarPanel({
   resetKeyword,
   selectedCardId,
   SetKeyword,
+  searchInput,
+  handleSearchChange,
+  mode,
+  setMode,
+  searchStores,
+  setStartInput,
+  setEndInput,
+  setWayInput,
 }: SidebarPanelProps) {
   const [userInfo, setUserInfo] = useState<UserInfoApi>();
   const token = localStorage.getItem('authToken');
@@ -114,7 +130,7 @@ export default function SidebarPanel({
       <div className="p-4 pr-2 bg-white relative md:shadow-lg rounded-lg scrollbar-custom overflow-y-auto h-auto  md:max-h-[calc(100vh-78px)] z-10 ">
         {/* 첫 번째 패널: 사용자 정보 */}
         <div className="hidden md:block">
-          {index === 0 && userInfo && (
+          {index === 0 && userInfo && panel.menu !== '길찾기' && (
             <UserSection
               membership={userInfo.membership}
               username={userInfo.nickname}
@@ -138,6 +154,12 @@ export default function SidebarPanel({
             resetKeyword={resetKeyword}
             selectedCardId={selectedCardId}
             SetKeyword={SetKeyword}
+            goToStore={goToStore}
+            searchInput={searchInput}
+            handleSearchChange={handleSearchChange}
+            mode={mode}
+            setMode={setMode}
+            searchStores={searchStores}
           />
         )}
         {index === 0 && panel.menu === '즐겨찾기' && (
@@ -149,6 +171,7 @@ export default function SidebarPanel({
             toggleBookmark={toggleBookmark}
             bookmarkIds={bookmarkIds}
             selectedCardId={selectedCardId}
+            goToStore={goToStore}
           />
         )}
         {index === 0 && panel.menu === '길찾기' && (
@@ -165,7 +188,10 @@ export default function SidebarPanel({
             setStartValue={setStartValue}
             setEndValue={setEndValue}
             stores={stores}
-            SetKeyword={SetKeyword}
+            setStartInput={setStartInput}
+            setEndInput={setEndInput}
+            setWayInput={setWayInput}
+            searchStores={searchStores}
           />
         )}
         {index === 1 && panel.type === 'detail' && panel.item && (
@@ -176,6 +202,7 @@ export default function SidebarPanel({
             bookmarkIds={bookmarkIds}
             toggleBookmark={toggleBookmark}
             goToStore={goToStore}
+            userInfo={userInfo}
           />
         )}
         {index === 1 && panel.type === 'road' && panel.item && (
