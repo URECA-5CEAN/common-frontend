@@ -28,6 +28,8 @@ import type { ExpResultType } from '@/types/expResult';
 import Lottie from 'lottie-react';
 import warning from '@/assets/lottie/Warning.json';
 import success from '@/assets/lottie/Success.json';
+import { useAuthStore } from '@/store/useAuthStore';
+import type { descriptors } from 'node_modules/chart.js/dist/core/core.defaults';
 
 interface BenefitModalProps {
   isBenefitModalOpen: boolean;
@@ -62,6 +64,8 @@ export default function BenefitModal({
   const [finalSubmitSuccess, setFinalSubmitSuccess] = useState(false);
   const [shouldShowLevelup, setShouldShowLevelup] = useState(false);
   const [duplicateReceipt, setDuplicateReceipt] = useState(false);
+
+  const { isLoggedIn } = useAuthStore();
 
   const navigate = useNavigate();
 
@@ -198,6 +202,39 @@ export default function BenefitModal({
     setOcrError(false);
     setDuplicateReceipt(false);
   };
+
+  if (!isLoggedIn) {
+    return (
+      <Modal
+        isOpen={isBenefitModalOpen}
+        onClose={() => {
+          setIsBenefitModalOpen(false);
+        }}
+        title="로그인이 필요한 서비스에요"
+        description={
+          <>
+            로그인 후 혜택 인증하고 경험치를 모아보세요.
+            <br />
+            경험치를 모아서 기프티콘을 받을 수 있어요!
+          </>
+        }
+        actions={
+          <>
+            <Button
+              fullWidth
+              variant="secondary"
+              onClick={() => setIsBenefitModalOpen(false)}
+            >
+              닫기
+            </Button>
+            <Button fullWidth onClick={() => navigate('/login')}>
+              로그인하기
+            </Button>
+          </>
+        }
+      ></Modal>
+    );
+  }
 
   return (
     <>
