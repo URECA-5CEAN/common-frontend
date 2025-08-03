@@ -43,7 +43,8 @@ const UserProfile: React.FC<UserProfileProps> = ({
     VVIP: vvipIcon,
   };
 
-  const iconSrc = userInfoApi && membershipIconMap[userInfoApi.membership];
+  const iconSrc =
+    userInfoApi?.membership && membershipIconMap[userInfoApi.membership];
 
   return (
     <div className="w-full lg:h-[186px] border border-gray-200 rounded-2xl flex lg:flex-row flex-col gap-5 p-5 md:justify-between items-center">
