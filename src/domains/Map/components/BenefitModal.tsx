@@ -28,8 +28,6 @@ import type { ExpResultType } from '@/types/expResult';
 import Lottie from 'lottie-react';
 import warning from '@/assets/lottie/Warning.json';
 import success from '@/assets/lottie/Success.json';
-import { useAuthStore } from '@/store/useAuthStore';
-import type { descriptors } from 'node_modules/chart.js/dist/core/core.defaults';
 
 interface BenefitModalProps {
   isBenefitModalOpen: boolean;
@@ -64,8 +62,6 @@ export default function BenefitModal({
   const [finalSubmitSuccess, setFinalSubmitSuccess] = useState(false);
   const [shouldShowLevelup, setShouldShowLevelup] = useState(false);
   const [duplicateReceipt, setDuplicateReceipt] = useState(false);
-
-  const { isLoggedIn } = useAuthStore();
 
   const navigate = useNavigate();
 
@@ -235,6 +231,7 @@ export default function BenefitModal({
       ></Modal>
     );
   }
+        
   return (
     <>
       <Modal
