@@ -463,9 +463,21 @@ export default function RoadSection({
       {viewmode === 'saved' && (
         <div className="space-y-2 px-2">
           <p className="text-xl font-semibold text-gray-600">저장한 경로</p>
-          <ul className="space-y-1">
-            {savedRoutes &&
-              savedRoutes.map((route, idx) => (
+          {!savedRoutes || savedRoutes.length === 0 ? (
+            <div className="py-4 text-center text-gray-400 text-sm space-y-1">
+              <p>저장된 경로가 없어요!</p>
+              {Roadmode === 'default' && (
+                <>
+                  <p>AI 길찾기를 통해 경로 추천 받고 저장해봐요!</p>
+                  <Button size="sm" onClick={() => setRoadMode('ai')}>
+                    AI 길찾기 이동하기
+                  </Button>
+                </>
+              )}
+            </div>
+          ) : (
+            <ul className="space-y-1">
+              {savedRoutes.map((route, idx) => (
                 <li
                   key={`${route.directionid}-${idx}`}
                   className="flex cursor-pointer items-center justify-between px-3 py-2 bg-gray-50 rounded-full"
@@ -494,9 +506,11 @@ export default function RoadSection({
                   </button>
                 </li>
               ))}
-          </ul>
+            </ul>
+          )}
         </div>
       )}
+
       {/* 최근 경로 토글 */}
       {viewmode === 'saved' && (
         <div className="space-y-2 px-2">
