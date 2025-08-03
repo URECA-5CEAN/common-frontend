@@ -235,7 +235,6 @@ export default function BenefitModal({
       ></Modal>
     );
   }
-
   return (
     <>
       <Modal
