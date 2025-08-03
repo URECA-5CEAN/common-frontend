@@ -199,6 +199,39 @@ export default function BenefitModal({
     setDuplicateReceipt(false);
   };
 
+  if (!isLoggedIn) {
+    return (
+      <Modal
+        isOpen={isBenefitModalOpen}
+        onClose={() => {
+          setIsBenefitModalOpen(false);
+        }}
+        title="로그인이 필요한 서비스에요"
+        description={
+          <>
+            로그인 후 혜택 인증하고 경험치를 모아보세요.
+            <br />
+            경험치를 모아서 기프티콘을 받을 수 있어요!
+          </>
+        }
+        actions={
+          <>
+            <Button
+              fullWidth
+              variant="secondary"
+              onClick={() => setIsBenefitModalOpen(false)}
+            >
+              닫기
+            </Button>
+            <Button fullWidth onClick={() => navigate('/login')}>
+              로그인하기
+            </Button>
+          </>
+        }
+      ></Modal>
+    );
+  }
+        
   return (
     <>
       <Modal
