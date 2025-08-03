@@ -23,7 +23,7 @@ interface DetailSectionProps {
   bookmarkIds: Set<string>;
   goToStore: (store: StoreInfo) => void;
   toggleBookmark: (store: StoreInfo) => void;
-  userInfo: UserInfoApi;
+  userInfo?: UserInfoApi;
 }
 
 const BenefitLabel = ['VIP', 'VVIP', '우수'];
@@ -61,7 +61,6 @@ function DetailSection({
   if (isError) return `Error: ${error.message}`;
   if (benefits.length === 0) return '해당 브랜드 혜택이 없습니다.';
 
-  console.log(userInfo?.membership);
   return (
     <div className="space-y-2  h-screen md:min-h-[800px] z-10 ">
       {/* 헤더 */}

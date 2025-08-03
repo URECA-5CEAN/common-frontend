@@ -397,6 +397,12 @@ export default function MapPage() {
     setPanel({ type: 'menu', menu });
     setSelectedCardId('');
     SetKeyword('');
+    if (menu !== '길찾기') {
+      setStartValue({ name: '', lat: 0, lng: 0 });
+      setEndValue({ name: '', lat: 0, lng: 0 });
+      setWaypoints([]);
+      setSelectedRoute(null);
+    }
   }, []);
 
   //매장 선택 시 상세열기
@@ -406,6 +412,7 @@ export default function MapPage() {
       setPanelIndex(1);
       setSelectedCardId(store.id);
     },
+
     [panel.menu],
   );
   // 길찾기 상세보기
@@ -558,14 +565,16 @@ export default function MapPage() {
     }
   }, [selectedRoute]);
 
-  const resetKeyword = () => {
+  const resetKeyword = useCallback(() => {
     SetKeyword('');
     SetIsCategory('');
-  };
+    setSelectedBenefit('');
+    setSearchInput('');
+  }, []);
 
   const fetchAndSetSearchStores = useCallback(
     async (keyword: string, category: string, benefit: BenefitType | '') => {
-      if (keyword.trim() || category || benefit) {
+      if (keyword.trim() !== '' || category || benefit) {
         try {
           const result = await fetchSearchStores({
             keyword,
@@ -583,6 +592,13 @@ export default function MapPage() {
     },
     [], // fetchSearchStores가 바깥에 고정이라면 의존성 없음
   );
+
+  useEffect(() => {
+    SetKeyword('');
+    setSearchInput('');
+    SetIsCategory('');
+    setSelectedBenefit('');
+  }, [mode]);
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
