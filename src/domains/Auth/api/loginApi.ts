@@ -40,7 +40,7 @@ export const login = async (loginData: LoginData): Promise<LoginResponse> => {
 
 export const openKakaoLogin = () => {
   const clientId = '524aef0330795198299d52f0dfe98b0b';
-  const redirectUri = 'http://15.164.81.45/api/auth/kakao/callback';
+  const redirectUri = 'https://15.164.81.45/api/auth/kakao/callback';
   const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code`;
 
   window.open(kakaoAuthUrl, '_blank', 'width=600,height=700');

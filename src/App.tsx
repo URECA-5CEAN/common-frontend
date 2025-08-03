@@ -33,6 +33,7 @@ import ShareEditPage from '@/domains/Explore/pages/ShareEditPage';
 import dolphinError from '@/assets/image/dolphin-error.svg';
 
 import { Toaster } from 'react-hot-toast';
+import ScrollToTop from '@/domains/Auth/components/ScrollToTop';
 
 const AppLayout = () => {
   return (
@@ -73,8 +74,8 @@ const ProtectedRoute = () => {
   const { isLoggedIn } = useAuthStore();
 
   if (!isLoggedIn) {
-    // 로그인 안 된 경우 로그인 페이지로 이동
-    return <Navigate to="/" replace />;
+    // 로그인 안 된 경우 /mypage 같은 경로 접근 시 지도 페이지로 이동
+    return <Navigate to="/map" replace />;
   }
 
   // 로그인 됐으면 자식 라우트 렌더링
@@ -85,7 +86,8 @@ export const PublicRoute = () => {
   const { isLoggedIn } = useAuthStore();
 
   if (isLoggedIn) {
-    return <Navigate to="/" replace />;
+    // 로그인 되어있는데 /login 같은 경로 접근 시
+    return <Navigate to="/map" replace />;
   }
 
   return <Outlet />;
@@ -94,6 +96,7 @@ export const PublicRoute = () => {
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Toaster position="bottom-center" reverseOrder={false} />
       <UnsavedChangesProvider>
         <Routes>

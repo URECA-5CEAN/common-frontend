@@ -117,7 +117,13 @@ const MissionPage = () => {
 
   const onCheckIn = () => {
     handleCheckIn();
-    fetchMyMission();
+    setMyMission((prev) =>
+      prev.map((mission) =>
+        mission.missionId === '8cdb76eb-6da8-11f0-b57c-026453520373'
+          ? { ...mission, myValue: 1 }
+          : mission,
+      ),
+    );
   };
 
   return (
@@ -205,7 +211,7 @@ const MissionPage = () => {
               닫기
             </Button>
             <Button fullWidth onClick={() => navigate('/mypage/profile')}>
-              마이페이지
+              내 정보
             </Button>
           </>
         }

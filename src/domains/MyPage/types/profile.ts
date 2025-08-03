@@ -21,6 +21,7 @@ export interface UserInfoApi {
   title: string;
   level: number;
   exp: number;
+  error: boolean;
 }
 
 export interface UserInfoResponse {
