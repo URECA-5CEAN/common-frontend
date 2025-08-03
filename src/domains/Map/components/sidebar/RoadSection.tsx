@@ -69,7 +69,6 @@ export interface RouteItem {
 }
 
 interface RouteInputProps {
-  openDetail: (store: StoreInfo) => void;
   startValue: LocationInfo;
   endValue: LocationInfo;
   onSwap?: () => void;
@@ -81,7 +80,6 @@ interface RouteInputProps {
   setStartValue: Dispatch<SetStateAction<LocationInfo>>;
   setEndValue: Dispatch<SetStateAction<LocationInfo>>;
   stores: StoreInfo[];
-
   setStartInput: Dispatch<SetStateAction<string>>;
   setEndInput: Dispatch<SetStateAction<string>>;
   setWayInput: Dispatch<SetStateAction<string>>;
@@ -95,12 +93,10 @@ export default function RoadSection({
   onReset,
   bookmarks,
   goToStore,
-  openDetail,
   openRoadDetail,
   setStartValue,
   setEndValue,
   stores,
-
   setStartInput,
   setEndInput,
   setWayInput,
@@ -228,6 +224,58 @@ export default function RoadSection({
       alert('최근 경로 삭제');
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const handleBookmarkClick = (bookmark: StoreInfo) => {
+    // 이미 등록된 제휴처 인지 확인
+    const isAlready =
+      startValue?.name === bookmark.name ||
+      endValue?.name === bookmark.name ||
+      waypoints.some((w) => w.name === bookmark.name);
+
+    if (isAlready) return; // 중복이면 무시
+
+    if (!startValue?.name) {
+      setStartValue({
+        name: bookmark.name,
+        lat: bookmark.latitude,
+        lng: bookmark.longitude,
+      });
+      return;
+    }
+    if (waypoints.length > 0) {
+      //빈 경유지 슬롯 우선
+      const emptyIdx = waypoints.findIndex((w) => !w.name);
+      if (emptyIdx !== -1) {
+        const updated = [...waypoints];
+        updated[emptyIdx] = {
+          name: bookmark.name,
+          lat: bookmark.latitude,
+          lng: bookmark.longitude,
+        };
+        setWaypoints(updated);
+        return;
+      }
+      // 도착지가 비었으면 도착지로
+      if (!endValue?.name) {
+        setEndValue({
+          name: bookmark.name,
+          lat: bookmark.latitude,
+          lng: bookmark.longitude,
+        });
+      }
+      return;
+    }
+
+    // 경유지가 아예 없을 때는 바로 도착지로
+    if (!endValue?.name) {
+      setEndValue({
+        name: bookmark.name,
+        lat: bookmark.latitude,
+        lng: bookmark.longitude,
+      });
+      return;
     }
   };
 
@@ -455,8 +503,8 @@ export default function RoadSection({
             <StarListItem
               bookmark={bookmark}
               key={bookmark.id}
+              onRoadClick={() => handleBookmarkClick(bookmark)}
               onCenter={() => goToStore(bookmark)}
-              openDetail={() => openDetail(bookmark)}
             />
           ))}
         </div>
@@ -483,7 +531,7 @@ export default function RoadSection({
               {savedRoutes.map((route, idx) => (
                 <li
                   key={`${route.directionid}-${idx}`}
-                  className="flex cursor-pointer items-center justify-between px-3 py-2 bg-white rounded-2xl"
+                  className="flex cursor-pointer items-center justify-between px-3 py-2 bg-white rounded-2xl  hover:bg-primaryGreen-40 border border-white hover:border-primaryGreen-80"
                   onClick={() => openRoadDetail(route)}
                 >
                   <RouteLine
@@ -522,7 +570,7 @@ export default function RoadSection({
               {recentRoutes.map((route, idx) => (
                 <li
                   key={`${route.directionid}-${idx}`}
-                  className="flex cursor-pointer items-center justify-between px-3 py-2 bg-white rounded-2xl"
+                  className="flex cursor-pointer items-center justify-between px-3 py-2 bg-white rounded-2xl hover:bg-primaryGreen-40 border border-white hover:border-primaryGreen-80"
                   onClick={() => openRoadDetail(route)}
                 >
                   <RouteLine

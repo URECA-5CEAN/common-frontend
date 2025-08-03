@@ -215,7 +215,7 @@ function FilterMarker({
                 boxShadow:
                   m.id === selectedCardId
                     ? '0 10px 20px rgba(18, 158, 223, 0.35), 0 6px 6px rgba(0, 0, 0, 0.12)'
-                    : '0 2px 4px rgba(0, 0, 0, 0.15)',
+                    : '0 2px 4px rgba(0, 0, 0, 0.35)',
                 position: 'relative',
                 zIndex: 2,
               }}

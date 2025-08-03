@@ -182,7 +182,6 @@ export default function SidebarPanel({
             onReset={onReset}
             onNavigate={onNavigate}
             bookmarks={bookmarks}
-            openDetail={openDetail}
             goToStore={goToStore}
             openRoadDetail={openRoadDetail}
             setStartValue={setStartValue}
