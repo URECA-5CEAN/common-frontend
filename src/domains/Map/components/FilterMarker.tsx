@@ -69,7 +69,6 @@ function FilterMarker({
     if (!map) return [];
     if (panel.menu === '길찾기') return [];
     const level = map.getLevel?.() ?? 5;
-    console.log(level);
     const max2D = level <= 2 ? 20 : level <= 4 ? 20 : level <= 6 ? 10 : 10;
     return stores
       .map((m) => ({
