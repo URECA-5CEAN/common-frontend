@@ -58,7 +58,7 @@ export default function MapSection({
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const keywordRequire = isFocused && stores.length > 0 && keyword.length > 0;
   const modeStore = mode === 'default' ? stores : searchStores;
-  const { hasLocation, requestLocation } = useCurrentLocation();
+  const { hasLocation } = useCurrentLocation();
   return (
     <div className="px-2 space-y-8 h-screen ">
       <div className="flex relative top-4 py-1 rounded-sm mx-auto">

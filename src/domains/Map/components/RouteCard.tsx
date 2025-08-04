@@ -14,6 +14,7 @@ interface Props {
   isDetail?: boolean;
   scenario?: string;
   showScenario?: boolean;
+  refreshSavedRoutes?: () => void;
 }
 
 export default function RouteCard({
@@ -23,6 +24,7 @@ export default function RouteCard({
   isDetail = false,
   showScenario,
   scenario,
+  refreshSavedRoutes,
 }: Props) {
   const allRoads = route.section?.flatMap((s) => s.roads) || [];
   const majorRoad = MajorLoads(allRoads);
@@ -32,6 +34,7 @@ export default function RouteCard({
       const res = await updateBookmarkStatus(route.directionid, true);
       console.log(res.data);
       if (res.data) alert('경로가 즐겨찾기에 저장되었습니다.');
+      refreshSavedRoutes?.();
     } catch (err) {
       console.error(err);
       alert('저장 중 오류가 발생했습니다.');

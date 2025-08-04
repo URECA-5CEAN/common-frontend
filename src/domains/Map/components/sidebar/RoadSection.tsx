@@ -176,14 +176,17 @@ export default function RoadSection({
     }
   };
 
+  const refreshSavedRoutes = async () => {
+    const bookmarks = await fetchDirectionBookmarks();
+    const converted = bookmarks.map(convertBookmarkToDirectionResponse);
+    const routeItems = converted.flatMap((res) => DirecitonRoot(res));
+    setSavedRoutes(routeItems);
+  };
+
   useEffect(() => {
     const fetchBookmark = async () => {
       try {
-        const bookmarks = await fetchDirectionBookmarks();
-        const converted = bookmarks.map(convertBookmarkToDirectionResponse);
-        const routeItems = converted.flatMap((res) => DirecitonRoot(res));
-        console.log(routeItems);
-        setSavedRoutes(routeItems);
+        refreshSavedRoutes();
       } catch (error) {
         console.log(error);
       }
@@ -612,6 +615,7 @@ export default function RoadSection({
               onClick={() => openRoadDetail(route)}
               showScenario={Roadmode === 'ai'}
               scenario={scenario}
+              refreshSavedRoutes={refreshSavedRoutes}
             />
           ))}
         </div>
