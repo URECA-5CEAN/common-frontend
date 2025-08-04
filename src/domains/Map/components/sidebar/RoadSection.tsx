@@ -279,7 +279,6 @@ export default function RoadSection({
     }
   };
 
-  console.log(routes);
   return (
     <div className="max-w-md mx-auto  space-y-4 bg-white min-h-dvh">
       <div className="flex relative top-4 w-[95%] ml-2 py-1 rounded-xl bg-gray-100 shadow-inner">
