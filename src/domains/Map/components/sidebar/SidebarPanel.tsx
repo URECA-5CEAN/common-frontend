@@ -55,6 +55,9 @@ interface SidebarPanelProps {
   setStartInput: Dispatch<SetStateAction<string>>;
   setEndInput: Dispatch<SetStateAction<string>>;
   setWayInput: Dispatch<SetStateAction<string>>;
+  setFocusField: Dispatch<SetStateAction<'start' | 'end' | number | null>>;
+  focusField: 'start' | 'end' | number | null;
+  isLoading: boolean;
 }
 
 export default function SidebarPanel({
@@ -90,6 +93,9 @@ export default function SidebarPanel({
   setStartInput,
   setEndInput,
   setWayInput,
+  setFocusField,
+  focusField,
+  isLoading,
 }: SidebarPanelProps) {
   const [userInfo, setUserInfo] = useState<UserInfoApi>();
   const token = localStorage.getItem('authToken');
@@ -176,16 +182,17 @@ export default function SidebarPanel({
             onReset={onReset}
             onNavigate={onNavigate}
             bookmarks={bookmarks}
-            openDetail={openDetail}
             goToStore={goToStore}
             openRoadDetail={openRoadDetail}
             setStartValue={setStartValue}
             setEndValue={setEndValue}
-            stores={stores}
             setStartInput={setStartInput}
             setEndInput={setEndInput}
             setWayInput={setWayInput}
             searchStores={searchStores}
+            onClose={onClose}
+            setFocusField={setFocusField}
+            focusField={focusField}
           />
         )}
         {index === 1 && panel.type === 'detail' && panel.item && (

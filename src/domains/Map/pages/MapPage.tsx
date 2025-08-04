@@ -44,9 +44,8 @@ import { extractBouns, type InternalBounds } from '../utils/extractBouns';
 import type { RouteItem } from '../components/sidebar/RoadSection';
 import { Coffee, ShoppingBag, ShoppingCart, Car } from 'lucide-react';
 import BenefitButton from '../components/BenefitButtons';
+import { useCurrentLocation } from '../hooks/useCurrentLoaction';
 import { useLocation, useNavigate } from 'react-router-dom';
-
-//bounds 타입에러 방지
 
 type CategoryType =
   | '음식점'
@@ -122,6 +121,7 @@ export interface LocationInfo {
   name: string;
   lat: number;
   lng: number;
+  recommendReason?: string;
 }
 
 export default function MapPage() {
@@ -131,7 +131,7 @@ export default function MapPage() {
   // Kakao Map 인스턴스
   const [map, setMap] = useState<kakao.maps.Map | null>(null);
   // 지도 중심 좌표
-  const [center, setCenter] = useState<LatLng>({ lat: 37.45, lng: 126.7 });
+  const [center, setCenter] = useState<LatLng>({ lat: 37.5, lng: 127 });
   // 내 위치 (Geolocation)
   const [myLocation, setMyLocation] = useState<LatLng | null>(null);
 
@@ -153,9 +153,9 @@ export default function MapPage() {
   const [mode, setMode] = useState<'default' | 'search'>('default');
   // 검색input
   const [searchInput, setSearchInput] = useState<string>('');
-  const [, setStartInput] = useState<string>('');
-  const [, setWayInput] = useState<string>('');
-  const [, setEndInput] = useState<string>('');
+  const [startInput, setStartInput] = useState<string>('');
+  const [wayInput, setWayInput] = useState<string>('');
+  const [endInput, setEndInput] = useState<string>('');
   // API로 불러온 매장 리스트
   const [searchStores, setSearchStores] = useState<StoreInfo[]>([]);
 
@@ -215,12 +215,22 @@ export default function MapPage() {
   const [waypoints, setWaypoints] = useState<LocationInfo[]>([]);
   //혜택 인증 모달
   const [isBenefitModalOpen, setIsBenefitModalOpen] = useState(false);
+
+  // 길찾기 input Focus
+  const [focusField, setFocusField] = useState<'start' | 'end' | number | null>(
+    null,
+  );
+  // 위치권한 여부
+  const { location, hasLocation, requestLocation } = useCurrentLocation();
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   //제휴처 조회 및 AI 제휴처 조회
   const searchStoresWithAI = useCallback(async () => {
     if (!map) return;
     const bounds = extractBouns(map);
     if (!bounds) return;
 
+    setIsLoading(true);
     try {
       // 1. 매장 목록 가져오기
       const storeList = await fetchStores({
@@ -228,8 +238,8 @@ export default function MapPage() {
         category: isCategory,
         benefit: selectedBenefit,
         ...bounds,
-        centerLat: center.lat,
-        centerLng: center.lng,
+        centerLat: center?.lat,
+        centerLng: center?.lng,
       });
 
       let finalList = [...storeList];
@@ -238,8 +248,8 @@ export default function MapPage() {
           keyword: debouncedKeyword,
           category: isCategory,
           ...bounds,
-          centerLat: center.lat,
-          centerLng: center.lng,
+          centerLat: center?.lat,
+          centerLng: center?.lng,
         });
 
         if (aiResult?.store?.id) {
@@ -267,6 +277,8 @@ export default function MapPage() {
     } catch (err) {
       console.error('매장 목록 로딩 실패:', err);
       setStores([]);
+    } finally {
+      setIsLoading(false);
     }
   }, [map, debouncedKeyword, isCategory, selectedBenefit]);
 
@@ -339,17 +351,14 @@ export default function MapPage() {
 
   // Geolocation API로 내 위치 가져오기
   useEffect(() => {
-    navigator.geolocation?.getCurrentPosition(
-      (pos) =>
-        setMyLocation({
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
-        }),
-      (err) => console.log('위치 권한 없음', err),
-      { enableHighAccuracy: true },
-    );
-  }, []);
+    requestLocation();
+  }, [requestLocation]);
 
+  useEffect(() => {
+    if (location && location.lat && location.lng) {
+      setMyLocation(location);
+    }
+  }, [location]);
   // 내 위치가 생기면 지도 중심으로 이동
   useEffect(() => {
     if (map && myLocation) {
@@ -402,8 +411,6 @@ export default function MapPage() {
     setSelectedCardId('');
     SetKeyword('');
     if (menu !== '길찾기') {
-      setStartValue({ name: '', lat: 0, lng: 0 });
-      setEndValue({ name: '', lat: 0, lng: 0 });
       setWaypoints([]);
       setSelectedRoute(null);
     }
@@ -451,6 +458,7 @@ export default function MapPage() {
             name: wp.name,
             lat: wp.lat,
             lng: wp.lng,
+            ...(wp.recommendReason && { recommendReason: wp.recommendReason }),
           }));
 
           setWaypoints(restoredWaypoints);
@@ -597,12 +605,26 @@ export default function MapPage() {
     [], // fetchSearchStores가 바깥에 고정이라면 의존성 없음
   );
 
+  //길찾기 입력시 키워드 검색 함수 호출
+  useEffect(() => {
+    if (focusField === 'start' && startInput.trim()) {
+      fetchAndSetSearchStores(startInput, '', '');
+    } else if (focusField === 'end' && endInput.trim()) {
+      fetchAndSetSearchStores(endInput, '', '');
+    } else if (typeof focusField === 'number' && wayInput.trim()) {
+      fetchAndSetSearchStores(wayInput, '', '');
+    } else {
+      setSearchStores([]);
+    }
+  }, [focusField, startInput, endInput, wayInput]);
+
   useEffect(() => {
     SetKeyword('');
     setSearchInput('');
     SetIsCategory('');
     setSelectedBenefit('');
   }, [mode]);
+  // 키워드 변경 함수
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
@@ -636,7 +658,7 @@ export default function MapPage() {
       {/* 사이드바 */}
       <aside className="relative top-[62px] md:top-[86px] mr-6 md:m-0  left-0 bottom-0 md:w-[420px] z-20 flex-shrink-0">
         <MapSidebar
-          stores={displayedStores}
+          stores={hasLocation ? displayedStores : []}
           panel={panel}
           openMenu={openMenu}
           openDetail={openDetail}
@@ -673,6 +695,9 @@ export default function MapPage() {
           setEndInput={setEndInput}
           setWayInput={setWayInput}
           setIsBenefitModalOpen={setIsBenefitModalOpen}
+          setFocusField={setFocusField}
+          focusField={focusField}
+          isLoading={isLoading}
         />
         {/* 내 위치 버튼 */}
         {map && myLocation && (
@@ -703,6 +728,7 @@ export default function MapPage() {
             onMapCreate={setMap}
             onCenterChanged={setCenter}
             selectedRoute={selectedRoute}
+            panel={panel}
             start={
               startValue.lat !== 0 && startValue.lng !== 0
                 ? { lat: startValue.lat, lng: startValue.lng }
@@ -716,46 +742,52 @@ export default function MapPage() {
             waypoints={waypoints.length > 0 ? waypoints : undefined}
           >
             {/* 2D 마커/오버레이 */}
-            {panel.type !== 'road' && (
-              <FilterMarker
-                hoveredMarkerId={hoveredId}
-                setHoveredMarkerId={setHoveredId}
-                map={map}
-                center={center}
-                containerRef={containerRef}
-                stores={displayedStores}
-                openDetail={openDetail}
-                onStartChange={onStartChange}
-                onEndChange={onEndChange}
-                toggleBookmark={toggleBookmark}
-                bookmarkIds={bookmarkIds}
-                selectedCardId={selectedCardId}
-                setSelectedCardId={setSelectedCardId}
-                goToStore={goToStore}
-              />
+            {panel.type !== 'road' &&
+              panel.menu !== '길찾기' &&
+              hasLocation && (
+                <FilterMarker
+                  hoveredMarkerId={hoveredId}
+                  setHoveredMarkerId={setHoveredId}
+                  map={map}
+                  center={center}
+                  containerRef={containerRef}
+                  stores={displayedStores}
+                  openDetail={openDetail}
+                  onStartChange={onStartChange}
+                  onEndChange={onEndChange}
+                  toggleBookmark={toggleBookmark}
+                  bookmarkIds={bookmarkIds}
+                  selectedCardId={selectedCardId}
+                  setSelectedCardId={setSelectedCardId}
+                  goToStore={goToStore}
+                />
+              )}
+            {panel.menu !== '길찾기' && (
+              <div className="absolute  w-full md:ml-10 ml-6 top-28 md:top-20 z-2  overflow-x-auto">
+                <CategorySlider
+                  Category={Object.keys(categoryIconMap) as CategoryType[]}
+                  isCategory={isCategory}
+                  changeCategory={changeCategory}
+                  categoryIconMap={categoryIconMap}
+                />
+                <DeskTopBtns
+                  Category={Object.keys(categoryIconMap) as CategoryType[]}
+                  isCategory={isCategory}
+                  changeCategory={changeCategory}
+                  categoryIconMap={categoryIconMap}
+                />
+              </div>
             )}
-            <div className="absolute  w-full md:ml-10 ml-6 top-28 md:top-20 z-2  overflow-x-auto">
-              <CategorySlider
-                Category={Object.keys(categoryIconMap) as CategoryType[]}
-                isCategory={isCategory}
-                changeCategory={changeCategory}
-                categoryIconMap={categoryIconMap}
-              />
-              <DeskTopBtns
-                Category={Object.keys(categoryIconMap) as CategoryType[]}
-                isCategory={isCategory}
-                changeCategory={changeCategory}
-                categoryIconMap={categoryIconMap}
-              />
-            </div>
-            <div className="absolute  w-full md:ml-10 ml-6 top-28 md:top-[120px] z-2  overflow-x-auto">
-              <BenefitButton
-                benefitList={['쿠폰', '할인', '증정']}
-                selected={selectedBenefit}
-                onSelect={setSelectedBenefit}
-                benefitIconMap={benefitIconMap}
-              />
-            </div>
+            {panel.menu !== '길찾기' && (
+              <div className="absolute  w-full md:ml-10 ml-6 top-28 md:top-[120px] z-2  overflow-x-auto">
+                <BenefitButton
+                  benefitList={['쿠폰', '할인', '증정']}
+                  selected={selectedBenefit}
+                  onSelect={setSelectedBenefit}
+                  benefitIconMap={benefitIconMap}
+                />
+              </div>
+            )}
             <div className="flex md:hidden  absolute top-[68px] left-6 right-6   bg-white z-2 items-center border border-gray-200 rounded-xl px-2 py-1 ">
               <Search />
               <DebouncedInput
@@ -765,7 +797,13 @@ export default function MapPage() {
                 placeholder="검색"
               />
             </div>
-
+            {!hasLocation && (
+              <div className="text-red-500 p-2">
+                위치 권한이 허용되지 않았습니다.
+                <br />
+                <button onClick={requestLocation}>권한 다시 요청</button>
+              </div>
+            )}
             <BenefitModal
               isBenefitModalOpen={isBenefitModalOpen}
               setIsBenefitModalOpen={setIsBenefitModalOpen}

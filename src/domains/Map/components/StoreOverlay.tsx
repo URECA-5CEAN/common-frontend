@@ -7,6 +7,7 @@ import { useBenefitBrands } from '../hooks/useBenefitBrands';
 import type { LocationInfo } from '../pages/MapPage';
 import RoadviewViewer from './RoadviewView';
 import { useState } from 'react';
+import { Ring } from 'ldrs/react';
 
 interface OverlayProps {
   lat: number;
@@ -32,7 +33,8 @@ const StoreOverlay = ({
     error,
   } = useBenefitBrands(store.brandName);
   const [isLoad, setIsLoad] = useState<boolean>(false);
-  if (isLoading) return 'Loading...';
+  if (isLoading)
+    return <Ring size="24" stroke="3" bgOpacity="0" speed="2" color="white" />;
   if (isError) return `Error: ${error.message}`;
   if (benefits.length === 0) return '해당 브랜드 혜택이 없습니다.';
   return (

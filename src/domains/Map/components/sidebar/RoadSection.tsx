@@ -29,6 +29,7 @@ import type { LatLng } from '../../KakaoMapContainer';
 import OnOffBtn from '../OnOffBtn';
 import DebouncedInput from '../DebouncedInput';
 import clsx from 'clsx';
+import RouteLine from '../RouteLine';
 export interface TrafficInfo {
   color: string;
   label: string;
@@ -63,12 +64,13 @@ export interface RouteItem {
     traffic_state: number;
     path?: LatLng[];
   }[];
-
+  recommendReason?: string;
   section?: RouteSection[];
+  scenario?: string;
+  bookmark?: boolean;
 }
 
 interface RouteInputProps {
-  openDetail: (store: StoreInfo) => void;
   startValue: LocationInfo;
   endValue: LocationInfo;
   onSwap?: () => void;
@@ -79,12 +81,14 @@ interface RouteInputProps {
   openRoadDetail: (route: RouteItem) => void;
   setStartValue: Dispatch<SetStateAction<LocationInfo>>;
   setEndValue: Dispatch<SetStateAction<LocationInfo>>;
-  stores: StoreInfo[];
 
   setStartInput: Dispatch<SetStateAction<string>>;
   setEndInput: Dispatch<SetStateAction<string>>;
   setWayInput: Dispatch<SetStateAction<string>>;
   searchStores: StoreInfo[];
+  onClose: (idx: number) => void;
+  setFocusField: Dispatch<SetStateAction<'start' | 'end' | number | null>>;
+  focusField: 'start' | 'end' | number | null;
 }
 type ViewMode = 'bookmark' | 'saved' | 'route';
 export default function RoadSection({
@@ -94,16 +98,16 @@ export default function RoadSection({
   onReset,
   bookmarks,
   goToStore,
-  openDetail,
   openRoadDetail,
   setStartValue,
   setEndValue,
-  stores,
-
   setStartInput,
   setEndInput,
   setWayInput,
   searchStores,
+  onClose,
+  setFocusField,
+  focusField,
 }: RouteInputProps) {
   const [showRecent, setShowRecent] = useState<boolean>(false);
   const [viewmode, setViewMode] = useState<ViewMode>('saved');
@@ -112,16 +116,12 @@ export default function RoadSection({
   const [savedRoutes, setSavedRoutes] = useState<RouteItem[]>([]);
   const [recentRoutes, setRecentRoutes] = useState<RouteItem[]>([]);
   const [waypoints, setWaypoints] = useState<LocationInfo[]>([]);
-  const [focusField, setFocusField] = useState<'start' | 'end' | number | null>(
-    null,
-  );
   const [Roadmode, setRoadMode] = useState<'default' | 'ai'>('default');
   const [scenario, setScenario] = useState<string>('');
   const keywordRequire =
     focusField !== null &&
-    stores.length > 0 &&
-    (startValue.name.length > 0 ||
-      endValue.name.length > 0 ||
+    ((focusField === 'start' && startValue.name.length > 0) ||
+      (focusField === 'end' && endValue.name.length > 0) ||
       (typeof focusField === 'number' &&
         waypoints[focusField]?.name.length > 0));
   // 리스트 토글
@@ -130,6 +130,7 @@ export default function RoadSection({
   };
   const handleNavigate = async () => {
     try {
+      onClose(1);
       const body: DirectionRequestBody = {
         origin: {
           name: startValue?.name,
@@ -143,13 +144,12 @@ export default function RoadSection({
           y: endValue.lat,
           angle: 270,
         },
-        ...(Roadmode === 'default' && {
-          waypoints: waypoints.map((w) => ({
-            name: w.name,
-            x: w.lng,
-            y: w.lat,
-          })),
-        }),
+        waypoints: waypoints.map((w) => ({
+          name: w.name,
+          x: w.lng,
+          y: w.lat,
+        })),
+
         priority: 'RECOMMEND',
         car_fuel: 'GASOLINE',
         car_hipass: false,
@@ -176,13 +176,17 @@ export default function RoadSection({
     }
   };
 
+  const refreshSavedRoutes = async () => {
+    const bookmarks = await fetchDirectionBookmarks();
+    const converted = bookmarks.map(convertBookmarkToDirectionResponse);
+    const routeItems = converted.flatMap((res) => DirecitonRoot(res));
+    setSavedRoutes(routeItems);
+  };
+
   useEffect(() => {
     const fetchBookmark = async () => {
       try {
-        const bookmarks = await fetchDirectionBookmarks();
-        const converted = bookmarks.map(convertBookmarkToDirectionResponse);
-        const routeItems = converted.flatMap((res) => DirecitonRoot(res));
-        setSavedRoutes(routeItems);
+        refreshSavedRoutes();
       } catch (error) {
         console.log(error);
       }
@@ -210,6 +214,7 @@ export default function RoadSection({
             (bookmark) =>
               bookmark.routes?.[0]?.summary && bookmark.routes?.[0]?.sections,
           )
+          .reverse()
           .map((bookmark) => convertBookmarkToDirectionResponse(bookmark));
         const routeItems = convertedResponses.flatMap((r) => DirecitonRoot(r));
         setRecentRoutes(routeItems);
@@ -224,8 +229,61 @@ export default function RoadSection({
   const deleteRoutes = async (id: string) => {
     try {
       await deleteDirectionPath(id);
+      alert('최근 경로 삭제');
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const handleBookmarkClick = (bookmark: StoreInfo) => {
+    // 이미 등록된 제휴처 인지 확인
+    const isAlready =
+      startValue?.name === bookmark.name ||
+      endValue?.name === bookmark.name ||
+      waypoints.some((w) => w.name === bookmark.name);
+
+    if (isAlready) return; // 중복이면 무시
+
+    if (!startValue?.name) {
+      setStartValue({
+        name: bookmark.name,
+        lat: bookmark.latitude,
+        lng: bookmark.longitude,
+      });
+      return;
+    }
+    if (waypoints.length > 0) {
+      //빈 경유지 슬롯 우선
+      const emptyIdx = waypoints.findIndex((w) => !w.name);
+      if (emptyIdx !== -1) {
+        const updated = [...waypoints];
+        updated[emptyIdx] = {
+          name: bookmark.name,
+          lat: bookmark.latitude,
+          lng: bookmark.longitude,
+        };
+        setWaypoints(updated);
+        return;
+      }
+      // 도착지가 비었으면 도착지로
+      if (!endValue?.name) {
+        setEndValue({
+          name: bookmark.name,
+          lat: bookmark.latitude,
+          lng: bookmark.longitude,
+        });
+      }
+      return;
+    }
+
+    // 경유지가 아예 없을 때는 바로 도착지로
+    if (!endValue?.name) {
+      setEndValue({
+        name: bookmark.name,
+        lat: bookmark.latitude,
+        lng: bookmark.longitude,
+      });
+      return;
     }
   };
 
@@ -347,39 +405,41 @@ export default function RoadSection({
 
           {keywordRequire && (
             <ul className="mt-2  border border-gray-200 rounded-md shadow scrollbar-custom bg-white max-h-72 overflow-y-auto">
-              {searchStores.map((store) => (
-                <li
-                  key={store.id}
-                  className="p-2 border-b border-b-gray-200 hover:bg-gray-100 cursor-pointer"
-                  onClick={() => {
-                    const selectedLocation: LocationInfo = {
-                      name: store.name,
-                      lat: store.latitude,
-                      lng: store.longitude,
-                    };
+              {Array.isArray(searchStores) && searchStores.length > 0
+                ? searchStores.map((store) => (
+                    <li
+                      key={store.id}
+                      className="p-2 border-b border-b-gray-200 hover:bg-gray-100 cursor-pointer"
+                      onClick={() => {
+                        const selectedLocation: LocationInfo = {
+                          name: store.name,
+                          lat: store.latitude,
+                          lng: store.longitude,
+                        };
 
-                    if (focusField === 'start') {
-                      setStartValue(selectedLocation);
-                    } else if (focusField === 'end') {
-                      setEndValue(selectedLocation);
-                    } else if (typeof focusField === 'number') {
-                      const updated = [...waypoints];
-                      updated[focusField] = selectedLocation;
-                      setWaypoints(updated);
-                    }
-                    setFocusField(null); // 선택 후 닫기
-                  }}
-                >
-                  <div className="flex flex-col">
-                    <span className="font-medium text-sm text-gray-800">
-                      {store.name}
-                    </span>
-                    <span className="text-xs text-gray-500">
-                      {store.address}
-                    </span>
-                  </div>
-                </li>
-              ))}
+                        if (focusField === 'start') {
+                          setStartValue(selectedLocation);
+                        } else if (focusField === 'end') {
+                          setEndValue(selectedLocation);
+                        } else if (typeof focusField === 'number') {
+                          const updated = [...waypoints];
+                          updated[focusField] = selectedLocation;
+                          setWaypoints(updated);
+                        }
+                        setFocusField(null); // 선택 후 닫기
+                      }}
+                    >
+                      <div className="flex flex-col">
+                        <span className="font-medium text-sm text-gray-800">
+                          {store.name}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {store.address}
+                        </span>
+                      </div>
+                    </li>
+                  ))
+                : null}
             </ul>
           )}
         </div>
@@ -452,8 +512,8 @@ export default function RoadSection({
             <StarListItem
               bookmark={bookmark}
               key={bookmark.id}
+              onRoadClick={() => handleBookmarkClick(bookmark)}
               onCenter={() => goToStore(bookmark)}
-              openDetail={() => openDetail(bookmark)}
             />
           ))}
         </div>
@@ -463,23 +523,31 @@ export default function RoadSection({
       {viewmode === 'saved' && (
         <div className="space-y-2 px-2">
           <p className="text-xl font-semibold text-gray-600">저장한 경로</p>
-          <ul className="space-y-1">
-            {savedRoutes &&
-              savedRoutes.map((route, idx) => (
+          {!savedRoutes || savedRoutes.length === 0 ? (
+            <div className="py-4 text-center text-gray-400 text-sm space-y-1">
+              <p>저장된 경로가 없어요!</p>
+              {Roadmode === 'default' && (
+                <>
+                  <p>AI 길찾기를 통해 경로 추천 받고 저장해봐요!</p>
+                  <Button size="sm" onClick={() => setRoadMode('ai')}>
+                    AI 길찾기 이동하기
+                  </Button>
+                </>
+              )}
+            </div>
+          ) : (
+            <ul className="space-y-1">
+              {savedRoutes.map((route, idx) => (
                 <li
                   key={`${route.directionid}-${idx}`}
-                  className="flex cursor-pointer items-center justify-between px-3 py-2 bg-gray-50 rounded-full"
+                  className="flex cursor-pointer items-center justify-between px-3 py-2 bg-white rounded-2xl  hover:bg-primaryGreen-40 border border-white hover:border-primaryGreen-80"
                   onClick={() => openRoadDetail(route)}
                 >
-                  <div className="flex items-center space-x-2 overflow-hidden">
-                    <span className="text-sm font-medium text-gray-800 truncate max-w-[250px]">
-                      {route.from}
-                    </span>
-                    <span className="text-gray-400">→</span>
-                    <span className="text-sm font-medium text-gray-800 truncate max-w-[250px]">
-                      {route.to}
-                    </span>
-                  </div>
+                  <RouteLine
+                    from={route.from}
+                    waypoints={route.waypoints?.map((w) => w.name) || []}
+                    to={route.to}
+                  />
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -494,9 +562,11 @@ export default function RoadSection({
                   </button>
                 </li>
               ))}
-          </ul>
+            </ul>
+          )}
         </div>
       )}
+
       {/* 최근 경로 토글 */}
       {viewmode === 'saved' && (
         <div className="space-y-2 px-2">
@@ -506,28 +576,23 @@ export default function RoadSection({
           </div>
           {showRecent && (
             <ul className="space-y-1">
-              {recentRoutes.map((route) => (
+              {recentRoutes.map((route, idx) => (
                 <li
-                  key={route.directionid}
-                  className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-full cursor-pointer"
+                  key={`${route.directionid}-${idx}`}
+                  className="flex cursor-pointer items-center justify-between px-3 py-2 bg-white rounded-2xl hover:bg-primaryGreen-40 border border-white hover:border-primaryGreen-80"
                   onClick={() => openRoadDetail(route)}
                 >
-                  <div className="flex items-center space-x-2 overflow-hidden">
-                    <span className="text-sm font-medium text-gray-800 truncate max-w-[250px]">
-                      {route.from}
-                    </span>
-                    <span className="text-gray-400">→</span>
-                    <span className="text-sm font-medium text-gray-800 truncate max-w-[250px]">
-                      {route.to}
-                    </span>
-                  </div>
+                  <RouteLine
+                    from={route.from}
+                    waypoints={route.waypoints?.map((w) => w.name) || []}
+                    to={route.to}
+                  />
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       setRecentRoutes((s) =>
                         s.filter((x) => x.directionid !== route.directionid),
                       );
-
                       deleteRoutes(route.directionid);
                     }}
                     className="p-1 text-gray-400 hover:text-red-500"
@@ -550,6 +615,7 @@ export default function RoadSection({
               onClick={() => openRoadDetail(route)}
               showScenario={Roadmode === 'ai'}
               scenario={scenario}
+              refreshSavedRoutes={refreshSavedRoutes}
             />
           ))}
         </div>

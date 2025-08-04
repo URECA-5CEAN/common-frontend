@@ -68,6 +68,9 @@ interface SideBarProps {
   setEndInput: Dispatch<SetStateAction<string>>;
   setWayInput: Dispatch<SetStateAction<string>>;
   setIsBenefitModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setFocusField: Dispatch<SetStateAction<'start' | 'end' | number | null>>;
+  focusField: 'start' | 'end' | number | null;
+  isLoading: boolean;
 }
 function MapSidebar({
   stores,
@@ -107,6 +110,9 @@ function MapSidebar({
   setEndInput,
   setWayInput,
   setIsBenefitModalOpen,
+  setFocusField,
+  focusField,
+  isLoading,
 }: SideBarProps) {
   if (!panel) return;
 
@@ -167,6 +173,9 @@ function MapSidebar({
             setStartInput={setStartInput}
             setEndInput={setEndInput}
             setWayInput={setWayInput}
+            setFocusField={setFocusField}
+            focusField={focusField}
+            isLoading={isLoading}
           />
 
           {/* 상세 패널 (panel.type이 'detail'일 때만) */}
@@ -206,6 +215,9 @@ function MapSidebar({
                   setStartInput={setStartInput}
                   setEndInput={setEndInput}
                   setWayInput={setWayInput}
+                  setFocusField={setFocusField}
+                  focusField={focusField}
+                  isLoading={isLoading}
                 />
               </Suspense>
             )}
@@ -256,6 +268,9 @@ function MapSidebar({
                 setStartInput={setStartInput}
                 setEndInput={setEndInput}
                 setWayInput={setWayInput}
+                setFocusField={setFocusField}
+                focusField={focusField}
+                isLoading={isLoading}
               />
             </BottomSheet>
           )}
@@ -302,6 +317,9 @@ function MapSidebar({
                   setStartInput={setStartInput}
                   setEndInput={setEndInput}
                   setWayInput={setWayInput}
+                  setFocusField={setFocusField}
+                  focusField={focusField}
+                  isLoading={isLoading}
                 />
               </BottomSheet>
             </Suspense>
@@ -349,6 +367,9 @@ function MapSidebar({
                   setStartInput={setStartInput}
                   setEndInput={setEndInput}
                   setWayInput={setWayInput}
+                  setFocusField={setFocusField}
+                  focusField={focusField}
+                  isLoading={isLoading}
                 />
               </BottomSheet>
             </Suspense>
