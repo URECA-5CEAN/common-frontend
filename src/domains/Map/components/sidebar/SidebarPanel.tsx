@@ -191,6 +191,7 @@ export default function SidebarPanel({
             setEndInput={setEndInput}
             setWayInput={setWayInput}
             searchStores={searchStores}
+            onClose={onClose}
           />
         )}
         {index === 1 && panel.type === 'detail' && panel.item && (

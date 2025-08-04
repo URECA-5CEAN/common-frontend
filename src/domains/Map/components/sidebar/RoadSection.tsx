@@ -84,6 +84,7 @@ interface RouteInputProps {
   setEndInput: Dispatch<SetStateAction<string>>;
   setWayInput: Dispatch<SetStateAction<string>>;
   searchStores: StoreInfo[];
+  onClose: (idx: number) => void;
 }
 type ViewMode = 'bookmark' | 'saved' | 'route';
 export default function RoadSection({
@@ -101,6 +102,7 @@ export default function RoadSection({
   setEndInput,
   setWayInput,
   searchStores,
+  onClose,
 }: RouteInputProps) {
   const [showRecent, setShowRecent] = useState<boolean>(false);
   const [viewmode, setViewMode] = useState<ViewMode>('saved');
@@ -127,6 +129,7 @@ export default function RoadSection({
   };
   const handleNavigate = async () => {
     try {
+      onClose(1);
       const body: DirectionRequestBody = {
         origin: {
           name: startValue?.name,
