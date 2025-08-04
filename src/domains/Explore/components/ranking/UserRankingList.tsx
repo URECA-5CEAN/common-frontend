@@ -133,7 +133,7 @@ const UserRankingList = ({ rankList }: RankingListProps) => {
       )}
 
       {/* 전체 랭킹 */}
-      <ul className="mt-2 sm:mt-4 bg-white">
+      <ul>
         {rankList.map((user, index) => (
           <RankRow
             key={index}
