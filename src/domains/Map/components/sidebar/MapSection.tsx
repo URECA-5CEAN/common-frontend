@@ -116,31 +116,9 @@ export default function MapSection({
         </div>
       )}
 
-      {keywordRequire && (
-        <ul className="mt-2 border border-gray-200 rounded-md shadow bg-white max-h-72 scrollbar-custom overflow-y-auto">
-          {stores.map((store) => (
-            <li
-              key={store.id}
-              className="p-2 border-b border-b-gray-200 hover:bg-gray-100 cursor-pointer"
-              onClick={() => {
-                SetKeyword(store.name);
-              }}
-            >
-              <div className="flex justify-between items-center">
-                <div className="flex flex-col">
-                  <span className="font-medium text-sm text-gray-800">
-                    {store.name}
-                  </span>
-                  <span className="text-xs text-gray-500">{store.address}</span>
-                </div>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
       {/* 리스트 아이템 반복 */}
       {status === 'loading' || status === 'error' ? (
-        // 1. 위치 권한이 없으면 무조건 이 블록만!
+        //위치 권한이 없으면 무조건 이 블록만!
         <div className="text-gray-400 py-10 text-[14px] text-center flex flex-col justify-center items-center">
           <p>위치 권한이 필요합니다.</p>
           <p>브라우저 설정에서 위치 권한을 허용해 주세요.</p>
@@ -148,12 +126,12 @@ export default function MapSection({
           <button onClick={requestLocation}>위치 권한 요청</button>
         </div>
       ) : isLoading ? (
-        // 2. 위치 권한은 있는데, 로딩중이면 스피너
+        // 위치 권한은 있는데, 로딩중이면 스피너
         <div className="flex justify-center items-center py-10">
           <Ring size="48" stroke="3" bgOpacity="0" speed="2" color="#6fc3d1" />
         </div>
-      ) : modeStore && modeStore.length !== 0 ? (
-        // 3. 위치 권한 있고, 매장 있으면 리스트
+      ) : Array.isArray(modeStore) && modeStore.length !== 0 ? (
+        // 위치 권한 있고, 매장 있으면 리스트
         modeStore.map((store, idx) => (
           <StoreCard
             key={store.id?.trim() || `unknown-${store.name}-${idx}`}
@@ -168,7 +146,7 @@ export default function MapSection({
           />
         ))
       ) : (
-        // 4. 위치 권한 있고, 매장도 없으면 없음 메시지
+        // 위치 권한 있고, 매장도 없으면 없음 메시지
         <div className="text-gray-400 py-10 text-center flex flex-col justify-center items-center">
           <p>조건에 맞는 매장을 찾을 수 없어요.</p>
           <p>검색 조건을 변경해 다시 시도해보세요.</p>
