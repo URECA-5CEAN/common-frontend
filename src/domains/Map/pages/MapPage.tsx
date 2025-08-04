@@ -35,7 +35,6 @@ import BenefitModal from '../components/BenefitModal';
 import type { BottomSheetHandle } from '../components/sidebar/BottomSheet';
 import DebouncedInput from '../components/DebouncedInput';
 import { useDebounce } from 'react-use';
-import CategorySlider from '../components/CategorySlider';
 import DeskTopBtns from '../components/DeskTopBtns';
 import MyLocationBtn from '../components/MyLocationBtn';
 import SearchHereBtn from '../components/SearchHearBtn';
@@ -46,8 +45,9 @@ import { Coffee, ShoppingBag, ShoppingCart, Car } from 'lucide-react';
 import BenefitButton from '../components/BenefitButtons';
 import { useCurrentLocation } from '../hooks/useCurrentLoaction';
 import { useLocation, useNavigate } from 'react-router-dom';
+import CategoryBenefitSlider from '../components/CategoryBenefitSlider';
 
-type CategoryType =
+export type CategoryType =
   | '음식점'
   | '카페'
   | '편의점'
@@ -796,11 +796,15 @@ export default function MapPage() {
               )}
             {panel.menu !== '길찾기' && (
               <div className="absolute  w-full md:ml-10 ml-6 top-28 md:top-20 z-2  overflow-x-auto">
-                <CategorySlider
-                  Category={Object.keys(categoryIconMap) as CategoryType[]}
-                  isCategory={isCategory}
-                  changeCategory={changeCategory}
+                <CategoryBenefitSlider
+                  categoryList={Object.keys(categoryIconMap) as CategoryType[]}
+                  selectedCategory={isCategory}
+                  onCategoryChange={changeCategory}
                   categoryIconMap={categoryIconMap}
+                  benefitList={['쿠폰', '할인', '증정']}
+                  selectedBenefit={selectedBenefit}
+                  onBenefitChange={setSelectedBenefit}
+                  benefitIconMap={benefitIconMap}
                 />
                 <DeskTopBtns
                   Category={Object.keys(categoryIconMap) as CategoryType[]}
@@ -811,7 +815,7 @@ export default function MapPage() {
               </div>
             )}
             {panel.menu !== '길찾기' && (
-              <div className="absolute  w-full md:ml-10 ml-6 top-28 md:top-[120px] z-2  overflow-x-auto">
+              <div className="absolute  w-full h-8 md:ml-10 ml-6 top-[150px] md:top-[120px] z-2  overflow-x-auto">
                 <BenefitButton
                   benefitList={['쿠폰', '할인', '증정']}
                   selected={selectedBenefit}

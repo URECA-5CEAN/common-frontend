@@ -20,7 +20,7 @@ export default function SidebarMenu({
   setIsOpen,
 }: SidebarMenuProps) {
   return (
-    <div className="fixed top-28 md:top-16 right-6 md:left-0  md:bottom-0 md:w-[90px] md:bg-gray-50 md:shadow text-center space-y-2 pt-10 z-1 ">
+    <div className="fixed top-28 md:top-16 right-4 md:left-0  md:bottom-0 md:w-[90px] md:bg-gray-50 md:shadow text-center space-y-2 pt-10 z-1 ">
       {menus.map((menu, idx) => (
         <button
           key={`${menu}-${idx}`}
