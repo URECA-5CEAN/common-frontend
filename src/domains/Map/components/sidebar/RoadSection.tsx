@@ -182,6 +182,7 @@ export default function RoadSection({
         const bookmarks = await fetchDirectionBookmarks();
         const converted = bookmarks.map(convertBookmarkToDirectionResponse);
         const routeItems = converted.flatMap((res) => DirecitonRoot(res));
+        console.log(routeItems);
         setSavedRoutes(routeItems);
       } catch (error) {
         console.log(error);

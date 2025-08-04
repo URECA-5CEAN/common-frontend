@@ -266,8 +266,8 @@ export interface DirectionAIResponse {
     trans_id: string;
     routes: RouteAI[];
     scenario: string;
+    bookmark?: boolean;
   };
-  bookmark?: boolean;
 }
 
 export interface RouteAI {

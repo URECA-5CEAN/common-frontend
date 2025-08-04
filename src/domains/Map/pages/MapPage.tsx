@@ -740,28 +740,32 @@ export default function MapPage() {
                 goToStore={goToStore}
               />
             )}
-            <div className="absolute  w-full md:ml-10 ml-6 top-28 md:top-20 z-2  overflow-x-auto">
-              <CategorySlider
-                Category={Object.keys(categoryIconMap) as CategoryType[]}
-                isCategory={isCategory}
-                changeCategory={changeCategory}
-                categoryIconMap={categoryIconMap}
-              />
-              <DeskTopBtns
-                Category={Object.keys(categoryIconMap) as CategoryType[]}
-                isCategory={isCategory}
-                changeCategory={changeCategory}
-                categoryIconMap={categoryIconMap}
-              />
-            </div>
-            <div className="absolute  w-full md:ml-10 ml-6 top-28 md:top-[120px] z-2  overflow-x-auto">
-              <BenefitButton
-                benefitList={['쿠폰', '할인', '증정']}
-                selected={selectedBenefit}
-                onSelect={setSelectedBenefit}
-                benefitIconMap={benefitIconMap}
-              />
-            </div>
+            {panel.menu !== '길찾기' && (
+              <div className="absolute  w-full md:ml-10 ml-6 top-28 md:top-20 z-2  overflow-x-auto">
+                <CategorySlider
+                  Category={Object.keys(categoryIconMap) as CategoryType[]}
+                  isCategory={isCategory}
+                  changeCategory={changeCategory}
+                  categoryIconMap={categoryIconMap}
+                />
+                <DeskTopBtns
+                  Category={Object.keys(categoryIconMap) as CategoryType[]}
+                  isCategory={isCategory}
+                  changeCategory={changeCategory}
+                  categoryIconMap={categoryIconMap}
+                />
+              </div>
+            )}
+            {panel.menu !== '길찾기' && (
+              <div className="absolute  w-full md:ml-10 ml-6 top-28 md:top-[120px] z-2  overflow-x-auto">
+                <BenefitButton
+                  benefitList={['쿠폰', '할인', '증정']}
+                  selected={selectedBenefit}
+                  onSelect={setSelectedBenefit}
+                  benefitIconMap={benefitIconMap}
+                />
+              </div>
+            )}
             <div className="flex md:hidden  absolute top-[68px] left-6 right-6   bg-white z-2 items-center border border-gray-200 rounded-xl px-2 py-1 ">
               <Search />
               <DebouncedInput
