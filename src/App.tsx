@@ -34,6 +34,7 @@ import dolphinError from '@/assets/image/dolphin-error.svg';
 
 import { Toaster } from 'react-hot-toast';
 import ScrollToTop from '@/domains/Auth/components/ScrollToTop';
+import RewardPage from '@/domains/MyPage/pages/RewardPage';
 
 const AppLayout = () => {
   return (
@@ -113,6 +114,7 @@ function App() {
 
             {/* 인증 필요 없는 explore 메뉴 */}
             <Route element={<SidebarLayout />}>
+              <Route path="/explore/reward" element={<RewardPage />} />
               <Route path="/explore/rankings" element={<RankingPage />} />
               <Route path="/explore/share" element={<SharePage />} />
               <Route

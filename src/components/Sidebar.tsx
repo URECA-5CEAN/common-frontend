@@ -6,6 +6,7 @@ import collectionIcon from '@/assets/icons/collection_icon.png';
 import missionsIcon from '@/assets/icons/missions_icon.png';
 import statisticsIcon from '@/assets/icons/statistics_icon.png';
 import favoritesIcon from '@/assets/icons/favorites_icon.png';
+import rewardIcon from '@/assets/icons/reward_icon.png';
 import { useUnsavedChanges } from '@/contexts/UnsavedChangesContext';
 
 // 타입 정의
@@ -18,6 +19,12 @@ interface MenuItem {
 
 // 상수 정의
 const EXPLORE_MENU_ITEMS: MenuItem[] = [
+  {
+    to: '/explore/reward',
+    icon: rewardIcon,
+    label: '기프티콘',
+    alt: '보상 아이콘',
+  },
   {
     to: '/explore/rankings',
     icon: rankingIcon,
