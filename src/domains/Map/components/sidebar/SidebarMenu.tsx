@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import type { MenuType } from './MapSidebar';
+import type { Dispatch, SetStateAction } from 'react';
 
 interface SidebarMenuProps {
   menus: MenuType[];
@@ -7,6 +8,7 @@ interface SidebarMenuProps {
   activeMenu?: MenuType; //선택된 메뉴 애니메이션 위해
   onSelect: (menu: MenuType) => void; //메뉴선택
   setIsBenefitModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function SidebarMenu({
@@ -15,17 +17,22 @@ export default function SidebarMenu({
   activeMenu,
   onSelect,
   setIsBenefitModalOpen,
+  setIsOpen,
 }: SidebarMenuProps) {
   return (
     <div className="fixed top-28 md:top-16 right-6 md:left-0  md:bottom-0 md:w-[90px] md:bg-gray-50 md:shadow text-center space-y-2 pt-10 z-1 ">
       {menus.map((menu, idx) => (
         <button
           key={`${menu}-${idx}`}
-          onClick={
-            menu === '혜택인증'
-              ? () => setIsBenefitModalOpen(true)
-              : () => onSelect(menu)
-          }
+          onClick={() => {
+            if (menu === '혜택인증') {
+              setIsBenefitModalOpen(true);
+            }
+            if (menu === '즐겨찾기') {
+              setIsOpen(true);
+            }
+            onSelect(menu);
+          }}
           className={clsx(
             'flex flex-col items-center justify-center',
             'transition-transform duration-150 ease-out',

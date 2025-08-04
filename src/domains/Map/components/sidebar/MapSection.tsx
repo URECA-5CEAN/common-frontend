@@ -60,7 +60,6 @@ export default function MapSection({
   const modeStore = mode === 'default' ? stores : searchStores;
   const { status, requestLocation } = useCurrentLocation();
 
-  console.log(status);
   return (
     <div className="px-2 space-y-8 h-screen ">
       <div className="flex relative top-4 py-1 rounded-sm mx-auto">

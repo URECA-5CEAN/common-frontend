@@ -58,6 +58,8 @@ interface SidebarPanelProps {
   setFocusField: Dispatch<SetStateAction<'start' | 'end' | number | null>>;
   focusField: 'start' | 'end' | number | null;
   isLoading: boolean;
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
+  isOpen: boolean;
 }
 
 export default function SidebarPanel({
@@ -96,6 +98,8 @@ export default function SidebarPanel({
   setFocusField,
   focusField,
   isLoading,
+  setIsOpen,
+  isOpen,
 }: SidebarPanelProps) {
   const [userInfo, setUserInfo] = useState<UserInfoApi>();
   const token = localStorage.getItem('authToken');
@@ -173,6 +177,8 @@ export default function SidebarPanel({
             bookmarkIds={bookmarkIds}
             selectedCardId={selectedCardId}
             goToStore={goToStore}
+            isOpen={isOpen}
+            setIsOpen={setIsOpen}
           />
         )}
         {index === 0 && panel.menu === '길찾기' && (

@@ -2,6 +2,7 @@ import {
   lazy,
   memo,
   Suspense,
+  useState,
   type ChangeEventHandler,
   type Dispatch,
   type SetStateAction,
@@ -114,8 +115,7 @@ function MapSidebar({
   focusField,
   isLoading,
 }: SideBarProps) {
-  if (!panel) return;
-
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   //메뉴 선택 시 openMenu 호출 + 시트를 middle 위치로 스냅
   const onMenuSelect = (menu: MenuType) => {
     openMenu(menu);
@@ -124,7 +124,7 @@ function MapSidebar({
   const onCloseSheet = () => {
     sheetDetail.current?.snapTo('bottom');
   };
-
+  if (!panel) return;
   return (
     <>
       {/* 최상단 메뉴 */}
@@ -134,6 +134,7 @@ function MapSidebar({
         activeMenu={panel?.menu}
         onSelect={onMenuSelect}
         setIsBenefitModalOpen={setIsBenefitModalOpen}
+        setIsOpen={setIsOpen}
       />
 
       <div className="hidden md:block">
@@ -176,6 +177,8 @@ function MapSidebar({
             setFocusField={setFocusField}
             focusField={focusField}
             isLoading={isLoading}
+            setIsOpen={setIsOpen}
+            isOpen={isOpen}
           />
 
           {/* 상세 패널 (panel.type이 'detail'일 때만) */}
@@ -218,6 +221,8 @@ function MapSidebar({
                   setFocusField={setFocusField}
                   focusField={focusField}
                   isLoading={isLoading}
+                  setIsOpen={setIsOpen}
+                  isOpen={isOpen}
                 />
               </Suspense>
             )}
@@ -271,6 +276,8 @@ function MapSidebar({
                 setFocusField={setFocusField}
                 focusField={focusField}
                 isLoading={isLoading}
+                setIsOpen={setIsOpen}
+                isOpen={isOpen}
               />
             </BottomSheet>
           )}
@@ -320,6 +327,8 @@ function MapSidebar({
                   setFocusField={setFocusField}
                   focusField={focusField}
                   isLoading={isLoading}
+                  setIsOpen={setIsOpen}
+                  isOpen={isOpen}
                 />
               </BottomSheet>
             </Suspense>
@@ -370,6 +379,8 @@ function MapSidebar({
                   setFocusField={setFocusField}
                   focusField={focusField}
                   isLoading={isLoading}
+                  setIsOpen={setIsOpen}
+                  isOpen={isOpen}
                 />
               </BottomSheet>
             </Suspense>

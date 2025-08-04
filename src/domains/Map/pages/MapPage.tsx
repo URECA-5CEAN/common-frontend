@@ -653,7 +653,6 @@ export default function MapPage() {
     }
   }, [locationPath.search]);
 
-  console.log(status);
   return (
     <div className="flex h-screen flex-col-reverse md:flex-row overflow-y-hidden ">
       {/* 사이드바 */}
