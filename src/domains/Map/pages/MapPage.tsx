@@ -230,7 +230,7 @@ export default function MapPage() {
 
     setIsLoading(true);
     try {
-      // 1. 매장 목록 가져오기
+      //  매장 목록 가져오기
       const storeList = await fetchStores({
         keyword: debouncedKeyword,
         category: isCategory,
@@ -241,6 +241,7 @@ export default function MapPage() {
       });
 
       let finalList = [...storeList];
+      // AI 제휴처
       try {
         const aiResult = await fetchAiRecommendedStore({
           keyword: debouncedKeyword,
@@ -270,7 +271,7 @@ export default function MapPage() {
         setRecommendedStore(undefined); // AI 추천 실패 시 undefined 처리
       }
 
-      // 3. 최종 매장 목록 반영
+      // 최종 매장 목록 반영
       setStores(finalList);
     } catch (err) {
       console.error('매장 목록 로딩 실패:', err);

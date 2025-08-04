@@ -32,6 +32,7 @@ import clsx from 'clsx';
 import RouteLine from '../RouteLine';
 import { Ring } from 'ldrs/react';
 import MapImage from '@/assets/image/dolphin-map.svg';
+import toast from 'react-hot-toast';
 export interface TrafficInfo {
   color: string;
   label: string;
@@ -178,7 +179,19 @@ export default function RoadSection({
         setViewMode('route');
       }
     } catch (err) {
-      alert(err instanceof Error ? err.message : '오류 발생');
+      console.error(err);
+      toast.error(<span>길찾기에 실패하였습니다</span>, {
+        duration: 2000,
+        style: {
+          border: '1px solid #ebebeb',
+          padding: '16px',
+          color: '#e4270f',
+        },
+        iconTheme: {
+          primary: '#e4270f',
+          secondary: '#FFFAEE',
+        },
+      });
     } finally {
       setIsLoading(false);
     }
@@ -207,10 +220,32 @@ export default function RoadSection({
   const routeDeleteBookmark = async (route: RouteItem) => {
     try {
       await updateBookmarkStatus(route.directionid, false);
-      alert('경로가 삭제되었습니다.');
+      toast.success(<span>경로가 삭제되었습니다.</span>, {
+        duration: 2000,
+        style: {
+          border: '1px solid #ebebeb',
+          padding: '16px',
+          color: '#1505f5',
+        },
+        iconTheme: {
+          primary: '#1505f5',
+          secondary: '#FFFAEE',
+        },
+      });
     } catch (err) {
       console.error(err);
-      alert('저장 중 오류가 발생했습니다.');
+      toast.error(<span>경로 삭제가 실패하였습니다</span>, {
+        duration: 2000,
+        style: {
+          border: '1px solid #ebebeb',
+          padding: '16px',
+          color: '#e4270f',
+        },
+        iconTheme: {
+          primary: '#e4270f',
+          secondary: '#FFFAEE',
+        },
+      });
     }
   };
 
@@ -224,7 +259,6 @@ export default function RoadSection({
             (bookmark) =>
               bookmark.routes?.[0]?.summary && bookmark.routes?.[0]?.sections,
           )
-          .reverse()
           .map((bookmark) => convertBookmarkToDirectionResponse(bookmark));
         const routeItems = convertedResponses.flatMap((r) => DirecitonRoot(r));
         setRecentRoutes(routeItems);
@@ -239,9 +273,32 @@ export default function RoadSection({
   const deleteRoutes = async (id: string) => {
     try {
       await deleteDirectionPath(id);
-      alert('최근 경로 삭제');
+      toast.success(<span>경로가 삭제되었습니다.</span>, {
+        duration: 2000,
+        style: {
+          border: '1px solid #ebebeb',
+          padding: '16px',
+          color: '#1505f5',
+        },
+        iconTheme: {
+          primary: '#1505f5',
+          secondary: '#FFFAEE',
+        },
+      });
     } catch (error) {
       console.error(error);
+      toast.error(<span>경로 삭제가 실패하였습니다</span>, {
+        duration: 2000,
+        style: {
+          border: '1px solid #ebebeb',
+          padding: '16px',
+          color: '#e4270f',
+        },
+        iconTheme: {
+          primary: '#e4270f',
+          secondary: '#FFFAEE',
+        },
+      });
     }
   };
 
@@ -533,7 +590,7 @@ export default function RoadSection({
       {isLoading ? (
         <div className="h-96 flex flex-col justify-center items-center gap-3">
           <img
-            src="/images/ai-guide-character.webp"
+            src={MapImage}
             alt="AI 길찾기 안내"
             className="w-24 h-24 animate-bounce"
           />
@@ -657,17 +714,6 @@ export default function RoadSection({
               refreshSavedRoutes={refreshSavedRoutes}
             />
           ))}
-        </div>
-      )}
-      {isLoading && (
-        <div className="h-72 flex flex-col justify-center items-center gap-3">
-          <img src={MapImage} alt="AI 길찾기 안내" className="w-24 h-24" />
-          {/* 안내 텍스트 */}
-          <div className="text-lg font-semibold text-gray-700">
-            AI가 최적의 경로를 찾고 있어요...
-          </div>
-          {/* Ring 스피너 */}
-          <Ring size="40" stroke="3" bgOpacity="0" speed="2" color="#6fc3d1" />
         </div>
       )}
     </div>
