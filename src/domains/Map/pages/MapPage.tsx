@@ -765,6 +765,7 @@ export default function MapPage() {
                   selectedCardId={selectedCardId}
                   setSelectedCardId={setSelectedCardId}
                   goToStore={goToStore}
+                  panel={panel}
                 />
               )}
             {panel.menu !== '길찾기' && (
