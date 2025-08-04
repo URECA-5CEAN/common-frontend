@@ -45,6 +45,8 @@ function StoreCard({
         alt={store.name}
         className="w-[80px] h-[80px] rounded-md mr-3 self-center ml-1"
         loading="lazy"
+        width={80}
+        height={80}
         decoding="async"
       />
       {store.isRecommended && (
