@@ -17,7 +17,7 @@ const RankingPage = () => {
   const [activeTab, setActiveTab] = useState(0);
 
   return (
-    <div className="w-full max-w-[1050px] m-6">
+    <div className="w-[calc(100%-48px)] md:w-[80%] max-w-[1050px] mb-50 md:mb-100">
       <Breadcrumb title="혜택탐험" subtitle="혜택 순위" />
       {/* 탭 버튼 */}
       <div className="mt-3">
