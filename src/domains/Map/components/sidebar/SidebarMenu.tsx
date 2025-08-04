@@ -54,7 +54,7 @@ export default function SidebarMenu({
           <img
             src={icons[idx]}
             alt={menu}
-            className="h-6 w-6  md:h-10 md:w-10 mb-0.5 md:mb-1 "
+            className="h-6 w-6  md:h-8 md:w-8 mb-0.5 md:mb-1 "
           />
           <span className="text-[8px] font-semibold md:font-medium md:text-sm">
             {menu}
