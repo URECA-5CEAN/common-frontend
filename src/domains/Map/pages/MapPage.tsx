@@ -19,6 +19,7 @@ import {
   Search,
   Ticket,
   Utensils,
+  X,
   type LucideIcon,
 } from 'lucide-react';
 import type { LatLng } from '../KakaoMapContainer';
@@ -823,15 +824,24 @@ export default function MapPage() {
                 />
               </div>
             )}
-            <div className="flex md:hidden  absolute top-[68px] left-6 right-6   bg-white z-2 items-center border border-gray-200 rounded-xl px-2 py-1 ">
-              <Search />
-              <DebouncedInput
-                value={keyword}
-                onChange={changeKeyword}
-                debounceTime={300}
-                placeholder="검색"
-              />
-            </div>
+            {panel.menu !== '길찾기' && (
+              <div className="flex md:hidden absolute top-[68px] left-6 right-6 bg-white z-2 items-center border border-gray-200 rounded-xl px-2 py-1">
+                <Search />
+                <DebouncedInput
+                  value={mode === 'search' ? searchInput : keyword}
+                  onChange={
+                    mode === 'search' ? handleSearchChange : changeKeyword
+                  }
+                  debounceTime={300}
+                  placeholder="검색"
+                />
+                <X
+                  onClick={resetKeyword}
+                  className="cursor-pointer "
+                  color="gray"
+                />
+              </div>
+            )}
 
             <BenefitModal
               isBenefitModalOpen={isBenefitModalOpen}
