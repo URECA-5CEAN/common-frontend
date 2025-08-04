@@ -64,8 +64,10 @@ export interface RouteItem {
     traffic_state: number;
     path?: LatLng[];
   }[];
-
+  recommendReason?: string;
   section?: RouteSection[];
+  scenario?: string;
+  bookmark?: boolean;
 }
 
 interface RouteInputProps {
@@ -79,12 +81,14 @@ interface RouteInputProps {
   openRoadDetail: (route: RouteItem) => void;
   setStartValue: Dispatch<SetStateAction<LocationInfo>>;
   setEndValue: Dispatch<SetStateAction<LocationInfo>>;
-  stores: StoreInfo[];
+
   setStartInput: Dispatch<SetStateAction<string>>;
   setEndInput: Dispatch<SetStateAction<string>>;
   setWayInput: Dispatch<SetStateAction<string>>;
   searchStores: StoreInfo[];
   onClose: (idx: number) => void;
+  setFocusField: Dispatch<SetStateAction<'start' | 'end' | number | null>>;
+  focusField: 'start' | 'end' | number | null;
 }
 type ViewMode = 'bookmark' | 'saved' | 'route';
 export default function RoadSection({
@@ -97,12 +101,13 @@ export default function RoadSection({
   openRoadDetail,
   setStartValue,
   setEndValue,
-  stores,
   setStartInput,
   setEndInput,
   setWayInput,
   searchStores,
   onClose,
+  setFocusField,
+  focusField,
 }: RouteInputProps) {
   const [showRecent, setShowRecent] = useState<boolean>(false);
   const [viewmode, setViewMode] = useState<ViewMode>('saved');
@@ -111,16 +116,12 @@ export default function RoadSection({
   const [savedRoutes, setSavedRoutes] = useState<RouteItem[]>([]);
   const [recentRoutes, setRecentRoutes] = useState<RouteItem[]>([]);
   const [waypoints, setWaypoints] = useState<LocationInfo[]>([]);
-  const [focusField, setFocusField] = useState<'start' | 'end' | number | null>(
-    null,
-  );
   const [Roadmode, setRoadMode] = useState<'default' | 'ai'>('default');
   const [scenario, setScenario] = useState<string>('');
   const keywordRequire =
     focusField !== null &&
-    stores.length > 0 &&
-    (startValue.name.length > 0 ||
-      endValue.name.length > 0 ||
+    ((focusField === 'start' && startValue.name.length > 0) ||
+      (focusField === 'end' && endValue.name.length > 0) ||
       (typeof focusField === 'number' &&
         waypoints[focusField]?.name.length > 0));
   // 리스트 토글
@@ -143,13 +144,12 @@ export default function RoadSection({
           y: endValue.lat,
           angle: 270,
         },
-        ...(Roadmode === 'default' && {
-          waypoints: waypoints.map((w) => ({
-            name: w.name,
-            x: w.lng,
-            y: w.lat,
-          })),
-        }),
+        waypoints: waypoints.map((w) => ({
+          name: w.name,
+          x: w.lng,
+          y: w.lat,
+        })),
+
         priority: 'RECOMMEND',
         car_fuel: 'GASOLINE',
         car_hipass: false,
@@ -210,6 +210,7 @@ export default function RoadSection({
             (bookmark) =>
               bookmark.routes?.[0]?.summary && bookmark.routes?.[0]?.sections,
           )
+          .reverse()
           .map((bookmark) => convertBookmarkToDirectionResponse(bookmark));
         const routeItems = convertedResponses.flatMap((r) => DirecitonRoot(r));
         setRecentRoutes(routeItems);
@@ -400,39 +401,41 @@ export default function RoadSection({
 
           {keywordRequire && (
             <ul className="mt-2  border border-gray-200 rounded-md shadow scrollbar-custom bg-white max-h-72 overflow-y-auto">
-              {searchStores.map((store) => (
-                <li
-                  key={store.id}
-                  className="p-2 border-b border-b-gray-200 hover:bg-gray-100 cursor-pointer"
-                  onClick={() => {
-                    const selectedLocation: LocationInfo = {
-                      name: store.name,
-                      lat: store.latitude,
-                      lng: store.longitude,
-                    };
+              {Array.isArray(searchStores) && searchStores.length > 0
+                ? searchStores.map((store) => (
+                    <li
+                      key={store.id}
+                      className="p-2 border-b border-b-gray-200 hover:bg-gray-100 cursor-pointer"
+                      onClick={() => {
+                        const selectedLocation: LocationInfo = {
+                          name: store.name,
+                          lat: store.latitude,
+                          lng: store.longitude,
+                        };
 
-                    if (focusField === 'start') {
-                      setStartValue(selectedLocation);
-                    } else if (focusField === 'end') {
-                      setEndValue(selectedLocation);
-                    } else if (typeof focusField === 'number') {
-                      const updated = [...waypoints];
-                      updated[focusField] = selectedLocation;
-                      setWaypoints(updated);
-                    }
-                    setFocusField(null); // 선택 후 닫기
-                  }}
-                >
-                  <div className="flex flex-col">
-                    <span className="font-medium text-sm text-gray-800">
-                      {store.name}
-                    </span>
-                    <span className="text-xs text-gray-500">
-                      {store.address}
-                    </span>
-                  </div>
-                </li>
-              ))}
+                        if (focusField === 'start') {
+                          setStartValue(selectedLocation);
+                        } else if (focusField === 'end') {
+                          setEndValue(selectedLocation);
+                        } else if (typeof focusField === 'number') {
+                          const updated = [...waypoints];
+                          updated[focusField] = selectedLocation;
+                          setWaypoints(updated);
+                        }
+                        setFocusField(null); // 선택 후 닫기
+                      }}
+                    >
+                      <div className="flex flex-col">
+                        <span className="font-medium text-sm text-gray-800">
+                          {store.name}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {store.address}
+                        </span>
+                      </div>
+                    </li>
+                  ))
+                : null}
             </ul>
           )}
         </div>

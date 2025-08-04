@@ -26,6 +26,7 @@ export function DirecitonRoot(response: DirectionResponse): RouteItem[] {
         name: w.name,
         lat: w.y,
         lng: w.x,
+        recommendReason: w.recommendReason,
       })) || [];
 
     const distanceText = `${(route.summary.distance / 1000).toFixed(1)}km`;
@@ -62,6 +63,12 @@ export function DirecitonRoot(response: DirectionResponse): RouteItem[] {
         })),
       ) ?? [];
     const section = route.sections || [];
+    const recommendReasons = Array.isArray(route.summary?.waypoints)
+      ? route.summary.waypoints.map((w) => w.recommendReason ?? '')
+      : [];
+
+    const scenario = route?.scenario || undefined;
+    const bookmark = response.bookmark ?? false;
     return {
       directionid,
       from,
@@ -75,6 +82,9 @@ export function DirecitonRoot(response: DirectionResponse): RouteItem[] {
       road,
       guide,
       section,
+      recommendReasons,
+      scenario,
+      bookmark,
     };
   });
 }

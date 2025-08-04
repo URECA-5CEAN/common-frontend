@@ -42,9 +42,10 @@ export interface DirectionResponse {
   data: {
     id: string;
     trans_id: string;
-    routes: Route[];
+    routes: RouteAI[];
   };
   bookmark?: boolean;
+  scenario?: string;
 }
 
 //루트 별 코드 및 메세지
@@ -118,9 +119,9 @@ const token = localStorage.getItem('authToken');
 
 export async function findDirectionPath(
   body: DirectionRequestBody,
-): Promise<DirectionResponse> {
+): Promise<DirectionAIResponse> {
   try {
-    const response = await apiClient.post<DirectionResponse>(
+    const response = await apiClient.post<DirectionAIResponse>(
       '/direction/path',
       body,
       {
@@ -166,7 +167,7 @@ export async function getDirectionPath(): Promise<DirectionBookmarkResponse> {
 export interface DirectionBookmark {
   id: string;
   trans_id: string;
-  routes: Route[];
+  routes: RouteAI[];
   userId: string;
   bookmark: boolean;
 }
@@ -202,9 +203,9 @@ export async function fetchDirectionBookmarks(): Promise<DirectionBookmark[]> {
 export async function updateBookmarkStatus(
   id: string,
   bookmark: boolean,
-): Promise<void> {
+): Promise<DirectionBookmarkResponse> {
   try {
-    await apiClient.put(
+    const res = await apiClient.put<DirectionBookmarkResponse>(
       `/direction`,
       {},
       {
@@ -214,6 +215,7 @@ export async function updateBookmarkStatus(
         params: { id, bookmark },
       },
     );
+    return res.data;
   } catch (error) {
     const axiosErr = error as AxiosError<{ message: string }>;
     const message =
@@ -273,6 +275,8 @@ export interface RouteAI {
   result_msg: string;
   summary: RouteAISummary;
   sections: RouteSection[];
+  scenario?: string;
+  bookmark?: boolean;
 }
 
 export interface WaypointAI {

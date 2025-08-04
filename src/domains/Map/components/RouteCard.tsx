@@ -29,8 +29,8 @@ export default function RouteCard({
   const [open, setOpen] = useState(false);
   const routeCreateBookmark = async () => {
     try {
-      await updateBookmarkStatus(route.directionid, true);
-      alert('경로가 즐겨찾기에 저장되었습니다.');
+      const res = await updateBookmarkStatus(route.directionid, true);
+      if (res.data) alert('경로가 즐겨찾기에 저장되었습니다.');
     } catch (err) {
       console.error(err);
       alert('저장 중 오류가 발생했습니다.');

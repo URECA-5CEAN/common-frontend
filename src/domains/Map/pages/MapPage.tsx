@@ -121,6 +121,7 @@ export interface LocationInfo {
   name: string;
   lat: number;
   lng: number;
+  recommendReason?: string;
 }
 
 export default function MapPage() {
@@ -152,9 +153,9 @@ export default function MapPage() {
   const [mode, setMode] = useState<'default' | 'search'>('default');
   // 검색input
   const [searchInput, setSearchInput] = useState<string>('');
-  const [, setStartInput] = useState<string>('');
-  const [, setWayInput] = useState<string>('');
-  const [, setEndInput] = useState<string>('');
+  const [startInput, setStartInput] = useState<string>('');
+  const [wayInput, setWayInput] = useState<string>('');
+  const [endInput, setEndInput] = useState<string>('');
   // API로 불러온 매장 리스트
   const [searchStores, setSearchStores] = useState<StoreInfo[]>([]);
 
@@ -214,6 +215,12 @@ export default function MapPage() {
   const [waypoints, setWaypoints] = useState<LocationInfo[]>([]);
   //혜택 인증 모달
   const [isBenefitModalOpen, setIsBenefitModalOpen] = useState(false);
+
+  // 길찾기 input Focus
+  const [focusField, setFocusField] = useState<'start' | 'end' | number | null>(
+    null,
+  );
+
   //제휴처 조회 및 AI 제휴처 조회
   const searchStoresWithAI = useCallback(async () => {
     if (!map) return;
@@ -448,6 +455,7 @@ export default function MapPage() {
             name: wp.name,
             lat: wp.lat,
             lng: wp.lng,
+            ...(wp.recommendReason && { recommendReason: wp.recommendReason }),
           }));
 
           setWaypoints(restoredWaypoints);
@@ -460,6 +468,7 @@ export default function MapPage() {
     [panel.menu],
   );
 
+  console.log(waypoints);
   //상세 닫기
   const closePanel = useCallback(() => {
     setPanel({ type: 'menu', menu: panel.menu });
@@ -594,12 +603,28 @@ export default function MapPage() {
     [], // fetchSearchStores가 바깥에 고정이라면 의존성 없음
   );
 
+  const clearSearchStores = useCallback(() => setSearchStores([]), []);
+
+  //길찾기 입력시 키워드 검색 함수 호출
+  useEffect(() => {
+    if (focusField === 'start' && startInput.trim()) {
+      fetchAndSetSearchStores(startInput, '', '');
+    } else if (focusField === 'end' && endInput.trim()) {
+      fetchAndSetSearchStores(endInput, '', '');
+    } else if (typeof focusField === 'number' && wayInput.trim()) {
+      fetchAndSetSearchStores(wayInput, '', '');
+    } else {
+      clearSearchStores([]);
+    }
+  }, [focusField, startInput, endInput, wayInput]);
+
   useEffect(() => {
     SetKeyword('');
     setSearchInput('');
     SetIsCategory('');
     setSelectedBenefit('');
   }, [mode]);
+  // 키워드 변경 함수
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
@@ -651,6 +676,8 @@ export default function MapPage() {
           setEndInput={setEndInput}
           setWayInput={setWayInput}
           setIsBenefitModalOpen={setIsBenefitModalOpen}
+          setFocusField={setFocusField}
+          focusField={focusField}
         />
         {/* 내 위치 버튼 */}
         {map && myLocation && (
