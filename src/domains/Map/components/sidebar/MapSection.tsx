@@ -1,7 +1,7 @@
 import { Search, X } from 'lucide-react';
 import StoreCard from '../StoreCard';
 import type { StoreInfo } from '../../api/store';
-import {
+import React, {
   useState,
   type ChangeEventHandler,
   type Dispatch,
@@ -35,7 +35,7 @@ interface MapSectionProps {
   isLoading: boolean;
 }
 
-export default function MapSection({
+function MapSection({
   stores,
   openDetail,
   changeKeyword,
@@ -178,3 +178,5 @@ export default function MapSection({
     </div>
   );
 }
+
+export default React.memo(MapSection);

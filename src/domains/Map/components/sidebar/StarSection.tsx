@@ -35,7 +35,6 @@ export default function StarSection({
   const { isLoggedIn } = useAuthStore();
   const navigate = useNavigate();
 
-  console.log(isLoggedIn);
   if (!isLoggedIn) {
     return (
       <Modal

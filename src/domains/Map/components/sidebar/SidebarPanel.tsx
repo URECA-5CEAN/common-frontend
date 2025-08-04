@@ -5,7 +5,7 @@ import StarSection from './StarSection';
 import DetailSection from './DetailSection';
 import { ChevronLeft } from 'lucide-react';
 import RoadSection, { type RouteItem } from './RoadSection';
-import {
+import React, {
   useEffect,
   useState,
   type ChangeEventHandler,
@@ -62,7 +62,7 @@ interface SidebarPanelProps {
   isOpen: boolean;
 }
 
-export default function SidebarPanel({
+function SidebarPanel({
   index,
   panel,
   stores,
@@ -233,3 +233,5 @@ export default function SidebarPanel({
     </motion.div>
   );
 }
+
+export default React.memo(SidebarPanel);

@@ -147,7 +147,7 @@ function FilterMarker({
         goToStore(store);
       }
     },
-    [openDetail, storeMap],
+    [openDetail, goToStore, storeMap, setSelectedCardId],
   );
 
   const visibleMarkers = useMemo(() => {
@@ -159,6 +159,9 @@ function FilterMarker({
       return bounds.contain(pos);
     });
   }, [Markers, map]);
+
+  // 마커 개수에 따라 클러스터링 여부 결정
+  const shouldCluster = Markers.length > 5;
 
   // 2D 마커 렌더링 함수 분리
   const renderFarMarkers = useCallback(
@@ -178,11 +181,16 @@ function FilterMarker({
           shouldCluster={shouldCluster}
         />
       )),
-    [Markers, selectedCardId, handleClick, handleMouseOver, handleMouseOut],
+    [
+      visibleMarkers,
+      selectedCardId,
+      handleClick,
+      handleMouseOver,
+      handleMouseOut,
+      shouldCluster,
+    ],
   );
 
-  // 마커 개수에 따라 클러스터링 여부 결정
-  const shouldCluster = Markers.length > 5;
   // 데스크톱 여부 판단 (모바일에서 오버레이 안뜨게)
   const isDesktop = useMedia('(min-width: 640px)');
 
