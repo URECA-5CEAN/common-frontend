@@ -40,6 +40,55 @@ const MotionPathAnimation: React.FC = () => {
   const motionDivRef = useRef<HTMLDivElement>(null); //움직이는 요소
   const motionPathRef = useRef<SVGPathElement>(null);
   const gsapLoadedRef = useRef(false);
+  const [screenSize, setScreenSize] = React.useState({ width: 0, height: 0 });
+  const [scaledPath, setScaledPath] = React.useState('');
+
+  // 원본 path 데이터 (고정값)
+  const originalPath =
+    'M1 40.5C39.3102 41.24 57.2261 79.23 66.1411 141.36C72.8614 188.19 79.0336 450.58 320.372 446.95C523.808 443.88 770.705 529.72 770.705 688.4C770.705 823.34 634.5 866.91 454.273 898.98C274.047 931.06 70.8909 969.08 70.8909 1135.19C70.8909 1325.2 360.017 1323.79 420.346 1323.79C479.38 1323.79 805.99 1371.05 805.99 1513.8C805.99 1679.21 771.35 1742.97 350.455 1789.94C200 1820 150 1900 250 1950';
+
+  // 큰 화면용 path (좌표를 직접 확장)
+  const largeScreenPath =
+    'M1 40.5C65.5 41.24 95.4 145.5 110.2 260.7C121.4 350.8 131.8 780.8 534.9 776.1C873.5 772.1 1285.9 920.0 1285.9 1200.3C1285.9 1430.4 1058.7 1515.0 758.8 1585.7C458.9 1656.4 118.4 1740.4 118.4 2030.0C118.4 2380.8 601.6 2380.0 702.4 2380.0C800.1 2380.0 1346.7 2470.4 1346.7 2730.0C1346.7 3030.3 1288.6 3180.9 585.6 3270.9C334 3335 250 3510 418 3620';
+
+  // 원본 viewBox 크기
+  const originalViewBox = { width: 869, height: 2200 };
+
+  // 화면 크기에 따른 path 선택 및 스케일링 함수
+  const getPathForScreen = React.useCallback(
+    (screenWidth: number) => {
+      if (screenWidth < 768) {
+        // 모바일: 원본 path를 축소
+        const scale = Math.min(screenWidth / originalViewBox.width, 1);
+        return originalPath.replace(/[\d.]+/g, (match) => {
+          const num = parseFloat(match);
+          return (num * scale).toString();
+        });
+      } else if (screenWidth >= 2000) {
+        // 큰 화면: 별도의 큰 화면용 path 사용
+        return largeScreenPath;
+      } else {
+        // 일반 데스크탑: 원본 path 그대로 사용
+        return originalPath;
+      }
+    },
+    [originalViewBox.width],
+  );
+
+  // 화면 크기 감지 및 path 업데이트
+  React.useEffect(() => {
+    const updateScreenSize = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      setScreenSize({ width, height });
+      setScaledPath(getPathForScreen(width));
+    };
+
+    updateScreenSize();
+    window.addEventListener('resize', updateScreenSize);
+
+    return () => window.removeEventListener('resize', updateScreenSize);
+  }, [getPathForScreen]);
 
   const pathEase = (
     path: string,
@@ -153,9 +202,16 @@ const MotionPathAnimation: React.FC = () => {
           end: () =>
             '+=' + (motionPathRef.current?.getBoundingClientRect().height || 0),
           scrub: 0.5,
-          onUpdate: (self: { direction: number }) => {
+          onUpdate: (self: { direction: number; progress: number }) => {
             if (prevDirection !== self.direction) {
               prevDirection = self.direction;
+            }
+            // path 끝에 가까워지면 고래 이미지를 점점 투명하게 만들기
+            if (self.progress > 0.9) {
+              const opacity = Math.max(0, (1 - self.progress) * 10);
+              gsap.set(motionDivRef.current, { opacity });
+            } else {
+              gsap.set(motionDivRef.current, { opacity: 1 });
             }
           },
         },
@@ -218,24 +274,45 @@ const MotionPathAnimation: React.FC = () => {
     };
   }, [loadGSAP]);
 
+  // scaledPath가 변경될 때마다 애니메이션 다시 초기화
+  useEffect(() => {
+    if (scaledPath && gsapLoadedRef.current) {
+      // 기존 애니메이션 정리
+      if (window.ScrollTrigger) {
+        window.ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      }
+
+      // 새로운 path로 애니메이션 다시 초기화
+      setTimeout(initializeAnimation, 100);
+    }
+  }, [scaledPath, initializeAnimation]);
+
   return (
     <div
       style={{
         margin: 0,
-        minHeight: '490vh',
         background: 'linear-gradient(180deg, #4DD2EB 0%, #2C6385 100%)',
       }}
-      className="absolute w-full top-[100dvh]"
+      className="absolute w-full top-[50vh] md:top-[100dvh] h-[330vh] md:h-[470vh] z-10"
     >
       <svg
         ref={svgRef}
         id="linesvg"
-        style={{ opacity: 0 }}
+        style={{ opacity: 0, overflow: 'hidden' }}
+        className={screenSize.width > 1800 ? 'block' : 'hidden'}
         xmlns="http://www.w3.org/2000/svg"
         xmlnsXlink="http://www.w3.org/1999/xlink"
         x="0px"
         y="0px"
-        viewBox="0 0 869 3000"
+        viewBox={`0 0 ${
+          screenSize.width >= 2000
+            ? 1800 // 큰 화면용 고정 viewBox 너비 (더 크게)
+            : originalViewBox.width
+        } ${
+          screenSize.width >= 2000
+            ? 3800 // 큰 화면용 고정 viewBox 높이 (더 크게)
+            : originalViewBox.height
+        }`}
         xmlSpace="preserve"
         preserveAspectRatio="xMidYMax meet"
       >
@@ -244,7 +321,7 @@ const MotionPathAnimation: React.FC = () => {
             .st0 {
               fill: none;
               stroke: white;
-              stroke-width: 8;
+              stroke-width: ${screenSize.width >= 2000 ? 20 : 15};
               stroke-opacity: 0.2;
               stroke-linecap: round;
               stroke-linejoin: round;
@@ -258,7 +335,7 @@ const MotionPathAnimation: React.FC = () => {
           ref={motionPathRef}
           id="motionPath"
           className="st0"
-          d="M1 40.5C39.3102 41.24 57.2261 79.23 66.1411 141.36C72.8614 188.19 79.0336 450.58 320.372 446.95C523.808 443.88 770.705 529.72 770.705 688.4C770.705 823.34 634.5 866.91 454.273 898.98C274.047 931.06 70.8909 969.08 70.8909 1135.19C70.8909 1325.2 360.017 1323.79 420.346 1323.79C479.38 1323.79 805.99 1371.05 805.99 1513.8C805.99 1679.21 771.35 1742.97 350.455 1789.94C148.02 1812.53 35.7964 1934.97 76.9979 2022.11C163.256 2147.18 238.493 2170.37 350 2175"
+          d={scaledPath || originalPath}
         />
         {/* 이미지 실제로 화면에 나타나는 부분 */}
         <foreignObject x="0" y="0" width="100%" height="100%">
@@ -266,18 +343,18 @@ const MotionPathAnimation: React.FC = () => {
             ref={motionDivRef}
             id="motionSVG"
             style={{
-              width: '130px',
+              width: screenSize.width >= 2000 ? '180px' : '130px',
               display: 'flex',
               justifyContent: 'center',
             }}
           >
             <div
               id="tractor"
+              className="hidden md:flex"
               style={{
-                width: '80px',
-                height: '80px',
+                width: screenSize.width >= 2000 ? '120px' : '80px',
+                height: screenSize.width >= 2000 ? '120px' : '80px',
                 borderRadius: '50%',
-                display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: 'white',

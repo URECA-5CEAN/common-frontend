@@ -3,7 +3,7 @@ import starfish from '@/assets/image/starfish.svg';
 
 const HeroSection = () => {
   return (
-    <div className="absolute top-0 h-full w-full">
+    <div className="absolute top-0 h-[40vh] md:h-[80vh] w-full">
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center mt-[140px]">
         <h1
           className="text-[32px] md:text-[72px] text-[#744B07] font-black"
@@ -21,7 +21,7 @@ const HeroSection = () => {
         >
           <img
             src={starfish}
-            className="absolute -left-20 md:-left-40 bottom-0 transform translate-y-1/4 w-6 h-6 md:w-12 md:h-12"
+            className="absolute -left-20 md:-left-40 bottom-0 transform translate-y-1/4 w-4 h-4 md:w-12 md:h-12"
           />
           <span className="text-[24px] md:text-[52px]">지</span>도 안의{' '}
           <span className="text-[24px] md:text-[52px]">중</span>요한{' '}
@@ -37,7 +37,7 @@ const HeroSection = () => {
             <img
               src={dolphinBeach}
               alt="돌고래"
-              className="w-16 h-16 md:w-32 md:h-32 object-contain"
+              className="w-12 h-12 md:w-32 md:h-32 object-contain"
             />
           </div>
         </div>

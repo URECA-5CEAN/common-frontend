@@ -62,14 +62,14 @@ const LandingPage = () => {
         className="absolute top-0 w-full h-[100vh]"
       />
 
-      <div className="absolute top-[130px] h-full overflow-hidden w-full">
+      <div className="absolute top-[130px] h-[50vh] md:h-full overflow-hidden w-full">
         <img src={wave} alt="파도" className=" h-full min-w-[1654px] " />
       </div>
       <MotionPathAnimation />
 
       {/* 첫 번째 섹션 - 메인 타이틀 */}
       <HeroSection />
-      <div className="relative z-0">
+      <div className="relative z-20">
         <div className="absolute inset-0 bg-gradient-to-b from-[#4DD2EB] to-[#2C6385] -z-10" />
         {/* 두 번째 섹션 - 멤버십 지도 */}
         <MapSection />
@@ -94,10 +94,11 @@ const LandingPage = () => {
       {showTopButton && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-8 right-8 w-14 h-14 bg-primaryGreen-60 hover:bg-primaryGreen-80 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-50 flex items-center justify-center"
+          className="fixed bottom-8 right-8 w-10 h-10 md:w-14 md:h-14 bg-primaryGreen-60 hover:bg-primaryGreen-80 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-50 flex items-center justify-center"
           aria-label="맨 위로 이동"
         >
-          <ArrowUpToLine size={24} />
+          <ArrowUpToLine size={16} className="md:hidden" />
+          <ArrowUpToLine size={24} className="hidden md:block" />
         </button>
       )}
     </div>
