@@ -93,8 +93,7 @@ export const categoryIconMap: Record<CategoryType, CategoryIconMeta> = {
   카페: {
     icon: Coffee,
     color: '#6D4C41',
-    size: 21,
-    className: 'mb-0.5',
+    size: 20,
   },
   편의점: {
     icon: ShoppingBag,
@@ -114,7 +113,7 @@ export const categoryIconMap: Record<CategoryType, CategoryIconMeta> = {
   렌터카: {
     icon: Car,
     color: '#F4511E',
-    size: 22,
+    size: 20,
   },
 };
 export interface LocationInfo {
@@ -815,7 +814,7 @@ export default function MapPage() {
               </div>
             )}
             {panel.menu !== '길찾기' && (
-              <div className="absolute  w-full h-8 md:ml-10 ml-6 top-[150px] md:top-[120px] z-2  overflow-x-auto">
+              <div className="absolute  w-full h-10 mt-1 md:ml-10 ml-6 top-[150px] md:top-[120px] z-2  overflow-x-auto">
                 <BenefitButton
                   benefitList={['쿠폰', '할인', '증정']}
                   selected={selectedBenefit}

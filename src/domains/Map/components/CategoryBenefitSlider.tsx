@@ -13,7 +13,6 @@ interface CategoryBenefitSliderProps {
   selectedCategory: string;
   onCategoryChange: (cate: string) => void;
   categoryIconMap: Record<CategoryType, CategoryIconMeta>;
-
   benefitList: BenefitType[];
   selectedBenefit: BenefitType | '';
   onBenefitChange: (b: BenefitType | '') => void;
@@ -46,7 +45,7 @@ export default function CategoryBenefitSlider({
         return (
           <div
             key={`category-${cate}-${idx}`}
-            className="keen-slider__slide pr-24 "
+            className="keen-slider__slide pr-24 md:hidden"
           >
             <button
               className={clsx(
@@ -77,11 +76,11 @@ export default function CategoryBenefitSlider({
         return (
           <div
             key={`benefit-${benefit}-${idx}`}
-            className="keen-slider__slide pr-24"
+            className="keen-slider__slide pr-24 md:hidden"
           >
             <button
               className={clsx(
-                'flex items-center justify-center gap-2 w-24 text-xs px-4 py-1.5 cursor-pointer rounded-2xl border-2 border-gray-200 transition-colors',
+                'flex items-center justify-center gap-2 w-24 text-xs px-2 py-1 cursor-pointer rounded-2xl border-2 border-gray-200 transition-colors',
                 selectedBenefit === benefit
                   ? 'text-white bg-amber-400 border-amber-400'
                   : 'bg-white hover:text-amber-500',
