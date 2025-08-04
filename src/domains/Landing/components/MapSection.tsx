@@ -1,4 +1,5 @@
 import dolphinFinger from '@/assets/image/dolphin-finger.svg';
+import mapPage from '@/assets/image/mapPage.png';
 
 const MapSection = () => {
   return (
@@ -21,7 +22,11 @@ const MapSection = () => {
         <div className="relative flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 w-full max-w-7xl mt-8 md:mt-20">
           {/* 지도 이미지 */}
           <div className="w-[50vw] md:w-[35vw] max-w-[700px] aspect-video bg-white rounded-lg overflow-hidden shadow-lg">
-            <div className="w-full h-full bg-gradient-to-br from-orange-100 to-orange-200 relative"></div>
+            <img
+              src={mapPage}
+              alt="멤버십 지도"
+              className="w-full h-full object-cover"
+            />
           </div>
 
           {/* 설명 박스들 */}
