@@ -634,24 +634,24 @@ export default function MapPage() {
     [fetchAndSetSearchStores, isCategory, selectedBenefit],
   );
 
-  const location = useLocation();
+  const locationPath = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
+    const params = new URLSearchParams(locationPath.search);
     const shouldClick = params.get('autoClick');
 
     if (shouldClick === 'true') {
       setIsBenefitModalOpen(true);
 
-      const newParams = new URLSearchParams(location.search);
+      const newParams = new URLSearchParams(locationPath.search);
       newParams.delete('autoClick');
 
-      navigate(`${location.pathname}?${newParams.toString()}`, {
+      navigate(`${locationPath.pathname}?${newParams.toString()}`, {
         replace: true,
       });
     }
-  }, [location.search]);
+  }, [locationPath.search]);
 
   return (
     <div className="flex h-screen flex-col-reverse md:flex-row overflow-y-hidden ">
