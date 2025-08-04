@@ -1,6 +1,10 @@
 import StoreCard from '../StoreCard';
 import type { StoreInfo } from '../../api/store';
 import type { LocationInfo } from '../../pages/MapPage';
+import { useAuthStore } from '@/store/useAuthStore';
+import { Modal } from '@/components/Modal';
+import { Button } from '@/components/Button';
+import { useNavigate } from 'react-router-dom';
 
 interface MapSectionProps {
   bookmarks: StoreInfo[];
@@ -23,6 +27,9 @@ export default function StarSection({
   selectedCardId,
   goToStore,
 }: MapSectionProps) {
+  // const { isLoggedIn } = useAuthStore();
+  // const navigate = useNavigate();
+
   return (
     <div className="px-2 py-3 space-y-3 h-screen ">
       {/* 리스트 아이템 반복 */}

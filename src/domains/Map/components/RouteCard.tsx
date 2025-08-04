@@ -14,6 +14,7 @@ interface Props {
   isDetail?: boolean;
   scenario?: string;
   showScenario?: boolean;
+  refreshSavedRoutes?: () => void;
 }
 
 export default function RouteCard({
@@ -23,14 +24,17 @@ export default function RouteCard({
   isDetail = false,
   showScenario,
   scenario,
+  refreshSavedRoutes,
 }: Props) {
   const allRoads = route.section?.flatMap((s) => s.roads) || [];
   const majorRoad = MajorLoads(allRoads);
   const [open, setOpen] = useState(false);
   const routeCreateBookmark = async () => {
     try {
-      await updateBookmarkStatus(route.directionid, true);
-      alert('경로가 즐겨찾기에 저장되었습니다.');
+      const res = await updateBookmarkStatus(route.directionid, true);
+      console.log(res.data);
+      if (res.data) alert('경로가 즐겨찾기에 저장되었습니다.');
+      refreshSavedRoutes?.();
     } catch (err) {
       console.error(err);
       alert('저장 중 오류가 발생했습니다.');
@@ -50,8 +54,8 @@ export default function RouteCard({
           <button
             onClick={() => setOpen((v) => !v)}
             className={clsx(
-              'mt-2 flex items-center justify-center rounded-full shadow-lg',
-              'bg-primaryGreen-80 text-white w-9 h-9 hover:scale-110 transition-transform',
+              'm-2 flex items-center justify-center rounded-full shadow-lg',
+              'bg-primaryGreen-80 text-white w-6 h-6 cursor-pointer hover:scale-110 transition-transform',
               open && 'ring-2 ring-primaryGreen-50',
             )}
             aria-label="추천 이유 보기"
@@ -104,7 +108,7 @@ export default function RouteCard({
             <Button
               size="sm"
               variant="ghost"
-              className="h-6 w-[85px] flex justify-end items-center"
+              className="h-7! w-[85px] flex justify-end items-center"
               onClick={() => onClick?.(route)}
             >
               <p className="text-xs w-20">상세보기</p>

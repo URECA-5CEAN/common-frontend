@@ -11,6 +11,9 @@ import DebouncedInput from '../DebouncedInput';
 import type { LocationInfo } from '../../pages/MapPage';
 import clsx from 'clsx';
 import NoImage from '@/assets/image/dolphin_find.png';
+import Errorimage from '@/assets/image/dolphin-error.svg';
+import { useCurrentLocation } from '../../hooks/useCurrentLoaction';
+import { Ring } from 'ldrs/react';
 interface MapSectionProps {
   stores: StoreInfo[];
   openDetail: (store: StoreInfo) => void;
@@ -29,6 +32,7 @@ interface MapSectionProps {
   mode: 'default' | 'search';
   setMode: Dispatch<SetStateAction<'default' | 'search'>>;
   searchStores: StoreInfo[];
+  isLoading: boolean;
 }
 
 export default function MapSection({
@@ -49,11 +53,12 @@ export default function MapSection({
   mode,
   setMode,
   searchStores,
+  isLoading,
 }: MapSectionProps) {
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const keywordRequire = isFocused && stores.length > 0 && keyword.length > 0;
-
   const modeStore = mode === 'default' ? stores : searchStores;
+  const { hasLocation } = useCurrentLocation();
   return (
     <div className="px-2 space-y-8 h-screen ">
       <div className="flex relative top-4 py-1 rounded-sm mx-auto">
@@ -133,7 +138,11 @@ export default function MapSection({
         </ul>
       )}
       {/* 리스트 아이템 반복 */}
-      {modeStore && modeStore.length !== 0 ? (
+      {isLoading ? (
+        <div className="flex justify-center items-center py-10">
+          <Ring size="48" stroke="3" bgOpacity="0" speed="2" color="#6fc3d1" />
+        </div>
+      ) : modeStore && modeStore.length !== 0 ? (
         modeStore.map((store, idx) => (
           <StoreCard
             key={store.id?.trim() || `unknown-${store.name}-${idx}`}
@@ -147,6 +156,12 @@ export default function MapSection({
             onCenter={() => goToStore(store)}
           />
         ))
+      ) : mode === 'default' && !hasLocation ? (
+        <div className="text-gray-400 py-10 text-[14px] text-center flex flex-col justify-center items-center">
+          <p>위치 권한이 필요합니다.</p>
+          <p>브라우저 설정에서 위치 권한을 허용해 주세요.</p>
+          <img src={Errorimage} alt="노이미지" width={120} height={120} />
+        </div>
       ) : (
         <div className="text-gray-400 py-10 text-center flex flex-col justify-center items-center">
           <p>조건에 맞는 매장을 찾을 수 없어요.</p>

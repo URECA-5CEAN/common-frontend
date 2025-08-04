@@ -16,7 +16,7 @@ export default function RoadDetailSection({ route }: RoadProps) {
     const Icon = NaviGuideIconMap[type] ?? Clock;
     return <Icon size={25} strokeWidth={2} className="text-primaryGreen-80" />;
   };
-  console.log(route);
+
   return (
     <div className="space-y-2 text-sm text-gray-700 h-screen mt-10">
       <RouteCard

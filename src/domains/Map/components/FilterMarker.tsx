@@ -14,6 +14,7 @@ import type { LatLng, MarkerProps } from '../KakaoMapContainer';
 import type { StoreInfo } from '../api/store';
 import { getDistance } from '../utils/getDistance';
 import type { LocationInfo } from '../pages/MapPage';
+import { Ring } from 'ldrs/react';
 
 const StoreOverlay = lazy(() => import('./StoreOverlay'));
 
@@ -201,7 +202,7 @@ function FilterMarker({
                 borderLeft: '10px solid transparent',
                 borderRight: '10px solid transparent',
                 borderTop: '15px solid white',
-                filter: 'drop-shadow(0 -1px 2px rgba(0,0,0,0.2))',
+                filter: 'drop-shadow(2px 4px 4px rgba(0,0,0,0.3))',
               }}
             />
             <div
@@ -215,7 +216,7 @@ function FilterMarker({
                 boxShadow:
                   m.id === selectedCardId
                     ? '0 10px 20px rgba(18, 158, 223, 0.35), 0 6px 6px rgba(0, 0, 0, 0.12)'
-                    : '0 2px 4px rgba(0, 0, 0, 0.15)',
+                    : '2px 4px 10px rgba(0, 0, 0, 0.35)',
                 position: 'relative',
                 zIndex: 2,
               }}
@@ -285,7 +286,11 @@ function FilterMarker({
 
       {/* 오버레이 데스크톱에서만, Suspense로 lazy 로딩) */}
       {overlay && isDesktop && (
-        <Suspense fallback={null}>
+        <Suspense
+          fallback={
+            <Ring size="24" stroke="3" bgOpacity="0" speed="2" color="white" />
+          }
+        >
           <div
             style={{
               position: 'fixed',
