@@ -70,6 +70,7 @@ interface SideBarProps {
   setIsBenefitModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setFocusField: Dispatch<SetStateAction<'start' | 'end' | number | null>>;
   focusField: 'start' | 'end' | number | null;
+  isLoading: boolean;
 }
 function MapSidebar({
   stores,
@@ -111,6 +112,7 @@ function MapSidebar({
   setIsBenefitModalOpen,
   setFocusField,
   focusField,
+  isLoading,
 }: SideBarProps) {
   if (!panel) return;
 
@@ -173,6 +175,7 @@ function MapSidebar({
             setWayInput={setWayInput}
             setFocusField={setFocusField}
             focusField={focusField}
+            isLoading={isLoading}
           />
 
           {/* 상세 패널 (panel.type이 'detail'일 때만) */}
@@ -214,6 +217,7 @@ function MapSidebar({
                   setWayInput={setWayInput}
                   setFocusField={setFocusField}
                   focusField={focusField}
+                  isLoading={isLoading}
                 />
               </Suspense>
             )}
@@ -266,6 +270,7 @@ function MapSidebar({
                 setWayInput={setWayInput}
                 setFocusField={setFocusField}
                 focusField={focusField}
+                isLoading={isLoading}
               />
             </BottomSheet>
           )}
@@ -314,6 +319,7 @@ function MapSidebar({
                   setWayInput={setWayInput}
                   setFocusField={setFocusField}
                   focusField={focusField}
+                  isLoading={isLoading}
                 />
               </BottomSheet>
             </Suspense>
@@ -363,6 +369,7 @@ function MapSidebar({
                   setWayInput={setWayInput}
                   setFocusField={setFocusField}
                   focusField={focusField}
+                  isLoading={isLoading}
                 />
               </BottomSheet>
             </Suspense>
