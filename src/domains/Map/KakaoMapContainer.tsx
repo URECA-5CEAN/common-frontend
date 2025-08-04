@@ -14,6 +14,7 @@ interface Props {
   end?: LatLng;
   waypoints?: LatLng[];
   panel: Panel;
+  onMapDrag: () => void;
 }
 
 export interface MarkerProps {
@@ -42,6 +43,7 @@ export default function KakaoMapContainer({
   end,
   waypoints,
   panel,
+  onMapDrag,
 }: PropsWithChildren<Props>) {
   // Kakao Maps SDK 비동기 로딩 훅
   const [loading, error] = useKakaoLoader({
@@ -70,6 +72,8 @@ export default function KakaoMapContainer({
       center={center}
       level={level} //
       style={{ width: '100%', height: '100%' }}
+      onClick={onMapDrag}
+      onDrag={onMapDrag}
       onCreate={onMapCreate} //맵 생성 인스턴스 콜백
       onCenterChanged={(m) => {
         // 사용자가 드래그/줌으로 중심 변경 시 중심좌표 변경

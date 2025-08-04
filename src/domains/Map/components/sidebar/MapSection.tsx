@@ -116,6 +116,28 @@ export default function MapSection({
         </div>
       )}
 
+      {keywordRequire && (
+        <ul className="mt-2 border border-gray-200 rounded-md shadow bg-white max-h-72 scrollbar-custom overflow-y-auto">
+          {stores.map((store) => (
+            <li
+              key={store.id}
+              className="p-2 border-b border-b-gray-200 hover:bg-gray-100 cursor-pointer"
+              onClick={() => {
+                SetKeyword(store.name);
+              }}
+            >
+              <div className="flex justify-between items-center">
+                <div className="flex flex-col">
+                  <span className="font-medium text-sm text-gray-800">
+                    {store.name}
+                  </span>
+                  <span className="text-xs text-gray-500">{store.address}</span>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
       {/* 리스트 아이템 반복 */}
       {status === 'loading' || status === 'error' ? (
         //위치 권한이 없으면 무조건 이 블록만!

@@ -653,6 +653,10 @@ export default function MapPage() {
     }
   }, [locationPath.search]);
 
+  const handleMapClickOrDrag = () => {
+    sheetRef.current?.snapTo('bottom');
+  };
+
   return (
     <div className="flex h-screen flex-col-reverse md:flex-row overflow-y-hidden ">
       {/* 사이드바 */}
@@ -728,6 +732,7 @@ export default function MapPage() {
             onMapCreate={setMap}
             onCenterChanged={setCenter}
             selectedRoute={selectedRoute}
+            onMapDrag={handleMapClickOrDrag}
             panel={panel}
             start={
               startValue.lat !== 0 && startValue.lng !== 0
