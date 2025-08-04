@@ -14,7 +14,7 @@ const NavigationSection = ({
   onMyPageClick,
 }: NavigationSectionProps) => {
   return (
-    <div className="absolute top-[340vh] md:top-[460vh] w-full">
+    <div className="absolute top-[340vh] md:top-[480vh] w-full">
       <div className="w-full max-w-[90rem] xl:max-w-[1440px] mx-auto px-[1rem] sm:px-[1.5rem] lg:px-[2rem] flex flex-col items-center text-center">
         {/* 제목 */}
         <div className="flex items-center justify-center mb-16 lg:mb-20">

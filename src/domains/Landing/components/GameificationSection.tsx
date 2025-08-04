@@ -7,7 +7,7 @@ import statsIcon from '@/assets/icons/stats-icon.svg';
 
 const GameificationSection = () => {
   return (
-    <div className="absolute top-[165vh] md:top-[270vh] w-full">
+    <div className="absolute top-[165vh] md:top-[290vh] w-full">
       <div className="w-full max-w-[90rem] xl:max-w-[1440px] mx-auto px-[1rem] sm:px-[1.5rem] lg:px-[2rem] flex flex-col items-center text-center">
         {/* 제목 */}
         <div className="flex items-center justify-center mb-[4rem] lg:mb-16">

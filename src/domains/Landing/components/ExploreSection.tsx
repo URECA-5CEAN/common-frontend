@@ -5,7 +5,7 @@ import vvipIcon from '@/assets/icons/vvip_icon.png';
 
 const ExploreSection = () => {
   return (
-    <div className="absolute top-[125vh] md:top-[190vh] w-full">
+    <div className="absolute top-[125vh] md:top-[200vh] w-full">
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center relative">
         {/* 데스크톱 버전 - 기존 레이아웃 유지 */}
         <div className="hidden md:block relative w-full">

@@ -1,6 +1,6 @@
 const StoreSection = () => {
   return (
-    <div className="absolute top-[280vh] md:top-[380vh] w-full">
+    <div className="absolute top-[280vh] md:top-[390vh] w-full">
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
         {/* 제목 */}
         <div className="flex items-center justify-center mb-4">
