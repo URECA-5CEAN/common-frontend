@@ -14,6 +14,7 @@ import type { LatLng, MarkerProps } from '../KakaoMapContainer';
 import type { StoreInfo } from '../api/store';
 import { getDistance } from '../utils/getDistance';
 import type { LocationInfo } from '../pages/MapPage';
+import { Ring } from 'ldrs/react';
 
 const StoreOverlay = lazy(() => import('./StoreOverlay'));
 
@@ -285,7 +286,11 @@ function FilterMarker({
 
       {/* 오버레이 데스크톱에서만, Suspense로 lazy 로딩) */}
       {overlay && isDesktop && (
-        <Suspense fallback={null}>
+        <Suspense
+          fallback={
+            <Ring size="24" stroke="3" bgOpacity="0" speed="2" color="white" />
+          }
+        >
           <div
             style={{
               position: 'fixed',

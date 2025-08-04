@@ -401,8 +401,6 @@ export default function MapPage() {
     setSelectedCardId('');
     SetKeyword('');
     if (menu !== '길찾기') {
-      setStartValue({ name: '', lat: 0, lng: 0 });
-      setEndValue({ name: '', lat: 0, lng: 0 });
       setWaypoints([]);
       setSelectedRoute(null);
     }

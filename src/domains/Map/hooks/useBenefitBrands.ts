@@ -8,6 +8,8 @@ export function useBenefitBrands(brandName?: string) {
     queryFn: async () => {
       if (!brandName) return [];
 
+      await new Promise((res) => setTimeout(res, 2000));
+
       const brands: BrandProps[] = await fetchBrands({ keyword: brandName });
       if (brands.length === 0) return [];
 

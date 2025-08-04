@@ -16,6 +16,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import RoadviewViewer from '../RoadviewView';
 import type { UserInfoApi } from '@/domains/MyPage/types/profile';
+import { Ring } from 'ldrs/react';
 interface DetailSectionProps {
   store: StoreInfo;
   onStartChange: (v: LocationInfo) => void;
@@ -65,7 +66,12 @@ function DetailSection({
     u.storeId.startsWith(store.brandName),
   ).length;
 
-  if (isLoading) return 'Loading...';
+  if (isLoading)
+    return (
+      <div className="h-screen flex justify-center items-center">
+        <Ring size="48" stroke="3" bgOpacity="0" speed="2" color="#6fc3d1" />
+      </div>
+    );
   if (isError) return `Error: ${error.message}`;
   if (benefits.length === 0) return '해당 브랜드 혜택이 없습니다.';
 
