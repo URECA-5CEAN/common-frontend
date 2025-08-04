@@ -44,6 +44,7 @@ import { extractBouns, type InternalBounds } from '../utils/extractBouns';
 import type { RouteItem } from '../components/sidebar/RoadSection';
 import { Coffee, ShoppingBag, ShoppingCart, Car } from 'lucide-react';
 import BenefitButton from '../components/BenefitButtons';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 //bounds 타입에러 방지
 
@@ -610,6 +611,25 @@ export default function MapPage() {
     },
     [fetchAndSetSearchStores, isCategory, selectedBenefit],
   );
+
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const shouldClick = params.get('autoClick');
+
+    if (shouldClick === 'true') {
+      setIsBenefitModalOpen(true);
+
+      const newParams = new URLSearchParams(location.search);
+      newParams.delete('autoClick');
+
+      navigate(`${location.pathname}?${newParams.toString()}`, {
+        replace: true,
+      });
+    }
+  }, [location.search]);
 
   return (
     <div className="flex h-screen flex-col-reverse md:flex-row overflow-y-hidden ">
