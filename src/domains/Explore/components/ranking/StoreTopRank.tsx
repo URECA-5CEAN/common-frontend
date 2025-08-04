@@ -70,17 +70,17 @@ const RankCard = ({ store, rank }: { store: StoreRank; rank: number }) => {
 
 const TopRankSection = ({ topStores }: { topStores: StoreRank[] }) => {
   return (
-    <div className="w-full py-8 md:py-12">
+    <div className="w-full py-8 md:py-12 bg-white rounded-lg shadow-inner">
       <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 md:gap-8 px-4">
-        {/* 모바일 */}
-        <div className="sm:hidden flex flex-col items-center gap-4 w-full">
+        {/* 모바일/태블릿 */}
+        <div className="lg:hidden flex flex-col items-center gap-4 w-full">
           <RankCard store={topStores[0]} rank={1} />
           <RankCard store={topStores[1]} rank={2} />
           <RankCard store={topStores[2]} rank={3} />
         </div>
 
-        {/* 태블릿/데스크톱 */}
-        <div className="hidden sm:flex flex-row items-center justify-center gap-4 md:gap-8">
+        {/* 데스크톱 */}
+        <div className="hidden lg:flex flex-row items-center justify-center gap-4 md:gap-8">
           <RankCard store={topStores[1]} rank={2} />
           <RankCard store={topStores[0]} rank={1} />
           <RankCard store={topStores[2]} rank={3} />

@@ -23,7 +23,7 @@ const StoreRankingList = ({ rankList }: StoreRankingListProps) => {
   return (
     <>
       <div
-        className={`${rowClass} mt-4 py-6 bg-[#E6F4F1] rounded-3xl text-gray-700 font-bold`}
+        className={`${rowClass} mt-4 py-6 bg-[#E6F4F1] rounded-3xl text-gray-600 font-bold`}
       >
         <div className={columnClass.rank}>순위</div>
         <div className={columnClass.store}>매장</div>
