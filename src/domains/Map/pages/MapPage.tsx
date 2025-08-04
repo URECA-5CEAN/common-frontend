@@ -708,7 +708,7 @@ export default function MapPage() {
             sheetY={sheetY}
           />
         )}
-        {map && (
+        {map && myLocation && panel.menu !== '길찾기' && (
           <SearchHereBtn
             map={map}
             myLocation={myLocation}
