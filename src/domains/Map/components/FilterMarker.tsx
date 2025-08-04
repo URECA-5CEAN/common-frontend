@@ -84,7 +84,7 @@ function FilterMarker({
         imageUrl: item.marker.brandImageUrl ?? '',
         isRecommended: item.marker.isRecommended ?? '',
       }));
-  }, [stores, center, map, panel.menu]);
+  }, [stores, map, panel.menu]);
 
   // stores 배열을 Map으로 변환
   const storeMap = useMemo(() => {

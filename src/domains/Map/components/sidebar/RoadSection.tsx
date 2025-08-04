@@ -30,6 +30,8 @@ import OnOffBtn from '../OnOffBtn';
 import DebouncedInput from '../DebouncedInput';
 import clsx from 'clsx';
 import RouteLine from '../RouteLine';
+import { Ring } from 'ldrs/react';
+import MapImage from '@/assets/image/dolphin-map.svg';
 export interface TrafficInfo {
   color: string;
   label: string;
@@ -118,6 +120,8 @@ export default function RoadSection({
   const [waypoints, setWaypoints] = useState<LocationInfo[]>([]);
   const [Roadmode, setRoadMode] = useState<'default' | 'ai'>('default');
   const [scenario, setScenario] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false);
+
   const keywordRequire =
     focusField !== null &&
     ((focusField === 'start' && startValue.name.length > 0) ||
@@ -129,6 +133,7 @@ export default function RoadSection({
     setViewMode((prev) => (prev === 'bookmark' ? 'saved' : 'bookmark'));
   };
   const handleNavigate = async () => {
+    setIsLoading(true);
     try {
       onClose(1);
       const body: DirectionRequestBody = {
@@ -173,6 +178,8 @@ export default function RoadSection({
       }
     } catch (err) {
       alert(err instanceof Error ? err.message : '오류 발생');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -503,7 +510,7 @@ export default function RoadSection({
         </div>
       </div>
 
-      {viewmode === 'bookmark' && (
+      {!isLoading && viewmode === 'bookmark' && (
         <div className="space-y-2 px-2">
           <div className=" flex justify-between">
             <p className="text-xl font-bold text-gray-600">즐겨찾기</p>
@@ -520,10 +527,10 @@ export default function RoadSection({
       )}
 
       {/* 저장한 경로 */}
-      {viewmode === 'saved' && (
+      {!isLoading && viewmode === 'saved' && (
         <div className="space-y-2 px-2">
           <p className="text-xl font-semibold text-gray-600">저장한 경로</p>
-          {!savedRoutes || savedRoutes.length === 0 ? (
+          {(!isLoading && !savedRoutes) || savedRoutes.length === 0 ? (
             <div className="py-4 text-center text-gray-400 text-sm space-y-1">
               <p>저장된 경로가 없어요!</p>
               {Roadmode === 'default' && (
@@ -568,7 +575,7 @@ export default function RoadSection({
       )}
 
       {/* 최근 경로 토글 */}
-      {viewmode === 'saved' && (
+      {!isLoading && viewmode === 'saved' && (
         <div className="space-y-2 px-2">
           <div className="flex items-center justify-between">
             <p className="text-xl font-semibold text-gray-600">최근 경로</p>
@@ -605,7 +612,7 @@ export default function RoadSection({
           )}
         </div>
       )}
-      {viewmode === 'route' && (
+      {!isLoading && viewmode === 'route' && (
         <div className="flex flex-col px-2 ">
           {routes.map((route, idx) => (
             <RouteCard
@@ -618,6 +625,17 @@ export default function RoadSection({
               refreshSavedRoutes={refreshSavedRoutes}
             />
           ))}
+        </div>
+      )}
+      {isLoading && (
+        <div className="h-72 flex flex-col justify-center items-center gap-3">
+          <img src={MapImage} alt="AI 길찾기 안내" className="w-24 h-24" />
+          {/* 안내 텍스트 */}
+          <div className="text-lg font-semibold text-gray-700">
+            AI가 최적의 경로를 찾고 있어요...
+          </div>
+          {/* Ring 스피너 */}
+          <Ring size="40" stroke="3" bgOpacity="0" speed="2" color="#6fc3d1" />
         </div>
       )}
     </div>
