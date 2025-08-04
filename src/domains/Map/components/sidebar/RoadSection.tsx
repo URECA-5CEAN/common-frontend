@@ -120,7 +120,8 @@ export default function RoadSection({
   const [waypoints, setWaypoints] = useState<LocationInfo[]>([]);
   const [Roadmode, setRoadMode] = useState<'default' | 'ai'>('default');
   const [scenario, setScenario] = useState<string>('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [savedRoutesLoading, setSavedRoutesLoading] = useState(true);
 
   const keywordRequire =
     focusField !== null &&
@@ -184,10 +185,12 @@ export default function RoadSection({
   };
 
   const refreshSavedRoutes = async () => {
+    setSavedRoutesLoading(true);
     const bookmarks = await fetchDirectionBookmarks();
     const converted = bookmarks.map(convertBookmarkToDirectionResponse);
     const routeItems = converted.flatMap((res) => DirecitonRoot(res));
     setSavedRoutes(routeItems);
+    setSavedRoutesLoading(false);
   };
 
   useEffect(() => {
@@ -527,51 +530,80 @@ export default function RoadSection({
       )}
 
       {/* 저장한 경로 */}
-      {!isLoading && viewmode === 'saved' && (
-        <div className="space-y-2 px-2">
-          <p className="text-xl font-semibold text-gray-600">저장한 경로</p>
-          {(!isLoading && !savedRoutes) || savedRoutes.length === 0 ? (
-            <div className="py-4 text-center text-gray-400 text-sm space-y-1">
-              <p>저장된 경로가 없어요!</p>
-              {Roadmode === 'default' && (
-                <>
-                  <p>AI 길찾기를 통해 경로 추천 받고 저장해봐요!</p>
-                  <Button size="sm" onClick={() => setRoadMode('ai')}>
-                    AI 길찾기 이동하기
-                  </Button>
-                </>
-              )}
-            </div>
-          ) : (
-            <ul className="space-y-1">
-              {savedRoutes.map((route, idx) => (
-                <li
-                  key={`${route.directionid}-${idx}`}
-                  className="flex cursor-pointer items-center justify-between px-3 py-2 bg-white rounded-2xl  hover:bg-primaryGreen-40 border border-white hover:border-primaryGreen-80"
-                  onClick={() => openRoadDetail(route)}
-                >
-                  <RouteLine
-                    from={route.from}
-                    waypoints={route.waypoints?.map((w) => w.name) || []}
-                    to={route.to}
-                  />
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSavedRoutes((s) =>
-                        s.filter((x) => x.directionid !== route.directionid),
-                      );
-                      routeDeleteBookmark(route);
-                    }}
-                    className="p-1 text-gray-400 hover:text-red-500"
-                  >
-                    <Trash2 size={18} className="cursor-pointer" />
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
+      {isLoading ? (
+        <div className="h-96 flex flex-col justify-center items-center gap-3">
+          <img
+            src="/images/ai-guide-character.webp"
+            alt="AI 길찾기 안내"
+            className="w-24 h-24 animate-bounce"
+          />
+          <div className="text-lg font-semibold text-gray-700">
+            AI가 최적 경로를 찾고 있어요...
+          </div>
+          <Ring size="40" stroke="3" bgOpacity="0" speed="2" color="#6fc3d1" />
         </div>
+      ) : (
+        // 로딩이 아닐 때만 아래 보이도록
+        viewmode === 'saved' && (
+          <div className="space-y-2 px-2">
+            <p className="text-xl font-semibold text-gray-600">저장한 경로</p>
+            {savedRoutesLoading ? (
+              <div className="h-screen flex justify-center items-center">
+                <Ring
+                  size="48"
+                  stroke="3"
+                  bgOpacity="0"
+                  speed="2"
+                  color="#6fc3d1"
+                />
+              </div>
+            ) : savedRoutes.length === 0 ? (
+              <div className="py-4 text-center text-gray-400 text-sm space-y-1">
+                <p>저장된 경로가 없어요!</p>
+                {Roadmode === 'default' && (
+                  <>
+                    <p>AI 길찾기를 통해 경로 추천 받고 저장해봐요!</p>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setRoadMode('ai')}
+                    >
+                      AI 길찾기 이동하기
+                    </Button>
+                  </>
+                )}
+              </div>
+            ) : (
+              <ul className="space-y-1">
+                {savedRoutes.map((route, idx) => (
+                  <li
+                    key={`${route.directionid}-${idx}`}
+                    className="flex cursor-pointer items-center justify-between px-3 py-2 bg-white rounded-2xl  hover:bg-primaryGreen-40 border border-white hover:border-primaryGreen-80"
+                    onClick={() => openRoadDetail(route)}
+                  >
+                    <RouteLine
+                      from={route.from}
+                      waypoints={route.waypoints?.map((w) => w.name) || []}
+                      to={route.to}
+                    />
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSavedRoutes((s) =>
+                          s.filter((x) => x.directionid !== route.directionid),
+                        );
+                        routeDeleteBookmark(route);
+                      }}
+                      className="p-1 text-gray-400 hover:text-red-500"
+                    >
+                      <Trash2 size={18} className="cursor-pointer" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )
       )}
 
       {/* 최근 경로 토글 */}

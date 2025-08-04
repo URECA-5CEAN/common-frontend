@@ -221,7 +221,6 @@ export default function MapPage() {
     null,
   );
   // 위치권한 여부
-  const { location, status, requestLocation } = useCurrentLocation();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   //제휴처 조회 및 AI 제휴처 조회
@@ -349,7 +348,28 @@ export default function MapPage() {
     };
   }, [map, filterStoresInView]);
 
+  const { location, status, setStatus, setLocation } = useCurrentLocation();
+
   // Geolocation API로 내 위치 가져오기
+
+  const requestLocation = useCallback(() => {
+    if (!navigator.geolocation) {
+      setStatus('error');
+      return;
+    }
+    setStatus('loading');
+    console.log('requestLocation - start');
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        setStatus('success');
+      },
+      () => {
+        setStatus('error');
+      },
+      { enableHighAccuracy: true },
+    );
+  }, []);
   useEffect(() => {
     requestLocation();
   }, [requestLocation]);
@@ -660,6 +680,7 @@ export default function MapPage() {
 
   const handleMapClickOrDrag = () => {
     sheetRef.current?.snapTo('bottom');
+    sheetDetail.current?.snapTo('bottom');
   };
 
   return (

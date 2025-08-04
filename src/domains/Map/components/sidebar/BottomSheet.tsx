@@ -51,7 +51,7 @@ const BottomSheet = forwardRef<BottomSheetHandle, BottomSheetProps>(
 
     // 최초 진입/상태 전환시
     useEffect(() => {
-      const target = isOpen ? bottomY : middleY;
+      const target = isOpen ? middleY : bottomY;
       animation.start({ y: target, transition });
       setCurrentY(target);
       onPositionChange?.(target);

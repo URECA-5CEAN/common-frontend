@@ -48,7 +48,10 @@ const CustomMarker: React.FC<CustomMarkerProps> = React.memo(
           yAnchor={1.0}
         >
           <div
-            onClick={() => onClick(id)}
+            onClick={(e) => {
+              onClick(id);
+              e.stopPropagation();
+            }}
             onMouseEnter={() => onMouseEnter(id)}
             onMouseLeave={onMouseLeave}
             style={{

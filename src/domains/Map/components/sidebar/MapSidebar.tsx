@@ -115,16 +115,19 @@ function MapSidebar({
   focusField,
   isLoading,
 }: SideBarProps) {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   //메뉴 선택 시 openMenu 호출 + 시트를 middle 위치로 스냅
   const onMenuSelect = (menu: MenuType) => {
     openMenu(menu);
     sheetRef.current?.snapTo('middle');
   };
+
   const onCloseSheet = () => {
     sheetDetail.current?.snapTo('bottom');
   };
+
   if (!panel) return;
+
   return (
     <>
       {/* 최상단 메뉴 */}
@@ -134,7 +137,7 @@ function MapSidebar({
         activeMenu={panel?.menu}
         onSelect={onMenuSelect}
         setIsBenefitModalOpen={setIsBenefitModalOpen}
-        setIsOpen={setIsOpen}
+        setIsOpen={setIsModalOpen}
       />
 
       <div className="hidden md:block">
@@ -177,8 +180,8 @@ function MapSidebar({
             setFocusField={setFocusField}
             focusField={focusField}
             isLoading={isLoading}
-            setIsOpen={setIsOpen}
-            isOpen={isOpen}
+            setIsOpen={setIsModalOpen}
+            isOpen={isModalOpen}
           />
 
           {/* 상세 패널 (panel.type이 'detail'일 때만) */}
@@ -221,8 +224,8 @@ function MapSidebar({
                   setFocusField={setFocusField}
                   focusField={focusField}
                   isLoading={isLoading}
-                  setIsOpen={setIsOpen}
-                  isOpen={isOpen}
+                  setIsOpen={setIsModalOpen}
+                  isOpen={isModalOpen}
                 />
               </Suspense>
             )}
@@ -276,23 +279,25 @@ function MapSidebar({
                 setFocusField={setFocusField}
                 focusField={focusField}
                 isLoading={isLoading}
-                setIsOpen={setIsOpen}
-                isOpen={isOpen}
+                setIsOpen={setIsModalOpen}
+                isOpen={isModalOpen}
               />
             </BottomSheet>
           )}
           {/* 상세 패널 (panel.type이 'detail'일 때만) */}
-          {panel?.type === 'detail' && panel.item && (
+          {panel.type === 'detail' && panel.item && (
             <Suspense fallback={<div>로딩 중…</div>}>
               <BottomSheet
                 key="detail-mobile"
                 ref={sheetDetail}
-                isOpen={panel.type === 'detail'}
+                isOpen={
+                  panel.type === 'detail' && (panel.item as unknown as boolean)
+                }
                 onClose={onCloseSheet}
                 onPositionChange={onDetailSheetPositionChange}
               >
                 <SidebarPanel
-                  key="detail"
+                  key="detail-mobile"
                   index={1}
                   panel={panel}
                   stores={stores}
@@ -327,8 +332,8 @@ function MapSidebar({
                   setFocusField={setFocusField}
                   focusField={focusField}
                   isLoading={isLoading}
-                  setIsOpen={setIsOpen}
-                  isOpen={isOpen}
+                  setIsOpen={setIsModalOpen}
+                  isOpen={isModalOpen}
                 />
               </BottomSheet>
             </Suspense>
@@ -337,7 +342,7 @@ function MapSidebar({
           {panel?.type === 'road' && panel.item && (
             <Suspense fallback={<div>로딩 중…</div>}>
               <BottomSheet
-                key="detail-mobile"
+                key="road-mobile"
                 ref={sheetDetail}
                 isOpen={panel.type === 'road'}
                 onClose={onCloseSheet}
@@ -379,8 +384,8 @@ function MapSidebar({
                   setFocusField={setFocusField}
                   focusField={focusField}
                   isLoading={isLoading}
-                  setIsOpen={setIsOpen}
-                  isOpen={isOpen}
+                  setIsOpen={setIsModalOpen}
+                  isOpen={isModalOpen}
                 />
               </BottomSheet>
             </Suspense>
