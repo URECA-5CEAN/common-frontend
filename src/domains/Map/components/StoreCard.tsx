@@ -3,6 +3,7 @@ import StartEndBtn from './StartEndBtn';
 import type { StoreInfo } from '../api/store';
 import clsx from 'clsx';
 import type { LocationInfo } from '../pages/MapPage';
+import React from 'react';
 
 interface StoreCardProps {
   store: StoreInfo;
@@ -15,7 +16,7 @@ interface StoreCardProps {
   onCenter: () => void;
 }
 
-export default function StoreCard({
+function StoreCard({
   store,
   openDetail,
   onStartChange,
@@ -44,6 +45,7 @@ export default function StoreCard({
         alt={store.name}
         className="w-[80px] h-[80px] rounded-md mr-3 self-center ml-1"
         loading="lazy"
+        decoding="async"
       />
       {store.isRecommended && (
         <div className="group">
@@ -95,3 +97,5 @@ export default function StoreCard({
     </div>
   );
 }
+
+export default React.memo(StoreCard);

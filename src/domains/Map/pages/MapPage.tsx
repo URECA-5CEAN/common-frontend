@@ -319,7 +319,7 @@ export default function MapPage() {
   // bounds 변경 시마다 필터링 + 검색 버튼 토글
   useDebounce(
     () => {
-      // 3초동안 추가 idle 이벤트 없으면 여기가 실행
+      // 6초동안 추가 idle 이벤트 없으면 여기가 실행
       filterStoresInView();
       setShowSearchBtn(true);
 
@@ -329,7 +329,7 @@ export default function MapPage() {
         setShowSearchBtn(false);
       }, 5000);
     },
-    300,
+    600,
     [idleCount], // 줌 드래그 할 시 값 변경
   );
 
@@ -359,6 +359,12 @@ export default function MapPage() {
       setMyLocation(location);
     }
   }, [location]);
+
+  useEffect(() => {
+    if (stores.length > 0 && map) {
+      filterStoresInView();
+    }
+  }, [stores, map]);
   // 내 위치가 생기면 지도 중심으로 이동
   useEffect(() => {
     if (map && myLocation) {
@@ -390,20 +396,20 @@ export default function MapPage() {
 
   //즐겨찾기 사이드바 클릭 시 즐겨찾기만 보이도록 +AI 추천 제휴처 추가
   const displayedStores = useMemo<StoreInfo[]>(() => {
+    // 패널이 '즐겨찾기'면 즐겨찾기만
     if (panel.menu === '즐겨찾기') return bookmarks;
 
-    const list = [...filteredStores];
-
+    // 최초 렌더(아직 filter 안됨)는 stores 전체, 이후엔 filteredStores 사용
+    const list = filteredStores.length > 0 ? filteredStores : stores;
+    //  AI 추천 매장은 맨 앞
     if (recommendedStore) {
-      // 이미 있는 경우도 일단 제외하고 맨 앞에 다시 삽입
       const listWithoutRecommended = list.filter(
         (store) => store.id !== recommendedStore.id,
       );
       return [recommendedStore, ...listWithoutRecommended];
     }
-
     return list;
-  }, [panel.menu, bookmarks, filteredStores, recommendedStore]);
+  }, [panel.menu, bookmarks, stores, filteredStores, recommendedStore]);
 
   // 사이드바 메뉴 Open
   const openMenu = useCallback((menu: MenuType) => {
@@ -540,8 +546,8 @@ export default function MapPage() {
   }, []);
 
   //즐겨찾기 토글
-  const toggleBookmark = async (store: StoreInfo) => {
-    try {
+  const toggleBookmark = useCallback(
+    async (store: StoreInfo) => {
       if (bookmarks.some((bookmark) => bookmark.id === store.id)) {
         await deleteBookmark(store.id);
         setBookmarks((prev) =>
@@ -551,10 +557,9 @@ export default function MapPage() {
         await createBookmark(store.id);
         setBookmarks((prev) => [...prev, store]);
       }
-    } catch (e) {
-      console.error(e);
-    }
-  };
+    },
+    [bookmarks],
+  );
 
   //즐겨찾기 구분
   const bookmarkIds: Set<string> = useMemo(

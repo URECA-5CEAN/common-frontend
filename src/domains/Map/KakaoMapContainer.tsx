@@ -1,4 +1,4 @@
-import { useRef, useState, type PropsWithChildren } from 'react';
+import React, { useRef, useState, type PropsWithChildren } from 'react';
 import { CustomOverlayMap, Map, useKakaoLoader } from 'react-kakao-maps-sdk';
 import type { RouteItem } from './components/sidebar/RoadSection';
 import PolyLineRender from './components/PolyLineRender';
@@ -32,7 +32,7 @@ export interface LatLng {
   recommendReason?: string;
 }
 
-export default function KakaoMapContainer({
+function KakaoMapContainer({
   center,
   level,
   onMapCreate,
@@ -305,3 +305,5 @@ export default function KakaoMapContainer({
     </Map>
   );
 }
+
+export default React.memo(KakaoMapContainer);

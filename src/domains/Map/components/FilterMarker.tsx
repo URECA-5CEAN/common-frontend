@@ -8,7 +8,7 @@ import React, {
   lazy,
   memo,
 } from 'react';
-import { CustomOverlayMap, MarkerClusterer } from 'react-kakao-maps-sdk';
+import { MarkerClusterer } from 'react-kakao-maps-sdk';
 import { useMedia } from 'react-use';
 import type { LatLng } from '../KakaoMapContainer';
 import type { StoreInfo } from '../api/store';
@@ -16,6 +16,7 @@ import { getDistance } from '../utils/getDistance';
 import type { LocationInfo } from '../pages/MapPage';
 import { Ring } from 'ldrs/react';
 import type { Panel } from './sidebar/MapSidebar';
+import CustomMarker from './CustomMarker';
 
 const StoreOverlay = lazy(() => import('./StoreOverlay'));
 
@@ -57,9 +58,6 @@ function FilterMarker({
   const hoverOutRef = useRef<number | null>(null);
   //2d마커
 
-  const [kakaoClusterer, setKakaoClusterer] =
-    useState<kakao.maps.MarkerClusterer | null>(null);
-
   // 오버레이 위치와 스토어 정보 저장
   const [overlay, setOverlay] = useState<{
     x: number;
@@ -68,8 +66,10 @@ function FilterMarker({
   } | null>(null);
 
   const Markers = useMemo(() => {
-    const level = map?.getLevel?.() ?? 5;
-    const max2D = level <= 2 ? 30 : level <= 4 ? 30 : level <= 6 ? 20 : 10;
+    if (!map) return [];
+    if (panel.menu === '길찾기') return [];
+    const level = map.getLevel?.() ?? 5;
+    const max2D = level <= 2 ? 20 : level <= 4 ? 20 : level <= 6 ? 10 : 10;
     return stores
       .map((m) => ({
         marker: m,
@@ -84,7 +84,7 @@ function FilterMarker({
         imageUrl: item.marker.brandImageUrl ?? '',
         isRecommended: item.marker.isRecommended ?? '',
       }));
-  }, [stores, center, map]);
+  }, [stores, center, map, panel.menu]);
 
   // stores 배열을 Map으로 변환
   const storeMap = useMemo(() => {
@@ -150,99 +150,35 @@ function FilterMarker({
     [openDetail, storeMap],
   );
 
+  const visibleMarkers = useMemo(() => {
+    if (!map) return Markers;
+    const bounds = map.getBounds();
+    // 실제 화면에 보이는 마커만 필터링
+    return Markers.filter((m) => {
+      const pos = new kakao.maps.LatLng(m.lat, m.lng);
+      return bounds.contain(pos);
+    });
+  }, [Markers, map]);
+
   // 2D 마커 렌더링 함수 분리
   const renderFarMarkers = useCallback(
     () =>
-      Markers.map((m, idx) => (
-        <React.Fragment
+      visibleMarkers.map((m, idx) => (
+        <CustomMarker
           key={m.id && m.id.trim() !== '' ? m.id : `unknown-${idx}`}
-        >
-          <CustomOverlayMap
-            position={{ lat: m.lat, lng: m.lng }}
-            zIndex={shouldCluster ? 2 : 3}
-            xAnchor={0.5}
-            yAnchor={1.0}
-          >
-            <div
-              onClick={() => handleClick(m.id)}
-              onMouseEnter={() => handleMouseOver(m.id)}
-              onMouseLeave={handleMouseOut}
-              style={{
-                width: 40,
-                height: 56,
-                position: 'relative',
-                cursor: 'pointer',
-                transform:
-                  m.id === selectedCardId ? 'scale(1.3)' : 'scale(1.0)',
-                transition: 'transform 0.25s ease',
-                animation:
-                  m.id === selectedCardId
-                    ? 'floatY 2.0s ease infinite'
-                    : undefined,
-              }}
-            >
-              <div
-                style={{
-                  position: 'absolute',
-                  top: 38,
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  width: 0,
-                  height: 0,
-                  zIndex: 1,
-                  borderLeft: '10px solid transparent',
-                  borderRight: '10px solid transparent',
-                  borderTop: '15px solid white',
-                  filter: 'drop-shadow(2px 4px 4px rgba(0,0,0,0.3))',
-                }}
-              />
-              <div
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: '50%',
-                  overflow: 'hidden',
-                  backgroundColor: '#fff',
-                  border: '2px solid #fff',
-                  boxShadow:
-                    m.id === selectedCardId
-                      ? '0 10px 20px rgba(18, 158, 223, 0.35), 0 6px 6px rgba(0, 0, 0, 0.12)'
-                      : '2px 4px 10px rgba(0, 0, 0, 0.35)',
-                  position: 'relative',
-                  zIndex: 2,
-                }}
-              >
-                <img
-                  src={m.imageUrl}
-                  alt="store"
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    display: 'block',
-                  }}
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-            </div>
-          </CustomOverlayMap>
-
-          {m.isRecommended && (
-            <CustomOverlayMap
-              position={{ lat: m.lat, lng: m.lng }}
-              zIndex={2}
-              xAnchor={0.5}
-              yAnchor={1.0}
-            >
-              <div className="relative">
-                <div className="w-12 h-12 rounded-full bg-primaryGreen opacity-80 animate-ping " />
-              </div>
-            </CustomOverlayMap>
-          )}
-        </React.Fragment>
+          id={m.id}
+          lat={m.lat}
+          lng={m.lng}
+          imageUrl={m.imageUrl}
+          isRecommended={m.isRecommended}
+          selected={selectedCardId === m.id}
+          onClick={handleClick}
+          onMouseEnter={handleMouseOver}
+          onMouseLeave={handleMouseOut}
+          shouldCluster={shouldCluster}
+        />
       )),
-    [],
+    [Markers, selectedCardId, handleClick, handleMouseOver, handleMouseOut],
   );
 
   // 마커 개수에 따라 클러스터링 여부 결정
@@ -250,22 +186,12 @@ function FilterMarker({
   // 데스크톱 여부 판단 (모바일에서 오버레이 안뜨게)
   const isDesktop = useMedia('(min-width: 640px)');
 
-  useEffect(() => {
-    if (!kakaoClusterer) return;
-    if (panel.menu === '길찾기') {
-      kakaoClusterer.setMap(null);
-    } else {
-      kakaoClusterer.setMap(map ?? null);
-    }
-  }, [panel.menu, kakaoClusterer, map]);
-
   if (panel.menu === '길찾기') return null;
   return (
     <>
       {/* 클러스터링 분기 */}
       {shouldCluster ? (
         <MarkerClusterer
-          onCreate={setKakaoClusterer}
           averageCenter
           minLevel={7}
           gridSize={200}
