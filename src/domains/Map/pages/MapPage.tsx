@@ -221,7 +221,7 @@ export default function MapPage() {
     null,
   );
   // 위치권한 여부
-  const { location, hasLocation, requestLocation } = useCurrentLocation();
+  const { location, status, requestLocation } = useCurrentLocation();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   //제휴처 조회 및 AI 제휴처 조회
@@ -634,31 +634,32 @@ export default function MapPage() {
     [fetchAndSetSearchStores, isCategory, selectedBenefit],
   );
 
-  const location = useLocation();
+  const locationPath = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
+    const params = new URLSearchParams(locationPath.search);
     const shouldClick = params.get('autoClick');
 
     if (shouldClick === 'true') {
       setIsBenefitModalOpen(true);
 
-      const newParams = new URLSearchParams(location.search);
+      const newParams = new URLSearchParams(locationPath.search);
       newParams.delete('autoClick');
 
-      navigate(`${location.pathname}?${newParams.toString()}`, {
+      navigate(`${locationPath.pathname}?${newParams.toString()}`, {
         replace: true,
       });
     }
-  }, [location.search]);
+  }, [locationPath.search]);
 
+  console.log(status);
   return (
     <div className="flex h-screen flex-col-reverse md:flex-row overflow-y-hidden ">
       {/* 사이드바 */}
       <aside className="relative top-[62px] md:top-[86px] mr-6 md:m-0  left-0 bottom-0 md:w-[420px] z-20 flex-shrink-0">
         <MapSidebar
-          stores={hasLocation ? displayedStores : []}
+          stores={status === 'success' ? displayedStores : []}
           panel={panel}
           openMenu={openMenu}
           openDetail={openDetail}
@@ -744,7 +745,7 @@ export default function MapPage() {
             {/* 2D 마커/오버레이 */}
             {panel.type !== 'road' &&
               panel.menu !== '길찾기' &&
-              hasLocation && (
+              status === 'success' && (
                 <FilterMarker
                   hoveredMarkerId={hoveredId}
                   setHoveredMarkerId={setHoveredId}
@@ -797,13 +798,7 @@ export default function MapPage() {
                 placeholder="검색"
               />
             </div>
-            {!hasLocation && (
-              <div className="text-red-500 p-2">
-                위치 권한이 허용되지 않았습니다.
-                <br />
-                <button onClick={requestLocation}>권한 다시 요청</button>
-              </div>
-            )}
+
             <BenefitModal
               isBenefitModalOpen={isBenefitModalOpen}
               setIsBenefitModalOpen={setIsBenefitModalOpen}

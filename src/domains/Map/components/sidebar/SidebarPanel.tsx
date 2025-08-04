@@ -159,6 +159,7 @@ export default function SidebarPanel({
               mode={mode}
               setMode={setMode}
               searchStores={searchStores}
+              isLoading={isLoading}
             />
           </>
         )}

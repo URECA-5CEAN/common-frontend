@@ -4,20 +4,24 @@ export function useCurrentLocation() {
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(
     null,
   );
-  const [hasLocation, setHasLocation] = useState(false);
+  // 상태값 추가
+  const [status, setStatus] = useState<
+    'idle' | 'loading' | 'success' | 'error'
+  >('idle');
 
   const requestLocation = useCallback(() => {
     if (!navigator.geolocation) {
-      setHasLocation(false);
+      setStatus('error');
       return;
     }
+    setStatus('loading');
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-        setHasLocation(true);
+        setStatus('success');
       },
       () => {
-        setHasLocation(false);
+        setStatus('error');
       },
       { enableHighAccuracy: true },
     );
@@ -25,9 +29,9 @@ export function useCurrentLocation() {
 
   return {
     location,
-    hasLocation,
+    status,
     requestLocation,
     setLocation,
-    setHasLocation,
+    setStatus,
   };
 }
