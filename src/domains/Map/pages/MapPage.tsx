@@ -357,7 +357,6 @@ export default function MapPage() {
       return;
     }
     setStatus('loading');
-    console.log('requestLocation - start');
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
