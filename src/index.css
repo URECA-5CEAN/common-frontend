@@ -1,4 +1,6 @@
 @import 'tailwindcss';
+@import 'swiper/css';
+@import 'swiper/css/pagination';
 
 :root {
   font-family: 'NanumSquareRound';
@@ -314,16 +316,18 @@
   }
 }
 
-@keyframes floatBounce {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-4px);
-  }
+/* 배너 스와이퍼 */
+.swiper-pagination-bullet {
+  transition: width 0.1s;
+  width: 15px;
+  height: 4px;
+  border-radius: 8px;
+  background-color: #c7c7c7;
 }
-
-.animate-floatBounce {
-  animation: floatBounce 1.5s ease-in-out infinite;
+.swiper-pagination-bullet-active {
+  width: 25px;
+  background-color: #ffffff;
+}
+.swiper-pagination {
+  /* top: 110px !important; */
 }

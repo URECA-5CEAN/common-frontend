@@ -18,7 +18,7 @@ const MENU_CONFIG = {
   desktop: {
     common: [
       { to: '/map', label: '지도' },
-      { to: '/explore/rankings', label: '혜택탐험' },
+      { to: '/explore/reward', label: '혜택탐험' },
     ],
     loggedIn: [
       { to: '/chat', label: '채팅' },
@@ -31,6 +31,7 @@ const MENU_CONFIG = {
       {
         label: '혜택탐험',
         subItems: [
+          { to: '/explore/reward', label: '기프티콘' },
           { to: '/explore/rankings', label: '혜택 순위' },
           { to: '/explore/share', label: '혜택 나누기' },
         ],
