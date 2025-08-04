@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { getStoreRank } from '@/domains/Explore/api/rank';
 import StoreRankingList from './StoreRankingList';
 import type { StoreRank } from '@/domains/Explore/types/rank';
+import TopRankSection from './StoreTopRank';
 
 const UserStoreRanking = () => {
   const [storeRankList, setStoreRankList] = useState<StoreRank[]>([]);
@@ -21,7 +22,12 @@ const UserStoreRanking = () => {
       </div>
     );
   }
-  return <StoreRankingList rankList={storeRankList} />;
+  return (
+    <>
+      <TopRankSection topStores={storeRankList.slice(0, 3)} />
+      <StoreRankingList rankList={storeRankList} />
+    </>
+  );
 };
 
 export default UserStoreRanking;

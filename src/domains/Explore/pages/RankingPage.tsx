@@ -28,7 +28,7 @@ const RankingPage = () => {
             className={`relative cursor-pointer px-5 py-2.5 font-bold text-xl ${activeTab === i ? 'text-[#1CB0F7]' : 'text-gray-300'}`}
           >
             {item.title} 순위
-            <span className="absolute bottom-0 left-0 h-[1px] w-full bg-gray-300" />
+            <span className="absolute bottom-0 left-0 h-[1px] w-full " />
             <span
               className={`absolute bottom-0 h-0.5 transition-all duration-400 bg-[#1CB0F7] ${activeTab === i ? 'left-0 w-full translate-x-0' : 'left-1/2 w-0 -translate-x-1/2'}`}
             />
