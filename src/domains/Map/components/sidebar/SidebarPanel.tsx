@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
 import clsx from 'clsx';
-import UserSection from './UserSection';
 import MapSection from './MapSection';
 import StarSection from './StarSection';
 import DetailSection from './DetailSection';
@@ -19,6 +18,7 @@ import { getUserInfo, getUserStat } from '@/domains/MyPage/api/profile';
 import type { UserInfoApi } from '@/domains/MyPage/types/profile';
 import type { LocationInfo } from '../../pages/MapPage';
 import RoadDetailSection from './RoadDetailSection';
+import Banner from '@/domains/MyPage/components/Banner';
 
 interface SidebarPanelProps {
   index: number; // 0 = 메뉴, 1 = 상세
@@ -134,40 +134,33 @@ export default function SidebarPanel({
       style={{ left }}
     >
       <div className="p-4 pr-2 bg-white relative md:shadow-lg rounded-lg scrollbar-custom overflow-y-auto h-auto  md:max-h-[calc(100vh-78px)] z-10 ">
-        {/* 첫 번째 패널: 사용자 정보 */}
-        <div className="hidden md:block">
-          {index === 0 && userInfo && panel.menu !== '길찾기' && (
-            <UserSection
-              membership={userInfo.membership}
-              username={userInfo.nickname}
-              level={userInfo.level}
-              currentExp={userInfo.exp}
-              nextLevelExp={50}
-            />
-          )}
-        </div>
         {/* 메뉴 및 상세 분기 렌더링 */}
         {index === 0 && panel.menu === '지도' && (
-          <MapSection
-            openDetail={openDetail}
-            stores={stores}
-            changeKeyword={changeKeyword}
-            keyword={keyword}
-            onStartChange={onStartChange}
-            onEndChange={onEndChange}
-            toggleBookmark={toggleBookmark}
-            bookmarkIds={bookmarkIds}
-            resetKeyword={resetKeyword}
-            selectedCardId={selectedCardId}
-            SetKeyword={SetKeyword}
-            goToStore={goToStore}
-            searchInput={searchInput}
-            handleSearchChange={handleSearchChange}
-            mode={mode}
-            setMode={setMode}
-            searchStores={searchStores}
-            isLoading={isLoading}
-          />
+          <>
+            {/* 광고 배너 */}
+            <div className="px-2">
+              <Banner />
+            </div>
+            <MapSection
+              openDetail={openDetail}
+              stores={stores}
+              changeKeyword={changeKeyword}
+              keyword={keyword}
+              onStartChange={onStartChange}
+              onEndChange={onEndChange}
+              toggleBookmark={toggleBookmark}
+              bookmarkIds={bookmarkIds}
+              resetKeyword={resetKeyword}
+              selectedCardId={selectedCardId}
+              SetKeyword={SetKeyword}
+              goToStore={goToStore}
+              searchInput={searchInput}
+              handleSearchChange={handleSearchChange}
+              mode={mode}
+              setMode={setMode}
+              searchStores={searchStores}
+            />
+          </>
         )}
         {index === 0 && panel.menu === '즐겨찾기' && (
           <StarSection

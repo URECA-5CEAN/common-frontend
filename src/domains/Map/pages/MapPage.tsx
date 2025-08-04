@@ -45,8 +45,7 @@ import type { RouteItem } from '../components/sidebar/RoadSection';
 import { Coffee, ShoppingBag, ShoppingCart, Car } from 'lucide-react';
 import BenefitButton from '../components/BenefitButtons';
 import { useCurrentLocation } from '../hooks/useCurrentLoaction';
-
-//bounds 타입에러 방지
+import { useLocation, useNavigate } from 'react-router-dom';
 
 type CategoryType =
   | '음식점'
@@ -634,6 +633,25 @@ export default function MapPage() {
     },
     [fetchAndSetSearchStores, isCategory, selectedBenefit],
   );
+
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const shouldClick = params.get('autoClick');
+
+    if (shouldClick === 'true') {
+      setIsBenefitModalOpen(true);
+
+      const newParams = new URLSearchParams(location.search);
+      newParams.delete('autoClick');
+
+      navigate(`${location.pathname}?${newParams.toString()}`, {
+        replace: true,
+      });
+    }
+  }, [location.search]);
 
   return (
     <div className="flex h-screen flex-col-reverse md:flex-row overflow-y-hidden ">
