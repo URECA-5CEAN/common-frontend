@@ -2,6 +2,7 @@ import { type PropsWithChildren } from 'react';
 import { CustomOverlayMap, Map, useKakaoLoader } from 'react-kakao-maps-sdk';
 import type { RouteItem } from './components/sidebar/RoadSection';
 import PolyLineRender from './components/PolyLineRender';
+import type { Panel } from './components/sidebar/MapSidebar';
 
 interface Props {
   center: LatLng;
@@ -12,6 +13,7 @@ interface Props {
   start?: LatLng;
   end?: LatLng;
   waypoints?: LatLng[];
+  panel: Panel;
 }
 
 export interface MarkerProps {
@@ -38,6 +40,7 @@ export default function KakaoMapContainer({
   start,
   end,
   waypoints,
+  panel,
 }: PropsWithChildren<Props>) {
   // Kakao Maps SDK 비동기 로딩 훅
   const [loading, error] = useKakaoLoader({
@@ -63,7 +66,7 @@ export default function KakaoMapContainer({
         onCenterChanged(c);
       }}
     >
-      {start && (
+      {start && panel.menu === '길찾기' && (
         <CustomOverlayMap position={start} xAnchor={0.5} yAnchor={1.0}>
           <div
             style={{
@@ -114,6 +117,7 @@ export default function KakaoMapContainer({
         </CustomOverlayMap>
       )}
       {waypoints &&
+        panel.menu === '길찾기' &&
         waypoints.map((point, idx) => (
           <CustomOverlayMap
             key={idx}
@@ -162,7 +166,7 @@ export default function KakaoMapContainer({
             </div>
           </CustomOverlayMap>
         ))}
-      {end && (
+      {end && panel.menu === '길찾기' && (
         <CustomOverlayMap position={end} xAnchor={0.5} yAnchor={1.0}>
           <div style={{ position: 'relative', width: 30, height: 42 }}>
             {/* 꼬리 */}

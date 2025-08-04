@@ -681,6 +681,7 @@ export default function MapPage() {
             onMapCreate={setMap}
             onCenterChanged={setCenter}
             selectedRoute={selectedRoute}
+            panel={panel}
             start={
               startValue.lat !== 0 && startValue.lng !== 0
                 ? { lat: startValue.lat, lng: startValue.lng }
