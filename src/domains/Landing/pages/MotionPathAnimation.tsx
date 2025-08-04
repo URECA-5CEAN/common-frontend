@@ -42,6 +42,47 @@ const MotionPathAnimation: React.FC = () => {
   const gsapLoadedRef = useRef(false);
   const [screenSize, setScreenSize] = React.useState({ width: 0, height: 0 });
   const [scaledPath, setScaledPath] = React.useState('');
+  const [checkpointStates, setCheckpointStates] = React.useState([
+    false,
+    false,
+    false,
+    false,
+    false,
+  ]); // 5개 체크포인트 상태
+
+  // 체크포인트 위치 (progress 기준)
+  const checkpointPositions = React.useMemo(
+    () => [
+      0.12, // 지도 섹션 앞 부분 - y 좌표가 처음 떨어지는 지점
+      0.35, // 혜택 탐험 섹션 옆 커브
+      0.55, // 게이미피케이션 섹션 옆 커브
+      0.75, // 제휴처 섹션 옆 커브
+      0.9, // 네비게이션 섹션 커브 전
+    ],
+    [],
+  );
+
+  // path 상의 실제 위치 계산 함수
+  const getPathPositionAtProgress = React.useCallback((progress: number) => {
+    if (
+      !motionPathRef.current ||
+      typeof window === 'undefined' ||
+      !window.MotionPathPlugin
+    ) {
+      return { x: 0, y: 0 };
+    }
+
+    try {
+      const MotionPathPlugin = window.MotionPathPlugin;
+      const rawPath = MotionPathPlugin.getRawPath(motionPathRef.current);
+      if (!rawPath || rawPath.length === 0) return { x: 0, y: 0 };
+
+      return MotionPathPlugin.getPositionOnPath(rawPath, progress);
+    } catch (error) {
+      console.warn('Path position calculation failed:', error);
+      return { x: 0, y: 0 };
+    }
+  }, []);
 
   // 원본 path 데이터 (고정값)
   const originalPath =
@@ -206,6 +247,13 @@ const MotionPathAnimation: React.FC = () => {
             if (prevDirection !== self.direction) {
               prevDirection = self.direction;
             }
+
+            // 체크포인트 상태 업데이트
+            const newCheckpointStates = checkpointPositions.map(
+              (position) => self.progress >= position,
+            );
+            setCheckpointStates(newCheckpointStates);
+
             // path 끝에 가까워지면 고래 이미지를 점점 투명하게 만들기
             if (self.progress > 0.9) {
               const opacity = Math.max(0, (1 - self.progress) * 10);
@@ -224,7 +272,7 @@ const MotionPathAnimation: React.FC = () => {
         },
       });
     }
-  }, []);
+  }, [checkpointPositions]);
 
   const loadGSAP = useCallback(() => {
     if (gsapLoadedRef.current) {
@@ -321,7 +369,7 @@ const MotionPathAnimation: React.FC = () => {
             .st0 {
               fill: none;
               stroke: white;
-              stroke-width: ${screenSize.width >= 2000 ? 20 : 15};
+              stroke-width: ${screenSize.width >= 2000 ? 20 : 10};
               stroke-opacity: 0.2;
               stroke-linecap: round;
               stroke-linejoin: round;
@@ -330,14 +378,81 @@ const MotionPathAnimation: React.FC = () => {
           `}
         </style>
 
-        {/* 이동 경로 */}
+        {/* 이동 경로 - 배경으로 먼저 배치 */}
         <path
           ref={motionPathRef}
           id="motionPath"
           className="st0"
           d={scaledPath || originalPath}
         />
-        {/* 이미지 실제로 화면에 나타나는 부분 */}
+
+        {/* 체크포인트 아이콘들 - GSAP가 로드된 후에만 표시 */}
+        {gsapLoadedRef.current &&
+          checkpointPositions.map((_, index) => {
+            const isCompleted = checkpointStates[index];
+
+            // 각 체크포인트의 실제 path 위치 계산
+            const getCheckpointCoords = () => {
+              const progress = checkpointPositions[index];
+              const pathPosition = getPathPositionAtProgress(progress);
+
+              // GSAP가 아직 로드되지 않았거나 path가 준비되지 않은 경우 대체 좌표 사용
+              if (pathPosition.x === 0 && pathPosition.y === 0) {
+                if (screenSize.width >= 2000) {
+                  // 큰 화면용 대체 좌표 - largeScreenPath 기준
+                  const fallbackCoords = [
+                    { x: 95, y: 145 }, // 12% - y 좌표가 처음 떨어지는 지점
+                    { x: 535, y: 776 }, // 35%
+                    { x: 1286, y: 1200 }, // 55%
+                    { x: 759, y: 1586 }, // 75%
+                    { x: 586, y: 3271 }, // 90%
+                  ];
+                  return fallbackCoords[index] || { x: 0, y: 0 };
+                } else {
+                  // 일반 화면용 대체 좌표 - originalPath 기준
+                  const fallbackCoords = [
+                    { x: 57, y: 79 }, // 12% - y 좌표가 처음 떨어지는 지점
+                    { x: 320, y: 447 }, // 35%
+                    { x: 771, y: 688 }, // 55%
+                    { x: 454, y: 899 }, // 75%
+                    { x: 350, y: 1790 }, // 90%
+                  ];
+                  return fallbackCoords[index] || { x: 0, y: 0 };
+                }
+              }
+
+              return pathPosition;
+            };
+
+            const coords = getCheckpointCoords();
+
+            return (
+              <g key={index}>
+                {/* 체크 배경 원 */}
+                <circle
+                  cx={coords.x}
+                  cy={coords.y}
+                  r={screenSize.width >= 2000 ? 20 : 15}
+                  fill={isCompleted ? '#158c9f' : 'white'}
+                  opacity={1}
+                />
+                {/* 체크 마크 */}
+                <path
+                  d={`M ${coords.x - (screenSize.width >= 2000 ? 6 : 4)} ${coords.y} 
+                      L ${coords.x - (screenSize.width >= 2000 ? 1 : 0.5)} ${coords.y + (screenSize.width >= 2000 ? 3 : 2)} 
+                      L ${coords.x + (screenSize.width >= 2000 ? 6 : 4)} ${coords.y - (screenSize.width >= 2000 ? 3 : 2)}`}
+                  stroke={isCompleted ? 'white' : '#6B7280'}
+                  strokeWidth={screenSize.width >= 2000 ? 3 : 2}
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  opacity={1}
+                />
+              </g>
+            );
+          })}
+
+        {/* 이미지 실제로 화면에 나타나는 부분 - path 위에 배치 */}
         <foreignObject x="0" y="0" width="100%" height="100%">
           <div
             ref={motionDivRef}
