@@ -138,6 +138,37 @@ export default function RoadSection({
     setViewMode((prev) => (prev === 'bookmark' ? 'saved' : 'bookmark'));
   };
   const handleNavigate = async () => {
+    if (startValue.name === '') {
+      toast.error(<span>출발지를 입력해주세요</span>, {
+        duration: 2000,
+        style: {
+          border: '1px solid #ebebeb',
+          padding: '16px',
+          color: '#e4270f',
+        },
+        iconTheme: {
+          primary: '#e4270f',
+          secondary: '#FFFAEE',
+        },
+      });
+      return;
+    }
+    if (endValue.name === '') {
+      toast.error(<span>도착지를 입력해주세요</span>, {
+        duration: 2000,
+        style: {
+          border: '1px solid #ebebeb',
+          padding: '16px',
+          color: '#e4270f',
+        },
+        iconTheme: {
+          primary: '#e4270f',
+          secondary: '#FFFAEE',
+        },
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
       onClose(1);
@@ -598,9 +629,10 @@ export default function RoadSection({
             className="w-24 h-24 animate-bounce"
           />
           <div className="text-lg font-semibold text-gray-700">
-            AI가 최적 경로를 찾고 있어요...
+            {Roadmode === 'default'
+              ? '경로를 찾고 있어요'
+              : 'AI가 최적 경로를 찾고 있어요...'}
           </div>
-          <Ring size="40" stroke="3" bgOpacity="0" speed="2" color="#6fc3d1" />
         </div>
       ) : (
         // 로딩이 아닐 때만 아래 보이도록

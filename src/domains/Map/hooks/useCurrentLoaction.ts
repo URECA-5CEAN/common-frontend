@@ -21,8 +21,7 @@ export function useCurrentLocation() {
         setHasLocation(true);
         setIsRequesting(false);
       },
-      (error) => {
-        console.log('위치 실패', error.code, error.message);
+      () => {
         setHasLocation(false);
         setIsRequesting(false);
       },

@@ -235,12 +235,6 @@ export default function MapPage() {
             ...aiResult.store,
             isRecommended: aiResult.reason,
           };
-          // if (!center) return;
-          console.log('ailat', aiStore.latitude);
-          console.log('bonlat', bounds.centerLat);
-
-          console.log('ailng', aiStore.longitude);
-          console.log('bonlng', bounds.centerLng);
 
           setRecommendedStore(aiStore);
 
@@ -279,11 +273,6 @@ export default function MapPage() {
   useEffect(() => {
     requestLocation();
   }, []);
-
-  // useEffect(() => {
-  //   console.log(center);
-  //   setShowSearchBtn(true);
-  // }, [bounds]);
 
   useEffect(() => {
     const handler = window.setTimeout(() => setDebouncedKeyword(keyword), 300);
