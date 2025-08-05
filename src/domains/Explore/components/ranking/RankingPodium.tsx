@@ -8,7 +8,7 @@ const RankingPodium = ({ podiumRanks }: PodiumProps) => {
   const [first, second, third] = podiumRanks;
 
   return (
-    <div className="w-full pt-8 md:pt-14 md:pb-6 bg-white rounded-lg shadow-inner">
+    <div className="w-full text-gray-800 pt-8 md:pt-14 md:pb-6 bg-white rounded-lg shadow-inner">
       <div
         className="relative w-full max-w-md mx-auto aspect-[472/312] bg-no-repeat bg-contain bg-center"
         style={{ backgroundImage: `url(${podiumImage})` }}
