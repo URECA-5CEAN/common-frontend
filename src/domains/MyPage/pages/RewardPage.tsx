@@ -7,6 +7,7 @@ import { ProgressBar } from '@/domains/MyPage/components/ProgressBar';
 import dolphinBeach from '@/assets/image/dolphin-beach.svg';
 import type { UserInfoApi } from '@/domains/MyPage/types/profile';
 import { getUserInfo, getUserStat } from '@/domains/MyPage/api/profile';
+import gifticonLv1 from '@/assets/image/gifticon/gifticon_level1.png';
 import gifticonLv10 from '@/assets/image/gifticon/gifticon_level10.png';
 import gifticonLv20 from '@/assets/image/gifticon/gifticon_level20.png';
 import gifticonLv30 from '@/assets/image/gifticon/gifticon_level30.png';
@@ -133,7 +134,7 @@ const RewardPage = () => {
   }, [isLoggedIn]);
 
   const gifticonMap: Record<number, string> = {
-    10: gifticonLv10,
+    10: gifticonLv1,
     20: gifticonLv20,
     30: gifticonLv30,
     40: gifticonLv40,
@@ -232,12 +233,12 @@ const RewardPage = () => {
               <>
                 <div className="w-fit flex flex-col gap-12 relative">
                   <LevelButton
-                    level={10}
-                    active={!!userInfo && isLoggedIn && userInfo.level >= 10}
+                    level={1}
+                    active={!!userInfo && isLoggedIn && userInfo.level >= 1}
                     onClick={() => {
-                      if ((userInfo?.level ?? 0) >= 10 && isLoggedIn) {
+                      if ((userInfo?.level ?? 0) >= 1 && isLoggedIn) {
                         setIsOpen(true);
-                        setSelectedLevel(10);
+                        setSelectedLevel(1);
                       }
                     }}
                   />
@@ -294,12 +295,12 @@ const RewardPage = () => {
                 <div className="w-fit flex flex-col gap-12 mt-2">
                   <div
                     className={`h-20 flex items-center rounded-xl p-3 font-bold justify-center break-keep text-center ${
-                      (userInfo?.level ?? 0) >= 10 && isLoggedIn
+                      (userInfo?.level ?? 0) >= 1 && isLoggedIn
                         ? 'text-primaryGreen-40 bg-primaryGreen-80'
                         : 'text-gray-300 bg-gray-200'
                     }`}
                   >
-                    GS25 1,000원권
+                    GS25 100원권
                   </div>
                   <div
                     className={`h-20 flex items-center rounded-xl p-3 font-bold justify-center break-keep text-center ${
@@ -388,8 +389,8 @@ const RewardPage = () => {
         }
       >
         <div className="w-full flex justify-center">
-          {selectedLevel === 10 && (
-            <img src={gifticonLv10} alt="기프티콘" className="w-60" />
+          {selectedLevel === 1 && (
+            <img src={gifticonLv1} alt="기프티콘" className="w-60" />
           )}
           {selectedLevel === 20 && (
             <img src={gifticonLv20} alt="기프티콘" className="w-60" />
