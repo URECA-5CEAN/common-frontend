@@ -22,6 +22,7 @@ export interface Post {
   brandImgUrl: string;
   // isClosed: boolean;
   isMine?: boolean;
+  storeName: string;
 }
 
 export interface PostWriteRequest {

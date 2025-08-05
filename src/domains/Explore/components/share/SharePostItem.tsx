@@ -100,7 +100,7 @@ const SharePostItem = ({ post }: SharePostItemProps) => {
             {`${dateTime.date}, ${dateTime.time.period} ${dateTime.time.hour}:${dateTime.time.minute}`}
           </div>
           <div className="flex items-center gap-2">
-            <MapPin size={20} /> {post.location}
+            <MapPin size={20} /> {post.storeName}
           </div>
         </div>
       </li>
