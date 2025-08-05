@@ -170,7 +170,7 @@ const SharePage = () => {
   };
 
   return (
-    <div className="w-[calc(100%-48px)] md:w-[80%] max-w-[1050px] mb-50 md:mb-100">
+    <div className="w-full max-w-[1050px] m-6">
       <Breadcrumb title="혜택탐험" subtitle="혜택 나누기" />
 
       <h2 className="text-[32px] font-bold mt-3 mb-4">혜택 나누기</h2>
