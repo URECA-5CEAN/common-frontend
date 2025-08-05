@@ -2,6 +2,12 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SignUpForm from '../components/SignUpForm';
 import SignUpAgreementForm from '../components/SignUpAgreementForm';
+import mobileWave1 from '@/assets/image/mobile-wave1.svg';
+import mobileWave2 from '@/assets/image/mobile-wave2.svg';
+import mobileWave3 from '@/assets/image/mobile-wave3.svg';
+import sideWave1 from '@/assets/image/side-wave1.svg';
+import sideWave2 from '@/assets/image/side-wave2.svg';
+import sideWave3 from '@/assets/image/side-wave3.svg';
 
 const SignUpPage = () => {
   const navigate = useNavigate();
@@ -18,6 +24,7 @@ const SignUpPage = () => {
   const handleBackToAgreement = () => {
     setStep('agreement');
   };
+
   return (
     <div className="min-h-screen pt-[62px] md:pt-[86px] bg-white relative">
       {/* Side Wave 배경 - 화면 오른쪽에서 시작해서 절반을 채움 */}
@@ -25,27 +32,42 @@ const SignUpPage = () => {
         {/* 모바일 버전 - Mobile Wave 배경 */}
         <div className="block md:hidden">
           {/* Mobile Wave 1 - 첫 번째 레이어 */}
-          <div className="absolute left-0 bottom-0 w-full h-[60vh] max-h-[60vh]">
+          <div
+            className="absolute left-0 bottom-0 w-full h-[60vh] max-h-[60vh]"
+            style={{
+              animation: 'slideUpMobile 1s ease-out 0.1s both',
+            }}
+          >
             <img
-              src="/src/assets/image/mobile-wave1.svg"
+              src={mobileWave1}
               alt="Mobile Wave 1"
               className="w-full h-full object-cover object-bottom"
             />
           </div>
 
           {/* Mobile Wave 2 - 두 번째 레이어 */}
-          <div className="absolute left-0 bottom-0 w-full h-[50vh] max-h-[50vh]">
+          <div
+            className="absolute left-0 bottom-0 w-full h-[50vh] max-h-[50vh]"
+            style={{
+              animation: 'slideUpMobile 1s ease-out 0.3s both',
+            }}
+          >
             <img
-              src="/src/assets/image/mobile-wave2.svg"
+              src={mobileWave2}
               alt="Mobile Wave 2"
               className="w-full h-full object-cover object-bottom"
             />
           </div>
 
           {/* Mobile Wave 3 - 세 번째 레이어 */}
-          <div className="absolute left-0 bottom-0 w-full h-[50vh] max-h-[50vh]">
+          <div
+            className="absolute left-0 bottom-0 w-full h-[50vh] max-h-[50vh]"
+            style={{
+              animation: 'slideUpMobile 1s ease-out 0.5s both',
+            }}
+          >
             <img
-              src="/src/assets/image/mobile-wave3.svg"
+              src={mobileWave3}
               alt="Mobile Wave 3"
               className="w-full h-full object-cover object-bottom"
             />
@@ -55,27 +77,42 @@ const SignUpPage = () => {
         {/* 데스크톱 버전 - Side Wave 배경 */}
         <div className="hidden md:block min-h-full">
           {/* Side Wave 1 - 첫 번째 레이어 */}
-          <div className="absolute right-0 top-0 w-3/5 min-h-screen h-full">
+          <div
+            className="absolute right-0 top-0 w-3/5 min-h-screen h-full"
+            style={{
+              animation: 'slideLeftDesktop 1s ease-out 0.1s both',
+            }}
+          >
             <img
-              src="/src/assets/image/side-wave1.svg"
+              src={sideWave1}
               alt="Side Wave 1"
               className="w-full h-full min-h-screen object-cover object-right transform scale-x-[-1]"
             />
           </div>
 
           {/* Side Wave 2 - 두 번째 레이어 */}
-          <div className="absolute right-0 top-0 w-2/5 min-h-screen h-full">
+          <div
+            className="absolute right-0 top-0 w-2/5 min-h-screen h-full"
+            style={{
+              animation: 'slideLeftDesktop 1s ease-out 0.3s both',
+            }}
+          >
             <img
-              src="/src/assets/image/side-wave2.svg"
+              src={sideWave2}
               alt="Side Wave 2"
               className="w-full h-full min-h-screen object-cover object-right transform scale-x-[-1]"
             />
           </div>
 
           {/* Side Wave 3 - 세 번째 레이어 */}
-          <div className="absolute right-0 top-0 w-1/5 min-h-screen h-full">
+          <div
+            className="absolute right-0 top-0 w-1/5 min-h-screen h-full"
+            style={{
+              animation: 'slideLeftDesktop 1s ease-out 0.5s both',
+            }}
+          >
             <img
-              src="/src/assets/image/side-wave3.svg"
+              src={sideWave3}
               alt="Side Wave 3"
               className="w-full h-full min-h-screen object-cover object-right transform scale-x-[-1]"
             />
@@ -93,6 +130,9 @@ const SignUpPage = () => {
             xl:w-[55%] 
             2xl:w-[50%]
             max-w-[500px]"
+          style={{
+            animation: 'fadeInForm 0.8s ease-out 0.8s both',
+          }}
         >
           {step === 'agreement' ? (
             <SignUpAgreementForm onNext={handleAgreementComplete} />
@@ -104,6 +144,60 @@ const SignUpPage = () => {
           )}
         </div>
       </div>
+
+      <style>{`
+        @keyframes slideUpMobile {
+          0% {
+            transform: translateY(100%);
+            opacity: 0;
+          }
+          50% {
+            opacity: 0.7;
+          }
+          100% {
+            transform: translateY(0);
+            opacity: 1;
+          }
+        }
+        
+        @keyframes slideLeftDesktop {
+          0% {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          50% {
+            opacity: 0.7;
+          }
+          100% {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        
+        @keyframes fadeInForm {
+          0% {
+            opacity: 0;
+            transform: translateX(50px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+        
+        @media (max-width: 767px) {
+          @keyframes fadeInForm {
+            0% {
+              opacity: 0;
+              transform: translateY(50px);
+            }
+            100% {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+        }
+      `}</style>
     </div>
   );
 };

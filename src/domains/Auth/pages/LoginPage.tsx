@@ -21,7 +21,12 @@ const LoginPage = () => {
         {/* 모바일 버전 - Mobile Wave 배경 */}
         <div className="block md:hidden">
           {/* Mobile Wave 1 - 첫 번째 레이어 */}
-          <div className="absolute left-0 bottom-0 w-full max-h-[60vh]">
+          <div
+            className="absolute left-0 bottom-0 w-full max-h-[60vh]"
+            style={{
+              animation: 'slideUpMobile 1s ease-out 0.1s both',
+            }}
+          >
             <img
               src={mobileWave1}
               alt="Mobile Wave 1"
@@ -30,7 +35,12 @@ const LoginPage = () => {
           </div>
 
           {/* Mobile Wave 2 - 두 번째 레이어 */}
-          <div className="absolute left-0 bottom-0 w-full max-h-[50vh]">
+          <div
+            className="absolute left-0 bottom-0 w-full max-h-[50vh]"
+            style={{
+              animation: 'slideUpMobile 1s ease-out 0.3s both',
+            }}
+          >
             <img
               src={mobileWave2}
               alt="Mobile Wave 2"
@@ -39,7 +49,12 @@ const LoginPage = () => {
           </div>
 
           {/* Mobile Wave 3 - 세 번째 레이어 */}
-          <div className="absolute left-0 bottom-0 w-full max-h-[50vh]">
+          <div
+            className="absolute left-0 bottom-0 w-full max-h-[50vh]"
+            style={{
+              animation: 'slideUpMobile 1s ease-out 0.5s both',
+            }}
+          >
             <img
               src={mobileWave3}
               alt="Mobile Wave 3"
@@ -51,7 +66,12 @@ const LoginPage = () => {
         {/* 데스크톱 버전 - Side Wave 배경 */}
         <div className="hidden md:block min-h-full">
           {/* Side Wave 1 - 첫 번째 레이어 */}
-          <div className="absolute left-0 top-0 w-3/5 min-h-screen h-full">
+          <div
+            className="absolute left-0 top-0 w-3/5 min-h-screen h-full"
+            style={{
+              animation: 'slideRightDesktop 1s ease-out 0.1s both',
+            }}
+          >
             <img
               src={sideWave1}
               alt="Side Wave 1"
@@ -60,7 +80,12 @@ const LoginPage = () => {
           </div>
 
           {/* Side Wave 2 - 두 번째 레이어 */}
-          <div className="absolute left-0 top-0 w-2/5 min-h-screen h-full">
+          <div
+            className="absolute left-0 top-0 w-2/5 min-h-screen h-full"
+            style={{
+              animation: 'slideRightDesktop 1s ease-out 0.3s both',
+            }}
+          >
             <img
               src={sideWave2}
               alt="Side Wave 2"
@@ -69,7 +94,12 @@ const LoginPage = () => {
           </div>
 
           {/* Side Wave 3 - 세 번째 레이어 */}
-          <div className="absolute left-0 top-0 w-1/5 min-h-screen h-full">
+          <div
+            className="absolute left-0 top-0 w-1/5 min-h-screen h-full"
+            style={{
+              animation: 'slideRightDesktop 1s ease-out 0.5s both',
+            }}
+          >
             <img
               src={sideWave3}
               alt="Side Wave 3"
@@ -89,10 +119,67 @@ const LoginPage = () => {
             xl:w-[55%] 
             2xl:w-[50%]
             max-w-[500px]"
+          style={{
+            animation: 'fadeInForm 0.8s ease-out 0.8s both',
+          }}
         >
           <LoginForm onSignUpClick={handleSignUpClick} />
         </div>
       </div>
+
+      <style>{`
+        @keyframes slideUpMobile {
+          0% {
+            transform: translateY(100%);
+            opacity: 0;
+          }
+          50% {
+            opacity: 0.7;
+          }
+          100% {
+            transform: translateY(0);
+            opacity: 1;
+          }
+        }
+        
+        @keyframes slideRightDesktop {
+          0% {
+            transform: translateX(-100%);
+            opacity: 0;
+          }
+          50% {
+            opacity: 0.7;
+          }
+          100% {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        
+        @keyframes fadeInForm {
+          0% {
+            opacity: 0;
+            transform: translateX(-50px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+        
+        @media (max-width: 767px) {
+          @keyframes fadeInForm {
+            0% {
+              opacity: 0;
+              transform: translateY(50px);
+            }
+            100% {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+        }
+      `}</style>
     </div>
   );
 };
