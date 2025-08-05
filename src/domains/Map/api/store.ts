@@ -153,6 +153,7 @@ export const fetchStores = async (
           lngMax: params.lngMax,
           centerLat: params.centerLat,
           centerLng: params.centerLng,
+          benefit: params.benefit ?? '',
         },
       },
     );
