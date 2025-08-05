@@ -99,7 +99,7 @@ const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
     }
 
     try {
-      const result = await login({
+      await login({
         email: form.email,
         password: form.password,
       });

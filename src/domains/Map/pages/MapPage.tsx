@@ -156,7 +156,7 @@ export default function MapPage() {
     null,
   );
   // 위치권한 여부
-  const { location, hasLocation, requestLocation } = useCurrentLocation();
+  const { location, requestLocation } = useCurrentLocation();
 
   const [isMainLoading, setIsMainLoading] = useState<boolean>(false);
 

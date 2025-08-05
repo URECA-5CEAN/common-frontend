@@ -1,5 +1,6 @@
 import clsx from 'clsx';
-import type { BenefitType, CategoryIconMeta } from '../pages/MapPage';
+import type { CategoryIconMeta } from '../pages/MapPage';
+import type { BenefitType } from '@/domains/Map/utils/constant';
 
 interface BenefitButtonProps {
   benefitList: BenefitType[];
