@@ -78,11 +78,11 @@ function DetailSection({
   return (
     <div className="space-y-2  h-full md:min-h-[791px]">
       {/* 헤더 */}
-      <div className="flex items-center justify-between fixed w-full md:w-[332px] rounded-t-xl bg-white px-6 py-1 md:p-6 z-1 mb-0">
+      <div className="flex items-center justify-between absolute w-full md:w-[332px] rounded-t-xl bg-white px-6 py-1 md:p-6 z-1 mb-0">
         <p className="text-xl font-bold">{store.name}</p>
         <span className="text-gray-500 text-sm">{store.category}</span>
       </div>
-      <div className="absolute top-10 md:top-19 overflow-y-auto scrollbar-custom h-[calc(100%-72px)] pb-15 md:h-[calc(100dvh-160px)] w-full">
+      <div className="absolute top-10 md:top-19  md:overflow-y-auto scrollbar-custom h-[calc(100%-72px)] pb-15 md:h-[calc(100dvh-160px)] w-full">
         {/* 위치 & 영업시간 */}
         <div className="flex flex-col gap-1 text-gray-600 mb-1 px-6">
           <p>영업시간</p>
@@ -177,7 +177,7 @@ function DetailSection({
         </section>
         <div className="w-full border border-gray-200  my-6"></div>
         {/* 내 도감 현황 */}
-        <section className="relative flex flex-col px-6">
+        <section className="relative flex flex-col px-6 pb-20">
           <p className="text-lg font-semibold mb-2">내 도감 현황</p>
           <Info
             size={17}
@@ -208,7 +208,7 @@ function DetailSection({
             </div>
           )}
 
-          <div className="flex justify-between">
+          <div className="flex justify-between ">
             <ul className="flex -space-x-3 items-end">
               {allMedals.map((medal, idx) => (
                 <li key={`${medal}-${idx}`}>

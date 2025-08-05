@@ -238,6 +238,7 @@ function MapSidebar({
             <BottomSheet
               key="menu-mobile"
               ref={sheetRef}
+              panelMenu={panel.menu}
               isOpen={panel.type === 'menu'}
               onClose={onCloseSheet}
               onPositionChange={onSheetPositionChange}
@@ -293,6 +294,7 @@ function MapSidebar({
                 isOpen={
                   panel.type === 'detail' && (panel.item as unknown as boolean)
                 }
+                panelMenu={panel.menu}
                 onClose={onCloseSheet}
                 onPositionChange={onDetailSheetPositionChange}
               >
@@ -344,6 +346,7 @@ function MapSidebar({
               <BottomSheet
                 key="road-mobile"
                 ref={sheetDetail}
+                panelMenu={panel.menu}
                 isOpen={panel.type === 'road'}
                 onClose={onCloseSheet}
                 onPositionChange={onDetailSheetPositionChange}

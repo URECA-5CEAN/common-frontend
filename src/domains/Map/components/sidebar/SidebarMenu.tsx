@@ -40,7 +40,7 @@ export default function SidebarMenu({
             'focus:outline-none cursor-pointer',
 
             // 모바일 전용
-            'w-12 h-12 bg-gray-50 rounded-full shadow-md z-1',
+            'w-12 h-12 bg-gray-50 rounded-full shadow-md z-1 font-semibold',
             'active:scale-95 active:opacity-80',
             'hover:shadow-lg hover:bg-primaryGreen-50',
             activeMenu === menu && 'bg-primaryGreen-60 shadow-lg ',
