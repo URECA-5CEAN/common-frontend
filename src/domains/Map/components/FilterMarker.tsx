@@ -191,7 +191,7 @@ function FilterMarker({
   );
 
   // 데스크톱 여부 판단 (모바일에서 오버레이 안뜨게)
-  const isDesktop = useMedia('(min-width: 640px)');
+  const isDesktop = useMedia('(min-width: 800px)');
 
   if (panel.menu === '길찾기') return null;
   return (
