@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { ArrowUpToLine } from 'lucide-react';
 import MotionPathAnimation from '@/domains/Landing/pages/MotionPathAnimation';
 import beach from '@/assets/image/beach.png';
-import wave2 from '@/assets/image/LandingWave.svg';
+import wave from '@/assets/image/LandingWave.svg';
 import HeroSection from '@/domains/Landing/components/HeroSection';
 import MapSection from '@/domains/Landing/components/MapSection';
 import ExploreSection from '@/domains/Landing/components/ExploreSection';
@@ -55,48 +55,60 @@ const LandingPage = () => {
   };
 
   return (
-    <div className="h-[600vh]">
+    <div className="">
       <img
         src={beach}
         alt="모래사장"
         className="absolute top-0 w-full h-[100vh]"
       />
 
-      <div className="absolute top-[130px] h-full overflow-hidden w-full">
-        <img src={wave2} alt="파도" className=" h-full min-w-[1654px] " />
+      {/* 모바일 전용 파도 */}
+      <div className="absolute top-[120px] h-[50vh] overflow-hidden w-full md:hidden">
+        <img
+          src={wave}
+          alt="파도"
+          className="h-full w-full min-w-[1654px] object-cover object-left"
+        />
+      </div>
+
+      {/* 태블릿/데스크톱 전용 파도 */}
+      <div className="absolute top-[130px] h-full overflow-hidden w-full hidden md:block">
+        <img src={wave} alt="파도" className="h-full min-w-[1654px]" />
       </div>
       <MotionPathAnimation />
 
       {/* 첫 번째 섹션 - 메인 타이틀 */}
       <HeroSection />
+      <div className="relative z-20">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#4DD2EB] to-[#2C6385] -z-10" />
+        {/* 두 번째 섹션 - 멤버십 지도 */}
+        <MapSection />
 
-      {/* 두 번째 섹션 - 멤버십 지도 */}
-      <MapSection />
+        {/* 세 번째 섹션 - 멤버십 혜택 탐험 */}
+        <ExploreSection />
 
-      {/* 세 번째 섹션 - 멤버십 혜택 탐험 */}
-      <ExploreSection />
+        {/* 네 번째 섹션 - 게이미피케이션 섹션 */}
+        <GameificationSection />
 
-      {/* 네 번째 섹션 - 게이미피케이션 섹션 */}
-      <GameificationSection />
+        {/* 다섯 번째 섹션 - 제휴처 정보 */}
+        <StoreSection />
 
-      {/* 다섯 번째 섹션 - 제휴처 정보 */}
-      <StoreSection />
-
-      {/* 여섯 번째 섹션 - 페이지 이동 */}
-      <NavigationSection
-        onMapClick={handleMapClick}
-        onExploreClick={handleExploreClick}
-        onMyPageClick={handleMyPageClick}
-      />
-
+        {/* 여섯 번째 섹션 - 페이지 이동 */}
+        <NavigationSection
+          onMapClick={handleMapClick}
+          onExploreClick={handleExploreClick}
+          onMyPageClick={handleMyPageClick}
+        />
+      </div>
       {/* 탑 버튼 */}
       {showTopButton && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-8 right-8 w-14 h-14 bg-primaryGreen-60 hover:bg-primaryGreen-80 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-50 flex items-center justify-center"
+          className="fixed bottom-8 right-8 w-10 h-10 md:w-14 md:h-14 bg-primaryGreen-60 hover:bg-primaryGreen-80 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-50 flex items-center justify-center"
           aria-label="맨 위로 이동"
         >
-          <ArrowUpToLine size={24} />
+          <ArrowUpToLine size={16} className="md:hidden" />
+          <ArrowUpToLine size={24} className="hidden md:block" />
         </button>
       )}
     </div>
