@@ -6,8 +6,8 @@ import type {
   TimeValue,
 } from '@/domains/Explore/types/share';
 import SharePostList from '@/domains/Explore/components/share/SharePostList';
-import { useNavigate } from 'react-router-dom';
-import { useEffect, useState, useMemo } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { getBrands, getShareLocations, getSharePostList } from '../api/share';
 import CustomSelect from '../components/CustomSelect';
 import { Breadcrumb } from '@/components/Breadcrumb';
@@ -34,6 +34,47 @@ const SharePage = () => {
   const [hasNextPage, setHasNextPage] = useState(true);
 
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // URL 파라미터에서 필터 값들을 복원하는 함수
+  const restoreFiltersFromURL = useCallback(() => {
+    const locationParam = searchParams.get('location');
+    const categoryParam = searchParams.get('category');
+    const brandParam = searchParams.get('brand');
+    const benefitParam = searchParams.get('benefit');
+    const searchParam = searchParams.get('search');
+    const pageParam = searchParams.get('page');
+
+    if (searchParam) {
+      setSearchKeyword(searchParam);
+    }
+
+    if (pageParam) {
+      setPage(parseInt(pageParam, 10) || 0);
+    }
+
+    return {
+      locationParam,
+      categoryParam,
+      brandParam,
+      benefitParam,
+    };
+  }, [searchParams]);
+
+  // URL 파라미터를 업데이트
+  const updateURLParams = (params: Record<string, string | null>) => {
+    const newSearchParams = new URLSearchParams(searchParams);
+
+    Object.entries(params).forEach(([key, value]) => {
+      if (value) {
+        newSearchParams.set(key, value);
+      } else {
+        newSearchParams.delete(key);
+      }
+    });
+
+    setSearchParams(newSearchParams);
+  };
 
   const fetchPostList = async (page: number, location?: string) => {
     try {
@@ -68,25 +109,39 @@ const SharePage = () => {
         }));
 
         setLocations(locationsData);
-        setLocation(locationsData[0] || null);
+
+        const { locationParam } = restoreFiltersFromURL();
+
+        const initialLocation = locationParam
+          ? locationsData.find((loc) => loc.value === locationParam) ||
+            locationsData[0]
+          : locationsData[0];
+
+        setLocation(initialLocation);
       } catch (error) {
         console.error('데이터 불러오기 실패:', error);
       }
     };
 
     fetchInitialData();
-  }, []);
+  }, [restoreFiltersFromURL]);
 
   useEffect(() => {
     if (!location) return;
 
-    // 초기화 및 첫 페이지 로드
-    setPostList([]);
-    setPage(0);
-    setHasNextPage(true);
-    setIsLoading(true);
-    fetchPostList(0, location.value);
-  }, [location]);
+    // 위치가 변경될 때만 포스트 리스트 초기화 후 로드
+    const shouldResetPosts =
+      postList.length === 0 ||
+      postList.some((post) => post.location !== location.value);
+
+    if (shouldResetPosts) {
+      setPostList([]);
+      setPage(0);
+      setHasNextPage(true);
+      setIsLoading(true);
+      fetchPostList(0, location.value);
+    }
+  }, [location, postList]);
 
   useEffect(() => {
     if (!location) return;
@@ -111,11 +166,54 @@ const SharePage = () => {
 
     setCategories(uniqueCategoryOptions);
     setBenefits(uniqueBenefitOptions);
-    setCategory(null);
-    setBrand(null);
-    setBrands([]);
-    setBenefit(null);
-  }, [location, postList]);
+
+    // URL 파라미터에서 필터 값 복원
+    const { categoryParam, brandParam, benefitParam } = restoreFiltersFromURL();
+
+    // 카테고리 복원
+    if (categoryParam) {
+      const restoredCategory = uniqueCategoryOptions.find(
+        (cat) => cat.label === categoryParam,
+      );
+      if (restoredCategory) {
+        setCategory(restoredCategory);
+        // 브랜드도 함께 복원
+        if (brandParam) {
+          getBrands(categoryParam).then((res) => {
+            const brandOptions = res.map(
+              (item: { id: string; name: string }) => ({
+                label: item.name,
+                value: item.id,
+              }),
+            );
+            setBrands(brandOptions);
+            const restoredBrand = brandOptions.find(
+              (b: SelectOption) => b.label === brandParam,
+            );
+            if (restoredBrand) {
+              setBrand(restoredBrand);
+            }
+          });
+        }
+      }
+    } else {
+      setCategory(null);
+      setBrand(null);
+      setBrands([]);
+    }
+
+    // 혜택 복원
+    if (benefitParam) {
+      const restoredBenefit = uniqueBenefitOptions.find(
+        (ben) => ben.label === benefitParam,
+      );
+      if (restoredBenefit) {
+        setBenefit(restoredBenefit);
+      }
+    } else {
+      setBenefit(null);
+    }
+  }, [location, postList, restoreFiltersFromURL]);
 
   const filteredPostList = useMemo(() => {
     return postList.filter((post) => {
@@ -140,7 +238,17 @@ const SharePage = () => {
   }, [postList, location, category, brand, benefit, searchKeyword]);
 
   const handleLocation = (value: SelectOption | TimeValue | null) => {
-    setLocation(value as SelectOption);
+    const locationValue = value as SelectOption;
+    setLocation(locationValue);
+
+    updateURLParams({
+      location: locationValue?.value || null,
+      category: null,
+      brand: null,
+      benefit: null,
+      search: searchKeyword || null,
+      page: null,
+    });
   };
 
   const handleCategory = async (value: SelectOption | TimeValue | null) => {
@@ -149,13 +257,26 @@ const SharePage = () => {
     setCategory(categoryValue);
     setBrand(null);
 
+    updateURLParams({
+      location: location?.value || null,
+      category: categoryValue?.label || null,
+      brand: null,
+      benefit: benefit?.label || null,
+      search: searchKeyword || null,
+      page: page > 0 ? page.toString() : null,
+    });
+
     try {
-      const res = await getBrands(categoryValue.label);
-      const brandOptions = res.map((item: { id: string; name: string }) => ({
-        label: item.name,
-        value: item.id,
-      }));
-      setBrands(brandOptions);
+      if (categoryValue) {
+        const res = await getBrands(categoryValue.label);
+        const brandOptions = res.map((item: { id: string; name: string }) => ({
+          label: item.name,
+          value: item.id,
+        }));
+        setBrands(brandOptions);
+      } else {
+        setBrands([]);
+      }
     } catch (err) {
       console.error('브랜드 불러오기 실패', err);
       setBrands([]);
@@ -163,11 +284,44 @@ const SharePage = () => {
   };
 
   const handleBrand = (value: SelectOption | TimeValue | null) => {
-    setBrand(value as SelectOption);
+    const brandValue = value as SelectOption;
+    setBrand(brandValue);
+
+    updateURLParams({
+      location: location?.value || null,
+      category: category?.label || null,
+      brand: brandValue?.label || null,
+      benefit: benefit?.label || null,
+      search: searchKeyword || null,
+      page: page > 0 ? page.toString() : null,
+    });
   };
 
   const handleBenefit = (value: SelectOption | TimeValue | null) => {
-    setBenefit(value as SelectOption);
+    const benefitValue = value as SelectOption;
+    setBenefit(benefitValue);
+
+    updateURLParams({
+      location: location?.value || null,
+      category: category?.label || null,
+      brand: brand?.label || null,
+      benefit: benefitValue?.label || null,
+      search: searchKeyword || null,
+      page: page > 0 ? page.toString() : null,
+    });
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearchKeyword(value);
+
+    updateURLParams({
+      location: location?.value || null,
+      category: category?.label || null,
+      brand: brand?.label || null,
+      benefit: benefit?.label || null,
+      search: value || null,
+      page: page > 0 ? page.toString() : null,
+    });
   };
 
   return (
@@ -187,10 +341,10 @@ const SharePage = () => {
 
           <input
             type="text"
-            className="flex-1 border rounded-2xl px-4 py-1 border-gray-200"
+            className="flex-1 border rounded-2xl px-4 py-1 border-gray-200 focus:outline-none"
             placeholder="검색"
             value={searchKeyword}
-            onChange={(e) => setSearchKeyword(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
           />
         </div>
 
@@ -247,6 +401,15 @@ const SharePage = () => {
                   const nextPage = page + 1;
                   setPage(nextPage);
                   fetchPostList(nextPage, location?.value);
+
+                  updateURLParams({
+                    location: location?.value || null,
+                    category: category?.label || null,
+                    brand: brand?.label || null,
+                    benefit: benefit?.label || null,
+                    search: searchKeyword || null,
+                    page: nextPage.toString(),
+                  });
                 }}
               >
                 더보기
