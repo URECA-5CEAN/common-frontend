@@ -2,9 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import type { ChatRoom, Message } from '../types/chat';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/Button';
-import { Send, ArrowLeft } from 'lucide-react';
+import { Send, ArrowLeft, MoreVertical } from 'lucide-react';
 import useWebSocket from '../hooks/useWebSocket';
-import { convertTimeFormat } from '@/domains/Explore/utils/datetimeUtils';
+import {
+  convertTimeFormat,
+  fromISOStringToDateTime,
+} from '@/domains/Explore/utils/datetimeUtils';
 
 const ChatContent = ({
   chatRooms,
@@ -22,7 +25,9 @@ const ChatContent = ({
   const navigate = useNavigate();
   const [messageInput, setMessageInput] = useState('');
   const bottomRef = useRef<HTMLDivElement | null>(null);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
+  const [menuOpen, setMenuOpen] = useState(false);
   const { messages, sendMessage, isLoading } = useWebSocket(
     selectedRoomId,
     currentUser.id,
@@ -47,6 +52,19 @@ const ChatContent = ({
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const selectedRoom = chatRooms.find(
     (room) => room.chatRoomId === selectedRoomId,
   );
@@ -59,11 +77,17 @@ const ChatContent = ({
     );
   }
 
+  const { title, author, location, promiseDate, postId, brandImgUrl } =
+    selectedRoom.postResponseDto;
+
+  const promiseDateObj = fromISOStringToDateTime(promiseDate);
+
   return (
     <main
       className={`flex flex-col h-full ${isMobile ? 'w-full' : 'flex-1'} sm:max-w-[1050px]`}
     >
-      <div className="border-b border-gray-200 px-4 py-4 shadow-sm flex flex-col gap-3">
+      {/* 채팅방 헤더 */}
+      <div className="relative border-b border-gray-200 px-4 py-4 shadow-sm flex flex-col gap-3">
         {/* 모바일에서만 뒤로가기 버튼 표시 */}
         {isMobile && onBackToList && (
           <button
@@ -73,34 +97,58 @@ const ChatContent = ({
             <ArrowLeft className="w-5 h-5 text-gray-600" />
           </button>
         )}
-        <div className="flex gap-4">
+        <div className="flex gap-4 justify-between items-start">
           {/* 프로필 이미지 */}
-          <div className="w-12 h-12 sm:w-20 sm:h-20 rounded object-cover bg-gray-300"></div>
-
-          {/* 채팅방 정보 */}
-          <div className="flex-1 min-w-0">
-            <h2 className="font-semibold text-lg text-gray-900 truncate">
-              {selectedRoom.postResponseDto.title}
-            </h2>
-            <p className="text-sm text-gray-500 truncate">
-              {selectedRoom.postResponseDto.author.nickname} ·{' '}
-              {selectedRoom.postResponseDto.location}
-            </p>
+          <div className="flex gap-4">
+            {brandImgUrl ? (
+              <img
+                src={brandImgUrl}
+                alt="브랜드이미지"
+                className="w-12 h-12 sm:w-20 sm:h-20 rounded object-cover"
+              />
+            ) : (
+              <div className="w-12 h-12 sm:w-20 sm:h-20 rounded object-cover bg-gray-300"></div>
+            )}
+            {/* 채팅방 정보 */}
+            <div className="min-w-0">
+              <h2 className="font-semibold text-lg text-gray-900 truncate">
+                {title}
+              </h2>
+              <p className="flex text-sm text-gray-500 flex-wrap gap-1">
+                <span>{author.nickname}</span>·<span>{location}</span>·
+                <span>{`${promiseDateObj.date}, ${promiseDateObj.time.period} ${promiseDateObj.time.hour}:${promiseDateObj.time.minute}`}</span>
+              </p>
+            </div>
+            {/* 게시물 바로가기 버튼 */}
+            <div ref={dropdownRef}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate(`/explore/share/${postId}`)}
+              >
+                게시물 바로가기
+              </Button>
+            </div>
           </div>
-          {/* 게시물 바로가기 버튼 */}
-          <div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() =>
-                navigate(
-                  `/explore/share/${selectedRoom.postResponseDto.postId}`,
-                )
-              }
-            >
-              게시물 바로가기
-            </Button>
-          </div>
+          <button
+            onClick={() => setMenuOpen((prev) => !prev)}
+            className="p-2 rounded hover:bg-gray-100"
+          >
+            <MoreVertical size={20} />
+          </button>
+          {menuOpen && (
+            <ul className="absolute right-6 top-12 w-40 bg-white border border-gray-200 rounded shadow-lg z-10">
+              <li
+                onClick={() => {
+                  alert('대화방에서 나갔습니다.');
+                  setMenuOpen(false);
+                }}
+                className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+              >
+                대화방 나가기
+              </li>
+            </ul>
+          )}
         </div>
       </div>
 
