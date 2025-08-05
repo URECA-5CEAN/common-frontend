@@ -240,8 +240,8 @@ const SharePage = () => {
           <SharePostList posts={filteredPostList} />
           {hasNextPage && (
             <div className="text-center mt-6">
-              <button
-                className="bg-blue-500 text-white px-4 py-2 rounded"
+              <Button
+                variant="ghost"
                 onClick={() => {
                   const nextPage = page + 1;
                   setPage(nextPage);
@@ -249,7 +249,7 @@ const SharePage = () => {
                 }}
               >
                 더보기
-              </button>
+              </Button>
             </div>
           )}
         </>
