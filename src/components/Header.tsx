@@ -5,6 +5,8 @@ import headerWaveImg from '@/assets/image/header-wave.svg';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useUnsavedChanges } from '@/contexts/UnsavedChangesContext';
 import { Menu, X } from 'lucide-react';
+import { Modal } from '@/components/Modal';
+import { Button } from '@/components/Button';
 
 // 타입 정의
 type MenuItem = {
@@ -495,9 +497,13 @@ const Header = () => {
   const handleSubMenuToggle = (index: number) => {
     setIsSubOpen((prev) => prev.map((open, i) => (i === index ? !open : open)));
   };
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const handleLogout = () => {
     logout();
     setIsMenuOpen(false);
+  };
+  const handleLogoutClick = () => {
+    setIsAuthModalOpen(true);
   };
 
   return (
@@ -522,7 +528,7 @@ const Header = () => {
         <DesktopAuth
           isLoginPage={pageStyles.isLoginPage}
           isLoggedIn={isLoggedIn}
-          onLogout={logout}
+          onLogout={handleLogoutClick}
         />
 
         {/* 모바일 메뉴 버튼 - ref를 prop으로 전달 */}
@@ -547,8 +553,35 @@ const Header = () => {
         onClose={handleMenuClose}
         menu={menuItems.mobile}
         isLoggedIn={isLoggedIn}
-        onLogout={handleLogout}
+        onLogout={handleLogoutClick}
         menuRef={mobileMenuRef}
+      />
+
+      <Modal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        title="로그아웃"
+        description="정말 로그아웃 하시겠어요?"
+        actions={
+          <>
+            <Button
+              variant="secondary"
+              fullWidth
+              onClick={() => setIsAuthModalOpen(false)}
+            >
+              취소
+            </Button>
+            <Button
+              fullWidth
+              onClick={() => {
+                handleLogout();
+                setIsAuthModalOpen(false);
+              }}
+            >
+              로그아웃
+            </Button>
+          </>
+        }
       />
     </>
   );
