@@ -114,7 +114,7 @@ const ShareDetailPage = () => {
                 {`${dateTime.date}, ${dateTime.time.period} ${dateTime.time.hour}:${dateTime.time.minute}`}
               </div>
               <div className="text-gray-500 flex gap-1">
-                <MapPin size={20} /> {post.location}
+                <MapPin size={20} /> {post.storeName}
               </div>
             </div>
             <div className="text-gray-400">

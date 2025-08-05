@@ -8,6 +8,7 @@ import ChatContent from './ChatContent';
 import ChatRoomList from '../components/ChatRoomList';
 import { Button } from '@/components/Button';
 import dolphinFind from '@/assets/image/dolphin_find.png';
+import { Grid } from 'ldrs/react';
 
 const ChatPage = () => {
   const location = useLocation();
@@ -23,6 +24,9 @@ const ChatPage = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [showChatList, setShowChatList] = useState(true);
 
+  const [isUserLoading, setIsUserLoading] = useState(true);
+  const [isChatRoomLoading, setIsChatRoomLoading] = useState(true);
+
   // 화면 크기 감지
   useEffect(() => {
     const checkScreenSize = () => {
@@ -32,7 +36,6 @@ const ChatPage = () => {
         setShowChatList(true);
       }
     };
-
     checkScreenSize();
     window.addEventListener('resize', checkScreenSize);
     return () => window.removeEventListener('resize', checkScreenSize);
@@ -41,66 +44,75 @@ const ChatPage = () => {
   // 유저 정보 로딩
   useEffect(() => {
     const fetchUser = async () => {
-      const user = await getUserInfo();
-      setCurrentUser({
-        id: user.data.id,
-        name: user.data.name,
-      });
+      try {
+        const user = await getUserInfo();
+        setCurrentUser({
+          id: user.data.id,
+          name: user.data.name,
+        });
+      } catch (e) {
+        console.error('유저 정보 로딩 실패:', e);
+      } finally {
+        setIsUserLoading(false);
+      }
     };
     fetchUser();
   }, []);
 
-  // 채팅방 목록 + 쿼리에서 roomId 읽기
+  // 채팅방 목록 + 메시지
   useEffect(() => {
     const fetchChatRooms = async () => {
-      const data = await getChatRooms();
-      const rooms = data.data;
+      try {
+        const data = await getChatRooms();
+        const rooms = data.data;
 
-      const messagesByRoom: Record<string, Message[]> = {};
-      await Promise.all(
-        rooms.map(async (room: ChatRoom) => {
-          const res = await getChatMessages(room.chatRoomId);
-          messagesByRoom[room.chatRoomId] = res.data;
-        }),
-      );
+        const messagesByRoom: Record<string, Message[]> = {};
+        await Promise.all(
+          rooms.map(async (room: ChatRoom) => {
+            const res = await getChatMessages(room.chatRoomId);
+            messagesByRoom[room.chatRoomId] = res.data;
+          }),
+        );
 
-      const processedRooms = rooms.map((room: ChatRoom) => {
-        const roomMessages = messagesByRoom[room.chatRoomId] || [];
-        const lastMessage = roomMessages[0];
-        if (!lastMessage) {
+        const processedRooms = rooms.map((room: ChatRoom) => {
+          const roomMessages = messagesByRoom[room.chatRoomId] || [];
+          const lastMessage = roomMessages[0];
           return {
             ...room,
-            lastMessage: '',
-            lastMessageTime: '',
+            lastMessage: lastMessage?.message ?? '',
+            lastMessageTime: lastMessage?.time ?? '',
           };
-        }
-        return {
-          ...room,
-          lastMessage: lastMessage?.message ?? '',
-          lastMessageTime: lastMessage?.time ?? '',
-        };
-      });
+        });
 
-      setChatRooms(processedRooms);
+        setChatRooms(processedRooms);
 
-      const params = new URLSearchParams(location.search);
-      const roomIdFromURL = params.get('roomId');
-
-      if (roomIdFromURL) {
-        setSelectedRoomId(roomIdFromURL);
-        if (isMobile) {
-          setShowChatList(false);
+        const params = new URLSearchParams(location.search);
+        const roomIdFromURL = params.get('roomId');
+        if (roomIdFromURL) {
+          setSelectedRoomId(roomIdFromURL);
+          if (isMobile) setShowChatList(false);
+        } else {
+          setSelectedRoomId(null);
+          if (isMobile) setShowChatList(true);
         }
-      } else {
-        setSelectedRoomId(null);
-        if (isMobile) {
-          setShowChatList(true);
-        }
+      } catch (e) {
+        console.error('채팅방 로딩 실패:', e);
+      } finally {
+        setIsChatRoomLoading(false);
       }
     };
 
     fetchChatRooms();
   }, [location.search, navigate, isMobile]);
+
+  if (isUserLoading || isChatRoomLoading) {
+    return (
+      <div className="flex flex-col gap-4 justify-center items-center h-[calc(100vh-110px)] text-gray-500 animate-pulse">
+        <Grid size="100" speed="1.5" color="#6fc3d1" />
+        채팅 정보를 불러오고 있어요...
+      </div>
+    );
+  }
 
   const handleRoomSelect = (roomId: string) => {
     setSelectedRoomId(roomId);
@@ -112,6 +124,12 @@ const ChatPage = () => {
 
   const handleBackToList = () => {
     setShowChatList(true);
+    setSelectedRoomId(null);
+    navigate('/chat');
+  };
+
+  const handleLeaveRoom = (roomId: string) => {
+    setChatRooms((prev) => prev.filter((room) => room.chatRoomId !== roomId));
     setSelectedRoomId(null);
     navigate('/chat');
   };
@@ -142,6 +160,7 @@ const ChatPage = () => {
               currentUser={currentUser}
               isMobile={isMobile}
               onBackToList={handleBackToList}
+              onLeaveRoom={handleLeaveRoom}
             />
           )
         )}
@@ -169,6 +188,7 @@ const ChatPage = () => {
           chatRooms={chatRooms}
           selectedRoomId={selectedRoomId}
           currentUser={currentUser}
+          onLeaveRoom={handleLeaveRoom}
         />
       ) : (
         <div className="flex-1 flex items-center justify-center">

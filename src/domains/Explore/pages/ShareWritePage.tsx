@@ -5,7 +5,12 @@ import {
   getTodayString,
   toISOStringFromDateTime,
 } from '../utils/datetimeUtils';
-import type { PostWriteRequest, SelectOption, TimeValue } from '../types/share';
+import type {
+  PostWriteRequest,
+  SelectOption,
+  Store,
+  TimeValue,
+} from '../types/share';
 import SelectFields from '../components/share/SelectFields';
 import PostContentFields from '../components/share/PostContentFields';
 import DateTimePicker from '../components/share/DateTimePicker';
@@ -13,6 +18,8 @@ import PlaceField from '../components/share/PlaceField';
 import { createSharePost } from '../api/share';
 import { useNavigate } from 'react-router-dom';
 import { useUnsavedChanges } from '../../../contexts/UnsavedChangesContext';
+import SelectStoreModal from '../components/share/SelectStoreModal';
+import toast from 'react-hot-toast';
 
 const ShareWritePage = () => {
   const navigate = useNavigate();
@@ -35,6 +42,8 @@ const ShareWritePage = () => {
     place: '',
     time: getDefaultTime(),
   }));
+  const [selectedStore, setSelectedStore] = useState<Store | null>(null);
+  const [showModal, setShowModal] = useState(false);
 
   const { setHasUnsavedChanges } = useUnsavedChanges();
 
@@ -77,9 +86,21 @@ const ShareWritePage = () => {
       !title ||
       !content ||
       !date ||
-      !time
+      !time ||
+      !selectedStore
     ) {
-      alert('모든 항목을 입력해주세요.');
+      toast.error(<span>모든 항목을 입력해주세요.</span>, {
+        duration: 2000,
+        style: {
+          border: '1px solid #ebebeb',
+          padding: '16px',
+          color: '#e94e4e',
+        },
+        iconTheme: {
+          primary: '#e94e4e',
+          secondary: '#FFFAEE',
+        },
+      });
       return;
     }
 
@@ -90,7 +111,7 @@ const ShareWritePage = () => {
       title,
       content,
       promiseDate: toISOStringFromDateTime(date, time),
-      location: place || '미정',
+      storeId: selectedStore?.id,
     };
 
     try {
@@ -100,6 +121,25 @@ const ShareWritePage = () => {
     } catch (error) {
       alert('작성 실패' + error);
     }
+  };
+
+  const handleOpenModal = () => {
+    if (!category || !brand) {
+      toast.error(<span>카테고리와 브랜드를 먼저 선택해주세요.</span>, {
+        duration: 2000,
+        style: {
+          border: '1px solid #ebebeb',
+          padding: '16px',
+          color: '#e94e4e',
+        },
+        iconTheme: {
+          primary: '#e94e4e',
+          secondary: '#FFFAEE',
+        },
+      });
+      return;
+    }
+    setShowModal(true);
   };
 
   return (
@@ -129,7 +169,17 @@ const ShareWritePage = () => {
         setSelectedTime={setTime}
       />
 
-      <PlaceField place={place} setPlace={setPlace} />
+      {/* <PlaceField place={place} setPlace={setPlace} /> */}
+      <PlaceField selectedStore={selectedStore} onOpen={handleOpenModal} />
+
+      {showModal && (
+        <SelectStoreModal
+          category={category?.label || null}
+          brand={brand?.label || null}
+          onClose={() => setShowModal(false)}
+          onSelect={(store) => setSelectedStore(store)}
+        />
+      )}
 
       <div className="flex justify-end mt-6">
         <Button onClick={handleSubmit} size="lg">
