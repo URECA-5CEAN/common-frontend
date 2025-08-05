@@ -21,8 +21,8 @@ const MENU_CONFIG = {
       { to: '/explore/reward', label: '혜택탐험' },
     ],
     loggedIn: [
-      { to: '/chat', label: '채팅' },
       { to: '/mypage/profile', label: '마이페이지' },
+      { to: '/chat', label: '채팅' },
     ],
   },
   mobile: {
@@ -38,7 +38,6 @@ const MENU_CONFIG = {
       },
     ],
     loggedIn: [
-      { to: '/chat', label: '채팅' },
       {
         label: '마이페이지',
         subItems: [
@@ -50,6 +49,7 @@ const MENU_CONFIG = {
           { to: '/mypage/share', label: '내 나눔' },
         ],
       },
+      { to: '/chat', label: '채팅' },
     ],
     notLoggedIn: [{ to: '/login', label: '로그인' }],
   },
