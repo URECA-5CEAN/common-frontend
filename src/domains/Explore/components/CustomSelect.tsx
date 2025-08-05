@@ -143,7 +143,13 @@ const CustomSelect = ({
 
   return (
     <div className="relative text-gray-600" ref={selectRef}>
-      <div className="rounded-2xl border border-gray-200 p-3">
+      <div
+        className={`rounded-2xl border p-3 ${
+          disabled
+            ? 'bg-gray-100 border-gray-200 text-gray-400 cursor-'
+            : 'border-gray-200 text-gray-600'
+        }`}
+      >
         <button
           onClick={() => {
             if (type === 'single' && (!options || options.length === 0)) return;

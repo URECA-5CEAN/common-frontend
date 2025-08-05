@@ -89,6 +89,7 @@ function FilterMarker({
   const storeMap = useMemo(() => {
     const m = new Map<string, StoreInfo>();
     stores.forEach((s) => m.set(s.id, s));
+
     return m;
   }, [stores]);
 
@@ -149,15 +150,19 @@ function FilterMarker({
     [openDetail, goToStore, storeMap, setSelectedCardId],
   );
 
+  // const visibleMarkers = useMemo(() => {
+  //   if (!map) return Markers;
+  //   const bounds = map.getBounds();
+  //   // 실제 화면에 보이는 마커만 필터링
+  //   return Markers.filter((m) => {
+  //     const pos = new kakao.maps.LatLng(m.lat, m.lng);
+  //     return bounds.contain(pos);
+  //   });
+  // }, [Markers, map]);
+
   const visibleMarkers = useMemo(() => {
-    if (!map) return Markers;
-    const bounds = map.getBounds();
-    // 실제 화면에 보이는 마커만 필터링
-    return Markers.filter((m) => {
-      const pos = new kakao.maps.LatLng(m.lat, m.lng);
-      return bounds.contain(pos);
-    });
-  }, [Markers, map]);
+    return Markers;
+  }, [Markers]);
 
   // 마커 개수에 따라 클러스터링 여부 결정
   const shouldCluster = Markers.length > 30;

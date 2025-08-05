@@ -43,7 +43,7 @@ export default function StarSection({
           <img src={dolphinFind} alt="돌고래" className="w-24" />
           <span className="text-gray-600">로그인이 필요한 서비스에요</span>
         </div>
-        <Modal
+        {/* <Modal
           isOpen={isOpen}
           onClose={() => {
             setIsOpen(false);
@@ -70,7 +70,7 @@ export default function StarSection({
               </Button>
             </>
           }
-        ></Modal>
+        ></Modal> */}
       </>
     );
   }
