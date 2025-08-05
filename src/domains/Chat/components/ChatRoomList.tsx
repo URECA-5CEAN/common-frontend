@@ -11,27 +11,27 @@ const ChatRoomList = ({
   onRoomSelect: (roomId: string) => void;
 }) => {
   return (
-    <div className="flex-1 md:max-w-sm bg-gray-50 h-full">
+    <div className="overflow-y-auto flex-1 md:max-w-sm md:fixed sm:pt-[86px] bg-gray-100 border-r-1 border-r-gray-200 sm:w-[240px] h-full top-0">
       {/* 헤더 */}
-      <div className="p-4 border-b border-gray-200 bg-white">
+      <div className="p-4 border-b border-gray-200 sm:hidden">
         <h1 className="text-xl font-bold text-gray-900">채팅</h1>
       </div>
 
       {/* 채팅방 목록 */}
-      <div className="overflow-y-auto h-[calc(100%-73px)]">
+      <div>
         {chatRooms.length === 0 ? (
           <div className="p-4">
             <p className="text-gray-500 text-center">채팅방이 없습니다.</p>
           </div>
         ) : (
-          <ul className="divide-y divide-gray-200">
+          <ul className="divide-y divide-gray-200 p-4 flex flex-col">
             {chatRooms.map((room) => (
               <li
                 key={room.chatRoomId}
                 className={`cursor-pointer rounded ${
                   selectedRoomId === room.chatRoomId
-                    ? 'bg-blue-100'
-                    : 'hover:bg-gray-200'
+                    ? 'bg-[#DDF4FF] border-[#84D8FF] text-[#1CB0F7] hover:bg-[#cee8f5] border-2 rounded-lg'
+                    : 'hover:bg-[#f0f0f0] border-transparent text-gray-500 border-2'
                 }`}
                 onClick={() => onRoomSelect(room.chatRoomId)}
               >
@@ -41,10 +41,10 @@ const ChatRoomList = ({
                     <img
                       src={room.postResponseDto.brandImgUrl}
                       alt="브랜드이미지"
-                      className="w-12 h-12 rounded object-cover"
+                      className="w-12 h-12 rounded  object-contain"
                     />
                   ) : (
-                    <div className="w-12 h-12 rounded object-cover bg-gray-300"></div>
+                    <div className="w-12 h-12 rounded bg-gray-300"></div>
                   )}
                   {/* 채팅방 정보 */}
                   <div className="flex-1 min-w-0">
