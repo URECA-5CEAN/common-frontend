@@ -36,7 +36,7 @@ const StoreRankingList = ({ rankList }: StoreRankingListProps) => {
         {rankList.map((store, index) => (
           <li
             key={store.id}
-            className={`${rowClass} text-sm sm:text-base flex sm:px-4 py-3.5 sm:py-4 justify-around items-center`}
+            className={`${rowClass} text-gray-800 text-sm sm:text-base flex sm:px-4 py-3.5 sm:py-4 justify-around items-center`}
           >
             <div className={columnClass.rank}>
               {index < 3 ? (
