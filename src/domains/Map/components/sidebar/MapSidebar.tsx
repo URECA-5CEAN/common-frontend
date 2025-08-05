@@ -71,7 +71,7 @@ interface SideBarProps {
   setIsBenefitModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setFocusField: Dispatch<SetStateAction<'start' | 'end' | number | null>>;
   focusField: 'start' | 'end' | number | null;
-  isLoading: boolean;
+  isMainLoading: boolean;
 }
 function MapSidebar({
   stores,
@@ -96,7 +96,7 @@ function MapSidebar({
   sheetDetail,
   onDetailSheetPositionChange,
   openRoadDetail,
-  index,
+  // index,
   setStartValue,
   setEndValue,
   resetKeyword,
@@ -113,7 +113,7 @@ function MapSidebar({
   setIsBenefitModalOpen,
   setFocusField,
   focusField,
-  isLoading,
+  isMainLoading,
 }: SideBarProps) {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   //메뉴 선택 시 openMenu 호출 + 시트를 middle 위치로 스냅
@@ -179,7 +179,7 @@ function MapSidebar({
             setWayInput={setWayInput}
             setFocusField={setFocusField}
             focusField={focusField}
-            isLoading={isLoading}
+            isMainLoading={isMainLoading}
             setIsOpen={setIsModalOpen}
             isOpen={isModalOpen}
           />
@@ -190,7 +190,7 @@ function MapSidebar({
               <Suspense fallback={<div>로딩 중…</div>}>
                 <SidebarPanel
                   key="detail"
-                  index={index}
+                  index={1}
                   panel={panel}
                   stores={stores}
                   openDetail={openDetail}
@@ -223,7 +223,7 @@ function MapSidebar({
                   setWayInput={setWayInput}
                   setFocusField={setFocusField}
                   focusField={focusField}
-                  isLoading={isLoading}
+                  isMainLoading={isMainLoading}
                   setIsOpen={setIsModalOpen}
                   isOpen={isModalOpen}
                 />
@@ -278,7 +278,7 @@ function MapSidebar({
                 setWayInput={setWayInput}
                 setFocusField={setFocusField}
                 focusField={focusField}
-                isLoading={isLoading}
+                isMainLoading={isMainLoading}
                 setIsOpen={setIsModalOpen}
                 isOpen={isModalOpen}
               />
@@ -331,7 +331,7 @@ function MapSidebar({
                   setWayInput={setWayInput}
                   setFocusField={setFocusField}
                   focusField={focusField}
-                  isLoading={isLoading}
+                  isMainLoading={isMainLoading}
                   setIsOpen={setIsModalOpen}
                   isOpen={isModalOpen}
                 />
@@ -383,7 +383,7 @@ function MapSidebar({
                   setWayInput={setWayInput}
                   setFocusField={setFocusField}
                   focusField={focusField}
-                  isLoading={isLoading}
+                  isMainLoading={isMainLoading}
                   setIsOpen={setIsModalOpen}
                   isOpen={isModalOpen}
                 />

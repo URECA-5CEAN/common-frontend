@@ -298,10 +298,21 @@
   color: black;
 }
 
-.scrollbar-custom {
-  /* Firefox */
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-gray-300) transparent;
+/* Firefox */
+.scrollbar-custom::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background-color: var(--color-gray-300);
+  border-radius: 10px;
+}
+.scrollbar-custom::-webkit-scrollbar-track {
+  background-color: var(--color-gray-200);
+  border-radius: 10px;
+}
+.scrollbar-custom::-webkit-scrollbar-button {
+  display: none;
 }
 
 @keyframes floatY {

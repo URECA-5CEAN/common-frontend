@@ -20,7 +20,7 @@ export default function StartEndBtn({
   return (
     <div className="inline-flex  items-center bg-white border border-gray-200 rounded-full shadow-sm overflow-hidden">
       <button
-        className={`px-3 ${pyClass} text-sm  hover:bg-primaryGreen hover:text-white focus:outline-none cursor-pointer`}
+        className={`px-3 ${pyClass} text-sm  hover:bg-primaryGreen-40 focus:outline-none cursor-pointer transition-all duration-100`}
         onClick={(e) => {
           e.stopPropagation();
           onStartChange({
@@ -34,7 +34,7 @@ export default function StartEndBtn({
       </button>
       <div className={`w-px ${lineClass} bg-gray-200`} />
       <button
-        className={`px-3 ${pyClass} text-sm  text-primaryGreen hover:bg-primaryGreen hover:text-white focus:outline-none cursor-pointer`}
+        className={`px-3 ${pyClass} text-sm  text-primaryGreen hover:bg-primaryGreen-40 hover:text-gray-700 focus:outline-none cursor-pointer transition-all duration-100`}
         onClick={(e) => {
           e.stopPropagation();
           onEndChange({

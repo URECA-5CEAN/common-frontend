@@ -13,7 +13,7 @@ import clsx from 'clsx';
 import NoImage from '@/assets/image/dolphin_find.png';
 import Errorimage from '@/assets/image/dolphin-error.svg';
 import { useCurrentLocation } from '../../hooks/useCurrentLoaction';
-import { Ring } from 'ldrs/react';
+import { Grid } from 'ldrs/react';
 interface MapSectionProps {
   stores: StoreInfo[];
   openDetail: (store: StoreInfo) => void;
@@ -32,7 +32,7 @@ interface MapSectionProps {
   mode: 'default' | 'search';
   setMode: Dispatch<SetStateAction<'default' | 'search'>>;
   searchStores: StoreInfo[];
-  isLoading: boolean;
+  isMainLoading: boolean;
 }
 
 function MapSection({
@@ -53,71 +53,82 @@ function MapSection({
   mode,
   setMode,
   searchStores,
-  isLoading,
+  isMainLoading,
 }: MapSectionProps) {
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const keywordRequire = isFocused && stores.length > 0 && keyword.length > 0;
   const modeStore = mode === 'default' ? stores : searchStores;
-  const { status, requestLocation } = useCurrentLocation();
+  const { hasLocation } = useCurrentLocation();
 
   return (
-    <div className="px-2 space-y-8 h-screen ">
-      <div className="flex relative top-4 py-1 rounded-sm mx-auto">
-        <button
-          onClick={() => setMode('default')}
-          className={clsx(
-            `w-1/2 py-2 cursor-pointer text-sm font-semibold transition-all duration-200 rounded-l-xl rounded-r-none`,
-            mode === 'default'
-              ? 'bg-primaryGreen-80 text-white shadow-sm border-none border border-primaryGreen-80 '
-              : 'bg-white text-bloack hover:text-primaryGreen-80 border border-primaryGreen-40',
-          )}
-          style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
-        >
-          근처 제휴처
-        </button>
-        <button
-          onClick={() => setMode('search')}
-          className={clsx(
-            `w-1/2 py-2 cursor-pointer text-sm font-semibold transition-all duration-200 rounded-r-xl rounded-l-none`,
-            mode === 'search'
-              ? 'bg-primaryGreen-80 text-white shadow-sm border-none border border-primaryGreen-80'
-              : 'bg-white text-black hover:text-primaryGreen-80 border border-primaryGreen-40',
-          )}
-        >
-          전체 검색
-        </button>
+    <div className="space-y-4 h-screen">
+      <div className="space-y-5 md:pl-6 absolute pl-6 top-33 md:top-36 w-[calc(100%-24px)] md:w-[308px] z-1">
+        <div className="flex relative top-4 py-1 rounded-sm mx-auto">
+          <button
+            onClick={() => setMode('default')}
+            className={clsx(
+              `w-1/2 py-2 cursor-pointer text-sm transition-all duration-200 rounded-l-xl rounded-r-none`,
+              mode === 'default'
+                ? 'bg-primaryGreen text-white shadow-sm border border-primaryGreen hover:bg-[#5ea6b3]'
+                : 'bg-white text-black hover:bg-primaryGreen-40 border border-primaryGreen-40',
+            )}
+            style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
+          >
+            근처 제휴처
+          </button>
+          <button
+            onClick={() => setMode('search')}
+            className={clsx(
+              `w-1/2 py-2 cursor-pointer text-sm transition-all duration-200 rounded-r-xl rounded-l-none`,
+              mode === 'search'
+                ? 'bg-primaryGreen text-white shadow-sm border border-primaryGreen hover:bg-[#5ea6b3]'
+                : 'bg-white text-black hover:bg-primaryGreen-40 border border-primaryGreen-40',
+            )}
+          >
+            전체 검색
+          </button>
+        </div>
+
+        {mode === 'default' ? (
+          <div className="hidden md:flex items-center border border-gray-200 rounded-2xl px-2 py-2 ">
+            <Search color="gray" size={20} />
+            <DebouncedInput
+              value={keyword}
+              onChange={changeKeyword}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setTimeout(() => setIsFocused(false), 150)}
+              debounceTime={300}
+              placeholder="근처 제휴처를 검색해봐요!"
+            />
+            <X
+              onClick={resetKeyword}
+              className="cursor-pointer "
+              color="gray"
+            />
+          </div>
+        ) : (
+          <div className="hidden sm:flex  items-center border border-gray-200 rounded-2xl px-2 py-2 ">
+            <Search color="gray" size={20} />
+            <DebouncedInput
+              value={searchInput}
+              onChange={handleSearchChange}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setTimeout(() => setIsFocused(false), 150)}
+              debounceTime={300}
+              placeholder="전국에 있는 제휴처를 검색해봐요!"
+            />
+            <X
+              onClick={resetKeyword}
+              className="cursor-pointer "
+              color="gray"
+            />
+          </div>
+        )}
       </div>
 
-      {mode === 'default' ? (
-        <div className="hidden sm:flex  items-center border border-gray-200 rounded-2xl px-2 py-2 ">
-          <Search color="gray" size={20} />
-          <DebouncedInput
-            value={keyword}
-            onChange={changeKeyword}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setTimeout(() => setIsFocused(false), 150)}
-            debounceTime={300}
-            placeholder="근처 제휴처를 검색해봐요!"
-          />
-          <X onClick={resetKeyword} className="cursor-pointer " color="gray" />
-        </div>
-      ) : (
-        <div className="hidden sm:flex  items-center border border-gray-200 rounded-2xl px-2 py-2 ">
-          <Search color="gray" size={20} />
-          <DebouncedInput
-            value={searchInput}
-            onChange={handleSearchChange}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setTimeout(() => setIsFocused(false), 150)}
-            debounceTime={300}
-            placeholder="전국에 있는 제휴처를 검색해봐요!"
-          />
-          <X onClick={resetKeyword} className="cursor-pointer " color="gray" />
-        </div>
-      )}
-
       {keywordRequire && (
-        <ul className="mt-2 border border-gray-200 rounded-md shadow bg-white max-h-72 scrollbar-custom overflow-y-auto">
+        <ul className="absolute top-62 left-6 w-[284px] z-1 0 mt-2 border border-gray-200 rounded-md shadow-2xl bg-white max-h-72 scrollbar-custom overflow-y-auto">
+          {stores.length === 0 && <div>검색 중...</div>}
           {stores.map((store) => (
             <li
               key={store.id}
@@ -139,41 +150,40 @@ function MapSection({
         </ul>
       )}
       {/* 리스트 아이템 반복 */}
-      {status === 'loading' || status === 'error' ? (
-        //위치 권한이 없으면 무조건 이 블록만!
-        <div className="text-gray-400 py-10 text-[14px] text-center flex flex-col justify-center items-center">
-          <p>위치 권한이 필요합니다.</p>
-          <p>브라우저 설정에서 위치 권한을 허용해 주세요.</p>
-          <img src={Errorimage} alt="에러이미지" width={120} height={120} />
-          <button onClick={requestLocation}>위치 권한 요청</button>
+      {isMainLoading ? (
+        <div className="flex justify-center items-center py-10 absolute top-90 w-full">
+          <Grid size="100" speed="1.5" color="#6fc3d1" />
         </div>
-      ) : isLoading ? (
-        // 위치 권한은 있는데, 로딩중이면 스피너
-        <div className="flex justify-center items-center py-10">
-          <Ring size="48" stroke="3" bgOpacity="0" speed="2" color="#6fc3d1" />
+      ) : modeStore && modeStore.length !== 0 ? (
+        <div className="scrollbar-custom border-t border-t-gray-200 w-full absolute top-51 md:top-66 overflow-y-auto h-[calc(100dvh-460px)] md:h-[calc(100dvh-320px)]">
+          {modeStore.map((store, idx) => (
+            <StoreCard
+              key={store.id?.trim() || `unknown-${store.name}-${idx}`}
+              store={store}
+              openDetail={openDetail}
+              onStartChange={onStartChange}
+              onEndChange={onEndChange}
+              toggleBookmark={toggleBookmark}
+              isBookmark={bookmarkIds.has(store.id)}
+              isSelected={selectedCardId === store.id}
+              onCenter={() => goToStore(store)}
+            />
+          ))}
         </div>
-      ) : Array.isArray(modeStore) && modeStore.length !== 0 ? (
-        // 위치 권한 있고, 매장 있으면 리스트
-        modeStore.map((store, idx) => (
-          <StoreCard
-            key={store.id?.trim() || `unknown-${store.name}-${idx}`}
-            store={store}
-            openDetail={openDetail}
-            onStartChange={onStartChange}
-            onEndChange={onEndChange}
-            toggleBookmark={toggleBookmark}
-            isBookmark={bookmarkIds.has(store.id)}
-            isSelected={selectedCardId === store.id}
-            onCenter={() => goToStore(store)}
-          />
-        ))
-      ) : (
-        // 위치 권한 있고, 매장도 없으면 없음 메시지
-        <div className="text-gray-400 py-10 text-center flex flex-col justify-center items-center">
+      ) : stores.length === 0 ? (
+        <div className="absolute top-80 w-[308px] pl-6 text-gray-400 py-10 text-center flex flex-col justify-center items-center">
           <p>조건에 맞는 매장을 찾을 수 없어요.</p>
           <p>검색 조건을 변경해 다시 시도해보세요.</p>
           <img src={NoImage} alt="노이미지" width={120} height={120} />
         </div>
+      ) : mode === 'default' && !hasLocation ? (
+        <div className="text-gray-400 pt-80 py-10 text-[14px] text-center flex flex-col justify-center items-center">
+          <p>위치 권한이 필요합니다.</p>
+          <p>브라우저 설정에서 위치 권한을 허용해 주세요.</p>
+          <img src={Errorimage} alt="노이미지" width={120} height={120} />
+        </div>
+      ) : (
+        <></>
       )}
     </div>
   );

@@ -2,11 +2,9 @@ import { RotateCcw } from 'lucide-react';
 import clsx from 'clsx';
 import { Button } from '@/components/Button';
 import { AnimatePresence, motion } from 'framer-motion'; // 추가
-import type { LatLng } from '../KakaoMapContainer';
 
 interface SearchHereButtonProps {
   map: kakao.maps.Map | null;
-  myLocation: LatLng | null;
   show: boolean;
   sheetY: number;
   onClick: () => void;
@@ -14,12 +12,11 @@ interface SearchHereButtonProps {
 
 export default function SearchHereBtn({
   map,
-  myLocation,
   show,
   sheetY,
   onClick,
 }: SearchHereButtonProps) {
-  if (!map || !myLocation) return null;
+  if (!map || !show) return null;
 
   return (
     <>
