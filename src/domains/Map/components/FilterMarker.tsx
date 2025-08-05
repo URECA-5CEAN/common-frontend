@@ -69,13 +69,12 @@ function FilterMarker({
     if (!map) return [];
     if (panel.menu === '길찾기') return [];
     const level = map.getLevel?.() ?? 5;
-    const max2D = level <= 2 ? 20 : level <= 4 ? 20 : level <= 6 ? 10 : 10;
+    const max2D = level <= 2 ? 30 : level <= 4 ? 30 : level <= 6 ? 20 : 20;
     return stores
       .map((m) => ({
         marker: m,
         distance: getDistance(center, { lat: m.latitude, lng: m.longitude }),
       }))
-      .sort((a, b) => a.distance - b.distance)
       .slice(0, max2D)
       .map((item) => ({
         id: item.marker.id,

@@ -33,6 +33,8 @@ import RouteLine from '../RouteLine';
 import { Ring } from 'ldrs/react';
 import MapImage from '@/assets/image/dolphin-map.svg';
 import toast from 'react-hot-toast';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useNavigate } from 'react-router-dom';
 export interface TrafficInfo {
   color: string;
   label: string;
@@ -123,7 +125,8 @@ export default function RoadSection({
   const [scenario, setScenario] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [savedRoutesLoading, setSavedRoutesLoading] = useState(true);
-
+  const { isLoggedIn } = useAuthStore();
+  const navigate = useNavigate();
   const keywordRequire =
     focusField !== null &&
     ((focusField === 'start' && startValue.name.length > 0) ||
@@ -604,7 +607,18 @@ export default function RoadSection({
         viewmode === 'saved' && (
           <div className="space-y-2 px-2">
             <p className="text-xl font-semibold text-gray-600">저장한 경로</p>
-            {savedRoutesLoading ? (
+            {!isLoggedIn ? (
+              <div className="py-4 text-center text-gray-400 text-sm space-y-1">
+                <p>로그인을 하고 나만의 경로를 저장해봐요!</p>
+                <Button
+                  size="sm"
+                  variant="primary"
+                  onClick={() => navigate('/login')}
+                >
+                  로그인 하러가기
+                </Button>
+              </div>
+            ) : savedRoutesLoading ? (
               <div className="h-screen flex justify-center items-center">
                 <Ring
                   size="48"
