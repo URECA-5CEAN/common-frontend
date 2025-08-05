@@ -62,6 +62,8 @@ export interface LocationInfo {
 }
 
 export default function MapPage() {
+  const token = useAuthStore((state) => state.token);
+
   //도 + 3D 캔버스 감쌀 div
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -478,6 +480,7 @@ export default function MapPage() {
     async function loadBookmarks() {
       try {
         const data = await fetchBookmark();
+
         if (imdounted) setBookmarks(data);
       } catch (err) {
         console.error('즐겨찾기 불러오기 실패', err);
@@ -487,7 +490,7 @@ export default function MapPage() {
     return () => {
       imdounted = false;
     };
-  }, []);
+  }, [token]);
 
   //즐겨찾기 토글
   const toggleBookmark = useCallback(
