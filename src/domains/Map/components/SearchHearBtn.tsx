@@ -22,10 +22,10 @@ export default function SearchHereBtn({
       {/* 모바일 */}
       <div
         className={clsx(
-          'fixed block md:hidden left-[50%] transform -translate-x-1/2 z-20',
+          'fixed bottom-13 block md:hidden left-[50%] transform -translate-x-1/2 z-20',
           sheetY === 0 ? 'hidden' : 'block',
         )}
-        style={{ top: sheetY + 110 }}
+        // style={{ top: sheetY + 80 }}
       >
         <Button
           onClick={onClick}
