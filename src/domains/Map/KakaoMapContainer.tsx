@@ -8,7 +8,6 @@ interface Props {
   center: LatLng;
   level: number;
   onMapCreate: (map: kakao.maps.Map) => void;
-  onCenterChanged: (center: LatLng) => void;
   selectedRoute?: RouteItem | null;
   start?: LatLng;
   end?: LatLng;
@@ -35,7 +34,6 @@ export default function KakaoMapContainer({
   center,
   level,
   onMapCreate,
-  onCenterChanged,
   children,
   selectedRoute,
   start,
@@ -71,14 +69,6 @@ export default function KakaoMapContainer({
       level={level} //
       style={{ width: '100%', height: '100%' }}
       onCreate={onMapCreate} //맵 생성 인스턴스 콜백
-      onCenterChanged={(m) => {
-        // 사용자가 드래그/줌으로 중심 변경 시 중심좌표 변경
-        const c = {
-          lat: m.getCenter().getLat(),
-          lng: m.getCenter().getLng(),
-        };
-        onCenterChanged(c);
-      }}
     >
       {start && panel.menu === '길찾기' && (
         <CustomOverlayMap position={start} xAnchor={0.5} yAnchor={1.0}>

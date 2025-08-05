@@ -8,7 +8,7 @@ export default function DeskTopBtns({
   categoryIconMap,
 }: CategoryProps) {
   return (
-    <div className="md:flex justify-start space-x-2 hidden">
+    <div className="md:flex justify-start space-x-2 hidden overflow-visible">
       {Category.map((cate, idx) => {
         const { icon: Icon, color, size, className } = categoryIconMap[cate];
 
@@ -16,12 +16,13 @@ export default function DeskTopBtns({
           <button
             key={`${cate}-${idx}`}
             className={clsx(
-              'flex items-center justify-center gap-2 w-[100px] text-sm px-2 py-1  cursor-pointer rounded-2xl border-2 border-gray-200 transition-colors',
+              'flex items-center justify-center gap-2 w-[100px] text-sm px-2 py-1.5 cursor-pointer rounded-2xl transition-colors',
               isCategory === cate
-                ? 'text-white bg-primaryGreen border-primaryGreen '
+                ? 'text-white bg-primaryGreen hover:bg-primaryGreen-80'
                 : 'bg-white hover:text-primaryGreen',
               'active:scale-[0.96] ',
             )}
+            style={{ boxShadow: '0 3px 3px rgba(0,0,0,0.2)' }}
             onClick={() => changeCategory(cate)}
           >
             <Icon

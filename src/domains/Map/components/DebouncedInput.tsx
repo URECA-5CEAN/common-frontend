@@ -69,7 +69,7 @@ export default function DebouncedInput({
         setInternalValue(e.currentTarget.value);
       }}
       onFocus={onFocus}
-      onBlur={onBlur}
+      // onBlur={onBlur}
     />
   );
 }

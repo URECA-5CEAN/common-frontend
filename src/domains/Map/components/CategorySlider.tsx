@@ -25,7 +25,7 @@ export default function CategorySlider({
   });
 
   return (
-    <div ref={sliderRef} className="keen-slider flex">
+    <div ref={sliderRef} className="keen-slider flex pl-6">
       {Category.map((cate, idx) => {
         const { icon: Icon, color, size, className } = categoryIconMap[cate];
         return (
@@ -35,12 +35,13 @@ export default function CategorySlider({
           >
             <button
               className={clsx(
-                'text-xs px-4 py-1 gap-2 flex w-24  items-center justify-center rounded-2xl border-2 border-gray-200 cursor-pointer whitespace-nowrap',
+                'text-xs px-4 py-1 gap-2 flex w-24  items-center justify-center rounded-2xl cursor-pointer whitespace-nowrap',
                 isCategory === cate
-                  ? 'text-white bg-primaryGreen border-primaryGreen '
+                  ? 'text-white bg-primaryGreen'
                   : 'bg-white hover:text-primaryGreen',
                 'active:scale-[0.96] ',
               )}
+              style={{ boxShadow: '0 3px 3px rgba(0,0,0,0.2)' }}
               onClick={() => changeCategory(cate)}
             >
               <Icon

@@ -57,7 +57,7 @@ interface SidebarPanelProps {
   setWayInput: Dispatch<SetStateAction<string>>;
   setFocusField: Dispatch<SetStateAction<'start' | 'end' | number | null>>;
   focusField: 'start' | 'end' | number | null;
-  isLoading: boolean;
+  isMainLoading: boolean;
 }
 
 export default function SidebarPanel({
@@ -95,7 +95,7 @@ export default function SidebarPanel({
   setWayInput,
   setFocusField,
   focusField,
-  isLoading,
+  isMainLoading,
 }: SidebarPanelProps) {
   const [userInfo, setUserInfo] = useState<UserInfoApi>();
   const token = localStorage.getItem('authToken');
@@ -128,17 +128,19 @@ export default function SidebarPanel({
       exit={{ x: -332, opacity: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       className={clsx(
-        'bg-white rounded-t-2xl shadow h-auto  ',
-        'md:rounded-tl-2xl  md:ml-6.5 md:mt-20 md:rounded-bl-2xl md:fixed md:top-0 md:bottom-0 md:left-0 md:w-[332px] md:max-h-full',
+        'bg-white shadow h-auto',
+        'md:fixed md:bottom-0 md:w-[332px] overflow-visible relative',
+        index === 1
+          ? 'md:max-h-[calc(100vh-80px)] top-8 md:top-17 z-21 rounded-xl md:left-102'
+          : 'md:max-h-full md:top-14 md:ml-1.5 z-22 md:left-16',
       )}
-      style={{ left }}
     >
-      <div className="p-4 pr-2 bg-white relative md:shadow-lg rounded-lg scrollbar-custom overflow-y-auto h-auto  md:max-h-[calc(100vh-78px)] z-10 ">
+      <div className={`scrollbar-custom relative z-10 mt-0 md:mt-0`}>
         {/* 메뉴 및 상세 분기 렌더링 */}
         {index === 0 && panel.menu === '지도' && (
           <>
             {/* 광고 배너 */}
-            <div className="px-2">
+            <div className="absolute left-6 top-3 md:top-6 w-[calc(100%-48px)]">
               <Banner />
             </div>
             <MapSection
@@ -159,6 +161,7 @@ export default function SidebarPanel({
               mode={mode}
               setMode={setMode}
               searchStores={searchStores}
+              isMainLoading={isMainLoading}
             />
           </>
         )}
@@ -215,10 +218,10 @@ export default function SidebarPanel({
       {index === 1 && (isDetail || isRoad) && (
         <button
           onClick={() => onClose(index)}
-          className="absolute active:scale-95 active:opacity-80 z-10 left-2  md:left-[100%] top-8  w-10 md:h-12 md:border-l-0 h-10 md:top-[43%] cursor-pointer hover:bg-gray-100 focus:outline-none bg-white border-1  md:rounded-lg rounded-full border-gray-200"
+          className="absolute z-10 left-6 md:left-83 -top-8 flex justify-center items-center w-10 md:w-7 md:h-12 md:border-l-0 h-10 md:top-[50%] cursor-pointer hover:bg-gray-100 transition-[background-color] duration-100 focus:outline-none bg-white border-1  md:rounded-r-lg rounded-full md:rounded-l-none border-gray-200"
         >
           <ChevronLeft
-            className="translate-x-1.5 text-gray-300"
+            className="translate-x-1.3 text-gray-300"
             strokeWidth={3}
           />
         </button>

@@ -5,23 +5,31 @@ export function useCurrentLocation() {
     null,
   );
   const [hasLocation, setHasLocation] = useState(false);
+  const [isRequesting, setIsRequesting] = useState(false);
 
   const requestLocation = useCallback(() => {
+    if (isRequesting) return; // 중복 방지
     if (!navigator.geolocation) {
       setHasLocation(false);
       return;
     }
+
+    setIsRequesting(true);
     navigator.geolocation.getCurrentPosition(
       (pos) => {
+        console.log('위치 성공');
         setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
         setHasLocation(true);
+        setIsRequesting(false);
       },
-      () => {
+      (error) => {
+        console.log('위치 실패', error.code, error.message);
         setHasLocation(false);
+        setIsRequesting(false);
       },
       { enableHighAccuracy: true },
     );
-  }, []);
+  }, [isRequesting]);
 
   return {
     location,

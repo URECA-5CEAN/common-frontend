@@ -28,7 +28,7 @@ export default function StoreCard({
   return (
     <div
       className={clsx(
-        'relative flex items-stretch  cursor-pointer py-2 rounded-lg',
+        'relative flex items-stretch  cursor-pointer py-2 w-full border-b border-b-gray-200',
         store.isRecommended ? 'bg-primaryGreen-40 pt-6' : 'bg-white',
       )}
       onClick={() => {
@@ -36,9 +36,9 @@ export default function StoreCard({
         onCenter();
       }}
     >
-      {isSelected && (
-        <div className="absolute -left-2 top-3 bottom-3  w-2 rounded bg-primaryGreen-60" />
-      )}
+      <div
+        className={`absolute -left-3 top-1/2 -translate-y-1/2  w-1.5 rounded bg-primaryGreen-60 transition-all duration-150 ${isSelected ? 'h-[98px]' : 'h-0'}`}
+      />
       <img
         src={store.brandImageUrl}
         alt={store.name}
@@ -69,12 +69,14 @@ export default function StoreCard({
       )}
 
       {/* 텍스트 영역 */}
-      <div className="flex flex-1 mt-2 flex-col justify-between space-y-2 h-full  ">
-        <p className="text-lg font-semibold truncate w-48 ">{store.name}</p>
+      <div className="flex flex-1 my-2 flex-col justify-between space-y-2 h-full w-[182px]">
+        <p className="text-lg font-semibold truncate w-full overflow-ellipsis">
+          {store.name}
+        </p>
         <p className=" text-xs text-gray-500 line-clamp-2 w-40">
           {store.address}
         </p>
-        <div className="flex justify-between mr-1 items-center">
+        <div className="flex justify-between items-center">
           <StartEndBtn
             isSmall={true}
             store={store}
