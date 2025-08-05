@@ -7,7 +7,6 @@ const apiClient: AxiosInstance = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-const token = localStorage.getItem('authToken');
 export interface StoreInfo {
   id: string;
   name: string;
