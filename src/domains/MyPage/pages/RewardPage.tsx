@@ -8,7 +8,7 @@ import dolphinBeach from '@/assets/image/dolphin-beach.svg';
 import type { UserInfoApi } from '@/domains/MyPage/types/profile';
 import { getUserInfo, getUserStat } from '@/domains/MyPage/api/profile';
 import gifticonLv1 from '@/assets/image/gifticon/gifticon_level1.png';
-import gifticonLv10 from '@/assets/image/gifticon/gifticon_level10.png';
+// import gifticonLv10 from '@/assets/image/gifticon/gifticon_level10.png';
 import gifticonLv20 from '@/assets/image/gifticon/gifticon_level20.png';
 import gifticonLv30 from '@/assets/image/gifticon/gifticon_level30.png';
 import gifticonLv40 from '@/assets/image/gifticon/gifticon_level40.png';
