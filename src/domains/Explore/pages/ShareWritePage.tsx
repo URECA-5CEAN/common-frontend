@@ -31,7 +31,6 @@ const ShareWritePage = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [date, setDate] = useState(() => getTodayString());
-  const [place, setPlace] = useState('');
   const [time, setTime] = useState<TimeValue>(() => getDefaultTime());
   const [initialValues] = useState(() => ({
     category: null,
@@ -40,7 +39,7 @@ const ShareWritePage = () => {
     title: '',
     content: '',
     date: getTodayString(),
-    place: '',
+    storeId: null,
     time: getDefaultTime(),
   }));
   const [selectedStore, setSelectedStore] = useState<Store | null>(null);
@@ -56,7 +55,7 @@ const ShareWritePage = () => {
       title !== initialValues.title ||
       content !== initialValues.content ||
       date !== initialValues.date ||
-      place !== initialValues.place ||
+      selectedStore?.id !== initialValues.storeId ||
       JSON.stringify(time) !== JSON.stringify(initialValues.time);
 
     setHasUnsavedChanges(hasChanges);
@@ -67,10 +66,10 @@ const ShareWritePage = () => {
     title,
     content,
     date,
-    place,
     time,
     initialValues,
     setHasUnsavedChanges,
+    selectedStore,
   ]);
 
   useEffect(() => {
@@ -177,7 +176,6 @@ const ShareWritePage = () => {
         setSelectedTime={setTime}
       />
 
-      {/* <PlaceField place={place} setPlace={setPlace} /> */}
       <PlaceField selectedStore={selectedStore} onOpen={handleOpenModal} />
 
       {showModal && (

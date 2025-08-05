@@ -2,9 +2,13 @@ import { Button } from '@/components/Button';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUnsavedChanges } from '../../../contexts/UnsavedChangesContext';
+import { ChevronLeft } from 'lucide-react';
+
+import toast from 'react-hot-toast';
 import type {
   PostWriteRequest,
   SelectOption,
+  Store,
   TimeValue,
 } from '@/domains/Explore/types/share';
 import {
@@ -17,9 +21,9 @@ import SelectFields from '@/domains/Explore/components/share/SelectFields';
 import PostContentFields from '@/domains/Explore/components/share/PostContentFields';
 import DateTimePicker from '@/domains/Explore/components/share/DateTimePicker';
 import PlaceField from '@/domains/Explore/components/share/PlaceField';
-import { ChevronLeft } from 'lucide-react';
+import SelectStoreModal from '@/domains/Explore/components/share/SelectStoreModal';
 
-const MyPageWritePage = () => {
+const ShareWritePage = () => {
   const navigate = useNavigate();
 
   const [category, setCategory] = useState<SelectOption | null>(null);
@@ -28,7 +32,6 @@ const MyPageWritePage = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [date, setDate] = useState(() => getTodayString());
-  const [place, setPlace] = useState('');
   const [time, setTime] = useState<TimeValue>(() => getDefaultTime());
   const [initialValues] = useState(() => ({
     category: null,
@@ -37,9 +40,11 @@ const MyPageWritePage = () => {
     title: '',
     content: '',
     date: getTodayString(),
-    place: '',
+    storeId: null,
     time: getDefaultTime(),
   }));
+  const [selectedStore, setSelectedStore] = useState<Store | null>(null);
+  const [showModal, setShowModal] = useState(false);
 
   const { setHasUnsavedChanges } = useUnsavedChanges();
 
@@ -51,7 +56,7 @@ const MyPageWritePage = () => {
       title !== initialValues.title ||
       content !== initialValues.content ||
       date !== initialValues.date ||
-      place !== initialValues.place ||
+      selectedStore?.id !== initialValues.storeId ||
       JSON.stringify(time) !== JSON.stringify(initialValues.time);
 
     setHasUnsavedChanges(hasChanges);
@@ -62,10 +67,10 @@ const MyPageWritePage = () => {
     title,
     content,
     date,
-    place,
     time,
     initialValues,
     setHasUnsavedChanges,
+    selectedStore,
   ]);
 
   useEffect(() => {
@@ -82,9 +87,21 @@ const MyPageWritePage = () => {
       !title ||
       !content ||
       !date ||
-      !time
+      !time ||
+      !selectedStore
     ) {
-      alert('모든 항목을 입력해주세요.');
+      toast.error(<span>모든 항목을 입력해주세요.</span>, {
+        duration: 2000,
+        style: {
+          border: '1px solid #ebebeb',
+          padding: '16px',
+          color: '#e94e4e',
+        },
+        iconTheme: {
+          primary: '#e94e4e',
+          secondary: '#FFFAEE',
+        },
+      });
       return;
     }
 
@@ -95,7 +112,7 @@ const MyPageWritePage = () => {
       title,
       content,
       promiseDate: toISOStringFromDateTime(date, time),
-      location: place || '미정',
+      storeId: selectedStore?.id,
     };
 
     try {
@@ -107,13 +124,32 @@ const MyPageWritePage = () => {
     }
   };
 
+  const handleOpenModal = () => {
+    if (!category || !brand) {
+      toast.error(<span>카테고리와 브랜드를 먼저 선택해주세요.</span>, {
+        duration: 2000,
+        style: {
+          border: '1px solid #ebebeb',
+          padding: '16px',
+          color: '#e94e4e',
+        },
+        iconTheme: {
+          primary: '#e94e4e',
+          secondary: '#FFFAEE',
+        },
+      });
+      return;
+    }
+    setShowModal(true);
+  };
+
   return (
-    <div className="w-[calc(100%-48px)] md:w-[80%] max-w-[1050px] mb-50 md:mb-100">
+    <div className="w-[calc(100%-48px)] max-w-[1050px] m-6">
       <div className="flex  md:flex-row flex-col">
         <ChevronLeft
           size={40}
           className="relative right-3 text-gray-500 cursor-pointer "
-          onClick={() => navigate('/mypage/share')}
+          onClick={() => navigate('/explore/share')}
         />
         <h2 className="text-[28px] font-bold mb-6 ">나눔 글 작성</h2>
       </div>
@@ -141,7 +177,16 @@ const MyPageWritePage = () => {
         setSelectedTime={setTime}
       />
 
-      <PlaceField place={place} setPlace={setPlace} />
+      <PlaceField selectedStore={selectedStore} onOpen={handleOpenModal} />
+
+      {showModal && (
+        <SelectStoreModal
+          category={category?.label || null}
+          brand={brand?.label || null}
+          onClose={() => setShowModal(false)}
+          onSelect={(store) => setSelectedStore(store)}
+        />
+      )}
 
       <div className="flex justify-end mt-6">
         <Button onClick={handleSubmit} size="lg">
@@ -152,4 +197,4 @@ const MyPageWritePage = () => {
   );
 };
 
-export default MyPageWritePage;
+export default ShareWritePage;

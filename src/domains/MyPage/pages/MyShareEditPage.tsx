@@ -5,6 +5,7 @@ import { useUnsavedChanges } from '../../../contexts/UnsavedChangesContext';
 import type {
   PostWriteRequest,
   SelectOption,
+  Store,
   TimeValue,
 } from '@/domains/Explore/types/share';
 import {
@@ -20,8 +21,10 @@ import PlaceField from '@/domains/Explore/components/share/PlaceField';
 import { updateMySharePost } from '@/domains/MyPage/api/myShare';
 import { Ring } from 'ldrs/react';
 import 'ldrs/react/Ring.css';
+import toast from 'react-hot-toast';
+import SelectStoreModal from '@/domains/Explore/components/share/SelectStoreModal';
 
-const MyShareEditPage = () => {
+const ShareEditPage = () => {
   const { postId = '' } = useParams();
 
   const navigate = useNavigate();
@@ -41,7 +44,6 @@ const MyShareEditPage = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [date, setDate] = useState(() => getTodayString());
-  const [place, setPlace] = useState('');
   const [time, setTime] = useState<TimeValue>(() => getDefaultTime());
   const [initialValues] = useState(() => ({
     category: null,
@@ -50,10 +52,12 @@ const MyShareEditPage = () => {
     title: '',
     content: '',
     date: getTodayString(),
-    place: '',
+    storeId: null,
     time: getDefaultTime(),
   }));
   const [isConfirmLoading, setIsConfirmLoading] = useState(false);
+  const [selectedStore, setSelectedStore] = useState<Store | null>(null);
+  const [showModal, setShowModal] = useState(false);
 
   const { setHasUnsavedChanges } = useUnsavedChanges();
 
@@ -78,13 +82,14 @@ const MyShareEditPage = () => {
     const fetchPost = async () => {
       try {
         const data = await getSharePostById(postId);
+        console.log(data);
         setCategory({ label: data.category, value: data.category });
         setBrand({ label: data.brandName, value: '' });
         setBenefitType({ label: data.benefitName, value: '' });
         setTitle(data.title);
         setContent(data.content);
         setDate(data.promiseDate.split('T')[0]);
-        setPlace(data.location);
+        setSelectedStore(null);
         const parsedTime = parseTimeValue(data.promiseDate);
         setTime(parsedTime);
       } catch (error) {
@@ -103,7 +108,7 @@ const MyShareEditPage = () => {
       title !== initialValues.title ||
       content !== initialValues.content ||
       date !== initialValues.date ||
-      place !== initialValues.place ||
+      selectedStore?.id !== initialValues.storeId ||
       JSON.stringify(time) !== JSON.stringify(initialValues.time);
 
     setHasUnsavedChanges(hasChanges);
@@ -114,10 +119,10 @@ const MyShareEditPage = () => {
     title,
     content,
     date,
-    place,
     time,
     initialValues,
     setHasUnsavedChanges,
+    selectedStore,
   ]);
 
   useEffect(() => {
@@ -134,7 +139,8 @@ const MyShareEditPage = () => {
       !title ||
       !content ||
       !date ||
-      !time
+      !time ||
+      !selectedStore
     ) {
       alert('모든 항목을 입력해주세요.');
       return;
@@ -147,7 +153,7 @@ const MyShareEditPage = () => {
       title,
       content,
       promiseDate: toISOStringFromDateTime(date, time),
-      location: place || '미정',
+      storeId: selectedStore?.id,
     };
 
     setIsConfirmLoading(true);
@@ -162,8 +168,27 @@ const MyShareEditPage = () => {
     }
   };
 
+  const handleOpenModal = () => {
+    if (!category || !brand) {
+      toast.error(<span>카테고리와 브랜드를 먼저 선택해주세요.</span>, {
+        duration: 2000,
+        style: {
+          border: '1px solid #ebebeb',
+          padding: '16px',
+          color: '#e94e4e',
+        },
+        iconTheme: {
+          primary: '#e94e4e',
+          secondary: '#FFFAEE',
+        },
+      });
+      return;
+    }
+    setShowModal(true);
+  };
+
   return (
-    <div className="w-[calc(100%-48px)] md:w-[80%] max-w-[1050px] mb-50 md:mb-100">
+    <div className="w-[calc(100%-48px)] max-w-[1050px] m-6">
       <h2 className="text-[28px] font-bold mb-6">나눔 글 작성</h2>
 
       <SelectFields
@@ -189,7 +214,16 @@ const MyShareEditPage = () => {
         setSelectedTime={setTime}
       />
 
-      <PlaceField place={place} setPlace={setPlace} />
+      <PlaceField selectedStore={selectedStore} onOpen={handleOpenModal} />
+
+      {showModal && (
+        <SelectStoreModal
+          category={category?.label || null}
+          brand={brand?.label || null}
+          onClose={() => setShowModal(false)}
+          onSelect={(store) => setSelectedStore(store)}
+        />
+      )}
 
       <div className="flex justify-end mt-6">
         <Button
@@ -218,4 +252,4 @@ const MyShareEditPage = () => {
   );
 };
 
-export default MyShareEditPage;
+export default ShareEditPage;
