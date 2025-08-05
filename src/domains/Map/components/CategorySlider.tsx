@@ -3,13 +3,6 @@ import { useKeenSlider } from 'keen-slider/react';
 import clsx from 'clsx';
 import type { CategoryIconMeta } from '../pages/MapPage';
 
-export interface CategoryProps {
-  Category: string[];
-  isCategory: string;
-  changeCategory: (cate: string) => void;
-  categoryIconMap: Record<string, CategoryIconMeta>;
-}
-
 export default function CategorySlider({
   Category,
   isCategory,
