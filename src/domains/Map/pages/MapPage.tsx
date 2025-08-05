@@ -585,6 +585,9 @@ export default function MapPage() {
     },
     [fetchAndSetSearchStores, isCategory, selectedBenefit],
   );
+  useEffect(() => {
+    searchStoresWithAI();
+  }, [selectedBenefit]);
 
   const locationPath = useLocation();
   const navigate = useNavigate();

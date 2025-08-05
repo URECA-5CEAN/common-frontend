@@ -166,7 +166,6 @@ function FilterMarker({
 
   // 마커 개수에 따라 클러스터링 여부 결정
   const shouldCluster = Markers.length > 30;
-  console.log(visibleMarkers);
 
   // 2D 마커 렌더링 함수 분리
   const renderFarMarkers = useCallback(
