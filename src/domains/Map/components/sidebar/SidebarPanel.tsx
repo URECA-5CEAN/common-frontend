@@ -140,7 +140,7 @@ function SidebarPanel({
       )}
     >
       <div
-        className={`relative z-10 mt-1 md:mt-0 h-full md:overflow-y-hidden md:h-full ${index === 1 || panel.menu === '즐겨찾기' ? 'overflow-y-hidden' : ''}`}
+        className={`relative z-10 mt-1 md:mt-0 h-full md:overflow-y-hidden md:h-full ${index === 1 || panel.menu === '즐겨찾기' || panel.menu === '길찾기' ? 'overflow-y-hidden' : 'overflow-y-auto'}`}
       >
         {/* 메뉴 및 상세 분기 렌더링 */}
         {index === 0 && panel.menu === '지도' && (
