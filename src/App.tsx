@@ -5,36 +5,58 @@ import {
   Route,
   Routes,
 } from 'react-router-dom';
-import LandingPage from './domains/Landing/pages/LandingPage';
-import MapPage from './domains/Map/pages/MapPage';
-import Header from './components/Header';
-import Sidebar from './components/Sidebar';
-import LoginPage from './domains/Auth/pages/LoginPage';
-import SignUpPage from './domains/Auth/pages/SignUpPage';
-import RankingPage from './domains/Explore/pages/RankingPage';
-import SharePage from './domains/Explore/pages/SharePage';
-import ShareWritePage from './domains/Explore/pages/ShareWritePage';
-import ShareDetailPage from './domains/Explore/pages/ShareDetailPage';
-import ProfilePage from './domains/MyPage/pages/ProfilePage';
-import CollectionPage from './domains/MyPage/pages/CollectionPage';
-import MissionPage from './domains/MyPage/pages/MissionPage';
-import StatisticsPage from './domains/MyPage/pages/StatisticsPage';
-import FavoritesPage from './domains/MyPage/pages/FavoritesPage';
-import EditProfilePage from '@/domains/MyPage/pages/EditProfilePage';
-import MySharePage from '@/domains/MyPage/pages/MySharePage';
-import { useAuthStore } from '@/store/useAuthStore';
-import LeaveConfirmModal from '@/components/LeaveConfirmModal';
-import { UnsavedChangesProvider } from '@/contexts/UnsavedChangesContext';
-import MyShareDetailPage from '@/domains/MyPage/pages/MyShareDetailPage';
-import MyShareEditPage from '@/domains/MyPage/pages/MyShareEditPage';
-import ChatPage from '@/domains/Chat/pages/ChatPage';
-import MyPageWritePage from '@/domains/MyPage/pages/MyPageWritePage';
-import ShareEditPage from '@/domains/Explore/pages/ShareEditPage';
-import dolphinError from '@/assets/image/dolphin-error.svg';
 
+import { UnsavedChangesProvider } from '@/contexts/UnsavedChangesContext';
+import { useAuthStore } from '@/store/useAuthStore';
+import dolphinError from '@/assets/image/dolphin-error.svg';
 import { Toaster } from 'react-hot-toast';
 import ScrollToTop from '@/domains/Auth/components/ScrollToTop';
-import RewardPage from '@/domains/MyPage/pages/RewardPage';
+import { lazy } from 'react';
+
+const LandingPage = lazy(() => import('./domains/Landing/pages/LandingPage'));
+const MapPage = lazy(() => import('./domains/Map/pages/MapPage'));
+const Header = lazy(() => import('./components/Header'));
+const Sidebar = lazy(() => import('./components/Sidebar'));
+const LoginPage = lazy(() => import('./domains/Auth/pages/LoginPage'));
+const SignUpPage = lazy(() => import('./domains/Auth/pages/SignUpPage'));
+const RankingPage = lazy(() => import('./domains/Explore/pages/RankingPage'));
+const SharePage = lazy(() => import('./domains/Explore/pages/SharePage'));
+const ShareWritePage = lazy(
+  () => import('./domains/Explore/pages/ShareWritePage'),
+);
+const ShareDetailPage = lazy(
+  () => import('./domains/Explore/pages/ShareDetailPage'),
+);
+const ProfilePage = lazy(() => import('./domains/MyPage/pages/ProfilePage'));
+const CollectionPage = lazy(
+  () => import('./domains/MyPage/pages/CollectionPage'),
+);
+const MissionPage = lazy(() => import('./domains/MyPage/pages/MissionPage'));
+const StatisticsPage = lazy(
+  () => import('./domains/MyPage/pages/StatisticsPage'),
+);
+const FavoritesPage = lazy(
+  () => import('./domains/MyPage/pages/FavoritesPage'),
+);
+const EditProfilePage = lazy(
+  () => import('@/domains/MyPage/pages/EditProfilePage'),
+);
+const MySharePage = lazy(() => import('@/domains/MyPage/pages/MySharePage'));
+const LeaveConfirmModal = lazy(() => import('@/components/LeaveConfirmModal'));
+const MyShareDetailPage = lazy(
+  () => import('@/domains/MyPage/pages/MyShareDetailPage'),
+);
+const MyShareEditPage = lazy(
+  () => import('@/domains/MyPage/pages/MyShareEditPage'),
+);
+const ChatPage = lazy(() => import('@/domains/Chat/pages/ChatPage'));
+const MyPageWritePage = lazy(
+  () => import('@/domains/MyPage/pages/MyPageWritePage'),
+);
+const ShareEditPage = lazy(
+  () => import('@/domains/Explore/pages/ShareEditPage'),
+);
+const RewardPage = lazy(() => import('@/domains/MyPage/pages/RewardPage'));
 
 const AppLayout = () => {
   return (

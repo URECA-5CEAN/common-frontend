@@ -2,9 +2,6 @@ import StoreCard from '../StoreCard';
 import type { StoreInfo } from '../../api/store';
 import type { LocationInfo } from '../../pages/MapPage';
 import { useAuthStore } from '@/store/useAuthStore';
-import { Modal } from '@/components/Modal';
-import { Button } from '@/components/Button';
-import { useNavigate } from 'react-router-dom';
 import type { Dispatch, SetStateAction } from 'react';
 import dolphinFind from '@/assets/image/dolphin_find.png';
 
@@ -30,11 +27,8 @@ export default function StarSection({
   bookmarkIds,
   selectedCardId,
   goToStore,
-  isOpen,
-  setIsOpen,
 }: MapSectionProps) {
   const { isLoggedIn } = useAuthStore();
-  const navigate = useNavigate();
 
   if (!isLoggedIn) {
     return (
