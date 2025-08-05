@@ -11,7 +11,7 @@ const rowClass = 'flex w-full px-4 py-4 items-center';
 const cellBaseClass = 'flex items-center justify-center';
 const columnClass = {
   rank: `flex-[1] ${cellBaseClass} text-center font-bold`,
-  store: `flex-[2] font-bold flex gap-x-4 gap-y-1 flex-wrap items-center min-w-0`,
+  store: `flex-[2] font-bold flex gap-x-4 gap-y-1 flex-wrap sm:flex-nowrap items-center min-w-0`,
   category: `flex-[1.5] ${cellBaseClass} text-center `,
   address: `flex-[1.5] ${cellBaseClass} text-center`,
   usage: `flex-[1] ${cellBaseClass} text-center `,
