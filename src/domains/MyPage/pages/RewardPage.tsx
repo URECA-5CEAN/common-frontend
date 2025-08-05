@@ -186,9 +186,9 @@ const RewardPage = () => {
                 onMouseEnter={handleDesktopEnter}
                 onMouseLeave={handleDesktopLeave}
                 // onClick={handleMobileClick}
-                className="border border-gray-200 font-medium text-base md:shadow-xl p-4 absolute top-10 md:top-6 -left-26 md:left-6 z-3 rounded-tr-xl rounded-br-xl rounded-bl-xl rounded-tl-xl	md:rounded-tl-0 bg-gray-100 w-[260px] flex flex-col gap-2"
+                className="border border-gray-200 font-medium text-base md:shadow-xl p-4 absolute top-10 md:top-6 -left-26 md:left-6 z-3 rounded-tr-xl rounded-br-xl rounded-bl-xl rounded-tl-xl md:rounded-tl-none	md:rounded-tl-0 bg-gray-100 w-[260px] flex flex-col gap-2"
               >
-                <div className="absolute -top-4 left-[117px] w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-b-[20px] border-b-gray-100"></div>
+                <div className="block md:hidden absolute -top-4 left-[117px] w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-b-[20px] border-b-gray-100"></div>
 
                 <span className="font-semibold">레벨을 올리려면?</span>
                 <div className="">
