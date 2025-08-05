@@ -339,19 +339,19 @@
 }
 
 /* Firefox */
-.scrollbar-custom::-webkit-scrollbar {
+::-webkit-scrollbar {
   width: 6px;
 }
 
-.scrollbar-custom::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
   background-color: var(--color-gray-300);
   border-radius: 10px;
 }
-.scrollbar-custom::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
   background-color: var(--color-gray-200);
   border-radius: 10px;
 }
-.scrollbar-custom::-webkit-scrollbar-button {
+::-webkit-scrollbar-button {
   display: none;
 }
 
@@ -373,12 +373,17 @@
   width: 15px;
   height: 4px;
   border-radius: 8px;
-  background-color: #c7c7c7;
+  background-color: var(--color-primaryGreen-80);
 }
 .swiper-pagination-bullet-active {
   width: 25px;
-  background-color: #ffffff;
+  background-color: var(--color-primaryGreen);
 }
 .swiper-pagination {
-  /* top: 110px !important; */
+  top: 96px !important;
+}
+@media (max-width: 767px) {
+  .swiper-pagination {
+    top: 96px !important;
+  }
 }

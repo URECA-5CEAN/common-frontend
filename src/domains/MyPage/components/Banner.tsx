@@ -5,6 +5,10 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { useState } from 'react';
 import { Modal } from '@/components/Modal';
 import { Button } from '@/components/Button';
+import gifticonImg from '@/assets/icons/banner/bannerGift.svg';
+import missionImg from '@/assets/icons/banner/bannerMission.svg';
+import benefitImg from '@/assets/icons/banner/bannerBenefit.svg';
+import rankingImg from '@/assets/icons/banner/bannerRank.svg';
 
 const Banner = () => {
   const navigate = useNavigate();
@@ -26,6 +30,7 @@ const Banner = () => {
       cta: '기프티콘 확인하기',
       bgColor: 'bg-[#eb1d1d]',
       path: '/explore/reward',
+      img: gifticonImg,
     },
     {
       title: '혜택 인증하고 레벨업 하자!',
@@ -33,6 +38,7 @@ const Banner = () => {
       cta: '지금 인증하기',
       bgColor: 'bg-[#f36d00]',
       path: '/map',
+      img: benefitImg,
     },
     {
       title: '미션 완료하고 경험치 모으기!',
@@ -40,6 +46,7 @@ const Banner = () => {
       cta: '미션 확인하기',
       bgColor: 'bg-[#858200]',
       path: '/mypage/missions',
+      img: missionImg,
     },
     {
       title: '내 혜택 순위, 얼마나 높을까?',
@@ -47,6 +54,7 @@ const Banner = () => {
       cta: '순위 보러가기',
       bgColor: 'bg-[#351ace]',
       path: '/explore/rankings',
+      img: rankingImg,
     },
   ];
 
@@ -60,7 +68,7 @@ const Banner = () => {
       <Swiper
         pagination={pagination}
         modules={[Pagination, Autoplay]}
-        className="w-full rounded-xl hover:brightness-95 transition duration-200 select-none"
+        className="w-full rounded-xl hover:brightness-95 transition duration-200 select-none border border-primaryGreen"
         loop={true}
         autoplay={{
           delay: 3000,
@@ -68,11 +76,22 @@ const Banner = () => {
         }}
       >
         {filteredSlideData.map((slide, index) => (
-          <SwiperSlide key={index} className={` ${slide.bgColor}`}>
-            <div className="flex flex-col h-[90%] p-3 gap-0 text-white justify-between">
+          <SwiperSlide key={index} className={``}>
+            <div className="flex flex-col md:h-[90%] p-3 gap-0 text-gray-700 justify-between">
               <div className="flex flex-col gap-0">
-                <p className="font-bold text-lg">{slide.title}</p>
-                <p className="text-sm h-10">{slide.desc}</p>
+                <div className="flex gap-4 justify-between">
+                  <div>
+                    <p className="font-bold text-base">{slide.title}</p>
+                    <p className="text-sm h-10">{slide.desc}</p>
+                  </div>
+                  <div className="">
+                    <img
+                      src={slide.img}
+                      alt={slide.cta}
+                      className="w-12 md:w-18"
+                    />
+                  </div>
+                </div>
               </div>
               <p className="w-full text-end font-bold pb-3">
                 <span

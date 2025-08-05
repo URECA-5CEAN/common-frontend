@@ -76,15 +76,15 @@ function DetailSection({
   if (benefits.length === 0) return '해당 브랜드 혜택이 없습니다.';
 
   return (
-    <div className="space-y-2  h-[calc(100dvh-209px)] md:min-h-[791px]">
+    <div className="space-y-2  h-full md:min-h-[791px]">
       {/* 헤더 */}
-      <div className="flex items-center justify-between fixed w-full md:w-[332px] rounded-t-xl bg-white p-6 z-1 mb-0">
+      <div className="flex items-center justify-between fixed w-full md:w-[332px] rounded-t-xl bg-white px-6 py-1 md:p-6 z-1 mb-0">
         <p className="text-xl font-bold">{store.name}</p>
         <span className="text-gray-500 text-sm">{store.category}</span>
       </div>
-      <div className="absolute top-19 overflow-y-auto scrollbar-custom h-[calc(100dvh-363px)] md:h-[calc(100dvh-160px)] w-full px-6">
+      <div className="absolute top-10 md:top-19 overflow-y-auto scrollbar-custom h-[calc(100%-72px)] pb-15 md:h-[calc(100dvh-160px)] w-full">
         {/* 위치 & 영업시간 */}
-        <div className="flex flex-col gap-1 text-gray-600 mb-1">
+        <div className="flex flex-col gap-1 text-gray-600 mb-1 px-6">
           <p>영업시간</p>
           <div className="flex justify-between">
             <p>09:00~21:00</p>
@@ -95,7 +95,7 @@ function DetailSection({
         </div>
 
         {/* 간단 설명 */}
-        <div className="flex justify-between items-center mb-3">
+        <div className="flex justify-between items-center mb-3 px-6">
           <p className="text-gray-600">{store.address}</p>
           <Map
             className="cursor-pointer text-gray-400 hover:text-black transition-all duration-100"
@@ -104,7 +104,7 @@ function DetailSection({
           />
         </div>
 
-        <div className="flex justify-between ">
+        <div className="flex justify-between px-6">
           <IconActionGroup
             actions={[
               {
@@ -139,7 +139,7 @@ function DetailSection({
         <div className="w-full border border-gray-200  my-6"></div>
         {/* 주요 혜택 */}
         <section>
-          <p className="text-lg font-semibold mb-2">주요 혜택</p>
+          <p className="text-lg font-semibold mb-2 px-6">주요 혜택</p>
           <ul>
             {benefits.map((benefit, idx) => {
               const isMyMembership = userInfo?.membership === BenefitLabel[idx];
@@ -149,7 +149,7 @@ function DetailSection({
                   className="flex items-center justify-between py-1 rounded-md"
                 >
                   <div className="relative flex flex-col justify-center">
-                    <p className="">
+                    <p className="px-6">
                       {BenefitLabel[idx]}{' '}
                       {isMyMembership && (
                         <span className="text-primaryGreen-80">(내 등급)</span>
@@ -160,13 +160,13 @@ function DetailSection({
                       className={clsx(
                         'text-sm inline-block  py-1 rounded transition',
                         isMyMembership
-                          ? 'bg-primaryGreen-80 text-white'
-                          : 'bg-white text-gray-800',
+                          ? 'bg-primaryGreen-80 text-white ml-4 px-2'
+                          : 'bg-white text-gray-800 px-6',
                       )}
                     >
                       {benefit.name}
                     </p>
-                    <p className="text-xs text-gray-500 ">
+                    <p className="text-xs text-gray-500 px-6">
                       ({benefit.description})
                     </p>
                   </div>
@@ -177,24 +177,24 @@ function DetailSection({
         </section>
         <div className="w-full border border-gray-200  my-6"></div>
         {/* 내 도감 현황 */}
-        <section className="relative flex flex-col">
+        <section className="relative flex flex-col px-6">
           <p className="text-lg font-semibold mb-2">내 도감 현황</p>
           <Info
             size={17}
             onClick={InfoClicked}
-            className=" cursor-pointer md:block absolute top-[4px] left-[95px] text-primaryGreen-80"
+            className=" cursor-pointer md:block absolute top-[6px] left-[120px] text-primaryGreen-80"
           />
           {isInfo && (
-            <div className="ml-3 absolute -top-3 left-28 flex items-center">
+            <div className="ml-3 absolute -top-9 left-30 flex items-center">
               {/* 말풍선 */}
-              <div className="bg-white border w-[150px] border-gray-200 px-3 py-1 rounded-lg shadow text-[13px] text-gray-800 relative z-10">
+              <div className="bg-white border w-[150px] border-gray-200 px-3 py-1 rounded-r-lg rounded-tl-lg shadow text-[13px] text-gray-800 relative z-10">
                 <span className="font-semibold text-primaryGreen-80">
                   제휴처를 사용하면 <br />
                   도감을 채울 수 있어요!
                 </span>
 
                 {/* 꼬리 */}
-                <div
+                {/* <div
                   className="absolute left-[-10px] top-1/2 -translate-y-1/2 w-0 h-0 
                                 border-t-8 border-t-transparent border-b-8 border-b-transparent 
                                 border-r-8 border-r-gray-200 border-l-0 border-l-transparent"
@@ -203,7 +203,7 @@ function DetailSection({
                   className="absolute left-[-8px] top-1/2 -translate-y-1/2 w-0 h-0 
                                 border-t-7 border-t-transparent border-b-7 border-b-transparent 
                                 border-r-7 border-r-white border-l-0 border-l-transparent"
-                ></div>
+                ></div> */}
               </div>
             </div>
           )}

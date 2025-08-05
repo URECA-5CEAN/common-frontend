@@ -5,6 +5,8 @@ import headerWaveImg from '@/assets/image/header-wave.svg';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useUnsavedChanges } from '@/contexts/UnsavedChangesContext';
 import { Menu, X } from 'lucide-react';
+import { Modal } from '@/components/Modal';
+import { Button } from '@/components/Button';
 
 // 타입 정의
 type MenuItem = {
@@ -58,7 +60,7 @@ const MENU_CONFIG = {
 // 스타일 상수
 const STYLES = {
   header: {
-    base: 'z-1000 fixed top-0 w-full h-[42px] md:h-[48px] py-2 px-6 md:px-10 flex items-end justify-between text-white',
+    base: 'z-1000 fixed top-0 w-full h-[48px] md:h-[48px] py-2 px-6 md:px-10 flex items-end justify-between text-white',
     transparent: 'bg-transparent',
     default: 'bg-primaryGreen',
   },
@@ -428,8 +430,8 @@ const MobileMenu = ({
 const HeaderWave = () => (
   <>
     <div className="absolute top-[40px] md:top-[34px] w-full min-w-[1150px] left-0 h-5 md:h-[34px] z-200 flex">
-      <img src={headerWaveImg} alt="헤더" className="" />
-      <img src={headerWaveImg} alt="헤더" className="" />
+      <img src={headerWaveImg} alt="헤더" className="hidden md:block" />
+      <img src={headerWaveImg} alt="헤더" className="hidden md:block" />
     </div>
   </>
 );
@@ -495,9 +497,13 @@ const Header = () => {
   const handleSubMenuToggle = (index: number) => {
     setIsSubOpen((prev) => prev.map((open, i) => (i === index ? !open : open)));
   };
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const handleLogout = () => {
     logout();
     setIsMenuOpen(false);
+  };
+  const handleLogoutClick = () => {
+    setIsAuthModalOpen(true);
   };
 
   return (
@@ -522,7 +528,7 @@ const Header = () => {
         <DesktopAuth
           isLoginPage={pageStyles.isLoginPage}
           isLoggedIn={isLoggedIn}
-          onLogout={logout}
+          onLogout={handleLogoutClick}
         />
 
         {/* 모바일 메뉴 버튼 - ref를 prop으로 전달 */}
@@ -547,8 +553,35 @@ const Header = () => {
         onClose={handleMenuClose}
         menu={menuItems.mobile}
         isLoggedIn={isLoggedIn}
-        onLogout={handleLogout}
+        onLogout={handleLogoutClick}
         menuRef={mobileMenuRef}
+      />
+
+      <Modal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        title="로그아웃"
+        description="정말 로그아웃 하시겠어요?"
+        actions={
+          <>
+            <Button
+              variant="secondary"
+              fullWidth
+              onClick={() => setIsAuthModalOpen(false)}
+            >
+              취소
+            </Button>
+            <Button
+              fullWidth
+              onClick={() => {
+                handleLogout();
+                setIsAuthModalOpen(false);
+              }}
+            >
+              로그아웃
+            </Button>
+          </>
+        }
       />
     </>
   );

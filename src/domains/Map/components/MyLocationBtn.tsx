@@ -22,10 +22,10 @@ export default function MyLocationBtn({
       {/* 모바일용 버튼 */}
       <div
         className={clsx(
-          'fixed block md:hidden left-6 z-1 ',
+          'fixed bottom-13 block md:hidden left-6 z-1 ',
           sheetY === 0 ? 'hidden' : 'block',
         )}
-        style={{ top: sheetY + 100 }}
+        // style={{ top: sheetY + 160 }}
       >
         <Button
           onClick={goToMyLocation}
