@@ -129,19 +129,13 @@ const SharePage = () => {
   useEffect(() => {
     if (!location) return;
 
-    // 위치가 변경될 때만 포스트 리스트 초기화 후 로드
-    const shouldResetPosts =
-      postList.length === 0 ||
-      postList.some((post) => post.location !== location.value);
-
-    if (shouldResetPosts) {
-      setPostList([]);
-      setPage(0);
-      setHasNextPage(true);
-      setIsLoading(true);
-      fetchPostList(0, location.value);
-    }
-  }, [location, postList]);
+    // 최초 또는 location 변경 시 초기 fetch
+    setPostList([]);
+    setPage(0);
+    setHasNextPage(true);
+    setIsLoading(true);
+    fetchPostList(0, location.value);
+  }, [location]);
 
   useEffect(() => {
     if (!location) return;
