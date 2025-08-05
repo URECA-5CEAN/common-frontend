@@ -169,33 +169,39 @@ const ChatPage = () => {
   }
 
   return (
-    <div className="flex m-6 mt-[62px] sm:mt-[86px] h-[calc(100vh-110px)] w-full max-w-[1340px] mx-auto">
+    <>
       <ChatRoomList
         chatRooms={chatRooms}
         selectedRoomId={selectedRoomId}
         onRoomSelect={handleRoomSelect}
       />
-      {chatRooms.length === 0 ? (
-        <div className="flex-1 flex items-center flex-col gap-2 justify-center">
-          <img src={dolphinFind} alt="Dolphin" className="w-32 h-32" />
-          <p className="text-gray-500">혜택 나누기에서 채팅을 시작해 보세요</p>
-          <Button onClick={() => navigate('/explore/share')}>
-            혜택 나누기 페이지로 이동
-          </Button>
+      <div className="md:ml-[240px] flex justify-center">
+        <div className="flex m-6 mt-[62px] sm:mt-[86px] h-[calc(100vh-110px)] w-full max-w-[1340px] justify-center">
+          {chatRooms.length === 0 ? (
+            <div className="flex-1 flex items-center flex-col gap-2 justify-center">
+              <img src={dolphinFind} alt="Dolphin" className="w-32 h-32" />
+              <p className="text-gray-500">
+                혜택 나누기에서 채팅을 시작해 보세요
+              </p>
+              <Button onClick={() => navigate('/explore/share')}>
+                혜택 나누기 페이지로 이동
+              </Button>
+            </div>
+          ) : selectedRoomId ? (
+            <ChatContent
+              chatRooms={chatRooms}
+              selectedRoomId={selectedRoomId}
+              currentUser={currentUser}
+              onLeaveRoom={handleLeaveRoom}
+            />
+          ) : (
+            <div className="flex-1 flex items-center justify-center">
+              <span className="text-gray-500">채팅방을 선택해주세요.</span>
+            </div>
+          )}
         </div>
-      ) : selectedRoomId ? (
-        <ChatContent
-          chatRooms={chatRooms}
-          selectedRoomId={selectedRoomId}
-          currentUser={currentUser}
-          onLeaveRoom={handleLeaveRoom}
-        />
-      ) : (
-        <div className="flex-1 flex items-center justify-center">
-          <span className="text-gray-500">채팅방을 선택해주세요.</span>
-        </div>
-      )}
-    </div>
+      </div>
+    </>
   );
 };
 

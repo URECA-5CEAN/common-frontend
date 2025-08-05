@@ -10,7 +10,9 @@ import { deleteMySharePost } from '@/domains/MyPage/api/myShare';
 import dolphinImg from '@/assets/image/dolphin_normal.png';
 import { getUserInfo } from '@/domains/MyPage/api/profile';
 import { Ring } from 'ldrs/react';
+import { Map, CustomOverlayMap, useKakaoLoader } from 'react-kakao-maps-sdk';
 import 'ldrs/react/Ring.css';
+import CustomMarker from '@/domains/Map/components/CustomMarker';
 
 const ShareDetailPage = () => {
   const { postId = '' } = useParams();
@@ -20,6 +22,8 @@ const ShareDetailPage = () => {
   const [isConfirmLoading, setIsConfirmLoading] = useState(false);
 
   const navigate = useNavigate();
+
+  useKakaoLoader({ appkey: import.meta.env.VITE_KAKAO_API });
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -50,7 +54,6 @@ const ShareDetailPage = () => {
 
   if (isLoading) return <div className="m-6">로딩 중...</div>;
   if (!post) return null;
-
   const dateTime = fromISOStringToDateTime(post.promiseDate);
 
   const handleStartChat = async () => {
@@ -84,8 +87,8 @@ const ShareDetailPage = () => {
   };
 
   return (
-    <>
-      <div className="w-full max-w-[1050px] m-6 flex flex-col gap-5">
+    <div className="w-[calc(100%-48px)] md:w-[80%] max-w-[1050px] mb-50 md:mb-100">
+      <div className="flex flex-col gap-5">
         <div className="flex gap-4 sm:items-center">
           <div className="relative w-16 h-16 sm:w-32 sm:h-32 flex items-center justify-center flex-shrink-0">
             {post.brandImgUrl ? (
@@ -122,8 +125,40 @@ const ShareDetailPage = () => {
             </div>
           </div>
         </div>
-        <p className="text-gray-600">{post.content}</p>
 
+        <p className="text-gray-600">{post.content}</p>
+        {post.storeLatitude && post.storeLongitude && (
+          <div className="mt-6 rounded-xl overflow-hidden w-full h-52">
+            <Map
+              center={{ lat: post.storeLatitude, lng: post.storeLongitude }}
+              style={{ width: '100%', height: '100%' }}
+              level={3}
+              draggable={false}
+              zoomable={false}
+            >
+              {/* 마커 */}
+              <CustomMarker
+                id={post.postId}
+                lat={post.storeLatitude}
+                lng={post.storeLongitude}
+                name={post.storeName}
+                imageUrl={post.brandImgUrl}
+                selected={true} // 상세페이지니까 항상 true로 강조
+                isRecommended={undefined}
+                onClick={() => {}}
+                onMouseEnter={() => {}}
+                onMouseLeave={() => {}}
+                shouldCluster={false}
+              />
+
+              {/* 커스텀 오버레이 */}
+              <CustomOverlayMap
+                position={{ lat: post.storeLatitude, lng: post.storeLongitude }}
+                yAnchor={1}
+              ></CustomOverlayMap>
+            </Map>
+          </div>
+        )}
         <div className="flex justify-end">
           {post.isMine ? (
             <>
@@ -188,7 +223,7 @@ const ShareDetailPage = () => {
           </>
         }
       ></Modal>
-    </>
+    </div>
   );
 };
 

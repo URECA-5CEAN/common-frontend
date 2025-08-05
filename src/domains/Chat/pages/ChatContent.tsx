@@ -10,6 +10,7 @@ import {
 } from '@/domains/Explore/utils/datetimeUtils';
 import { leaveChatRoom } from '../api/chat';
 import toast from 'react-hot-toast';
+import { shortenProvince } from '@/domains/Explore/utils/addressUtils';
 
 const ChatContent = ({
   chatRooms,
@@ -29,7 +30,7 @@ const ChatContent = ({
   const navigate = useNavigate();
   const [messageInput, setMessageInput] = useState('');
   const bottomRef = useRef<HTMLDivElement | null>(null);
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const dropdownRef = useRef<HTMLUListElement | null>(null);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const { messages, sendMessage, isLoading } = useWebSocket(
@@ -98,13 +99,13 @@ const ChatContent = ({
     selectedRoom.postResponseDto;
 
   const promiseDateObj = fromISOStringToDateTime(promiseDate);
-
+  console.log(selectedRoom);
   return (
     <main
       className={`flex flex-col h-full ${isMobile ? 'w-full' : 'flex-1'} sm:max-w-[1050px]`}
     >
       {/* 채팅방 헤더 */}
-      <div className="relative border-b border-gray-200 px-4 py-4 shadow-sm flex sm:flex-col items-start gap-3">
+      <div className="relative border-b border-gray-200 px-4 py-4 flex sm:flex-col items-start gap-3">
         {/* 모바일에서만 뒤로가기 버튼 표시 */}
         {isMobile && onBackToList && (
           <button
@@ -134,7 +135,8 @@ const ChatContent = ({
                 {title}
               </h2>
               <p className="flex text-sm text-gray-500 flex-wrap gap-1">
-                <span>{author.nickname}</span>·<span>{location}</span>·
+                <span>{author.nickname}</span>·
+                <span>{shortenProvince(location)}</span>·
                 <span>{`${promiseDateObj.date}, ${promiseDateObj.time.period} ${promiseDateObj.time.hour}:${promiseDateObj.time.minute}`}</span>
               </p>
               <div className="mt-2 sm:mt-0">
@@ -157,7 +159,10 @@ const ChatContent = ({
             <MoreVertical size={20} />
           </button>
           {menuOpen && (
-            <ul className="absolute right-6 top-12 w-40 bg-white border border-gray-200 rounded shadow-lg z-10">
+            <ul
+              ref={dropdownRef}
+              className="absolute right-6 top-12 w-40 bg-white border border-gray-200 rounded shadow-lg z-10"
+            >
               <li
                 onClick={handleLeaveRoom}
                 className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
