@@ -12,16 +12,7 @@ import MapSidebar, {
   type MenuType,
   type Panel,
 } from '../components/sidebar/MapSidebar';
-import {
-  Clapperboard,
-  Gift,
-  Percent,
-  Search,
-  Ticket,
-  Utensils,
-  X,
-  type LucideIcon,
-} from 'lucide-react';
+import { Search, X, type LucideIcon } from 'lucide-react';
 import type { LatLng } from '../KakaoMapContainer';
 
 import {
@@ -42,19 +33,17 @@ import SearchHereBtn from '../components/SearchHearBtn';
 import { fetchAiRecommendedStore } from '../api/ai';
 import { extractBouns, type InternalBounds } from '../utils/extractBouns';
 import type { RouteItem } from '../components/sidebar/RoadSection';
-import { Coffee, ShoppingBag, ShoppingCart, Car } from 'lucide-react';
+
 import BenefitButton from '../components/BenefitButtons';
 import { useCurrentLocation } from '../hooks/useCurrentLoaction';
 import { useLocation, useNavigate } from 'react-router-dom';
 import CategoryBenefitSlider from '../components/CategoryBenefitSlider';
-
-export type CategoryType =
-  | '음식점'
-  | '카페'
-  | '편의점'
-  | '대형마트'
-  | '문화시설'
-  | '렌터카';
+import {
+  benefitIconMap,
+  categoryIconMap,
+  type BenefitType,
+  type CategoryType,
+} from '../utils/constant';
 
 export interface CategoryIconMeta {
   icon: LucideIcon;
@@ -63,60 +52,6 @@ export interface CategoryIconMeta {
   size?: number;
 }
 
-// 혜택 타입 정의
-export type BenefitType = '쿠폰' | '할인' | '증정';
-
-// 아이콘 매핑
-export const benefitIconMap: Record<BenefitType, CategoryIconMeta> = {
-  쿠폰: {
-    icon: Ticket,
-    color: '#fbbc04', // 노랑 등등 원하는 색
-    size: 20,
-  },
-  할인: {
-    icon: Percent,
-    color: '#34c759', // 연두 등등 원하는 색
-    size: 20,
-  },
-  증정: {
-    icon: Gift,
-    color: '#42a5f5', // 파랑 등등 원하는 색
-    size: 20,
-  },
-};
-
-export const categoryIconMap: Record<CategoryType, CategoryIconMeta> = {
-  음식점: {
-    icon: Utensils,
-    color: '#FF7043',
-    size: 20,
-  },
-  카페: {
-    icon: Coffee,
-    color: '#6D4C41',
-    size: 20,
-  },
-  편의점: {
-    icon: ShoppingBag,
-    color: '#0ecc17',
-    size: 20,
-  },
-  대형마트: {
-    icon: ShoppingCart,
-    color: '#db2f18',
-    size: 20,
-  },
-  문화시설: {
-    icon: Clapperboard,
-    color: '#8E24AA',
-    size: 20,
-  },
-  렌터카: {
-    icon: Car,
-    color: '#F4511E',
-    size: 20,
-  },
-};
 export interface LocationInfo {
   name: string;
   lat: number;
