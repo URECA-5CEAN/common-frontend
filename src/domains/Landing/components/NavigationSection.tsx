@@ -14,56 +14,38 @@ const NavigationSection = ({
   onMyPageClick,
 }: NavigationSectionProps) => {
   return (
-    <div className="absolute top-[340vh] md:top-[480vh] w-full">
+    <div className="absolute top-[400vh] md:top-[480vh] w-full">
       <div className="w-full max-w-[90rem] xl:max-w-[1440px] mx-auto px-[1rem] sm:px-[1.5rem] lg:px-[2rem] flex flex-col items-center text-center">
         {/* 제목 */}
         <div className="flex items-center justify-center mb-16 lg:mb-20">
-          <h2 className="text-[1.25rem] sm:text-[1.75rem] lg:text-[2.5rem] text-white font-bold px-4 text-center leading-tight">
+          <h2 className="text-base md:text-2xl lg:text-[2.5rem] xl:text-[40px] text-white font-bold px-4 text-center leading-tight">
             이제 지중해로 항해를 떠나보아요!
           </h2>
         </div>
 
         {/* 원형 레이어 */}
-        <div className="flex flex-row justify-center items-center gap-[1rem] sm:gap-[2rem] lg:gap-16 max-w-[76rem] xl:max-w-6xl w-full">
+        <div className="flex flex-row justify-center items-center gap-1 sm:gap-2 md:gap-4 lg:gap-8 xl:gap-16 w-full px-1 sm:px-2 md:px-4">
           {/* 멤버십 지도 */}
           <div className="flex flex-col items-center">
             <div
-              className="bg-primaryGreen-40 rounded-full flex flex-col items-center justify-between hover:scale-105 transition-transform duration-300 cursor-pointer"
+              className="bg-primaryGreen-40 rounded-full flex flex-col items-center justify-between hover:scale-105 transition-transform duration-300 cursor-pointer w-[28vw] h-[28vw] max-w-[110px] max-h-[110px] sm:w-[25vw] sm:h-[25vw] sm:max-w-[140px] sm:max-h-[140px] md:w-[26vw] md:h-[26vw] md:max-w-[280px] md:max-h-[280px] lg:w-80 lg:h-80 p-2 sm:p-3 md:p-6 lg:p-8"
               style={{
                 boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
-                width: 'min(18rem, 28vw)',
-                height: 'min(18rem, 28vw)',
-                padding: 'min(1.5rem, 2.5vw)',
               }}
               onClick={onMapClick}
             >
               <div className="flex-1 flex items-center justify-center">
                 <img
                   src={dolphinMap}
-                  style={{
-                    width: 'min(10rem, 18vw)',
-                    height: 'min(10rem, 18vw)',
-                  }}
-                  className="object-contain"
+                  className="w-[16vw] h-[16vw] max-w-[60px] max-h-[60px] sm:w-[14vw] sm:h-[14vw] sm:max-w-[80px] sm:max-h-[80px] md:w-[11vw] md:h-[11vw] md:max-w-[140px] md:max-h-[140px] lg:w-44 lg:h-44 object-contain"
                 />
               </div>
               <div
                 className="text-center"
                 style={{ marginBottom: 'min(1rem, 2vw)' }}
               >
-                <div
-                  className="bg-white bg-opacity-90 rounded-full"
-                  style={{
-                    paddingLeft: 'min(1rem, 2vw)',
-                    paddingRight: 'min(1rem, 2vw)',
-                    paddingTop: 'min(0.5rem, 1vw)',
-                    paddingBottom: 'min(0.5rem, 1vw)',
-                  }}
-                >
-                  <h3
-                    className="font-bold text-gray-800"
-                    style={{ fontSize: 'min(0.75rem, 1.5vw)' }}
-                  >
+                <div className="bg-white bg-opacity-90 rounded-full overflow-hidden px-1 py-0.5 sm:px-2 sm:py-1 md:px-2 md:py-1.5 lg:px-4 lg:py-2 max-w-[95%] md:max-w-[95%] lg:max-w-none">
+                  <h3 className="font-bold text-gray-700 whitespace-nowrap md:whitespace-nowrap lg:whitespace-normal text-[8px] sm:text-[2vw] md:text-[10px] lg:text-lg">
                     멤버십 지도 바로가기
                   </h3>
                 </div>
@@ -74,42 +56,24 @@ const NavigationSection = ({
           {/* 혜택 탐험 */}
           <div className="flex flex-col items-center">
             <div
-              className="bg-primaryGreen-40 rounded-full flex flex-col items-center justify-between hover:scale-105 transition-transform duration-300 cursor-pointer"
+              className="bg-primaryGreen-40 rounded-full flex flex-col items-center justify-between hover:scale-105 transition-transform duration-300 cursor-pointer w-[28vw] h-[28vw] max-w-[110px] max-h-[110px] sm:w-[25vw] sm:h-[25vw] sm:max-w-[140px] sm:max-h-[140px] md:w-[26vw] md:h-[26vw] md:max-w-[280px] md:max-h-[280px] lg:w-80 lg:h-80 p-2 sm:p-3 md:p-6 lg:p-8"
               style={{
                 boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
-                width: 'min(18rem, 28vw)',
-                height: 'min(18rem, 28vw)',
-                padding: 'min(1.5rem, 2.5vw)',
               }}
               onClick={onExploreClick}
             >
               <div className="flex-1 flex items-center justify-center">
                 <img
                   src={dolphinExploration}
-                  style={{
-                    width: 'min(10rem, 18vw)',
-                    height: 'min(10rem, 18vw)',
-                  }}
-                  className="object-contain"
+                  className="w-[16vw] h-[16vw] max-w-[60px] max-h-[60px] sm:w-[14vw] sm:h-[14vw] sm:max-w-[80px] sm:max-h-[80px] md:w-[11vw] md:h-[11vw] md:max-w-[140px] md:max-h-[140px] lg:w-44 lg:h-44 object-contain"
                 />
               </div>
               <div
                 className="text-center"
                 style={{ marginBottom: 'min(1rem, 2vw)' }}
               >
-                <div
-                  className="bg-white bg-opacity-90 rounded-full"
-                  style={{
-                    paddingLeft: 'min(1rem, 2vw)',
-                    paddingRight: 'min(1rem, 2vw)',
-                    paddingTop: 'min(0.5rem, 1vw)',
-                    paddingBottom: 'min(0.5rem, 1vw)',
-                  }}
-                >
-                  <h3
-                    className="font-bold text-gray-800"
-                    style={{ fontSize: 'min(0.75rem, 1.5vw)' }}
-                  >
+                <div className="bg-white bg-opacity-90 rounded-full overflow-hidden px-1 py-0.5 sm:px-2 sm:py-1 md:px-2 md:py-1.5 lg:px-4 lg:py-2 max-w-[95%] md:max-w-[95%] lg:max-w-none">
+                  <h3 className="font-bold text-gray-700 whitespace-nowrap md:whitespace-nowrap lg:whitespace-normal text-[8px] sm:text-[2vw] md:text-[10px] lg:text-lg">
                     혜택 탐험 바로가기
                   </h3>
                 </div>
@@ -120,42 +84,24 @@ const NavigationSection = ({
           {/* 마이페이지 */}
           <div className="flex flex-col items-center">
             <div
-              className="bg-primaryGreen-40 rounded-full flex flex-col items-center justify-between hover:scale-105 transition-transform duration-300 cursor-pointer"
+              className="bg-primaryGreen-40 rounded-full flex flex-col items-center justify-between hover:scale-105 transition-transform duration-300 cursor-pointer w-[28vw] h-[28vw] max-w-[110px] max-h-[110px] sm:w-[25vw] sm:h-[25vw] sm:max-w-[140px] sm:max-h-[140px] md:w-[26vw] md:h-[26vw] md:max-w-[280px] md:max-h-[280px] lg:w-80 lg:h-80 p-2 sm:p-3 md:p-6 lg:p-8"
               style={{
                 boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
-                width: 'min(18rem, 28vw)',
-                height: 'min(18rem, 28vw)',
-                padding: 'min(1.5rem, 2.5vw)',
               }}
               onClick={onMyPageClick}
             >
               <div className="flex-1 flex items-center justify-center">
                 <img
                   src={dolphinSofa}
-                  style={{
-                    width: 'min(10rem, 18vw)',
-                    height: 'min(10rem, 18vw)',
-                  }}
-                  className="object-contain"
+                  className="w-[16vw] h-[16vw] max-w-[60px] max-h-[60px] sm:w-[14vw] sm:h-[14vw] sm:max-w-[80px] sm:max-h-[80px] md:w-[11vw] md:h-[11vw] md:max-w-[140px] md:max-h-[140px] lg:w-44 lg:h-44 object-contain"
                 />
               </div>
               <div
                 className="text-center"
                 style={{ marginBottom: 'min(1rem, 2vw)' }}
               >
-                <div
-                  className="bg-white bg-opacity-90 rounded-full"
-                  style={{
-                    paddingLeft: 'min(1rem, 2vw)',
-                    paddingRight: 'min(1rem, 2vw)',
-                    paddingTop: 'min(0.5rem, 1vw)',
-                    paddingBottom: 'min(0.5rem, 1vw)',
-                  }}
-                >
-                  <h3
-                    className="font-bold text-gray-800"
-                    style={{ fontSize: 'min(0.75rem, 1.5vw)' }}
-                  >
+                <div className="bg-white bg-opacity-90 rounded-full overflow-hidden px-1 py-0.5 sm:px-2 sm:py-1 md:px-2 md:py-1.5 lg:px-4 lg:py-2 max-w-[95%] md:max-w-[95%] lg:max-w-none">
+                  <h3 className="font-bold text-gray-700 whitespace-nowrap md:whitespace-nowrap lg:whitespace-normal text-[8px] sm:text-[2vw] md:text-[10px] lg:text-lg">
                     마이페이지 바로가기
                   </h3>
                 </div>

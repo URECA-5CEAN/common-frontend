@@ -62,8 +62,18 @@ const LandingPage = () => {
         className="absolute top-0 w-full h-[100vh]"
       />
 
-      <div className="absolute top-[130px] h-[50vh] md:h-full overflow-hidden w-full">
-        <img src={wave} alt="파도" className=" h-full min-w-[1654px] " />
+      {/* 모바일 전용 파도 */}
+      <div className="absolute top-[120px] h-[50vh] overflow-hidden w-full md:hidden">
+        <img
+          src={wave}
+          alt="파도"
+          className="h-full w-full min-w-[1654px] object-cover object-left"
+        />
+      </div>
+
+      {/* 태블릿/데스크톱 전용 파도 */}
+      <div className="absolute top-[130px] h-full overflow-hidden w-full hidden md:block">
+        <img src={wave} alt="파도" className="h-full min-w-[1654px]" />
       </div>
       <MotionPathAnimation />
 
