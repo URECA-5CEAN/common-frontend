@@ -96,7 +96,7 @@ function MapSidebar({
   sheetDetail,
   onDetailSheetPositionChange,
   openRoadDetail,
-  index,
+  // index,
   setStartValue,
   setEndValue,
   resetKeyword,
@@ -179,7 +179,7 @@ function MapSidebar({
             setWayInput={setWayInput}
             setFocusField={setFocusField}
             focusField={focusField}
-            isLoading={isLoading}
+            isMainLoading={isMainLoading}
             setIsOpen={setIsModalOpen}
             isOpen={isModalOpen}
           />
@@ -223,7 +223,7 @@ function MapSidebar({
                   setWayInput={setWayInput}
                   setFocusField={setFocusField}
                   focusField={focusField}
-                  isLoading={isLoading}
+                  isMainLoading={isMainLoading}
                   setIsOpen={setIsModalOpen}
                   isOpen={isModalOpen}
                 />
@@ -278,7 +278,7 @@ function MapSidebar({
                 setWayInput={setWayInput}
                 setFocusField={setFocusField}
                 focusField={focusField}
-                isLoading={isLoading}
+                isMainLoading={isMainLoading}
                 setIsOpen={setIsModalOpen}
                 isOpen={isModalOpen}
               />
@@ -331,7 +331,7 @@ function MapSidebar({
                   setWayInput={setWayInput}
                   setFocusField={setFocusField}
                   focusField={focusField}
-                  isLoading={isLoading}
+                  isMainLoading={isMainLoading}
                   setIsOpen={setIsModalOpen}
                   isOpen={isModalOpen}
                 />
@@ -383,7 +383,7 @@ function MapSidebar({
                   setWayInput={setWayInput}
                   setFocusField={setFocusField}
                   focusField={focusField}
-                  isLoading={isLoading}
+                  isMainLoading={isMainLoading}
                   setIsOpen={setIsModalOpen}
                   isOpen={isModalOpen}
                 />

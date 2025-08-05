@@ -146,16 +146,21 @@ function DetailSection({
               return (
                 <li
                   key={benefit.id?.trim() || `benefit-${idx}`}
-                  className="flex items-center justify-between p-1 rounded-md"
+                  className="flex items-center justify-between py-1 rounded-md"
                 >
-                  <div className="relative flex flex-col justify-center ">
-                    <p className="font-bold">{BenefitLabel[idx]}</p>
+                  <div className="relative flex flex-col justify-center">
+                    <p className="">
+                      {BenefitLabel[idx]}{' '}
+                      {isMyMembership && (
+                        <span className="text-primaryGreen-80">(내 등급)</span>
+                      )}
+                    </p>
 
                     <p
                       className={clsx(
-                        'text-sm inline-block  py-0.5 rounded transition',
+                        'text-sm inline-block  py-1 rounded transition',
                         isMyMembership
-                          ? 'bg-primaryGreen text-gray-800 font-semibold'
+                          ? 'bg-primaryGreen-80 text-white'
                           : 'bg-white text-gray-800',
                       )}
                     >
@@ -164,28 +169,6 @@ function DetailSection({
                     <p className="text-xs text-gray-500 ">
                       ({benefit.description})
                     </p>
-                    {isMyMembership && (
-                      <div className="ml-3 absolute -top-3 left-8 flex items-center">
-                        {/* 말풍선 */}
-                        <div className="bg-white border w-[220px] border-gray-200 px-3 py-1 rounded-t-lg rounded-br-lg shadow text-[13px] text-gray-800 relative z-10">
-                          <span className="font-semibold text-primaryGreen-80">
-                            {userInfo.nickname}
-                          </span>
-                          님은 {userInfo.membership} 등급이에요!
-                          {/* 꼬리 */}
-                          <div
-                            className="absolute left-[-8px] top-[75%] -translate-y-1/2 w-0 h-0 
-                                border-t-8 border-t-transparent border-b-8 border-b-transparent 
-                                border-r-8 border-r-gray-200 border-l-0 border-l-transparent z-11"
-                          ></div>
-                          <div
-                            className="absolute left-[-6px] top-[75%] -translate-y-1/2 w-0 h-0 
-                                border-t-7 border-t-transparent border-b-7 border-b-transparent 
-                                border-r-7 border-r-white border-l-0 border-l-transparent z-11"
-                          ></div>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </li>
               );
@@ -274,15 +257,16 @@ function DetailSection({
           )}
         </section>
 
-      {isLoad && (
-        <RoadviewViewer
-          location={{
-            lat: store.latitude,
-            lng: store.longitude,
-            isDetail: true,
-          }}
-        />
-      )}
+        {isLoad && (
+          <RoadviewViewer
+            location={{
+              lat: store.latitude,
+              lng: store.longitude,
+              isDetail: true,
+            }}
+          />
+        )}
+      </div>
     </div>
   );
 }

@@ -29,7 +29,7 @@ function StoreCard({
   return (
     <div
       className={clsx(
-        'relative flex items-stretch  cursor-pointer py-2 w-full border-b border-b-gray-200',
+        'relative flex items-stretch  cursor-pointer py-2 w-full border-b border-b-gray-200 px-6',
         store.isRecommended ? 'bg-primaryGreen-40 pt-6' : 'bg-white',
       )}
       onClick={() => {
@@ -43,7 +43,7 @@ function StoreCard({
       <img
         src={store.brandImageUrl}
         alt={store.name}
-        className="w-[80px] h-[80px] rounded-md mr-3 self-center ml-1"
+        className="w-[80px] h-[80px] rounded-md mr-3 self-center"
         loading="lazy"
         width={80}
         height={80}
@@ -51,23 +51,24 @@ function StoreCard({
       />
       {store.isRecommended && (
         <div className="group">
-          <div className="hidden  md:block absolute top-[28px] left-[28px] md:top-[5px] md:left-[5px] text-primaryGreen-80 text-lg font-semibold z-2">
+          <div className="hidden  md:block absolute top-[28px] left-[28px] md:top-[5px] md:left-6 text-primaryGreen-80 text-lg font-semibold">
             AI의 픽!
           </div>
           <Info
             size={17}
-            className="hidden md:block absolute top-[32px] left-[90px] md:top-[10px] md:left-[65px] text-primaryGreen-80"
+            className="hidden md:block absolute top-[32px] left-[90px] md:top-[10px] md:left-22 text-primaryGreen-80"
           />
 
           {/* 말풍선 툴팁 */}
-          <div className="absolute -top-5 left-[86px] hidden group-hover:block bg-white  text-xs px-3 py-2 z-2 shadow rounded-xl whitespace-nowrap">
+          <div className="absolute top-5 left-24 hidden group-hover:block bg-white  text-xs px-3 py-2 z-2000 shadow rounded-xl rounded-tl-none whitespace-nowrap">
             <p className="w-36">
-              AI를 활용해 김민석님을 위한 <br />
-              맞춤 제휴처를 제공해드려요!
+              AI가 사용자의 패턴을 분석해
+              <br />
+              맞춤 제휴처를 추천해드려요!
             </p>
           </div>
-          <p className="absolute md:hidden text-base top-[5px] left-[6px] font-semibold text-primaryGreen-80">
-            AI를 활용해 김민석님을 위한 맞춤 제휴처 추천!
+          <p className="absolute md:hidden text-base top-[5px] left-6 font-semibold text-primaryGreen-80">
+            AI의 맞춤 제휴처 추천!
           </p>
         </div>
       )}

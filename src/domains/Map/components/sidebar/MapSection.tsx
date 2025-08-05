@@ -13,7 +13,7 @@ import clsx from 'clsx';
 import NoImage from '@/assets/image/dolphin_find.png';
 import Errorimage from '@/assets/image/dolphin-error.svg';
 import { useCurrentLocation } from '../../hooks/useCurrentLoaction';
-import { Grid, Ring } from 'ldrs/react';
+import { Grid } from 'ldrs/react';
 interface MapSectionProps {
   stores: StoreInfo[];
   openDetail: (store: StoreInfo) => void;
@@ -155,7 +155,7 @@ function MapSection({
           <Grid size="100" speed="1.5" color="#6fc3d1" />
         </div>
       ) : modeStore && modeStore.length !== 0 ? (
-        <div className="scrollbar-custom border-t border-t-gray-200 px-6 w-full absolute top-51 md:top-66 overflow-y-auto h-[calc(100dvh-460px)] md:h-[calc(100dvh-320px)]">
+        <div className="scrollbar-custom border-t border-t-gray-200 w-full absolute top-51 md:top-66 overflow-y-auto h-[calc(100dvh-460px)] md:h-[calc(100dvh-320px)]">
           {modeStore.map((store, idx) => (
             <StoreCard
               key={store.id?.trim() || `unknown-${store.name}-${idx}`}

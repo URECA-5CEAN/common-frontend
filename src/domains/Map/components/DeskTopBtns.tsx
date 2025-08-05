@@ -1,5 +1,12 @@
+import type { CategoryIconMeta } from '@/domains/Map/pages/MapPage';
 import clsx from 'clsx';
-import type { CategoryProps } from './CategorySlider';
+
+interface CategoryProps {
+  Category: string[];
+  isCategory: string;
+  changeCategory: (cate: string) => void;
+  categoryIconMap: Record<string, CategoryIconMeta>;
+}
 
 export default function DeskTopBtns({
   Category,

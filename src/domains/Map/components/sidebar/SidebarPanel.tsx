@@ -120,7 +120,7 @@ function SidebarPanel({
     fetchUserData();
   }, [token]);
 
-  const left = 64 + index * 345;
+  // const left = 64 + index * 345;
   const isDetail = panel.type === 'detail';
   const isRoad = panel.type === 'road';
 
@@ -139,7 +139,7 @@ function SidebarPanel({
           : 'md:max-h-full md:top-14 md:ml-1.5 z-22 md:left-16',
       )}
     >
-      <div className={`scrollbar-custom relative z-10 mt-0 md:mt-0`}>
+      <div className={`relative z-10 mt-0 md:mt-0 h-full`}>
         {/* 메뉴 및 상세 분기 렌더링 */}
         {index === 0 && panel.menu === '지도' && (
           <>
