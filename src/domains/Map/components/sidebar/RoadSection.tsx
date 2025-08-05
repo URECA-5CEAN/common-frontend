@@ -605,7 +605,7 @@ export default function RoadSection({
       </div>
 
       {!isLoading && viewmode === 'bookmark' && (
-        <div className="space-y-2 px-2">
+        <div className="space-y-2">
           <div className=" flex justify-between">
             <p className="text-xl font-bold text-gray-600">즐겨찾기</p>
           </div>

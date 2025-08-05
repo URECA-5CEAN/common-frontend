@@ -62,7 +62,7 @@ export default function MapSection({
 
   return (
     <div className="space-y-4 h-screen">
-      <div className="space-y-5 md:pl-6 absolute pl-6 top-33 md:top-36 w-[calc(100%-24px)] md:w-[308px] z-1">
+      <div className="space-y-5 md:pl-6 md:absolute pl-6 top-33 md:top-36 w-[calc(100%-24px)] md:w-[308px] z-1">
         <div className="flex relative top-4 py-1 rounded-sm mx-auto">
           <button
             onClick={() => setMode('default')}
@@ -155,7 +155,7 @@ export default function MapSection({
           <Grid size="100" speed="1.5" color="#6fc3d1" />
         </div>
       ) : modeStore && modeStore.length !== 0 ? (
-        <div className="scrollbar-custom border-t border-t-gray-200 w-full absolute top-51 md:top-66 overflow-y-auto h-[calc(100dvh-460px)] md:h-[calc(100dvh-320px)]">
+        <div className="md:scrollbar-custom border-t border-t-gray-200 w-full absolute top-51 md:top-66 md:overflow-y-auto h-[calc(100dvh-460px)] md:h-[calc(100dvh-320px)]">
           {modeStore.map((store, idx) => (
             <StoreCard
               key={store.id?.trim() || `unknown-${store.name}-${idx}`}

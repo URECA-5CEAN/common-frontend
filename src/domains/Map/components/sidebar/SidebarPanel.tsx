@@ -133,18 +133,20 @@ function SidebarPanel({
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       className={clsx(
         'bg-white shadow h-auto',
-        'md:fixed md:bottom-0 md:w-[332px] overflow-visible relative',
+        'md:fixed md:bottom-0 md:w-[332px] overflow-visible relative h-full',
         index === 1
           ? 'md:max-h-[calc(100vh-80px)] top-8 md:top-17 z-21 rounded-xl md:left-102'
           : 'md:max-h-full md:top-14 md:ml-1.5 z-22 md:left-16',
       )}
     >
-      <div className={`relative z-10 mt-0 md:mt-0 h-full`}>
+      <div
+        className={`relative z-10 mt-1 md:mt-0 h-full md:overflow-y-hidden md:h-full ${index === 1 || panel.menu === '즐겨찾기' ? 'overflow-y-hidden' : ''}`}
+      >
         {/* 메뉴 및 상세 분기 렌더링 */}
         {index === 0 && panel.menu === '지도' && (
           <>
             {/* 광고 배너 */}
-            <div className="absolute left-6 top-3 md:top-6 w-[calc(100%-48px)]">
+            <div className="md:absolute px-6 md:px-0 left-6 top-3 md:top-6 md:w-[calc(100%-48px)]">
               <Banner />
             </div>
             <MapSection
@@ -224,10 +226,10 @@ function SidebarPanel({
       {index === 1 && (isDetail || isRoad) && (
         <button
           onClick={() => onClose(index)}
-          className="absolute z-10 left-6 md:left-83 -top-8 flex justify-center items-center w-10 md:w-7 md:h-12 md:border-l-0 h-10 md:top-[50%] cursor-pointer hover:bg-gray-100 transition-[background-color] duration-100 focus:outline-none bg-white border-1  md:rounded-r-lg rounded-full md:rounded-l-none border-gray-200"
+          className="absolute z-10 left-4 px-3 md:px-0 md:left-83 -top-10 flex justify-center items-center w-12 md:w-7 md:h-12 md:border-l-0 h-10 md:top-[50%] cursor-pointer focus:outline-none bg-white md:rounded-r-lg rounded-full md:rounded-l-none"
         >
           <ChevronLeft
-            className="translate-x-1.3 text-gray-300"
+            className="translate-x-1.3 text-gray-600 md:text-gray-300"
             strokeWidth={3}
           />
         </button>

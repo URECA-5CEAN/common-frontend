@@ -19,7 +19,7 @@ import dolphinFind from '@/assets/image/dolphin_find.png';
 
 const STYLES = {
   container: 'w-[calc(100%-48px)] max-w-[1050px] m-6',
-  title: 'text-[32px] font-bold my-3',
+  title: 'text-[32px] font-bold my-3 flex items-end gap-2',
   subtitle: 'text-2xl font-bold',
   card: '',
   section: 'w-full flex flex-col gap-3',
@@ -488,11 +488,28 @@ const StatisticsPage = () => {
     );
   }
 
+  const getYesterday = () => {
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+
+    const year = yesterday.getFullYear();
+    const month = String(yesterday.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작
+    const day = String(yesterday.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  };
+
   return (
     <div className="w-[calc(100%-48px)] md:w-[80%] max-w-[1050px] mb-50 md:mb-100">
       <Breadcrumb title="마이페이지" subtitle="통계" />
 
-      <div className={STYLES.title}>통계</div>
+      <div className={STYLES.title}>
+        통계
+        <span className="text-sm text-gray-500 font-medium flex">
+          {getYesterday()} 03:00 기준
+        </span>
+      </div>
 
       <div className={STYLES.card}>
         <div className="flex flex-col items-center justify-center gap-[52px]">

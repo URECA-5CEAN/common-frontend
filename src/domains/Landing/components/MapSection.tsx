@@ -1,9 +1,45 @@
+import { useState, useEffect, useRef } from 'react';
 import dolphinFinger from '@/assets/image/dolphin-finger.svg';
 import mapPage from '@/assets/image/mapPage.png';
 
 const MapSection = () => {
+  const [visibleBoxes, setVisibleBoxes] = useState<number[]>([]);
+  const sectionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            // 섹션이 보이면 박스들을 순차적으로 나타나게 함
+            setTimeout(() => setVisibleBoxes([1]), 100);
+            setTimeout(() => setVisibleBoxes([1, 2]), 250);
+            setTimeout(() => setVisibleBoxes([1, 2, 3]), 400);
+          } else {
+            // 섹션이 보이지 않으면 초기화
+            setVisibleBoxes([]);
+          }
+        });
+      },
+      {
+        threshold: 0.3, // 30%가 보일 때 트리거
+      },
+    );
+
+    const currentSection = sectionRef.current;
+    if (currentSection) {
+      observer.observe(currentSection);
+    }
+
+    return () => {
+      if (currentSection) {
+        observer.unobserve(currentSection);
+      }
+    };
+  }, []);
+
   return (
-    <div className="absolute top-[55vh] md:top-[100vh] w-full">
+    <div className="absolute top-[55vh] md:top-[100vh] w-full" ref={sectionRef}>
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
         <div className="flex items-center justify-center mb-4 sm:mb-6 md:mb-8 lg:mb-12">
           <h2 className="text-base sm:text-xl md:text-2xl lg:text-3xl xl:text-[40px] text-white font-bold mr-2 sm:mr-4">
@@ -21,11 +57,14 @@ const MapSection = () => {
         {/* 지도와 설명 박스들 */}
         <div className="relative flex flex-col md:flex-row items-center justify-center gap-4 sm:gap-6 md:gap-12 lg:gap-16 w-full max-w-7xl mt-4 sm:mt-8 md:mt-16 lg:mt-20">
           {/* 지도 이미지 */}
-          <div className="w-[80vw] sm:w-[70vw] md:w-[45vw] lg:w-[35vw] max-w-[700px] aspect-video bg-white rounded-lg overflow-hidden shadow-lg">
+          <div
+            className="w-[80vw] sm:w-[70vw] md:w-[45vw] lg:w-[35vw] max-w-[700px] bg-white rounded-lg overflow-hidden shadow-lg"
+            style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)' }}
+          >
             <img
               src={mapPage}
               alt="멤버십 지도"
-              className="w-full h-full object-cover"
+              className="w-full h-auto object-contain"
             />
           </div>
 
@@ -33,7 +72,14 @@ const MapSection = () => {
           <div className="flex flex-col space-y-4 sm:space-y-6 md:space-y-8 flex-1 md:items-center lg:transform lg:-translate-x-8">
             <div
               className="bg-primaryGreen-80 text-white p-3 sm:p-4 md:p-6 lg:p-8 rounded-2xl lg:transform lg:-translate-x-12 min-h-[80px] sm:min-h-[100px] md:min-h-[120px] lg:min-h-[158px] flex items-center justify-center w-full md:max-w-[32vw] lg:max-w-[28vw]"
-              style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)' }}
+              style={{
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
+                transform: visibleBoxes.includes(1)
+                  ? 'translateX(0)'
+                  : 'translateX(100px)',
+                opacity: visibleBoxes.includes(1) ? 1 : 0,
+                transition: 'transform 0.5s ease-out, opacity 0.5s ease-out',
+              }}
             >
               <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-2xl font-medium text-center leading-[1.75]">
                 멤버십 지도에서 제휴 매장을
@@ -43,7 +89,14 @@ const MapSection = () => {
             </div>
             <div
               className="bg-primaryGreen-80 text-white p-3 sm:p-4 md:p-6 lg:p-8 rounded-2xl min-h-[80px] sm:min-h-[100px] md:min-h-[120px] lg:min-h-[158px] flex items-center justify-center w-full md:max-w-[32vw] lg:max-w-[28vw]"
-              style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)' }}
+              style={{
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
+                transform: visibleBoxes.includes(2)
+                  ? 'translateX(0)'
+                  : 'translateX(100px)',
+                opacity: visibleBoxes.includes(2) ? 1 : 0,
+                transition: 'transform 0.5s ease-out, opacity 0.5s ease-out',
+              }}
             >
               <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-2xl font-medium text-center leading-[1.75]">
                 제휴 매장을 클릭하여
@@ -53,7 +106,14 @@ const MapSection = () => {
             </div>
             <div
               className="bg-primaryGreen-80 text-white p-4 md:p-8 rounded-2xl min-h-[100px] md:min-h-[158px] flex items-center justify-center lg:transform lg:translate-x-12 w-full md:max-w-[28vw]"
-              style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)' }}
+              style={{
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
+                transform: visibleBoxes.includes(3)
+                  ? 'translateX(0)'
+                  : 'translateX(100px)',
+                opacity: visibleBoxes.includes(3) ? 1 : 0,
+                transition: 'transform 0.5s ease-out, opacity 0.5s ease-out',
+              }}
             >
               <p className="text-xs sm:text-sm md:text-lg lg:text-xl xl:text-2xl font-medium text-center leading-[1.75]">
                 자주 가는 제휴 매장을 즐겨찾기하고

@@ -78,7 +78,9 @@ const SharePostItem = ({ post }: SharePostItemProps) => {
             <h3 className="text-lg font-bold break-words  pr-10 min-w-0">
               {post.title}
             </h3>
-            <p className="text-gray-600 text-sm line-clamp-1">{post.content}</p>
+            <p className="text-gray-600 text-sm line-clamp-1 max-w-90">
+              {post.content}
+            </p>
             <div className="text-sm flex flex-wrap gap-1 text-gray-300">
               {post.category} · {post.brandName} · {post.benefitName}
             </div>

@@ -11,7 +11,7 @@ const rowClass = 'flex w-full px-4 py-4 items-center';
 const cellBaseClass = 'flex items-center justify-center';
 const columnClass = {
   rank: `flex-[1] ${cellBaseClass} text-center font-bold`,
-  store: `flex-[2] font-bold flex gap-x-4 gap-y-1 flex-wrap items-center min-w-0`,
+  store: `flex-[2] font-bold flex gap-x-4 gap-y-1 flex-wrap sm:flex-nowrap items-center min-w-0`,
   category: `flex-[1.5] ${cellBaseClass} text-center `,
   address: `flex-[1.5] ${cellBaseClass} text-center`,
   usage: `flex-[1] ${cellBaseClass} text-center `,
@@ -36,7 +36,7 @@ const StoreRankingList = ({ rankList }: StoreRankingListProps) => {
         {rankList.map((store, index) => (
           <li
             key={store.id}
-            className={`${rowClass} text-sm sm:text-base flex sm:px-4 py-3.5 sm:py-4 justify-around items-center`}
+            className={`${rowClass} text-gray-800 text-sm sm:text-base flex sm:px-4 py-3.5 sm:py-4 justify-around items-center`}
           >
             <div className={columnClass.rank}>
               {index < 3 ? (

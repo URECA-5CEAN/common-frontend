@@ -23,6 +23,8 @@ export interface Post {
   // isClosed: boolean;
   isMine?: boolean;
   storeName: string;
+  storeLatitude: number;
+  storeLongitude: number;
 }
 
 export interface PostWriteRequest {
