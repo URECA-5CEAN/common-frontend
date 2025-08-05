@@ -270,6 +270,7 @@ function DetailSection({
         )}
       </section>
 
+      <div className="w-full border border-gray-200  my-6"></div>
       {isLoad && (
         <RoadviewViewer
           location={{

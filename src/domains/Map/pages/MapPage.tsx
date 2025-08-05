@@ -12,7 +12,15 @@ import MapSidebar, {
   type MenuType,
   type Panel,
 } from '../components/sidebar/MapSidebar';
-import { Search, X, type LucideIcon } from 'lucide-react';
+import {
+  Clapperboard,
+  Gift,
+  Percent,
+  Search,
+  Ticket,
+  Utensils,
+  type LucideIcon,
+} from 'lucide-react';
 import type { LatLng } from '../KakaoMapContainer';
 
 import {
@@ -27,23 +35,25 @@ import BenefitModal from '../components/BenefitModal';
 import type { BottomSheetHandle } from '../components/sidebar/BottomSheet';
 import DebouncedInput from '../components/DebouncedInput';
 import { useDebounce } from 'react-use';
+import CategorySlider from '../components/CategorySlider';
 import DeskTopBtns from '../components/DeskTopBtns';
 import MyLocationBtn from '../components/MyLocationBtn';
 import SearchHereBtn from '../components/SearchHearBtn';
 import { fetchAiRecommendedStore } from '../api/ai';
 import { extractBouns, type InternalBounds } from '../utils/extractBouns';
 import type { RouteItem } from '../components/sidebar/RoadSection';
-
+import { Coffee, ShoppingBag, ShoppingCart, Car } from 'lucide-react';
 import BenefitButton from '../components/BenefitButtons';
 import { useCurrentLocation } from '../hooks/useCurrentLoaction';
 import { useLocation, useNavigate } from 'react-router-dom';
-import CategoryBenefitSlider from '../components/CategoryBenefitSlider';
-import {
-  benefitIconMap,
-  categoryIconMap,
-  type BenefitType,
-  type CategoryType,
-} from '../utils/constant';
+
+type CategoryType =
+  | '음식점'
+  | '카페'
+  | '편의점'
+  | '대형마트'
+  | '문화시설'
+  | '렌터카';
 
 export interface CategoryIconMeta {
   icon: LucideIcon;
@@ -52,6 +62,61 @@ export interface CategoryIconMeta {
   size?: number;
 }
 
+// 혜택 타입 정의
+export type BenefitType = '쿠폰' | '할인' | '증정';
+
+// 아이콘 매핑
+export const benefitIconMap: Record<BenefitType, CategoryIconMeta> = {
+  쿠폰: {
+    icon: Ticket,
+    color: '#fbbc04', // 노랑 등등 원하는 색
+    size: 20,
+  },
+  할인: {
+    icon: Percent,
+    color: '#34c759', // 연두 등등 원하는 색
+    size: 20,
+  },
+  증정: {
+    icon: Gift,
+    color: '#42a5f5', // 파랑 등등 원하는 색
+    size: 20,
+  },
+};
+
+export const categoryIconMap: Record<CategoryType, CategoryIconMeta> = {
+  음식점: {
+    icon: Utensils,
+    color: '#FF7043',
+    size: 20,
+  },
+  카페: {
+    icon: Coffee,
+    color: '#6D4C41',
+    size: 21,
+    className: 'mb-0.5',
+  },
+  편의점: {
+    icon: ShoppingBag,
+    color: '#0ecc17',
+    size: 20,
+  },
+  대형마트: {
+    icon: ShoppingCart,
+    color: '#db2f18',
+    size: 20,
+  },
+  문화시설: {
+    icon: Clapperboard,
+    color: '#8E24AA',
+    size: 20,
+  },
+  렌터카: {
+    icon: Car,
+    color: '#F4511E',
+    size: 22,
+  },
+};
 export interface LocationInfo {
   name: string;
   lat: number;
@@ -156,6 +221,7 @@ export default function MapPage() {
     null,
   );
   // 위치권한 여부
+  const { location, hasLocation, requestLocation } = useCurrentLocation();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   //제휴처 조회 및 AI 제휴처 조회
@@ -166,7 +232,7 @@ export default function MapPage() {
 
     setIsLoading(true);
     try {
-      //  매장 목록 가져오기
+      // 1. 매장 목록 가져오기
       const storeList = await fetchStores({
         keyword: debouncedKeyword,
         category: isCategory,
@@ -177,7 +243,6 @@ export default function MapPage() {
       });
 
       let finalList = [...storeList];
-      // AI 제휴처
       try {
         const aiResult = await fetchAiRecommendedStore({
           keyword: debouncedKeyword,
@@ -207,7 +272,7 @@ export default function MapPage() {
         setRecommendedStore(undefined); // AI 추천 실패 시 undefined 처리
       }
 
-      // 최종 매장 목록 반영
+      // 3. 최종 매장 목록 반영
       setStores(finalList);
     } catch (err) {
       console.error('매장 목록 로딩 실패:', err);
@@ -254,7 +319,7 @@ export default function MapPage() {
   // bounds 변경 시마다 필터링 + 검색 버튼 토글
   useDebounce(
     () => {
-      // 6초동안 추가 idle 이벤트 없으면 여기가 실행
+      // 3초동안 추가 idle 이벤트 없으면 여기가 실행
       filterStoresInView();
       setShowSearchBtn(true);
 
@@ -264,7 +329,7 @@ export default function MapPage() {
         setShowSearchBtn(false);
       }, 5000);
     },
-    600,
+    300,
     [idleCount], // 줌 드래그 할 시 값 변경
   );
 
@@ -284,27 +349,7 @@ export default function MapPage() {
     };
   }, [map, filterStoresInView]);
 
-  const { location, status, setStatus, setLocation } = useCurrentLocation();
-
   // Geolocation API로 내 위치 가져오기
-
-  const requestLocation = useCallback(() => {
-    if (!navigator.geolocation) {
-      setStatus('error');
-      return;
-    }
-    setStatus('loading');
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-        setStatus('success');
-      },
-      () => {
-        setStatus('error');
-      },
-      { enableHighAccuracy: true },
-    );
-  }, []);
   useEffect(() => {
     requestLocation();
   }, [requestLocation]);
@@ -314,12 +359,6 @@ export default function MapPage() {
       setMyLocation(location);
     }
   }, [location]);
-
-  useEffect(() => {
-    if (stores.length > 0 && map) {
-      filterStoresInView();
-    }
-  }, [stores, map]);
   // 내 위치가 생기면 지도 중심으로 이동
   useEffect(() => {
     if (map && myLocation) {
@@ -351,20 +390,20 @@ export default function MapPage() {
 
   //즐겨찾기 사이드바 클릭 시 즐겨찾기만 보이도록 +AI 추천 제휴처 추가
   const displayedStores = useMemo<StoreInfo[]>(() => {
-    // 패널이 '즐겨찾기'면 즐겨찾기만
     if (panel.menu === '즐겨찾기') return bookmarks;
 
-    // 최초 렌더(아직 filter 안됨)는 stores 전체, 이후엔 filteredStores 사용
-    const list = filteredStores.length > 0 ? filteredStores : stores;
-    //  AI 추천 매장은 맨 앞
+    const list = [...filteredStores];
+
     if (recommendedStore) {
+      // 이미 있는 경우도 일단 제외하고 맨 앞에 다시 삽입
       const listWithoutRecommended = list.filter(
         (store) => store.id !== recommendedStore.id,
       );
       return [recommendedStore, ...listWithoutRecommended];
     }
+
     return list;
-  }, [panel.menu, bookmarks, stores, filteredStores, recommendedStore]);
+  }, [panel.menu, bookmarks, filteredStores, recommendedStore]);
 
   // 사이드바 메뉴 Open
   const openMenu = useCallback((menu: MenuType) => {
@@ -501,8 +540,8 @@ export default function MapPage() {
   }, []);
 
   //즐겨찾기 토글
-  const toggleBookmark = useCallback(
-    async (store: StoreInfo) => {
+  const toggleBookmark = async (store: StoreInfo) => {
+    try {
       if (bookmarks.some((bookmark) => bookmark.id === store.id)) {
         await deleteBookmark(store.id);
         setBookmarks((prev) =>
@@ -512,9 +551,10 @@ export default function MapPage() {
         await createBookmark(store.id);
         setBookmarks((prev) => [...prev, store]);
       }
-    },
-    [bookmarks],
-  );
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   //즐겨찾기 구분
   const bookmarkIds: Set<string> = useMemo(
@@ -594,36 +634,31 @@ export default function MapPage() {
     [fetchAndSetSearchStores, isCategory, selectedBenefit],
   );
 
-  const locationPath = useLocation();
+  const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const params = new URLSearchParams(locationPath.search);
+    const params = new URLSearchParams(location.search);
     const shouldClick = params.get('autoClick');
 
     if (shouldClick === 'true') {
       setIsBenefitModalOpen(true);
 
-      const newParams = new URLSearchParams(locationPath.search);
+      const newParams = new URLSearchParams(location.search);
       newParams.delete('autoClick');
 
-      navigate(`${locationPath.pathname}?${newParams.toString()}`, {
+      navigate(`${location.pathname}?${newParams.toString()}`, {
         replace: true,
       });
     }
-  }, [locationPath.search]);
-
-  const handleMapClickOrDrag = () => {
-    sheetRef.current?.snapTo('bottom');
-    sheetDetail.current?.snapTo('bottom');
-  };
+  }, [location.search]);
 
   return (
     <div className="flex h-screen flex-col-reverse md:flex-row overflow-y-hidden ">
       {/* 사이드바 */}
       <aside className="relative top-[62px] md:top-[86px] mr-6 md:m-0  left-0 bottom-0 md:w-[420px] z-20 flex-shrink-0">
         <MapSidebar
-          stores={status === 'success' ? displayedStores : []}
+          stores={hasLocation ? displayedStores : []}
           panel={panel}
           openMenu={openMenu}
           openDetail={openDetail}
@@ -673,7 +708,7 @@ export default function MapPage() {
             sheetY={sheetY}
           />
         )}
-        {map && myLocation && panel.menu !== '길찾기' && (
+        {map && (
           <SearchHereBtn
             map={map}
             myLocation={myLocation}
@@ -693,7 +728,6 @@ export default function MapPage() {
             onMapCreate={setMap}
             onCenterChanged={setCenter}
             selectedRoute={selectedRoute}
-            onMapDrag={handleMapClickOrDrag}
             panel={panel}
             start={
               startValue.lat !== 0 && startValue.lng !== 0
@@ -710,7 +744,7 @@ export default function MapPage() {
             {/* 2D 마커/오버레이 */}
             {panel.type !== 'road' &&
               panel.menu !== '길찾기' &&
-              status === 'success' && (
+              hasLocation && (
                 <FilterMarker
                   hoveredMarkerId={hoveredId}
                   setHoveredMarkerId={setHoveredId}
@@ -726,20 +760,15 @@ export default function MapPage() {
                   selectedCardId={selectedCardId}
                   setSelectedCardId={setSelectedCardId}
                   goToStore={goToStore}
-                  panel={panel}
                 />
               )}
             {panel.menu !== '길찾기' && (
               <div className="absolute  w-full md:ml-10 ml-6 top-28 md:top-20 z-2  overflow-x-auto">
-                <CategoryBenefitSlider
-                  categoryList={Object.keys(categoryIconMap) as CategoryType[]}
-                  selectedCategory={isCategory}
-                  onCategoryChange={changeCategory}
+                <CategorySlider
+                  Category={Object.keys(categoryIconMap) as CategoryType[]}
+                  isCategory={isCategory}
+                  changeCategory={changeCategory}
                   categoryIconMap={categoryIconMap}
-                  benefitList={['쿠폰', '할인', '증정']}
-                  selectedBenefit={selectedBenefit}
-                  onBenefitChange={setSelectedBenefit}
-                  benefitIconMap={benefitIconMap}
                 />
                 <DeskTopBtns
                   Category={Object.keys(categoryIconMap) as CategoryType[]}
@@ -750,7 +779,7 @@ export default function MapPage() {
               </div>
             )}
             {panel.menu !== '길찾기' && (
-              <div className="absolute  w-full h-10 mt-1 md:ml-10 ml-6 top-[150px] md:top-[120px] z-2  overflow-x-auto">
+              <div className="absolute  w-full md:ml-10 ml-6 top-28 md:top-[120px] z-2  overflow-x-auto">
                 <BenefitButton
                   benefitList={['쿠폰', '할인', '증정']}
                   selected={selectedBenefit}
@@ -759,25 +788,22 @@ export default function MapPage() {
                 />
               </div>
             )}
-            {panel.menu !== '길찾기' && (
-              <div className="flex md:hidden absolute top-[68px] left-6 right-6 bg-white z-2 items-center border border-gray-200 rounded-xl px-2 py-1">
-                <Search />
-                <DebouncedInput
-                  value={mode === 'search' ? searchInput : keyword}
-                  onChange={
-                    mode === 'search' ? handleSearchChange : changeKeyword
-                  }
-                  debounceTime={300}
-                  placeholder="검색"
-                />
-                <X
-                  onClick={resetKeyword}
-                  className="cursor-pointer "
-                  color="gray"
-                />
+            <div className="flex md:hidden  absolute top-[68px] left-6 right-6   bg-white z-2 items-center border border-gray-200 rounded-xl px-2 py-1 ">
+              <Search />
+              <DebouncedInput
+                value={keyword}
+                onChange={changeKeyword}
+                debounceTime={300}
+                placeholder="검색"
+              />
+            </div>
+            {!hasLocation && (
+              <div className="text-red-500 p-2">
+                위치 권한이 허용되지 않았습니다.
+                <br />
+                <button onClick={requestLocation}>권한 다시 요청</button>
               </div>
             )}
-
             <BenefitModal
               isBenefitModalOpen={isBenefitModalOpen}
               setIsBenefitModalOpen={setIsBenefitModalOpen}
