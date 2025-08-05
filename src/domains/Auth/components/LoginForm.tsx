@@ -99,13 +99,14 @@ const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
     }
 
     try {
-      await login({
+      const result = await login({
         email: form.email,
         password: form.password,
       });
 
       // 로그인 성공 시 Zustand 상태 변경
       useAuthStore.getState().setIsLoggedIn(true);
+      useAuthStore.getState().setToken(result.data.token);
       const params = new URLSearchParams(location.search);
       const redirectPath = params.get('redirect') || '/map';
       setTimeout(() => navigate(redirectPath, { replace: true }), 0);
@@ -126,6 +127,7 @@ const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
             localStorage.setItem('authToken', event.data.token);
             localStorage.setItem('isKakao', 'true');
             useAuthStore.getState().setIsLoggedIn(true);
+            useAuthStore.getState().setToken(event.data.token);
             navigate('/');
           } else if (event.data.result === 'signup required') {
             setKakaoSignupToken(event?.data.token);
@@ -170,6 +172,7 @@ const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
       localStorage.setItem('authToken', res.data.token);
       localStorage.setItem('isKakao', 'true');
       useAuthStore.getState().setIsLoggedIn(true);
+      useAuthStore.getState().setToken(res.data.token);
       navigate('/');
     } catch (err) {
       console.error('카카오 회원가입 실패:', err);

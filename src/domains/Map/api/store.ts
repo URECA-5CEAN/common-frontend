@@ -198,6 +198,7 @@ export const fetchSearchStores = async (
 
 //즐겨찾기 조회
 export async function fetchBookmark(category?: string): Promise<StoreInfo[]> {
+  const token = localStorage.getItem('authToken');
   if (!token) return [];
   try {
     const response: AxiosResponse<FetchStoresResponse> = await apiClient.get(
@@ -225,6 +226,7 @@ export async function fetchBookmark(category?: string): Promise<StoreInfo[]> {
 
 /** 즐겨찾기 등록 */
 export async function createBookmark(storeId: string): Promise<string> {
+  const token = localStorage.getItem('authToken');
   try {
     const response = await apiClient.post<CreateDeleteStoresResponse>(
       `/bookmark/${storeId}`, // URL에 storeId 추가
@@ -247,6 +249,7 @@ export async function createBookmark(storeId: string): Promise<string> {
 
 /** 즐겨찾기 삭제 */
 export async function deleteBookmark(storeId: string): Promise<string> {
+  const token = localStorage.getItem('authToken');
   try {
     const response = await apiClient.delete<CreateDeleteStoresResponse>(
       `/bookmark/${storeId}`, // URL에 storeId 추가
@@ -272,6 +275,7 @@ export async function uploadReceiptImage(
   const formData = new FormData();
   formData.append('imageFile', file);
   try {
+    const token = localStorage.getItem('authToken');
     const response: AxiosResponse<{ data: BenefitData }> = await apiClient.post(
       '/ocr',
       formData,
@@ -300,6 +304,7 @@ export async function saveBenefitData(
   userEmail: string,
 ): Promise<SaveBenefitDataResponse> {
   try {
+    const token = localStorage.getItem('authToken');
     const response: AxiosResponse<SaveBenefitDataResponse> =
       await apiClient.post(`/ocr/save?benefitAmount=${benefitAmount}`, data, {
         headers: {
