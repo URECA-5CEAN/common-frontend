@@ -17,6 +17,7 @@ import SelectFields from '@/domains/Explore/components/share/SelectFields';
 import PostContentFields from '@/domains/Explore/components/share/PostContentFields';
 import DateTimePicker from '@/domains/Explore/components/share/DateTimePicker';
 import PlaceField from '@/domains/Explore/components/share/PlaceField';
+import { ChevronLeft } from 'lucide-react';
 
 const MyPageWritePage = () => {
   const navigate = useNavigate();
@@ -108,7 +109,14 @@ const MyPageWritePage = () => {
 
   return (
     <div className="w-[calc(100%-48px)] md:w-[80%] max-w-[1050px] mb-50 md:mb-100">
-      <h2 className="text-[28px] font-bold mb-6">나눔 글 작성</h2>
+      <div className="flex  md:flex-row flex-col">
+        <ChevronLeft
+          size={40}
+          className="relative right-3 text-gray-500 cursor-pointer "
+          onClick={() => navigate('/mypage/share')}
+        />
+        <h2 className="text-[28px] font-bold mb-6 ">나눔 글 작성</h2>
+      </div>
 
       <SelectFields
         selectedCategory={category}

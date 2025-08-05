@@ -22,8 +22,6 @@ export default function RoadviewViewer({ location }: { location: LatLng }) {
     roadviewClient.getNearestPanoId(position, 50, (panoId) => {
       if (panoId) {
         roadview.setPanoId(panoId, position);
-      } else {
-        alert('해당 지점에는 로드뷰가 없습니다.');
       }
     });
   }, [location]);
@@ -32,7 +30,7 @@ export default function RoadviewViewer({ location }: { location: LatLng }) {
     <div
       ref={roadviewRef}
       className={clsx(
-        location.isDetail ? 'fixed w-80 h-48 top-20 right-8' : 'w-full h-48',
+        location.isDetail ? 'fixed w-80 h-48 top-20 right-8' : 'w-full h-48 ',
         'hidden md:block',
       )}
     />
