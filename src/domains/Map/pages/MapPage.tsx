@@ -21,29 +21,31 @@ import {
   fetchBookmark,
   fetchSearchStores,
   fetchStores,
+  type FetchStoresParams,
   type StoreInfo,
 } from '../api/store';
 import BenefitModal from '../components/BenefitModal';
 import type { BottomSheetHandle } from '../components/sidebar/BottomSheet';
 import DebouncedInput from '../components/DebouncedInput';
-import { useDebounce } from 'react-use';
+import CategorySlider from '../components/CategorySlider';
 import DeskTopBtns from '../components/DeskTopBtns';
 import MyLocationBtn from '../components/MyLocationBtn';
 import SearchHereBtn from '../components/SearchHearBtn';
 import { fetchAiRecommendedStore } from '../api/ai';
-import { extractBouns, type InternalBounds } from '../utils/extractBouns';
+import { extractBouns } from '../utils/extractBouns';
 import type { RouteItem } from '../components/sidebar/RoadSection';
 
 import BenefitButton from '../components/BenefitButtons';
 import { useCurrentLocation } from '../hooks/useCurrentLoaction';
 import { useLocation, useNavigate } from 'react-router-dom';
-import CategoryBenefitSlider from '../components/CategoryBenefitSlider';
+// import CategoryBenefitSlider from '../components/CategoryBenefitSlider';
 import {
   benefitIconMap,
   categoryIconMap,
   type BenefitType,
   type CategoryType,
 } from '../utils/constant';
+import { useAuthStore } from '@/store/useAuthStore';
 
 export interface CategoryIconMeta {
   icon: LucideIcon;
@@ -60,20 +62,21 @@ export interface LocationInfo {
 }
 
 export default function MapPage() {
+  const token = useAuthStore((state) => state.token);
+
   //도 + 3D 캔버스 감쌀 div
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Kakao Map 인스턴스
   const [map, setMap] = useState<kakao.maps.Map | null>(null);
   // 지도 중심 좌표
-  const [center, setCenter] = useState<LatLng>({ lat: 37.5, lng: 127 });
+  const [center, setCenter] = useState<LatLng>();
   // 내 위치 (Geolocation)
   const [myLocation, setMyLocation] = useState<LatLng | null>(null);
 
   // API로 불러온 매장 리스트
   const [stores, setStores] = useState<StoreInfo[]>([]);
-  // 화면 내 매장
-  const [filteredStores, setFilteredStores] = useState<StoreInfo[]>([]);
+
   // 사이드바에서 선택한 매장 (상세보기)
   //const [selectedStore, setSelectedStore] = useState<StoreInfo | null>(null);
   // 호버 오버레이 할 ID
@@ -139,7 +142,6 @@ export default function MapPage() {
   // peek 상태 바텀시트 높이
   const peekHeight = 30;
 
-  const [idleCount, setIdleCount] = useState(0);
   //AI 추천 제휴처
   const [recommendedStore, setRecommendedStore] = useState<StoreInfo>();
   // 선택한 길찾기
@@ -156,35 +158,78 @@ export default function MapPage() {
     null,
   );
   // 위치권한 여부
+  const { location, requestLocation } = useCurrentLocation();
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isMainLoading, setIsMainLoading] = useState<boolean>(false);
+
+  const createBoundsFromLocation = (loc: LatLng, radiusKm = 0.3) => {
+    const latDelta = radiusKm / 111;
+    const lngDelta = radiusKm / (111 * Math.cos((loc.lat * Math.PI) / 180));
+
+    return {
+      centerLat: loc.lat,
+      centerLng: loc.lng,
+      latMin: loc.lat - latDelta,
+      latMax: loc.lat + latDelta,
+      lngMin: loc.lng - lngDelta,
+      lngMax: loc.lng + lngDelta,
+    };
+  };
+
+  const { isLoggedIn } = useAuthStore();
+
   //제휴처 조회 및 AI 제휴처 조회
-  const searchStoresWithAI = useCallback(async () => {
-    if (!map) return;
-    const bounds = extractBouns(map);
-    if (!bounds) return;
+  const searchStoresWithAI = useCallback(
+    async (myLocation?: LatLng) => {
+      if (!map) return;
 
-    setIsLoading(true);
-    try {
-      //  매장 목록 가져오기
-      const storeList = await fetchStores({
-        keyword: debouncedKeyword,
-        category: isCategory,
-        benefit: selectedBenefit,
-        ...bounds,
-        centerLat: center?.lat,
-        centerLng: center?.lng,
-      });
+      const bounds = myLocation
+        ? createBoundsFromLocation(myLocation, 1.0)
+        : extractBouns(map);
 
-      let finalList = [...storeList];
-      // AI 제휴처
+      if (!bounds) return;
+
+      setCenter({ lat: bounds.centerLat, lng: bounds.centerLng });
+      setIsMainLoading(true);
+
+      // 새로운 검색 시 기존 AI 추천 결과 초기화
+      setRecommendedStore(undefined);
+
+      try {
+        // 1. 기본 매장 목록 먼저 가져오기 (빠른 응답)
+        const storeList = await fetchStores({
+          keyword: debouncedKeyword,
+          category: isCategory,
+          benefit: selectedBenefit,
+          ...bounds,
+        });
+
+        // 2. 기본 매장 목록을 먼저 화면에 표시
+        setStores(storeList);
+
+        // 3. AI 추천을 별도로 비동기 처리 (느린 응답)
+        fetchAiRecommendationAsync(bounds, storeList);
+      } catch (err) {
+        console.error('매장 목록 로딩 실패:', err);
+        setStores([]);
+      } finally {
+        setIsMainLoading(false); // 기본 로딩은 여기서 완료
+        setShowSearchBtn(false);
+      }
+    },
+    [map, debouncedKeyword, isCategory, selectedBenefit],
+  );
+
+  const fetchAiRecommendationAsync = useCallback(
+    async (
+      bounds: Omit<FetchStoresParams, 'keyword' | 'category' | 'benefit'>,
+      currentStoreList: StoreInfo[],
+    ) => {
       try {
         const aiResult = await fetchAiRecommendedStore({
           keyword: debouncedKeyword,
           category: isCategory,
           ...bounds,
-          centerLat: center?.lat,
-          centerLng: center?.lng,
         });
 
         if (aiResult?.store?.id) {
@@ -195,31 +240,30 @@ export default function MapPage() {
 
           setRecommendedStore(aiStore);
 
-          const exists = storeList.some((store) => store.id === aiStore.id);
+          // 기존 목록에 AI 추천 매장이 없으면 맨 앞에 추가
+          const exists = currentStoreList.some(
+            (store) => store.id === aiStore.id,
+          );
           if (!exists) {
-            finalList = [aiStore, ...storeList];
+            setStores((prevStores) => [aiStore, ...prevStores]);
           }
         } else {
           setRecommendedStore(undefined);
         }
       } catch (e) {
         console.warn('AI 추천 실패:', e);
-        setRecommendedStore(undefined); // AI 추천 실패 시 undefined 처리
+        setRecommendedStore(undefined);
       }
-
-      // 최종 매장 목록 반영
-      setStores(finalList);
-    } catch (err) {
-      console.error('매장 목록 로딩 실패:', err);
-      setStores([]);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [map, debouncedKeyword, isCategory, selectedBenefit]);
+    },
+    [debouncedKeyword, isCategory],
+  );
 
   useEffect(() => {
-    searchStoresWithAI();
-  }, [searchStoresWithAI]);
+    if (!isLoggedIn) {
+      setRecommendedStore(undefined);
+      setStores((prev) => prev.filter((store) => !store.isRecommended));
+    }
+  }, [isLoggedIn]);
 
   // 초기 바텀시트 위치 계산
   useEffect(() => {
@@ -227,87 +271,35 @@ export default function MapPage() {
     setSheetY(sheetHeight - peekHeight);
   }, []);
 
+  // Geolocation API로 내 위치 가져오기
+  useEffect(() => {
+    requestLocation();
+  }, []);
+
   useEffect(() => {
     const handler = window.setTimeout(() => setDebouncedKeyword(keyword), 300);
     return () => clearTimeout(handler);
   }, [keyword]);
 
-  //화면 내 매장만 filter해 sidebar 및 marker적용
-  const filterStoresInView = useCallback(() => {
-    if (!map) return;
-    const bounds = map.getBounds() as InternalBounds;
-    if (!bounds) return;
-    const list = Array.isArray(stores) ? stores : []; //제휴처 있는지 확인 후 없으면 빈 배열 (filter부분 에러 해결)
-    // pa: north, qa: south, oa: east, ha: west
-    const inView = list.filter((store) => {
-      const { latitude: lat, longitude: lng } = store;
-      return (
-        lat <= bounds.pa &&
-        lat >= bounds.qa &&
-        lng <= bounds.oa &&
-        lng >= bounds.ha
-      );
-    });
-    setFilteredStores(inView);
-  }, [map, stores]);
-
-  // bounds 변경 시마다 필터링 + 검색 버튼 토글
-  useDebounce(
-    () => {
-      // 6초동안 추가 idle 이벤트 없으면 여기가 실행
-      filterStoresInView();
-      setShowSearchBtn(true);
-
-      // 5초 뒤 버튼 숨기기
-      clearTimeout(hideTimeoutRef.current);
-      hideTimeoutRef.current = window.setTimeout(() => {
-        setShowSearchBtn(false);
-      }, 5000);
-    },
-    600,
-    [idleCount], // 줌 드래그 할 시 값 변경
-  );
+  useEffect(() => {
+    searchStoresWithAI();
+  }, [debouncedKeyword]);
 
   // idle 이벤트에서는 카운터만 올려 주기
   useEffect(() => {
     if (!map) return;
     // 마운트 시 제휴처 보여줌
-    filterStoresInView();
+    searchStoresWithAI();
 
     const handleIdle = () => {
-      setIdleCount((c) => c + 1);
+      // setIdleCount((c) => c + 1);
     };
     kakao.maps.event.addListener(map, 'idle', handleIdle);
     return () => {
       kakao.maps.event.removeListener(map, 'idle', handleIdle);
       clearTimeout(hideTimeoutRef.current);
     };
-  }, [map, filterStoresInView]);
-
-  const { location, status, setStatus, setLocation } = useCurrentLocation();
-
-  // Geolocation API로 내 위치 가져오기
-
-  const requestLocation = useCallback(() => {
-    if (!navigator.geolocation) {
-      setStatus('error');
-      return;
-    }
-    setStatus('loading');
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-        setStatus('success');
-      },
-      () => {
-        setStatus('error');
-      },
-      { enableHighAccuracy: true },
-    );
-  }, []);
-  useEffect(() => {
-    requestLocation();
-  }, [requestLocation]);
+  }, [map]);
 
   useEffect(() => {
     if (location && location.lat && location.lng) {
@@ -315,17 +307,13 @@ export default function MapPage() {
     }
   }, [location]);
 
-  useEffect(() => {
-    if (stores.length > 0 && map) {
-      filterStoresInView();
-    }
-  }, [stores, map]);
   // 내 위치가 생기면 지도 중심으로 이동
   useEffect(() => {
     if (map && myLocation) {
       const mylocate = new kakao.maps.LatLng(myLocation.lat, myLocation.lng);
       map.panTo(mylocate);
       setCenter(myLocation);
+      searchStoresWithAI(myLocation);
     }
   }, [map, myLocation]);
 
@@ -344,19 +332,22 @@ export default function MapPage() {
       const loc = new kakao.maps.LatLng(store.latitude, store.longitude);
       map.panTo(loc);
       setCenter({ lat: store.latitude, lng: store.longitude });
-      searchStoresWithAI();
+      // searchStoresWithAI();
     },
     [map, searchStoresWithAI],
   );
 
   //즐겨찾기 사이드바 클릭 시 즐겨찾기만 보이도록 +AI 추천 제휴처 추가
   const displayedStores = useMemo<StoreInfo[]>(() => {
-    // 패널이 '즐겨찾기'면 즐겨찾기만
+    if (isMainLoading) return [];
+
     if (panel.menu === '즐겨찾기') return bookmarks;
 
-    // 최초 렌더(아직 filter 안됨)는 stores 전체, 이후엔 filteredStores 사용
-    const list = filteredStores.length > 0 ? filteredStores : stores;
-    //  AI 추천 매장은 맨 앞
+    // Add proper array check here
+    if (!stores || !Array.isArray(stores)) return [];
+
+    const list = [...stores];
+
     if (recommendedStore) {
       const listWithoutRecommended = list.filter(
         (store) => store.id !== recommendedStore.id,
@@ -364,7 +355,7 @@ export default function MapPage() {
       return [recommendedStore, ...listWithoutRecommended];
     }
     return list;
-  }, [panel.menu, bookmarks, stores, filteredStores, recommendedStore]);
+  }, [isMainLoading, panel.menu, bookmarks, stores, recommendedStore, center]);
 
   // 사이드바 메뉴 Open
   const openMenu = useCallback((menu: MenuType) => {
@@ -489,6 +480,7 @@ export default function MapPage() {
     async function loadBookmarks() {
       try {
         const data = await fetchBookmark();
+
         if (imdounted) setBookmarks(data);
       } catch (err) {
         console.error('즐겨찾기 불러오기 실패', err);
@@ -498,7 +490,7 @@ export default function MapPage() {
     return () => {
       imdounted = false;
     };
-  }, []);
+  }, [token]);
 
   //즐겨찾기 토글
   const toggleBookmark = useCallback(
@@ -555,7 +547,7 @@ export default function MapPage() {
           });
           setSearchStores(result);
         } catch (e) {
-          console.log(e);
+          console.error(e);
           setSearchStores([]);
         }
       } else {
@@ -618,12 +610,100 @@ export default function MapPage() {
     sheetDetail.current?.snapTo('bottom');
   };
 
+  // 이전 중심점을 저장할 ref 추가
+  const previousCenterRef = useRef<LatLng | null>(null);
+
+  // 거리 계산 함수 (Haversine formula)
+  const calculateDistance = (point1: LatLng, point2: LatLng): number => {
+    const R = 6371; // 지구 반지름 (km)
+    const dLat = ((point2.lat - point1.lat) * Math.PI) / 180;
+    const dLon = ((point2.lng - point1.lng) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((point1.lat * Math.PI) / 180) *
+        Math.cos((point2.lat * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // 거리 (km)
+  };
+
+  // 지도 중심점 변경 감지 함수
+  const handleMapCenterChange = useCallback(() => {
+    if (!map) return;
+
+    const currentCenter = map.getCenter();
+    const newCenter: LatLng = {
+      lat: currentCenter.getLat(),
+      lng: currentCenter.getLng(),
+    };
+
+    // 이전 중심점이 있고, 일정 거리 이상 이동했을 때만 버튼 표시
+    if (
+      previousCenterRef.current &&
+      calculateDistance(previousCenterRef.current, newCenter) > 0.1
+    ) {
+      // 100m 이상 이동
+      setShowSearchBtn(true);
+    }
+
+    // 현재 중심점을 이전 중심점으로 저장
+    previousCenterRef.current = newCenter;
+  }, [map]);
+
+  // 지도 이벤트 리스너 설정
+  useEffect(() => {
+    if (!map) return;
+
+    // 초기 중심점 설정
+    const initialCenter = map.getCenter();
+    previousCenterRef.current = {
+      lat: initialCenter.getLat(),
+      lng: initialCenter.getLng(),
+    };
+
+    // bounds_changed 이벤트로 지도 이동 감지
+    const handleBoundsChanged = () => {
+      // 디바운스를 위해 타이머 사용
+      clearTimeout(hideTimeoutRef.current);
+      hideTimeoutRef.current = window.setTimeout(() => {
+        handleMapCenterChange();
+      }, 300); // 300ms 디바운스
+    };
+
+    kakao.maps.event.addListener(map, 'bounds_changed', handleBoundsChanged);
+
+    return () => {
+      kakao.maps.event.removeListener(
+        map,
+        'bounds_changed',
+        handleBoundsChanged,
+      );
+      clearTimeout(hideTimeoutRef.current);
+    };
+  }, [map, handleMapCenterChange]);
+
+  // 검색 버튼 클릭 시 이전 중심점 업데이트
+  const handleSearchHere = useCallback(() => {
+    if (!map) return;
+
+    const currentCenter = map.getCenter();
+    previousCenterRef.current = {
+      lat: currentCenter.getLat(),
+      lng: currentCenter.getLng(),
+    };
+
+    searchStoresWithAI();
+    setMode('default');
+    setShowSearchBtn(false); // 검색 후 버튼 숨김
+  }, [map, searchStoresWithAI]);
+
   return (
     <div className="flex h-screen flex-col-reverse md:flex-row overflow-y-hidden ">
       {/* 사이드바 */}
-      <aside className="relative top-[62px] md:top-[86px] mr-6 md:m-0  left-0 bottom-0 md:w-[420px] z-20 flex-shrink-0">
+      <aside className="relative top-[62px] md:top-[86px] mr-6 md:m-0  left-0 bottom-0 md:w-[402px] z-20 flex-shrink-0">
         <MapSidebar
-          stores={status === 'success' ? displayedStores : []}
+          stores={displayedStores}
           panel={panel}
           openMenu={openMenu}
           openDetail={openDetail}
@@ -662,7 +742,7 @@ export default function MapPage() {
           setIsBenefitModalOpen={setIsBenefitModalOpen}
           setFocusField={setFocusField}
           focusField={focusField}
-          isLoading={isLoading}
+          isMainLoading={isMainLoading}
         />
         {/* 내 위치 버튼 */}
         {map && myLocation && (
@@ -673,25 +753,23 @@ export default function MapPage() {
             sheetY={sheetY}
           />
         )}
-        {map && myLocation && panel.menu !== '길찾기' && (
+        {map && panel.menu !== '길찾기' && panel.menu !== '즐겨찾기' && (
           <SearchHereBtn
             map={map}
-            myLocation={myLocation}
             show={showSearchBtn}
             sheetY={sheetY}
-            onClick={searchStoresWithAI}
+            onClick={handleSearchHere}
           />
         )}
       </aside>
 
       {/* 지도 영역 */}
-      <div className="flex-1 relative overflow-x-hidden">
-        <div ref={containerRef} className="absolute inset-0 ">
+      <div className="flex-1 md:w-[calc(100%-402px)] h-100dvh relative overflow-x-hidden">
+        <div ref={containerRef} className="absolute inset-0">
           <KakaoMapContainer
-            center={myLocation ?? center}
-            level={5}
+            center={myLocation ?? center ?? { lat: 37.5, lng: 127 }}
+            level={4}
             onMapCreate={setMap}
-            onCenterChanged={setCenter}
             selectedRoute={selectedRoute}
             onMapDrag={handleMapClickOrDrag}
             panel={panel}
@@ -708,30 +786,28 @@ export default function MapPage() {
             waypoints={waypoints.length > 0 ? waypoints : undefined}
           >
             {/* 2D 마커/오버레이 */}
-            {panel.type !== 'road' &&
-              panel.menu !== '길찾기' &&
-              status === 'success' && (
-                <FilterMarker
-                  hoveredMarkerId={hoveredId}
-                  setHoveredMarkerId={setHoveredId}
-                  map={map}
-                  center={center}
-                  containerRef={containerRef}
-                  stores={displayedStores}
-                  openDetail={openDetail}
-                  onStartChange={onStartChange}
-                  onEndChange={onEndChange}
-                  toggleBookmark={toggleBookmark}
-                  bookmarkIds={bookmarkIds}
-                  selectedCardId={selectedCardId}
-                  setSelectedCardId={setSelectedCardId}
-                  goToStore={goToStore}
-                  panel={panel}
-                />
-              )}
-            {panel.menu !== '길찾기' && (
-              <div className="absolute  w-full md:ml-10 ml-6 top-28 md:top-20 z-2  overflow-x-auto">
-                <CategoryBenefitSlider
+            {panel.type !== 'road' && panel.menu !== '길찾기' && (
+              <FilterMarker
+                hoveredMarkerId={hoveredId}
+                setHoveredMarkerId={setHoveredId}
+                map={map}
+                center={center ?? { lat: 37.5, lng: 127 }}
+                containerRef={containerRef}
+                stores={displayedStores}
+                openDetail={openDetail}
+                onStartChange={onStartChange}
+                onEndChange={onEndChange}
+                toggleBookmark={toggleBookmark}
+                bookmarkIds={bookmarkIds}
+                selectedCardId={selectedCardId}
+                setSelectedCardId={setSelectedCardId}
+                goToStore={goToStore}
+                panel={panel}
+              />
+            )}
+            {panel.menu !== '길찾기' && panel.menu !== '즐겨찾기' && (
+              <div className="absolute  w-full md:ml-10 ml-0 top-24 md:top-16 z-2  overflow-x-auto overflow-y-visible md:py-4">
+                <CategorySlider
                   categoryList={Object.keys(categoryIconMap) as CategoryType[]}
                   selectedCategory={isCategory}
                   onCategoryChange={changeCategory}
@@ -749,8 +825,8 @@ export default function MapPage() {
                 />
               </div>
             )}
-            {panel.menu !== '길찾기' && (
-              <div className="absolute  w-full h-10 mt-1 md:ml-10 ml-6 top-[150px] md:top-[120px] z-2  overflow-x-auto">
+            {panel.menu !== '길찾기' && panel.menu !== '즐겨찾기' && (
+              <div className="absolute  w-full md:ml-10 ml-6 top-28 md:top-[110px] z-2  overflow-x-auto py-4 hidden md:block">
                 <BenefitButton
                   benefitList={['쿠폰', '할인', '증정']}
                   selected={selectedBenefit}

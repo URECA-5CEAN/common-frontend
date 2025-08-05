@@ -143,7 +143,7 @@ const BottomSheet = forwardRef<BottomSheetHandle, BottomSheetProps>(
             </motion.div>
             {/* 콘텐츠는 drag 없음 */}
             <div
-              className="flex-1 overflow-y-auto pt-1 pb-5 touch-none"
+              className="flex-1 overflow-y-hidden pt-1 pb-5 touch-none"
               onScroll={handleContentScroll}
               style={{
                 minHeight: sheetHeight - HANDLE_HEIGHT,

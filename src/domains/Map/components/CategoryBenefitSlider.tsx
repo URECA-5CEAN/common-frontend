@@ -1,11 +1,8 @@
 import 'keen-slider/keen-slider.min.css';
 import { useKeenSlider } from 'keen-slider/react';
 import clsx from 'clsx';
-import type {
-  CategoryIconMeta,
-  BenefitType,
-  CategoryType,
-} from '../pages/MapPage';
+import type { CategoryIconMeta } from '../pages/MapPage';
+import type { BenefitType, CategoryType } from '@/domains/Map/utils/constant';
 
 // 통합 슬라이더 Props
 interface CategoryBenefitSliderProps {

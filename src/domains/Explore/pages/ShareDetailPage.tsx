@@ -84,8 +84,8 @@ const ShareDetailPage = () => {
   };
 
   return (
-    <div className="w-[calc(100%-48px)] md:w-[80%] max-w-[1050px] mb-50 md:mb-100">
-      <div className="flex flex-col gap-5">
+    <>
+      <div className="w-full max-w-[1050px] m-6 flex flex-col gap-5">
         <div className="flex gap-4 sm:items-center">
           <div className="relative w-16 h-16 sm:w-32 sm:h-32 flex items-center justify-center flex-shrink-0">
             {post.brandImgUrl ? (
@@ -114,7 +114,7 @@ const ShareDetailPage = () => {
                 {`${dateTime.date}, ${dateTime.time.period} ${dateTime.time.hour}:${dateTime.time.minute}`}
               </div>
               <div className="text-gray-500 flex gap-1">
-                <MapPin size={20} /> {post.location}
+                <MapPin size={20} /> {post.storeName}
               </div>
             </div>
             <div className="text-gray-400">
@@ -188,7 +188,7 @@ const ShareDetailPage = () => {
           </>
         }
       ></Modal>
-    </div>
+    </>
   );
 };
 

@@ -11,6 +11,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { getBrands, getShareLocations, getSharePostList } from '../api/share';
 import CustomSelect from '../components/CustomSelect';
 import { Breadcrumb } from '@/components/Breadcrumb';
+import { shortenProvince } from '../utils/addressUtils';
 
 const SharePage = () => {
   const [postList, setPostList] = useState<Post[]>([]);
@@ -62,7 +63,7 @@ const SharePage = () => {
       try {
         setIsLoading(true);
         const locationsData = (await getShareLocations()).map((item) => ({
-          label: item,
+          label: shortenProvince(item),
           value: item,
         }));
 
@@ -118,7 +119,7 @@ const SharePage = () => {
 
   const filteredPostList = useMemo(() => {
     return postList.filter((post) => {
-      const matchLocation = location ? post.location === location.label : true;
+      const matchLocation = location ? post.location === location.value : true;
       const matchCategory = category ? post.category === category.label : true;
       const matchBrand = brand ? post.brandName === brand.label : true;
       const matchBenefit = benefit ? post.benefitName === benefit.label : true;
@@ -170,7 +171,7 @@ const SharePage = () => {
   };
 
   return (
-    <div className="w-[calc(100%-48px)] md:w-[80%] max-w-[1050px] mb-50 md:mb-100">
+    <div className="w-full max-w-[1050px] m-6">
       <Breadcrumb title="혜택탐험" subtitle="혜택 나누기" />
 
       <h2 className="text-[32px] font-bold mt-3 mb-4">혜택 나누기</h2>
@@ -240,8 +241,8 @@ const SharePage = () => {
           <SharePostList posts={filteredPostList} />
           {hasNextPage && (
             <div className="text-center mt-6">
-              <button
-                className="bg-blue-500 text-white px-4 py-2 rounded"
+              <Button
+                variant="ghost"
                 onClick={() => {
                   const nextPage = page + 1;
                   setPage(nextPage);
@@ -249,7 +250,7 @@ const SharePage = () => {
                 }}
               >
                 더보기
-              </button>
+              </Button>
             </div>
           )}
         </>

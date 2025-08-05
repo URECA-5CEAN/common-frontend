@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { Post, PostWriteRequest } from '../types/share';
+import type { Post, PostWriteRequest, Store } from '../types/share';
 
 const baseURL = import.meta.env.VITE_API_URL;
 
@@ -86,4 +86,24 @@ export const createChatRoom = async (postId: string) => {
   );
 
   return response.data;
+};
+
+export const getNearbyStores = async (
+  category: string,
+  latitude: number,
+  longitude: number,
+  latRange = 0.02,
+  lngRange = 0.02,
+): Promise<Store[]> => {
+  const response = await axios.get(`${baseURL}/map/store`, {
+    params: {
+      category,
+      latMin: latitude - latRange,
+      latMax: latitude + latRange,
+      lngMin: longitude - lngRange,
+      lngMax: longitude + lngRange,
+    },
+  });
+
+  return Array.isArray(response.data.data) ? response.data.data : [];
 };

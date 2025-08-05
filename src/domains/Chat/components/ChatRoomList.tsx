@@ -37,8 +37,15 @@ const ChatRoomList = ({
               >
                 <div className="flex items-center gap-3 p-4">
                   {/* 프로필 이미지 */}
-                  <div className="w-12 h-12 rounded object-cover bg-gray-300"></div>
-
+                  {room.postResponseDto.brandImgUrl ? (
+                    <img
+                      src={room.postResponseDto.brandImgUrl}
+                      alt="브랜드이미지"
+                      className="w-12 h-12 rounded object-cover"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 rounded object-cover bg-gray-300"></div>
+                  )}
                   {/* 채팅방 정보 */}
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-center mb-1">

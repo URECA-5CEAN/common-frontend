@@ -59,7 +59,7 @@ export default function DebouncedInput({
       type="text"
       value={internalValue}
       placeholder={placeholder}
-      className={`flex-1 bg-transparent outline-none ml-2 text-sm w-full ${className}`}
+      className={`flex-1 bg-transparent outline-none mx-2 text-sm ${className}`}
       onChange={handleChange}
       onCompositionStart={() => setIsComposing(true)}
       onCompositionEnd={(e) => {
