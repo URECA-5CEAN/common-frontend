@@ -13,17 +13,31 @@ function splitPathByRoad(
   const totalPoints = fullPath.length;
   let currentIdx = 0;
   let accumulated = 0;
+  const segments = [];
 
-  return roadList.map((r) => {
+  for (let i = 0; i < roadList.length; i++) {
+    const r = roadList[i];
     accumulated += r.distance;
-    const targetIdx = Math.round((accumulated / totalDistance) * totalPoints);
-    const segment = {
-      path: fullPath.slice(currentIdx, Math.max(targetIdx, currentIdx + 2)),
+    const targetIdx =
+      i === roadList.length - 1
+        ? totalPoints
+        : Math.round((accumulated / totalDistance) * totalPoints);
+    // 첫 구간: 그대로
+    // 이후 구간: 앞 segment의 마지막 점과 현재 구간의 첫 점을 겹치게
+    let segmentPath;
+    if (i === 0) {
+      segmentPath = fullPath.slice(currentIdx, targetIdx);
+    } else {
+      segmentPath = fullPath.slice(currentIdx - 1, targetIdx);
+    }
+
+    segments.push({
+      path: segmentPath,
       traffic_state: r.traffic_state,
-    };
+    });
     currentIdx = targetIdx;
-    return segment;
-  });
+  }
+  return segments;
 }
 
 function PolylineRenderer({ route }: { route: RouteItem }) {

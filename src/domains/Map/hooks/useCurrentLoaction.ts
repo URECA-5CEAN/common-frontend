@@ -10,7 +10,7 @@ export function useCurrentLocation() {
   const requestLocation = useCallback(() => {
     if (isRequesting) return; // 중복 방지
     if (!navigator.geolocation) {
-      setHasLocation(false);
+      setStatus('error');
       return;
     }
 
@@ -33,9 +33,9 @@ export function useCurrentLocation() {
 
   return {
     location,
-    hasLocation,
+    status,
     requestLocation,
     setLocation,
-    setHasLocation,
+    setStatus,
   };
 }

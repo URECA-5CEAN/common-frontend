@@ -7,13 +7,14 @@ type StoreRankingListProps = {
   rankList: StoreRank[];
 };
 
+const rowClass = 'flex w-full px-4 py-4 items-center';
 const cellBaseClass = 'flex items-center justify-center';
 const columnClass = {
-  rank: `w-[10%] ${cellBaseClass} text-center font-bold`,
-  store: 'w-[35%] flex flex-wrap gap-x-4 gap-y-1 items-center',
-  category: `w-[15%] ${cellBaseClass} text-center`,
-  address: `w-[30%] ${cellBaseClass} text-sm text-left`,
-  usage: `w-[10%] ${cellBaseClass} text-center`,
+  rank: `flex-[1] ${cellBaseClass} text-center font-bold`,
+  store: `flex-[2] font-bold flex gap-x-4 gap-y-1 flex-wrap items-center min-w-0`,
+  category: `flex-[1.5] ${cellBaseClass} text-center `,
+  address: `flex-[1.5] ${cellBaseClass} text-center`,
+  usage: `flex-[1] ${cellBaseClass} text-center `,
 };
 
 const medals = [medalGold, medalSilver, medalBronze];
@@ -21,7 +22,9 @@ const medals = [medalGold, medalSilver, medalBronze];
 const StoreRankingList = ({ rankList }: StoreRankingListProps) => {
   return (
     <>
-      <div className="mt-4 bg-[#E6F4F1] flex px-1 sm:px-4 py-2.5 sm:py-6 rounded-3xl justify-around items-center text-gray-700 font-bold whitespace-normal">
+      <div
+        className={`${rowClass} mt-4 py-6 bg-[#E6F4F1] rounded-3xl text-gray-600 font-bold`}
+      >
         <div className={columnClass.rank}>순위</div>
         <div className={columnClass.store}>매장</div>
         <div className={columnClass.category}>카테고리</div>
@@ -33,13 +36,17 @@ const StoreRankingList = ({ rankList }: StoreRankingListProps) => {
         {rankList.map((store, index) => (
           <li
             key={store.id}
-            className="flex sm:px-4 py-3.5 sm:py-4 justify-around items-center"
+            className={`${rowClass} text-sm sm:text-base flex sm:px-4 py-3.5 sm:py-4 justify-around items-center`}
           >
             <div className={columnClass.rank}>
               {index < 3 ? (
-                <img src={medals[index]} alt="메달" className="mx-auto" />
+                <img
+                  src={medals[index]}
+                  alt="메달"
+                  className="mx-auto sm:w-11 sm:h-11 w-8 h-8 object-contain"
+                />
               ) : (
-                <span className="text-xl">{index + 1}</span>
+                <span className="text-base sm:text-xl">{index + 1}</span>
               )}
             </div>
 
@@ -47,7 +54,7 @@ const StoreRankingList = ({ rankList }: StoreRankingListProps) => {
               <img
                 src={store.brandImageUrl}
                 alt={store.brandName}
-                className="w-6 h-6 object-contain rounded"
+                className="w-6 h-6 sm:w-12 sm:h-12 object-contain rounded"
               />
               <span className="font-bold truncate whitespace-nowrap">
                 {store.name}

@@ -8,13 +8,15 @@ import React, {
   lazy,
   memo,
 } from 'react';
-import { CustomOverlayMap, MarkerClusterer } from 'react-kakao-maps-sdk';
+import { MarkerClusterer } from 'react-kakao-maps-sdk';
 import { useMedia } from 'react-use';
-import type { LatLng, MarkerProps } from '../KakaoMapContainer';
+import type { LatLng } from '../KakaoMapContainer';
 import type { StoreInfo } from '../api/store';
 import { getDistance } from '../utils/getDistance';
 import type { LocationInfo } from '../pages/MapPage';
 import { Ring } from 'ldrs/react';
+import type { Panel } from './sidebar/MapSidebar';
+import CustomMarker from './CustomMarker';
 
 const StoreOverlay = lazy(() => import('./StoreOverlay'));
 
@@ -33,6 +35,7 @@ interface Props {
   selectedCardId: string;
   setSelectedCardId: React.Dispatch<React.SetStateAction<string>>;
   goToStore: (store: StoreInfo) => void;
+  panel: Panel;
 }
 function FilterMarker({
   hoveredMarkerId,
@@ -49,11 +52,11 @@ function FilterMarker({
   selectedCardId,
   setSelectedCardId,
   goToStore,
+  panel,
 }: Props) {
   // hover 해제 지연용 타이머 ID 저장
   const hoverOutRef = useRef<number | null>(null);
   //2d마커
-  const [Markers, SetMarkers] = useState<MarkerProps[]>([]);
 
   // 오버레이 위치와 스토어 정보 저장
   const [overlay, setOverlay] = useState<{
@@ -62,40 +65,25 @@ function FilterMarker({
     store: StoreInfo;
   } | null>(null);
 
-  useEffect(() => {
-    if (!map) return;
-
-    const handleIdle = () => {
-      const level = map.getLevel!();
-      const max2D = level <= 2 ? 20 : level <= 4 ? 30 : level <= 6 ? 40 : 50;
-      const enriched2D = stores
-        .map((m) => ({
-          marker: m,
-          distance: getDistance(center, {
-            lat: m.latitude,
-            lng: m.longitude,
-          }),
-        }))
-        .sort((a, b) => a.distance - b.distance)
-        .slice(0, max2D)
-        .map((item) => ({
-          id: item.marker.id,
-          lat: item.marker.latitude,
-          lng: item.marker.longitude,
-          imageUrl: item.marker.brandImageUrl ?? '',
-          isRecommended: item.marker.isRecommended ?? '',
-        }));
-
-      SetMarkers(enriched2D);
-    };
-
-    kakao.maps.event.addListener(map, 'idle', handleIdle);
-    handleIdle();
-
-    return () => {
-      kakao.maps.event.removeListener(map, 'idle', handleIdle);
-    };
-  }, [map, center, stores]);
+  const Markers = useMemo(() => {
+    if (!map) return [];
+    if (panel.menu === '길찾기') return [];
+    const level = map.getLevel?.() ?? 5;
+    const max2D = level <= 2 ? 30 : level <= 4 ? 30 : level <= 6 ? 20 : 20;
+    return stores
+      .map((m) => ({
+        marker: m,
+        distance: getDistance(center, { lat: m.latitude, lng: m.longitude }),
+      }))
+      .slice(0, max2D)
+      .map((item) => ({
+        id: item.marker.id,
+        lat: item.marker.latitude,
+        lng: item.marker.longitude,
+        imageUrl: item.marker.brandImageUrl ?? '',
+        isRecommended: item.marker.isRecommended ?? '',
+      }));
+  }, [stores, map, panel.menu]);
 
   // stores 배열을 Map으로 변환
   const storeMap = useMemo(() => {
@@ -158,103 +146,54 @@ function FilterMarker({
         goToStore(store);
       }
     },
-    [openDetail, storeMap],
+    [openDetail, goToStore, storeMap, setSelectedCardId],
   );
 
-  // 2D 마커 렌더링 함수 분리
-  const renderFarMarkers = () =>
-    Markers.map((m, idx) => (
-      <React.Fragment
-        key={m.id && m.id.trim() !== '' ? m.id : `unknown-${idx}`}
-      >
-        <CustomOverlayMap
-          position={{ lat: m.lat, lng: m.lng }}
-          zIndex={shouldCluster ? 2 : 3}
-          xAnchor={0.5}
-          yAnchor={1.0}
-        >
-          <div
-            onClick={() => handleClick(m.id)}
-            onMouseEnter={() => handleMouseOver(m.id)}
-            onMouseLeave={handleMouseOut}
-            style={{
-              width: 40,
-              height: 56,
-              position: 'relative',
-              cursor: 'pointer',
-              transform: m.id === selectedCardId ? 'scale(1.3)' : 'scale(1.0)',
-              transition: 'transform 0.25s ease',
-              animation:
-                m.id === selectedCardId
-                  ? 'floatY 2.0s ease infinite'
-                  : undefined,
-            }}
-          >
-            <div
-              style={{
-                position: 'absolute',
-                top: 38,
-                left: '50%',
-                transform: 'translateX(-50%)',
-                width: 0,
-                height: 0,
-                zIndex: 1,
-                borderLeft: '10px solid transparent',
-                borderRight: '10px solid transparent',
-                borderTop: '15px solid white',
-                filter: 'drop-shadow(2px 4px 4px rgba(0,0,0,0.3))',
-              }}
-            />
-            <div
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: '50%',
-                overflow: 'hidden',
-                backgroundColor: '#fff',
-                border: '2px solid #fff',
-                boxShadow:
-                  m.id === selectedCardId
-                    ? '0 10px 20px rgba(18, 158, 223, 0.35), 0 6px 6px rgba(0, 0, 0, 0.12)'
-                    : '2px 4px 10px rgba(0, 0, 0, 0.35)',
-                position: 'relative',
-                zIndex: 2,
-              }}
-            >
-              <img
-                src={m.imageUrl}
-                alt="store"
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  display: 'block',
-                }}
-              />
-            </div>
-          </div>
-        </CustomOverlayMap>
-
-        {m.isRecommended && (
-          <CustomOverlayMap
-            position={{ lat: m.lat, lng: m.lng }}
-            zIndex={2}
-            xAnchor={0.5}
-            yAnchor={1.0}
-          >
-            <div className="relative">
-              <div className="w-12 h-12 rounded-full bg-primaryGreen opacity-80 animate-ping " />
-            </div>
-          </CustomOverlayMap>
-        )}
-      </React.Fragment>
-    ));
+  const visibleMarkers = useMemo(() => {
+    if (!map) return Markers;
+    const bounds = map.getBounds();
+    // 실제 화면에 보이는 마커만 필터링
+    return Markers.filter((m) => {
+      const pos = new kakao.maps.LatLng(m.lat, m.lng);
+      return bounds.contain(pos);
+    });
+  }, [Markers, map]);
 
   // 마커 개수에 따라 클러스터링 여부 결정
-  const shouldCluster = Markers.length > 20;
+  const shouldCluster = Markers.length > 5;
+
+  // 2D 마커 렌더링 함수 분리
+  const renderFarMarkers = useCallback(
+    () =>
+      visibleMarkers.map((m, idx) => (
+        <CustomMarker
+          key={m.id && m.id.trim() !== '' ? m.id : `unknown-${idx}`}
+          id={m.id}
+          lat={m.lat}
+          lng={m.lng}
+          imageUrl={m.imageUrl}
+          isRecommended={m.isRecommended}
+          selected={selectedCardId === m.id}
+          onClick={handleClick}
+          onMouseEnter={handleMouseOver}
+          onMouseLeave={handleMouseOut}
+          shouldCluster={shouldCluster}
+        />
+      )),
+    [
+      visibleMarkers,
+      selectedCardId,
+      handleClick,
+      handleMouseOver,
+      handleMouseOut,
+      shouldCluster,
+    ],
+  );
+
   // 데스크톱 여부 판단 (모바일에서 오버레이 안뜨게)
   const isDesktop = useMedia('(min-width: 640px)');
 
+  if (panel.menu === '길찾기') return null;
   return (
     <>
       {/* 클러스터링 분기 */}
@@ -262,7 +201,7 @@ function FilterMarker({
         <MarkerClusterer
           averageCenter
           minLevel={7}
-          gridSize={50}
+          gridSize={150}
           styles={[
             {
               width: '50px',
@@ -283,7 +222,6 @@ function FilterMarker({
       ) : (
         renderFarMarkers()
       )}
-
       {/* 오버레이 데스크톱에서만, Suspense로 lazy 로딩) */}
       {overlay && isDesktop && (
         <Suspense

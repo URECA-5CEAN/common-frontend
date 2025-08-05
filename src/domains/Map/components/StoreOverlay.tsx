@@ -6,7 +6,7 @@ import clsx from 'clsx';
 import { useBenefitBrands } from '../hooks/useBenefitBrands';
 import type { LocationInfo } from '../pages/MapPage';
 import RoadviewViewer from './RoadviewView';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Ring } from 'ldrs/react';
 
 interface OverlayProps {
@@ -19,13 +19,13 @@ interface OverlayProps {
   isBookmark: boolean;
 }
 
-const StoreOverlay = ({
+function StoreOverlay({
   store,
   onStartChange,
   onEndChange,
   toggleBookmark,
   isBookmark,
-}: OverlayProps) => {
+}: OverlayProps) {
   const {
     data: benefits = [],
     isLoading,
@@ -101,6 +101,6 @@ const StoreOverlay = ({
       )}
     </div>
   );
-};
+}
 
-export default StoreOverlay;
+export default React.memo(StoreOverlay);

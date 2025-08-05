@@ -2,6 +2,7 @@ import {
   lazy,
   memo,
   Suspense,
+  useState,
   type ChangeEventHandler,
   type Dispatch,
   type SetStateAction,
@@ -114,16 +115,18 @@ function MapSidebar({
   focusField,
   isMainLoading,
 }: SideBarProps) {
-  if (!panel) return;
-
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   //메뉴 선택 시 openMenu 호출 + 시트를 middle 위치로 스냅
   const onMenuSelect = (menu: MenuType) => {
     openMenu(menu);
     sheetRef.current?.snapTo('middle');
   };
+
   const onCloseSheet = () => {
     sheetDetail.current?.snapTo('bottom');
   };
+
+  if (!panel) return;
 
   return (
     <>
@@ -134,6 +137,7 @@ function MapSidebar({
         activeMenu={panel?.menu}
         onSelect={onMenuSelect}
         setIsBenefitModalOpen={setIsBenefitModalOpen}
+        setIsOpen={setIsModalOpen}
       />
 
       <div className="hidden md:block">
@@ -175,7 +179,9 @@ function MapSidebar({
             setWayInput={setWayInput}
             setFocusField={setFocusField}
             focusField={focusField}
-            isMainLoading={isMainLoading}
+            isLoading={isLoading}
+            setIsOpen={setIsModalOpen}
+            isOpen={isModalOpen}
           />
 
           {/* 상세 패널 (panel.type이 'detail'일 때만) */}
@@ -217,7 +223,9 @@ function MapSidebar({
                   setWayInput={setWayInput}
                   setFocusField={setFocusField}
                   focusField={focusField}
-                  isMainLoading={isMainLoading}
+                  isLoading={isLoading}
+                  setIsOpen={setIsModalOpen}
+                  isOpen={isModalOpen}
                 />
               </Suspense>
             )}
@@ -270,22 +278,26 @@ function MapSidebar({
                 setWayInput={setWayInput}
                 setFocusField={setFocusField}
                 focusField={focusField}
-                isMainLoading={isMainLoading}
+                isLoading={isLoading}
+                setIsOpen={setIsModalOpen}
+                isOpen={isModalOpen}
               />
             </BottomSheet>
           )}
           {/* 상세 패널 (panel.type이 'detail'일 때만) */}
-          {panel?.type === 'detail' && panel.item && (
+          {panel.type === 'detail' && panel.item && (
             <Suspense fallback={<div>로딩 중…</div>}>
               <BottomSheet
                 key="detail-mobile"
                 ref={sheetDetail}
-                isOpen={panel.type === 'detail'}
+                isOpen={
+                  panel.type === 'detail' && (panel.item as unknown as boolean)
+                }
                 onClose={onCloseSheet}
                 onPositionChange={onDetailSheetPositionChange}
               >
                 <SidebarPanel
-                  key="detail"
+                  key="detail-mobile"
                   index={1}
                   panel={panel}
                   stores={stores}
@@ -319,7 +331,9 @@ function MapSidebar({
                   setWayInput={setWayInput}
                   setFocusField={setFocusField}
                   focusField={focusField}
-                  isMainLoading={isMainLoading}
+                  isLoading={isLoading}
+                  setIsOpen={setIsModalOpen}
+                  isOpen={isModalOpen}
                 />
               </BottomSheet>
             </Suspense>
@@ -328,7 +342,7 @@ function MapSidebar({
           {panel?.type === 'road' && panel.item && (
             <Suspense fallback={<div>로딩 중…</div>}>
               <BottomSheet
-                key="detail-mobile"
+                key="road-mobile"
                 ref={sheetDetail}
                 isOpen={panel.type === 'road'}
                 onClose={onCloseSheet}
@@ -369,7 +383,9 @@ function MapSidebar({
                   setWayInput={setWayInput}
                   setFocusField={setFocusField}
                   focusField={focusField}
-                  isMainLoading={isMainLoading}
+                  isLoading={isLoading}
+                  setIsOpen={setIsModalOpen}
+                  isOpen={isModalOpen}
                 />
               </BottomSheet>
             </Suspense>

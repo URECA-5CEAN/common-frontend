@@ -12,15 +12,7 @@ import MapSidebar, {
   type MenuType,
   type Panel,
 } from '../components/sidebar/MapSidebar';
-import {
-  Clapperboard,
-  Gift,
-  Percent,
-  Search,
-  Ticket,
-  Utensils,
-  type LucideIcon,
-} from 'lucide-react';
+import { Search, X, type LucideIcon } from 'lucide-react';
 import type { LatLng } from '../KakaoMapContainer';
 
 import {
@@ -41,18 +33,17 @@ import SearchHereBtn from '../components/SearchHearBtn';
 import { fetchAiRecommendedStore } from '../api/ai';
 import { extractBouns } from '../utils/extractBouns';
 import type { RouteItem } from '../components/sidebar/RoadSection';
-import { Coffee, ShoppingBag, ShoppingCart, Car } from 'lucide-react';
+
 import BenefitButton from '../components/BenefitButtons';
 import { useCurrentLocation } from '../hooks/useCurrentLoaction';
 import { useLocation, useNavigate } from 'react-router-dom';
-
-type CategoryType =
-  | '음식점'
-  | '카페'
-  | '편의점'
-  | '대형마트'
-  | '문화시설'
-  | '렌터카';
+import CategoryBenefitSlider from '../components/CategoryBenefitSlider';
+import {
+  benefitIconMap,
+  categoryIconMap,
+  type BenefitType,
+  type CategoryType,
+} from '../utils/constant';
 
 export interface CategoryIconMeta {
   icon: LucideIcon;
@@ -61,61 +52,6 @@ export interface CategoryIconMeta {
   size?: number;
 }
 
-// 혜택 타입 정의
-export type BenefitType = '쿠폰' | '할인' | '증정';
-
-// 아이콘 매핑
-export const benefitIconMap: Record<BenefitType, CategoryIconMeta> = {
-  쿠폰: {
-    icon: Ticket,
-    color: '#fbbc04', // 노랑 등등 원하는 색
-    size: 20,
-  },
-  할인: {
-    icon: Percent,
-    color: '#34c759', // 연두 등등 원하는 색
-    size: 20,
-  },
-  증정: {
-    icon: Gift,
-    color: '#42a5f5', // 파랑 등등 원하는 색
-    size: 20,
-  },
-};
-
-export const categoryIconMap: Record<CategoryType, CategoryIconMeta> = {
-  음식점: {
-    icon: Utensils,
-    color: '#FF7043',
-    size: 20,
-  },
-  카페: {
-    icon: Coffee,
-    color: '#6D4C41',
-    size: 21,
-    className: 'mb-0.5',
-  },
-  편의점: {
-    icon: ShoppingBag,
-    color: '#0ecc17',
-    size: 20,
-  },
-  대형마트: {
-    icon: ShoppingCart,
-    color: '#db2f18',
-    size: 20,
-  },
-  문화시설: {
-    icon: Clapperboard,
-    color: '#8E24AA',
-    size: 20,
-  },
-  렌터카: {
-    icon: Car,
-    color: '#F4511E',
-    size: 22,
-  },
-};
 export interface LocationInfo {
   name: string;
   lat: number;
@@ -434,6 +370,12 @@ export default function MapPage() {
       setMyLocation(location);
     }
   }, [location]);
+
+  useEffect(() => {
+    if (stores.length > 0 && map) {
+      filterStoresInView();
+    }
+  }, [stores, map]);
   // 내 위치가 생기면 지도 중심으로 이동
   useEffect(() => {
     if (map && myLocation) {
@@ -478,7 +420,6 @@ export default function MapPage() {
       );
       return [recommendedStore, ...listWithoutRecommended];
     }
-
     return list;
   }, [isMainLoading, panel.menu, bookmarks, stores, recommendedStore, center]);
 
@@ -617,8 +558,8 @@ export default function MapPage() {
   }, []);
 
   //즐겨찾기 토글
-  const toggleBookmark = async (store: StoreInfo) => {
-    try {
+  const toggleBookmark = useCallback(
+    async (store: StoreInfo) => {
       if (bookmarks.some((bookmark) => bookmark.id === store.id)) {
         await deleteBookmark(store.id);
         setBookmarks((prev) =>
@@ -628,10 +569,9 @@ export default function MapPage() {
         await createBookmark(store.id);
         setBookmarks((prev) => [...prev, store]);
       }
-    } catch (e) {
-      console.error(e);
-    }
-  };
+    },
+    [bookmarks],
+  );
 
   //즐겨찾기 구분
   const bookmarkIds: Set<string> = useMemo(
@@ -730,6 +670,11 @@ export default function MapPage() {
     }
   }, [locationPath.search]);
 
+  const handleMapClickOrDrag = () => {
+    sheetRef.current?.snapTo('bottom');
+    sheetDetail.current?.snapTo('bottom');
+  };
+
   return (
     <div className="flex h-screen flex-col-reverse md:flex-row overflow-y-hidden ">
       {/* 사이드바 */}
@@ -785,7 +730,7 @@ export default function MapPage() {
             sheetY={sheetY}
           />
         )}
-        {map && (
+        {map && myLocation && panel.menu !== '길찾기' && (
           <SearchHereBtn
             map={map}
             show={showSearchBtn}
@@ -806,6 +751,7 @@ export default function MapPage() {
             level={4}
             onMapCreate={setMap}
             selectedRoute={selectedRoute}
+            onMapDrag={handleMapClickOrDrag}
             panel={panel}
             start={
               startValue.lat !== 0 && startValue.lng !== 0
@@ -845,6 +791,10 @@ export default function MapPage() {
                   isCategory={isCategory}
                   changeCategory={changeCategory}
                   categoryIconMap={categoryIconMap}
+                  benefitList={['쿠폰', '할인', '증정']}
+                  selectedBenefit={selectedBenefit}
+                  onBenefitChange={setSelectedBenefit}
+                  benefitIconMap={benefitIconMap}
                 />
                 <DeskTopBtns
                   Category={Object.keys(categoryIconMap) as CategoryType[]}
@@ -864,22 +814,25 @@ export default function MapPage() {
                 />
               </div>
             )}
-            <div className="flex md:hidden  absolute top-[68px] left-6 right-6   bg-white z-2 items-center border border-gray-200 rounded-xl px-2 py-1 ">
-              <Search />
-              <DebouncedInput
-                value={keyword}
-                onChange={changeKeyword}
-                debounceTime={300}
-                placeholder="검색"
-              />
-            </div>
-            {!hasLocation && (
-              <div className="text-red-500 p-2">
-                위치 권한이 허용되지 않았습니다.
-                <br />
-                <button onClick={requestLocation}>권한 다시 요청</button>
+            {panel.menu !== '길찾기' && (
+              <div className="flex md:hidden absolute top-[68px] left-6 right-6 bg-white z-2 items-center border border-gray-200 rounded-xl px-2 py-1">
+                <Search />
+                <DebouncedInput
+                  value={mode === 'search' ? searchInput : keyword}
+                  onChange={
+                    mode === 'search' ? handleSearchChange : changeKeyword
+                  }
+                  debounceTime={300}
+                  placeholder="검색"
+                />
+                <X
+                  onClick={resetKeyword}
+                  className="cursor-pointer "
+                  color="gray"
+                />
               </div>
             )}
+
             <BenefitModal
               isBenefitModalOpen={isBenefitModalOpen}
               setIsBenefitModalOpen={setIsBenefitModalOpen}

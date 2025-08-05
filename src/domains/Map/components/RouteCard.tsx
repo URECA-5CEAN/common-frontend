@@ -6,6 +6,7 @@ import { Button } from '@/components/Button';
 import { updateBookmarkStatus } from '../api/road';
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import toast from 'react-hot-toast';
 
 interface Props {
   route: RouteItem;
@@ -33,11 +34,35 @@ export default function RouteCard({
     try {
       const res = await updateBookmarkStatus(route.directionid, true);
       console.log(res.data);
-      if (res.data) alert('경로가 즐겨찾기에 저장되었습니다.');
+      if (res.statusCode === 200) {
+        toast.success(<span>경로가 저장되었습니다.</span>, {
+          duration: 2000,
+          style: {
+            border: '1px solid #ebebeb',
+            padding: '16px',
+            color: '#1505f5',
+          },
+          iconTheme: {
+            primary: '#1505f5',
+            secondary: '#FFFAEE',
+          },
+        });
+      }
       refreshSavedRoutes?.();
     } catch (err) {
       console.error(err);
-      alert('저장 중 오류가 발생했습니다.');
+      toast.success(<span>경로 저장이 실패하였습니다</span>, {
+        duration: 2000,
+        style: {
+          border: '1px solid #ebebeb',
+          padding: '16px',
+          color: '#e4270f',
+        },
+        iconTheme: {
+          primary: '#e4270f',
+          secondary: '#FFFAEE',
+        },
+      });
     }
   };
 
