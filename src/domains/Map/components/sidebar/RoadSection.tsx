@@ -428,7 +428,7 @@ export default function RoadSection({
   }
 
   return (
-    <div className="space-y-4 bg-white px-6 pt-2 overflow-y-auto w-full h-[calc(100dvh-190px)] md:h-[calc(100dvh-56px)] scrollbar-custom">
+    <div className="space-y-4 bg-white px-6 pt-2 md:overflow-y-auto w-full h-[calc(100dvh-190px)] md:h-[calc(100dvh-56px)] scrollbar-custom">
       <div className="flex relative top-4 w-full py-1 px-1 rounded-xl bg-gray-100 shadow-inner">
         <button
           onClick={() => setRoadMode('default')}
