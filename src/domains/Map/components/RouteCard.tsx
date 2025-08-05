@@ -7,6 +7,7 @@ import { updateBookmarkStatus } from '../api/road';
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import toast from 'react-hot-toast';
+import { useAuthStore } from '@/store/useAuthStore';
 
 interface Props {
   route: RouteItem;
@@ -54,6 +55,8 @@ export default function RouteCard({
       alert('저장 중 오류가 발생했습니다.');
     }
   };
+
+  const { isLoggedIn } = useAuthStore();
 
   return (
     <div
@@ -111,14 +114,17 @@ export default function RouteCard({
         ))}
         {!isDetail && (
           <div className="flex justify-between items-center mt-1 cursor-pointer">
-            <Button
-              size="sm"
-              variant="primary"
-              className="text-xs"
-              onClick={routeCreateBookmark}
-            >
-              경로 저장
-            </Button>
+            {isLoggedIn && (
+              <Button
+                size="sm"
+                variant="primary"
+                className="text-xs"
+                onClick={routeCreateBookmark}
+              >
+                경로 저장
+              </Button>
+            )}
+
             <Button
               size="sm"
               variant="ghost"
