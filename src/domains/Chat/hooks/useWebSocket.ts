@@ -37,7 +37,6 @@ const useChatSocket = (roomId: string, senderId: string) => {
     socketRef.current = socket;
 
     socket.onopen = () => {
-      console.log('웹소켓 연결 성공');
       socket.send(
         JSON.stringify({
           type: 'join',
@@ -50,7 +49,6 @@ const useChatSocket = (roomId: string, senderId: string) => {
     socket.onmessage = (event) => {
       try {
         const msg = JSON.parse(event.data);
-        console.log('메시지 수신:', msg);
 
         const msgWithTime = {
           ...msg,
@@ -61,10 +59,6 @@ const useChatSocket = (roomId: string, senderId: string) => {
       } catch (e) {
         console.error('메시지 파싱 실패:', e);
       }
-    };
-
-    socket.onclose = () => {
-      console.log('웹소켓 연결 종료');
     };
 
     socket.onerror = (error) => {

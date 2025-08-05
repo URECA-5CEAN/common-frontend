@@ -128,6 +128,12 @@ const ChatPage = () => {
     navigate('/chat');
   };
 
+  const handleLeaveRoom = (roomId: string) => {
+    setChatRooms((prev) => prev.filter((room) => room.chatRoomId !== roomId));
+    setSelectedRoomId(null);
+    navigate('/chat');
+  };
+
   if (!currentUser) {
     return (
       <div className="flex justify-center items-center h-[calc(100vh-110px)]">
@@ -154,6 +160,7 @@ const ChatPage = () => {
               currentUser={currentUser}
               isMobile={isMobile}
               onBackToList={handleBackToList}
+              onLeaveRoom={handleLeaveRoom}
             />
           )
         )}
@@ -181,6 +188,7 @@ const ChatPage = () => {
           chatRooms={chatRooms}
           selectedRoomId={selectedRoomId}
           currentUser={currentUser}
+          onLeaveRoom={handleLeaveRoom}
         />
       ) : (
         <div className="flex-1 flex items-center justify-center">

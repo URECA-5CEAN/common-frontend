@@ -20,3 +20,13 @@ export const getChatMessages = async (chatRoomId: string) => {
 
   return response.data;
 };
+
+export const leaveChatRoom = async (chatRoomId: string) => {
+  const token = localStorage.getItem('authToken');
+  const response = await axios.delete(`${baseURL}/user/chatRoom`, {
+    params: { chatRoomId },
+    headers: { Authorization: token },
+  });
+
+  return response.data;
+};
