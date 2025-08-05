@@ -5,7 +5,7 @@ import StarSection from './StarSection';
 import DetailSection from './DetailSection';
 import { ChevronLeft } from 'lucide-react';
 import RoadSection, { type RouteItem } from './RoadSection';
-import {
+import React, {
   useEffect,
   useState,
   type ChangeEventHandler,
@@ -58,9 +58,11 @@ interface SidebarPanelProps {
   setFocusField: Dispatch<SetStateAction<'start' | 'end' | number | null>>;
   focusField: 'start' | 'end' | number | null;
   isLoading: boolean;
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
+  isOpen: boolean;
 }
 
-export default function SidebarPanel({
+function SidebarPanel({
   index,
   panel,
   stores,
@@ -96,6 +98,8 @@ export default function SidebarPanel({
   setFocusField,
   focusField,
   isLoading,
+  setIsOpen,
+  isOpen,
 }: SidebarPanelProps) {
   const [userInfo, setUserInfo] = useState<UserInfoApi>();
   const token = localStorage.getItem('authToken');
@@ -159,6 +163,7 @@ export default function SidebarPanel({
               mode={mode}
               setMode={setMode}
               searchStores={searchStores}
+              isLoading={isLoading}
             />
           </>
         )}
@@ -172,6 +177,8 @@ export default function SidebarPanel({
             bookmarkIds={bookmarkIds}
             selectedCardId={selectedCardId}
             goToStore={goToStore}
+            isOpen={isOpen}
+            setIsOpen={setIsOpen}
           />
         )}
         {index === 0 && panel.menu === '길찾기' && (
@@ -226,3 +233,5 @@ export default function SidebarPanel({
     </motion.div>
   );
 }
+
+export default React.memo(SidebarPanel);
