@@ -7,6 +7,7 @@ export interface ChatRoom {
   lastMessage?: string;
   lastMessageTime?: string;
   postResponseDto: Post;
+  otherNickname: string;
 }
 
 export interface Message {
