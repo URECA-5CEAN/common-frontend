@@ -13,6 +13,7 @@ import PlaceField from '../components/share/PlaceField';
 import { createSharePost } from '../api/share';
 import { useNavigate } from 'react-router-dom';
 import { useUnsavedChanges } from '../../../contexts/UnsavedChangesContext';
+import { ChevronLeft } from 'lucide-react';
 
 const ShareWritePage = () => {
   const navigate = useNavigate();
@@ -104,7 +105,14 @@ const ShareWritePage = () => {
 
   return (
     <div className="w-[calc(100%-48px)] max-w-[1050px] m-6">
-      <h2 className="text-[28px] font-bold mb-6">나눔 글 작성</h2>
+      <div className="flex  md:flex-row flex-col">
+        <ChevronLeft
+          size={40}
+          className="relative right-3 text-gray-500 cursor-pointer "
+          onClick={() => navigate('/explore/share')}
+        />
+        <h2 className="text-[28px] font-bold mb-6 ">나눔 글 작성</h2>
+      </div>
 
       <SelectFields
         selectedCategory={category}
