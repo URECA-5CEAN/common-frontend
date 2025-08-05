@@ -58,7 +58,7 @@ const MENU_CONFIG = {
 // 스타일 상수
 const STYLES = {
   header: {
-    base: 'z-1000 fixed top-0 w-full h-[42px] md:h-[48px] py-2 px-6 md:px-10 flex items-end justify-between text-white',
+    base: 'z-1000 fixed top-0 w-full h-[48px] md:h-[48px] py-2 px-6 md:px-10 flex items-end justify-between text-white',
     transparent: 'bg-transparent',
     default: 'bg-primaryGreen',
   },
@@ -428,8 +428,8 @@ const MobileMenu = ({
 const HeaderWave = () => (
   <>
     <div className="absolute top-[40px] md:top-[34px] w-full min-w-[1150px] left-0 h-5 md:h-[34px] z-200 flex">
-      <img src={headerWaveImg} alt="헤더" className="" />
-      <img src={headerWaveImg} alt="헤더" className="" />
+      <img src={headerWaveImg} alt="헤더" className="hidden md:block" />
+      <img src={headerWaveImg} alt="헤더" className="hidden md:block" />
     </div>
   </>
 );
