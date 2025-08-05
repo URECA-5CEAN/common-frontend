@@ -31,7 +31,8 @@ export interface PostWriteRequest {
   brandId: string;
   benefitId: string;
   promiseDate: string;
-  location: string;
+  // location: string;
+  storeId: string;
 }
 
 export interface TimeValue {
@@ -43,4 +44,15 @@ export interface TimeValue {
 export interface SelectOption {
   label: string;
   value: string;
+}
+
+export interface Store {
+  id: string;
+  name: string;
+  address: string;
+  category: string;
+  latitude: number;
+  longitude: number;
+  brandName: string;
+  brandImageUrl: string;
 }
