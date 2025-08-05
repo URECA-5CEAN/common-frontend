@@ -35,6 +35,7 @@ import MapImage from '@/assets/image/dolphin-map.svg';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useNavigate } from 'react-router-dom';
+import { Modal } from '@/components/Modal';
 export interface TrafficInfo {
   color: string;
   label: string;
@@ -124,6 +125,7 @@ export default function RoadSection({
   const [Roadmode, setRoadMode] = useState<'default' | 'ai'>('default');
   const [scenario, setScenario] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [savedRoutesLoading, setSavedRoutesLoading] = useState(true);
   const { isLoggedIn } = useAuthStore();
   const navigate = useNavigate();
@@ -388,6 +390,43 @@ export default function RoadSection({
     }
   };
 
+  if (!isLoggedIn && Roadmode === 'ai' && isOpen) {
+    return (
+      <Modal
+        isOpen={isOpen}
+        onClose={() => {
+          setIsOpen(false);
+          setRoadMode('default');
+        }}
+        title="로그인이 필요한 서비스에요"
+        description={
+          <>
+            로그인 후 AI 길찾기를 사용해봐요!
+            <br />
+            출발지와 도착지를 입력하면 AI가 가는길에 제휴처를 추천해줘요!
+          </>
+        }
+        actions={
+          <>
+            <Button
+              fullWidth
+              variant="secondary"
+              onClick={() => {
+                setIsOpen(false);
+                setRoadMode('default');
+              }}
+            >
+              닫기
+            </Button>
+            <Button fullWidth onClick={() => navigate('/login')}>
+              로그인하기
+            </Button>
+          </>
+        }
+      ></Modal>
+    );
+  }
+
   return (
     <div className="space-y-4 bg-white px-6 pt-2 overflow-y-auto w-full h-[calc(100dvh-190px)] md:h-[calc(100dvh-56px)] scrollbar-custom">
       <div className="flex relative top-4 w-full py-1 px-1 rounded-xl bg-gray-100 shadow-inner">
@@ -404,7 +443,10 @@ export default function RoadSection({
           길찾기
         </button>
         <button
-          onClick={() => setRoadMode('ai')}
+          onClick={() => {
+            setRoadMode('ai');
+            setIsOpen(true);
+          }}
           className={clsx(
             `w-1/2 py-2 cursor-pointer text-sm font-semibold rounded-r-xl transition-all duration-200  `,
 
