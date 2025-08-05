@@ -17,6 +17,8 @@ interface MapSectionProps {
   bookmarkIds: Set<string>;
   selectedCardId: string;
   goToStore: (store: StoreInfo) => void;
+  isOpen: boolean;
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function StarSection({
@@ -28,9 +30,11 @@ export default function StarSection({
   bookmarkIds,
   selectedCardId,
   goToStore,
+  isOpen,
+  setIsOpen,
 }: MapSectionProps) {
-  // const { isLoggedIn } = useAuthStore();
-  // const navigate = useNavigate();
+  const { isLoggedIn } = useAuthStore();
+  const navigate = useNavigate();
 
   if (!isLoggedIn) {
     return (

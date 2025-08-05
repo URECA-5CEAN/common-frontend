@@ -1,4 +1,4 @@
-import { useRef, useState, type PropsWithChildren } from 'react';
+import React, { useRef, useState, type PropsWithChildren } from 'react';
 import { CustomOverlayMap, Map, useKakaoLoader } from 'react-kakao-maps-sdk';
 import type { RouteItem } from './components/sidebar/RoadSection';
 import PolyLineRender from './components/PolyLineRender';
@@ -13,6 +13,7 @@ interface Props {
   end?: LatLng;
   waypoints?: LatLng[];
   panel: Panel;
+  onMapDrag: () => void;
 }
 
 export interface MarkerProps {
@@ -30,7 +31,7 @@ export interface LatLng {
   recommendReason?: string;
 }
 
-export default function KakaoMapContainer({
+function KakaoMapContainer({
   center,
   level,
   onMapCreate,
@@ -40,6 +41,7 @@ export default function KakaoMapContainer({
   end,
   waypoints,
   panel,
+  onMapDrag,
 }: PropsWithChildren<Props>) {
   // Kakao Maps SDK 비동기 로딩 훅
   const [loading, error] = useKakaoLoader({
@@ -68,6 +70,8 @@ export default function KakaoMapContainer({
       center={center}
       level={level} //
       style={{ width: '100%', height: '100%' }}
+      onClick={onMapDrag}
+      onDrag={onMapDrag}
       onCreate={onMapCreate} //맵 생성 인스턴스 콜백
     >
       {start && panel.menu === '길찾기' && (
@@ -291,3 +295,5 @@ export default function KakaoMapContainer({
     </Map>
   );
 }
+
+export default React.memo(KakaoMapContainer);

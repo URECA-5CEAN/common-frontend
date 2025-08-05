@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import type { MenuType } from './MapSidebar';
+import type { Dispatch, SetStateAction } from 'react';
 
 interface SidebarMenuProps {
   menus: MenuType[];
@@ -7,6 +8,7 @@ interface SidebarMenuProps {
   activeMenu?: MenuType; //선택된 메뉴 애니메이션 위해
   onSelect: (menu: MenuType) => void; //메뉴선택
   setIsBenefitModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function SidebarMenu({
@@ -15,6 +17,7 @@ export default function SidebarMenu({
   activeMenu,
   onSelect,
   setIsBenefitModalOpen,
+  setIsOpen,
 }: SidebarMenuProps) {
   return (
     <div className="fixed top-28 md:top-10 right-6 md:left-0  md:bottom-0 md:w-[70px] md:bg-gray-50 md:shadow text-center space-y-2 mt-10 z-1">
@@ -52,7 +55,7 @@ export default function SidebarMenu({
           <img
             src={icons[idx]}
             alt={menu}
-            className="h-6 w-6  md:h-10 md:w-10 mb-0.5 md:mb-1 "
+            className="h-6 w-6  md:h-7 md:w-7 mb-0.5 md:mb-1 "
           />
           <span
             className={`text-[8px] md:text-sm ${activeMenu === menu ? 'md:font-bold' : 'md:font-medium text-gray-500'} `}

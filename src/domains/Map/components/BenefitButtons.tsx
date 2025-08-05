@@ -16,7 +16,7 @@ export default function BenefitButton({
   benefitIconMap,
 }: BenefitButtonProps) {
   return (
-    <div className="md:flex justify-start space-x-2 hidden">
+    <div className="md:flex justify-start space-x-2 hidden ">
       {benefitList.map((benefit, idx) => {
         const { icon: Icon, color, size, className } = benefitIconMap[benefit];
 

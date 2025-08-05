@@ -1,7 +1,6 @@
 import { RotateCcw } from 'lucide-react';
 import clsx from 'clsx';
 import { Button } from '@/components/Button';
-import { AnimatePresence, motion } from 'framer-motion'; // 추가
 
 interface SearchHereButtonProps {
   map: kakao.maps.Map | null;

@@ -30,6 +30,11 @@ import OnOffBtn from '../OnOffBtn';
 import DebouncedInput from '../DebouncedInput';
 import clsx from 'clsx';
 import RouteLine from '../RouteLine';
+import { Ring } from 'ldrs/react';
+import MapImage from '@/assets/image/dolphin-map.svg';
+import toast from 'react-hot-toast';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useNavigate } from 'react-router-dom';
 export interface TrafficInfo {
   color: string;
   label: string;
@@ -118,6 +123,10 @@ export default function RoadSection({
   const [waypoints, setWaypoints] = useState<LocationInfo[]>([]);
   const [Roadmode, setRoadMode] = useState<'default' | 'ai'>('default');
   const [scenario, setScenario] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [savedRoutesLoading, setSavedRoutesLoading] = useState(true);
+  const { isLoggedIn } = useAuthStore();
+  const navigate = useNavigate();
   const keywordRequire =
     focusField !== null &&
     ((focusField === 'start' && startValue.name.length > 0) ||
@@ -204,15 +213,31 @@ export default function RoadSection({
         setViewMode('route');
       }
     } catch (err) {
-      alert(err instanceof Error ? err.message : '오류 발생');
+      console.error(err);
+      toast.error(<span>길찾기에 실패하였습니다</span>, {
+        duration: 2000,
+        style: {
+          border: '1px solid #ebebeb',
+          padding: '16px',
+          color: '#e4270f',
+        },
+        iconTheme: {
+          primary: '#e4270f',
+          secondary: '#FFFAEE',
+        },
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const refreshSavedRoutes = async () => {
+    setSavedRoutesLoading(true);
     const bookmarks = await fetchDirectionBookmarks();
     const converted = bookmarks.map(convertBookmarkToDirectionResponse);
     const routeItems = converted.flatMap((res) => DirecitonRoot(res));
     setSavedRoutes(routeItems);
+    setSavedRoutesLoading(false);
   };
 
   useEffect(() => {
@@ -229,10 +254,32 @@ export default function RoadSection({
   const routeDeleteBookmark = async (route: RouteItem) => {
     try {
       await updateBookmarkStatus(route.directionid, false);
-      alert('경로가 삭제되었습니다.');
+      toast.success(<span>경로가 삭제되었습니다.</span>, {
+        duration: 2000,
+        style: {
+          border: '1px solid #ebebeb',
+          padding: '16px',
+          color: '#1505f5',
+        },
+        iconTheme: {
+          primary: '#1505f5',
+          secondary: '#FFFAEE',
+        },
+      });
     } catch (err) {
       console.error(err);
-      alert('저장 중 오류가 발생했습니다.');
+      toast.error(<span>경로 삭제가 실패하였습니다</span>, {
+        duration: 2000,
+        style: {
+          border: '1px solid #ebebeb',
+          padding: '16px',
+          color: '#e4270f',
+        },
+        iconTheme: {
+          primary: '#e4270f',
+          secondary: '#FFFAEE',
+        },
+      });
     }
   };
 
@@ -246,7 +293,6 @@ export default function RoadSection({
             (bookmark) =>
               bookmark.routes?.[0]?.summary && bookmark.routes?.[0]?.sections,
           )
-          .reverse()
           .map((bookmark) => convertBookmarkToDirectionResponse(bookmark));
         const routeItems = convertedResponses.flatMap((r) => DirecitonRoot(r));
         setRecentRoutes(routeItems);
@@ -261,9 +307,32 @@ export default function RoadSection({
   const deleteRoutes = async (id: string) => {
     try {
       await deleteDirectionPath(id);
-      alert('최근 경로 삭제');
+      toast.success(<span>경로가 삭제되었습니다.</span>, {
+        duration: 2000,
+        style: {
+          border: '1px solid #ebebeb',
+          padding: '16px',
+          color: '#1505f5',
+        },
+        iconTheme: {
+          primary: '#1505f5',
+          secondary: '#FFFAEE',
+        },
+      });
     } catch (error) {
       console.error(error);
+      toast.error(<span>경로 삭제가 실패하였습니다</span>, {
+        duration: 2000,
+        style: {
+          border: '1px solid #ebebeb',
+          padding: '16px',
+          color: '#e4270f',
+        },
+        iconTheme: {
+          primary: '#e4270f',
+          secondary: '#FFFAEE',
+        },
+      });
     }
   };
 
@@ -535,7 +604,7 @@ export default function RoadSection({
         </div>
       </div>
 
-      {viewmode === 'bookmark' && (
+      {!isLoading && viewmode === 'bookmark' && (
         <div className="space-y-2 px-2">
           <div className=" flex justify-between">
             <p className="text-xl font-bold text-gray-600">즐겨찾기</p>
@@ -582,7 +651,7 @@ export default function RoadSection({
                 </Button>
               </div>
             ) : savedRoutesLoading ? (
-              <div className="h-screen flex justify-center items-center">
+              <div className="h-[40%] flex justify-center items-center">
                 <Ring
                   size="48"
                   stroke="3"

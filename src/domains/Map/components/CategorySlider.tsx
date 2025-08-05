@@ -2,7 +2,7 @@ import 'keen-slider/keen-slider.min.css';
 import { useKeenSlider } from 'keen-slider/react';
 import clsx from 'clsx';
 import type { CategoryIconMeta } from '../pages/MapPage';
-import type { BenefitType, CategoryType } from '@/domains/Map/utils/constant';
+import type { BenefitType, CategoryType } from '../utils/constant';
 
 export interface CategoryProps {
   categoryList: CategoryType[];

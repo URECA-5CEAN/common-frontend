@@ -107,7 +107,17 @@ const BottomSheet = forwardRef<BottomSheetHandle, BottomSheetProps>(
         if (closest === bottomY) onClose();
       });
     };
+    const handleContentScroll = (e: React.UIEvent<HTMLDivElement>) => {
+      const target = e.currentTarget;
+      const scrollPercent =
+        (target.scrollTop + target.clientHeight) / target.scrollHeight;
+      if (scrollPercent > 0.4 && ref && typeof ref !== 'function') {
+        // ref가 current를 가진 객체일 때만
+        (ref as React.RefObject<BottomSheetHandle>).current?.snapTo('full');
+      }
+    };
 
+    const HANDLE_HEIGHT = 40;
     return (
       <AnimatePresence>
         {isOpen && (
