@@ -367,6 +367,22 @@
   }
 }
 
+@keyframes floatBtn {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.floatBtn {
+  animation: floatBtn 1s linear infinite;
+}
+
 /* 배너 스와이퍼 */
 .swiper-pagination-bullet {
   transition: width 0.1s;

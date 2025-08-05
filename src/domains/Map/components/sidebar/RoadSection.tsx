@@ -410,7 +410,7 @@ export default function RoadSection({
 
             Roadmode === 'ai'
               ? 'bg-primaryGreen-80 text-white shadow-md animate-none border border-primaryGreen-80'
-              : 'text-black bg-white hover:text-primaryGreen-80 shadow-sm border border-primaryGreen-40 animate-floatBounce ',
+              : 'text-black bg-white hover:text-primaryGreen-80 shadow-sm border border-primaryGreen-40  floatBtn ',
           )}
         >
           AI 길찾기
@@ -418,7 +418,7 @@ export default function RoadSection({
         <span
           className={clsx(
             `absolute -top-2 -right-2 text-[10px] bg-red-400 text-white px-1.5 py-0.5 rounded-full shadow`,
-            Roadmode !== 'ai' ? 'duration-200 animate-floatBounce' : 'hidden',
+            Roadmode !== 'ai' ? 'duration-200 floatBtn' : 'hidden',
           )}
         >
           HOT
