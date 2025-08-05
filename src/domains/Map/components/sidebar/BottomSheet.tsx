@@ -24,6 +24,7 @@ interface BottomSheetProps {
   children: ReactNode;
   peekHeight?: number;
   midRatio?: number;
+  panelMenu: string;
 }
 
 const BottomSheet = forwardRef<BottomSheetHandle, BottomSheetProps>(
@@ -35,6 +36,7 @@ const BottomSheet = forwardRef<BottomSheetHandle, BottomSheetProps>(
       children,
       peekHeight = 30,
       midRatio = 0.5,
+      panelMenu,
     },
     ref,
   ) => {
@@ -43,7 +45,7 @@ const BottomSheet = forwardRef<BottomSheetHandle, BottomSheetProps>(
 
     // Height, y 위치 계산
     const sheetHeight =
-      typeof window !== 'undefined' ? window.innerHeight * 0.75 : 0;
+      typeof window !== 'undefined' ? window.innerHeight * 0.8 : 0;
     const fullY = 0;
     const middleY = sheetHeight * (1 - midRatio);
     const bottomY = sheetHeight - peekHeight;
@@ -51,11 +53,20 @@ const BottomSheet = forwardRef<BottomSheetHandle, BottomSheetProps>(
 
     // 최초 진입/상태 전환시
     useEffect(() => {
-      const target = isOpen ? middleY : bottomY;
+      let target;
+      if (isOpen) {
+        if (panelMenu === '길찾기') {
+          target = fullY;
+        } else {
+          target = middleY;
+        }
+      } else {
+        target = bottomY;
+      }
       animation.start({ y: target, transition });
       setCurrentY(target);
       onPositionChange?.(target);
-    }, [isOpen, middleY, bottomY]);
+    }, [isOpen, middleY, bottomY, fullY, panelMenu]);
 
     // ref로 snapTo 제공
     useImperativeHandle(
@@ -122,7 +133,7 @@ const BottomSheet = forwardRef<BottomSheetHandle, BottomSheetProps>(
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="fixed bottom-0 left-0 w-full bg-white rounded-t-2xl shadow-lg z-50 flex flex-col pointer-events-auto"
+            className="fixed bottom-0 left-0 w-full bg-white rounded-t-2xl shadow-lg z-50 flex flex-col pointer-events-auto "
             style={{ height: sheetHeight, maxHeight: '80vh' }}
             animate={animation}
             initial={{ y: bottomY }}
@@ -130,7 +141,7 @@ const BottomSheet = forwardRef<BottomSheetHandle, BottomSheetProps>(
           >
             {/* 핸들에서만 drag! */}
             <motion.div
-              className="w-full flex justify-center py-2 cursor-grab active:cursor-grabbing"
+              className="w-full flex justify-center py-2 cursor-grab active:cursor-grabbing "
               drag="y"
               dragConstraints={{ top: 0, bottom: 0 }} // drag자체는 이동X, 이동량만 추적용
               dragElastic={0}
@@ -143,7 +154,7 @@ const BottomSheet = forwardRef<BottomSheetHandle, BottomSheetProps>(
             </motion.div>
             {/* 콘텐츠는 drag 없음 */}
             <div
-              className="flex-1 overflow-y-hidden pt-1 md:pb-5 pb-1 touch-none h-full"
+              className="flex-1 overflow-y-auto pt-1 md:pb-5 pb-1 touch-none h-full"
               onScroll={handleContentScroll}
               style={{
                 minHeight: sheetHeight - HANDLE_HEIGHT,

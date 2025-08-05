@@ -4,6 +4,8 @@ import type { LocationInfo } from '../../pages/MapPage';
 import { useAuthStore } from '@/store/useAuthStore';
 import type { Dispatch, SetStateAction } from 'react';
 import dolphinFind from '@/assets/image/dolphin_find.png';
+import { Button } from '@/components/Button';
+import { useNavigate } from 'react-router-dom';
 
 interface MapSectionProps {
   bookmarks: StoreInfo[];
@@ -29,13 +31,16 @@ export default function StarSection({
   goToStore,
 }: MapSectionProps) {
   const { isLoggedIn } = useAuthStore();
-
+  const navigate = useNavigate();
   if (!isLoggedIn) {
     return (
       <>
-        <div className="w-full flex flex-col items-center justify-center pt-50 gap-2">
+        <div className="w-full flex flex-col items-center justify-center pt-10 md:pt-50 gap-2">
           <img src={dolphinFind} alt="돌고래" className="w-24" />
           <span className="text-gray-600">로그인이 필요한 서비스에요</span>
+          <Button size="sm" onClick={() => navigate('/login')}>
+            로그인
+          </Button>
         </div>
         {/* <Modal
           isOpen={isOpen}
@@ -76,7 +81,7 @@ export default function StarSection({
       {/* 리스트 아이템 반복 */}
       <div className="absolute top-16 w-full md:w-[332px] h-[calc(100dvh-320px)] md:h-[calc(100dvh-120px)] overflow-y-auto scrollbar-custom">
         {bookmarks.length === 0 && (
-          <div className="w-full flex flex-col items-center justify-center pt-50 gap-2">
+          <div className="w-full flex flex-col  items-center justify-center pt-10 md:pt-50 gap-2">
             <img src={dolphinFind} alt="돌고래" className="w-24" />
             <span className="text-gray-600">아직 즐겨찾기가 없어요!</span>
           </div>
