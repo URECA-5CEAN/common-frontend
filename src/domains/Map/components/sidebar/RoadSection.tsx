@@ -176,7 +176,7 @@ export default function RoadSection({
       } else {
         // AI 길찾기
         const res = await findDirectionPathAI(body);
-        console.log(res);
+
         setRoutes(DirecitonRoot(res));
         setScenario(res.data.scenario);
         setViewMode('route');
@@ -214,7 +214,7 @@ export default function RoadSection({
       try {
         refreshSavedRoutes();
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     };
     fetchBookmark();
@@ -631,9 +631,8 @@ export default function RoadSection({
             ) : savedRoutes.length === 0 ? (
               <div className="py-4 text-center text-gray-400 text-sm space-y-1">
                 <p>저장된 경로가 없어요!</p>
-                {Roadmode === 'default' && (
+                {Roadmode === 'default' ? (
                   <>
-                    <p>AI 길찾기를 통해 경로 추천 받고 저장해봐요!</p>
                     <Button
                       size="sm"
                       variant="ghost"
@@ -642,6 +641,8 @@ export default function RoadSection({
                       AI 길찾기 이동하기
                     </Button>
                   </>
+                ) : (
+                  <p>AI 길찾기를 통해 경로 추천 받고 저장해봐요!</p>
                 )}
               </div>
             ) : (

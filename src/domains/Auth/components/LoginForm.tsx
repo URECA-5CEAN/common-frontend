@@ -104,7 +104,6 @@ const LoginForm = ({ onSignUpClick }: { onSignUpClick?: () => void }) => {
         password: form.password,
       });
 
-      console.log('로그인 성공:', result);
       // 로그인 성공 시 Zustand 상태 변경
       useAuthStore.getState().setIsLoggedIn(true);
       const params = new URLSearchParams(location.search);

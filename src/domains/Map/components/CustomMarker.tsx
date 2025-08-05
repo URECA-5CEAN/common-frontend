@@ -153,7 +153,7 @@ const CustomMarker: React.FC<CustomMarkerProps> = React.memo(
             yAnchor={1.0}
           >
             <div className="relative">
-              <div className="w-12 h-12 rounded-full bg-primaryGreen opacity-80 animate-ping" />
+              <div className="w-12 h-12 rounded-full bg-primaryGreen opacity-90 animate-ping" />
             </div>
           </CustomOverlayMap>
         )}

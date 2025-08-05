@@ -25,12 +25,12 @@ export interface FetchStoresParams {
   keyword?: string;
   category?: string;
   benefit?: string;
-  latMin: number;
-  latMax: number;
-  lngMin: number;
-  lngMax: number;
-  // centerLat: number;
-  // centerLng: number;
+  latMin?: number;
+  latMax?: number;
+  lngMin?: number;
+  lngMax?: number;
+  centerLat?: number;
+  centerLng?: number;
 }
 
 export interface FetchSearchParams {
@@ -307,7 +307,6 @@ export async function saveBenefitData(
           'X-User-email': userEmail,
         },
       });
-    console.log(response.data);
 
     return response.data;
   } catch (error: unknown) {

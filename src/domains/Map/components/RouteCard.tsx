@@ -33,7 +33,7 @@ export default function RouteCard({
   const routeCreateBookmark = async () => {
     try {
       const res = await updateBookmarkStatus(route.directionid, true);
-      console.log(res.data);
+
       if (res.statusCode === 200) {
         toast.success(<span>경로가 저장되었습니다.</span>, {
           duration: 2000,

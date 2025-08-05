@@ -21,6 +21,7 @@ import {
   fetchBookmark,
   fetchSearchStores,
   fetchStores,
+  type FetchStoresParams,
   type StoreInfo,
 } from '../api/store';
 import BenefitModal from '../components/BenefitModal';
@@ -44,6 +45,7 @@ import {
   type BenefitType,
   type CategoryType,
 } from '../utils/constant';
+import { useAuthStore } from '@/store/useAuthStore';
 
 export interface CategoryIconMeta {
   icon: LucideIcon;
@@ -130,7 +132,7 @@ export default function MapPage() {
   const sheetRef = useRef<BottomSheetHandle | null>(null);
   const sheetDetail = useRef<BottomSheetHandle | null>(null);
   //이 위치 검색버튼 상태
-  const [showSearchBtn, setShowSearchBtn] = useState(true);
+  const [showSearchBtn, setShowSearchBtn] = useState(false);
 
   // bounds 변경 시마다 시간 업데이트
   const hideTimeoutRef = useRef<number>(0);
@@ -172,6 +174,8 @@ export default function MapPage() {
     };
   };
 
+  const { isLoggedIn } = useAuthStore();
+
   //제휴처 조회 및 AI 제휴처 조회
   const searchStoresWithAI = useCallback(
     async (myLocation?: LatLng) => {
@@ -181,68 +185,89 @@ export default function MapPage() {
         ? createBoundsFromLocation(myLocation, 1.0)
         : extractBouns(map);
 
-      console.log(myLocation);
-
-      // const bounds = extractBouns(map);
-
       if (!bounds) return;
 
       setCenter({ lat: bounds.centerLat, lng: bounds.centerLng });
-
       setIsMainLoading(true);
-      try {
-        // 1. 매장 목록 가져오기
 
+      // 새로운 검색 시 기존 AI 추천 결과 초기화
+      setRecommendedStore(undefined);
+
+      try {
+        // 1. 기본 매장 목록 먼저 가져오기 (빠른 응답)
         const storeList = await fetchStores({
           keyword: debouncedKeyword,
           category: isCategory,
           benefit: selectedBenefit,
           ...bounds,
-          // centerLat: center?.lat,
-          // centerLng: center?.lng,
         });
 
-        let finalList = [...storeList];
-        try {
-          const aiResult = await fetchAiRecommendedStore({
-            keyword: debouncedKeyword,
-            category: isCategory,
-            ...bounds,
-            // centerLat: center?.lat,
-            // centerLng: center?.lng,
-          });
+        // 2. 기본 매장 목록을 먼저 화면에 표시
+        setStores(storeList);
 
-          if (aiResult?.store?.id) {
-            const aiStore: StoreInfo = {
-              ...aiResult.store,
-              isRecommended: aiResult.reason,
-            };
-
-            setRecommendedStore(aiStore);
-
-            const exists = storeList.some((store) => store.id === aiStore.id);
-            if (!exists) {
-              finalList = [aiStore, ...storeList];
-            }
-          } else {
-            setRecommendedStore(undefined);
-          }
-        } catch (e) {
-          console.warn('AI 추천 실패:', e);
-          setRecommendedStore(undefined); // AI 추천 실패 시 undefined 처리
-        }
-
-        // 3. 최종 매장 목록 반영
-        setStores(finalList);
+        // 3. AI 추천을 별도로 비동기 처리 (느린 응답)
+        fetchAiRecommendationAsync(bounds, storeList);
       } catch (err) {
         console.error('매장 목록 로딩 실패:', err);
         setStores([]);
       } finally {
-        setIsMainLoading(false);
+        setIsMainLoading(false); // 기본 로딩은 여기서 완료
+        setShowSearchBtn(false);
       }
     },
     [map, debouncedKeyword, isCategory, selectedBenefit],
   );
+
+  const fetchAiRecommendationAsync = useCallback(
+    async (
+      bounds: Omit<FetchStoresParams, 'keyword' | 'category' | 'benefit'>,
+      currentStoreList: StoreInfo[],
+    ) => {
+      try {
+        const aiResult = await fetchAiRecommendedStore({
+          keyword: debouncedKeyword,
+          category: isCategory,
+          ...bounds,
+        });
+
+        if (aiResult?.store?.id) {
+          const aiStore: StoreInfo = {
+            ...aiResult.store,
+            isRecommended: aiResult.reason,
+          };
+          // if (!center) return;
+          console.log('ailat', aiStore.latitude);
+          console.log('bonlat', bounds.centerLat);
+
+          console.log('ailng', aiStore.longitude);
+          console.log('bonlng', bounds.centerLng);
+
+          setRecommendedStore(aiStore);
+
+          // 기존 목록에 AI 추천 매장이 없으면 맨 앞에 추가
+          const exists = currentStoreList.some(
+            (store) => store.id === aiStore.id,
+          );
+          if (!exists) {
+            setStores((prevStores) => [aiStore, ...prevStores]);
+          }
+        } else {
+          setRecommendedStore(undefined);
+        }
+      } catch (e) {
+        console.warn('AI 추천 실패:', e);
+        setRecommendedStore(undefined);
+      }
+    },
+    [debouncedKeyword, isCategory],
+  );
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setRecommendedStore(undefined);
+      setStores((prev) => prev.filter((store) => !store.isRecommended));
+    }
+  }, [isLoggedIn]);
 
   // 초기 바텀시트 위치 계산
   useEffect(() => {
@@ -255,6 +280,11 @@ export default function MapPage() {
     requestLocation();
   }, []);
 
+  // useEffect(() => {
+  //   console.log(center);
+  //   setShowSearchBtn(true);
+  // }, [bounds]);
+
   useEffect(() => {
     const handler = window.setTimeout(() => setDebouncedKeyword(keyword), 300);
     return () => clearTimeout(handler);
@@ -264,87 +294,10 @@ export default function MapPage() {
     searchStoresWithAI();
   }, [debouncedKeyword]);
 
-  //화면 내 매장만 filter해 sidebar 및 marker적용
-  // const filterStoresInView = useCallback(() => {
-  //   if (!map) return;
-  //   const bounds = map.getBounds() as InternalBounds;
-  //   if (!bounds) return;
-
-  //   const latSpan = bounds.pa - bounds.qa;
-  //   const lngSpan = bounds.oa - bounds.ha;
-
-  //   const narrowedBounds = {
-  //     pa: bounds.pa - latSpan * 0.12,
-  //     qa: bounds.qa + latSpan * 0.05,
-  //     oa: bounds.oa - lngSpan * 0.001,
-  //     ha: bounds.ha + lngSpan * 0.1,
-  //   };
-
-  //   const list = Array.isArray(stores) ? stores : [];
-
-  //   const inView = list.filter((store) => {
-  //     const { latitude: lat, longitude: lng } = store;
-  //     return (
-  //       lat <= narrowedBounds.pa &&
-  //       lat >= narrowedBounds.qa &&
-  //       lng <= narrowedBounds.oa &&
-  //       lng >= narrowedBounds.ha
-  //     );
-  //   });
-
-  //   console.log('필터드스토어');
-
-  //   setFilteredStores(inView);
-
-  //   if (inView.length > 0) {
-  //     const sum = inView.reduce(
-  //       (acc, cur) => {
-  //         acc.lat += cur.latitude;
-  //         acc.lng += cur.longitude;
-  //         return acc;
-  //       },
-  //       { lat: 0, lng: 0 },
-  //     );
-
-  //     const center = {
-  //       lat: sum.lat / inView.length,
-  //       lng: sum.lng / inView.length,
-  //     };
-
-  //     setCenter(center);
-  //   }
-  //   setShowSearchBtn(true);
-  // }, [map, stores]);
-
-  // bounds 변경 시마다 필터링 + 검색 버튼 토글
-
-  // useEffect(() => {
-
-  //   filterStoresInView();
-  // }, []);
-  // useDebounce(
-  //   () => {
-  //     if (hasFilteredOnce) return;
-
-  //     filterStoresInView();
-  //     setShowSearchBtn(true);
-  //     setHasFilteredOnce(true);
-
-  //     // 버튼 숨기기 타이머
-  //     clearTimeout(hideTimeoutRef.current);
-  //     hideTimeoutRef.current = window.setTimeout(() => {
-  //       setShowSearchBtn(false);
-  //     }, 5000);
-  //   },
-  //   300,
-  //   [idleCount],
-  // );
-
   // idle 이벤트에서는 카운터만 올려 주기
   useEffect(() => {
     if (!map) return;
     // 마운트 시 제휴처 보여줌
-    // filterStoresInView();
     searchStoresWithAI();
 
     const handleIdle = () => {
@@ -357,25 +310,11 @@ export default function MapPage() {
     };
   }, [map]);
 
-  // useEffect(() => {
-  //   console.log('map changed:', map);
-  // }, [map]);
-
-  // useEffect(() => {
-  //   console.log('stores changed:', stores);
-  // }, [stores]);
-
   useEffect(() => {
     if (location && location.lat && location.lng) {
       setMyLocation(location);
     }
   }, [location]);
-
-  // useEffect(() => {
-  //   if (stores.length > 0 && map) {
-  //     filterStoresInView();
-  //   }
-  // }, [stores, map]);
 
   // 내 위치가 생기면 지도 중심으로 이동
   useEffect(() => {
@@ -676,6 +615,94 @@ export default function MapPage() {
     sheetDetail.current?.snapTo('bottom');
   };
 
+  // 이전 중심점을 저장할 ref 추가
+  const previousCenterRef = useRef<LatLng | null>(null);
+
+  // 거리 계산 함수 (Haversine formula)
+  const calculateDistance = (point1: LatLng, point2: LatLng): number => {
+    const R = 6371; // 지구 반지름 (km)
+    const dLat = ((point2.lat - point1.lat) * Math.PI) / 180;
+    const dLon = ((point2.lng - point1.lng) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((point1.lat * Math.PI) / 180) *
+        Math.cos((point2.lat * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // 거리 (km)
+  };
+
+  // 지도 중심점 변경 감지 함수
+  const handleMapCenterChange = useCallback(() => {
+    if (!map) return;
+
+    const currentCenter = map.getCenter();
+    const newCenter: LatLng = {
+      lat: currentCenter.getLat(),
+      lng: currentCenter.getLng(),
+    };
+
+    // 이전 중심점이 있고, 일정 거리 이상 이동했을 때만 버튼 표시
+    if (
+      previousCenterRef.current &&
+      calculateDistance(previousCenterRef.current, newCenter) > 0.1
+    ) {
+      // 100m 이상 이동
+      setShowSearchBtn(true);
+    }
+
+    // 현재 중심점을 이전 중심점으로 저장
+    previousCenterRef.current = newCenter;
+  }, [map]);
+
+  // 지도 이벤트 리스너 설정
+  useEffect(() => {
+    if (!map) return;
+
+    // 초기 중심점 설정
+    const initialCenter = map.getCenter();
+    previousCenterRef.current = {
+      lat: initialCenter.getLat(),
+      lng: initialCenter.getLng(),
+    };
+
+    // bounds_changed 이벤트로 지도 이동 감지
+    const handleBoundsChanged = () => {
+      // 디바운스를 위해 타이머 사용
+      clearTimeout(hideTimeoutRef.current);
+      hideTimeoutRef.current = window.setTimeout(() => {
+        handleMapCenterChange();
+      }, 300); // 300ms 디바운스
+    };
+
+    kakao.maps.event.addListener(map, 'bounds_changed', handleBoundsChanged);
+
+    return () => {
+      kakao.maps.event.removeListener(
+        map,
+        'bounds_changed',
+        handleBoundsChanged,
+      );
+      clearTimeout(hideTimeoutRef.current);
+    };
+  }, [map, handleMapCenterChange]);
+
+  // 검색 버튼 클릭 시 이전 중심점 업데이트
+  const handleSearchHere = useCallback(() => {
+    if (!map) return;
+
+    const currentCenter = map.getCenter();
+    previousCenterRef.current = {
+      lat: currentCenter.getLat(),
+      lng: currentCenter.getLng(),
+    };
+
+    searchStoresWithAI();
+    setMode('default');
+    setShowSearchBtn(false); // 검색 후 버튼 숨김
+  }, [map, searchStoresWithAI]);
+
   return (
     <div className="flex h-screen flex-col-reverse md:flex-row overflow-y-hidden ">
       {/* 사이드바 */}
@@ -731,15 +758,12 @@ export default function MapPage() {
             sheetY={sheetY}
           />
         )}
-        {map && myLocation && panel.menu !== '길찾기' && (
+        {map && panel.menu !== '길찾기' && (
           <SearchHereBtn
             map={map}
             show={showSearchBtn}
             sheetY={sheetY}
-            onClick={() => {
-              searchStoresWithAI();
-              setMode('default');
-            }}
+            onClick={handleSearchHere}
           />
         )}
       </aside>

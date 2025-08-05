@@ -316,7 +316,7 @@ export async function findDirectionPathAI(
     return response.data;
   } catch (error: unknown) {
     const axiosErr = error as AxiosError<{ message: string }>;
-    console.log(error);
+    console.error(error);
     const message =
       axiosErr.response?.data?.message ??
       axiosErr.message ??

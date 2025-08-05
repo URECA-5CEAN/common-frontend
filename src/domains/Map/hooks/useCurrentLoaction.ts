@@ -17,7 +17,6 @@ export function useCurrentLocation() {
     setIsRequesting(true);
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        console.log('위치 성공');
         setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
         setHasLocation(true);
         setIsRequesting(false);
