@@ -70,7 +70,7 @@ interface SideBarProps {
   setIsBenefitModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setFocusField: Dispatch<SetStateAction<'start' | 'end' | number | null>>;
   focusField: 'start' | 'end' | number | null;
-  isLoading: boolean;
+  isMainLoading: boolean;
 }
 function MapSidebar({
   stores,
@@ -95,7 +95,7 @@ function MapSidebar({
   sheetDetail,
   onDetailSheetPositionChange,
   openRoadDetail,
-  index,
+  // index,
   setStartValue,
   setEndValue,
   resetKeyword,
@@ -112,7 +112,7 @@ function MapSidebar({
   setIsBenefitModalOpen,
   setFocusField,
   focusField,
-  isLoading,
+  isMainLoading,
 }: SideBarProps) {
   if (!panel) return;
 
@@ -175,7 +175,9 @@ function MapSidebar({
             setWayInput={setWayInput}
             setFocusField={setFocusField}
             focusField={focusField}
-            isLoading={isLoading}
+            isMainLoading={isMainLoading}
+            setIsOpen={setIsModalOpen}
+            isOpen={isModalOpen}
           />
 
           {/* 상세 패널 (panel.type이 'detail'일 때만) */}
@@ -184,7 +186,7 @@ function MapSidebar({
               <Suspense fallback={<div>로딩 중…</div>}>
                 <SidebarPanel
                   key="detail"
-                  index={index}
+                  index={1}
                   panel={panel}
                   stores={stores}
                   openDetail={openDetail}
@@ -217,7 +219,9 @@ function MapSidebar({
                   setWayInput={setWayInput}
                   setFocusField={setFocusField}
                   focusField={focusField}
-                  isLoading={isLoading}
+                  isMainLoading={isMainLoading}
+                  setIsOpen={setIsModalOpen}
+                  isOpen={isModalOpen}
                 />
               </Suspense>
             )}
@@ -270,7 +274,9 @@ function MapSidebar({
                 setWayInput={setWayInput}
                 setFocusField={setFocusField}
                 focusField={focusField}
-                isLoading={isLoading}
+                isMainLoading={isMainLoading}
+                setIsOpen={setIsModalOpen}
+                isOpen={isModalOpen}
               />
             </BottomSheet>
           )}
@@ -319,7 +325,9 @@ function MapSidebar({
                   setWayInput={setWayInput}
                   setFocusField={setFocusField}
                   focusField={focusField}
-                  isLoading={isLoading}
+                  isMainLoading={isMainLoading}
+                  setIsOpen={setIsModalOpen}
+                  isOpen={isModalOpen}
                 />
               </BottomSheet>
             </Suspense>
@@ -369,7 +377,9 @@ function MapSidebar({
                   setWayInput={setWayInput}
                   setFocusField={setFocusField}
                   focusField={focusField}
-                  isLoading={isLoading}
+                  isMainLoading={isMainLoading}
+                  setIsOpen={setIsModalOpen}
+                  isOpen={isModalOpen}
                 />
               </BottomSheet>
             </Suspense>

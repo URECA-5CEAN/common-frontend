@@ -32,8 +32,21 @@ export default function RouteCard({
   const routeCreateBookmark = async () => {
     try {
       const res = await updateBookmarkStatus(route.directionid, true);
-      console.log(res.data);
-      if (res.data) alert('경로가 즐겨찾기에 저장되었습니다.');
+
+      if (res.statusCode === 200) {
+        toast.success(<span>경로가 저장되었습니다.</span>, {
+          duration: 2000,
+          style: {
+            border: '1px solid #ebebeb',
+            padding: '16px',
+            color: '#1505f5',
+          },
+          iconTheme: {
+            primary: '#1505f5',
+            secondary: '#FFFAEE',
+          },
+        });
+      }
       refreshSavedRoutes?.();
     } catch (err) {
       console.error(err);
@@ -44,8 +57,8 @@ export default function RouteCard({
   return (
     <div
       className={clsx(
-        ' flex flex-col rounded-lg py-2 mb-2',
-        isDetail ? 'bg-white' : 'bg-primaryGreen-40',
+        ' flex flex-col rounded-t-xl py-2 mb-0 gap-1 border-b border-b-gray-200',
+        isDetail ? 'bg-white px-4 pt-4' : 'bg-primaryGreen-40 rounded-b-xl',
       )}
     >
       <div className="flex justify-between">
@@ -74,7 +87,7 @@ export default function RouteCard({
         <p>택시비: {route.taxiFare.toLocaleString()}원</p>
         <p>통행료: {route.tollFare.toLocaleString()}원</p>
       </div>
-      <div className="px-2 mt-2 text-sm text-gray-600 space-y-0.5">
+      <div className="px-2 mt-2 mb-1 text-sm text-gray-600 space-y-0.5">
         {majorRoad.map((road, i) => (
           <div key={`${road.name}-${i}`} className="flex flex-wrap gap-1">
             <div className="flex items-center space-x-1 space-y-1">

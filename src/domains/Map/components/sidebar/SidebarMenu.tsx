@@ -17,15 +17,20 @@ export default function SidebarMenu({
   setIsBenefitModalOpen,
 }: SidebarMenuProps) {
   return (
-    <div className="fixed top-28 md:top-16 right-6 md:left-0  md:bottom-0 md:w-[90px] md:bg-gray-50 md:shadow text-center space-y-2 pt-10 z-1 ">
+    <div className="fixed top-28 md:top-10 right-6 md:left-0  md:bottom-0 md:w-[70px] md:bg-gray-50 md:shadow text-center space-y-2 mt-10 z-1">
       {menus.map((menu, idx) => (
         <button
           key={`${menu}-${idx}`}
-          onClick={
-            menu === '혜택인증'
-              ? () => setIsBenefitModalOpen(true)
-              : () => onSelect(menu)
-          }
+          onClick={() => {
+            if (menu === '혜택인증') {
+              setIsBenefitModalOpen(true);
+              return;
+            }
+            if (menu === '즐겨찾기') {
+              setIsOpen(true);
+            }
+            onSelect(menu);
+          }}
           className={clsx(
             'flex flex-col items-center justify-center',
             'transition-transform duration-150 ease-out',
@@ -38,10 +43,10 @@ export default function SidebarMenu({
             activeMenu === menu && 'bg-primaryGreen-60 shadow-lg ',
 
             // 데스크탑(mdall 이상)
-            'md:w-20 md:h-20 md:rounded-lg md:shadow-none  md:hover:shadow-none ml-1.5',
-            ' md:hover:bg-[#DDF4FF] md:active:scale-100 md:active:opacity-100  ',
+            'md:w-14 md:h-16 md:rounded-lg md:shadow-none  md:hover:shadow-none ml-[7px]',
+            ' md:hover:bg-[#DDF4FF] md:active:scale-100 md:active:opacity-100 md:transition-[background-color] md:duration-100',
             activeMenu === menu &&
-              'md:bg-[#DDF4FF]  md:border-2 md:border-[#84D8FF] ',
+              'md:bg-[#DDF4FF] md:text-[#1CB0F7] md:border-2 md:border-[#84D8FF] md:hover:bg-[#cee8f5]',
           )}
         >
           <img
@@ -49,7 +54,9 @@ export default function SidebarMenu({
             alt={menu}
             className="h-6 w-6  md:h-10 md:w-10 mb-0.5 md:mb-1 "
           />
-          <span className="text-[8px] font-semibold md:font-medium md:text-sm">
+          <span
+            className={`text-[8px] md:text-sm ${activeMenu === menu ? 'md:font-bold' : 'md:font-medium text-gray-500'} `}
+          >
             {menu}
           </span>
         </button>

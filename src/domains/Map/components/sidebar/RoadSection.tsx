@@ -111,7 +111,7 @@ export default function RoadSection({
 }: RouteInputProps) {
   const [showRecent, setShowRecent] = useState<boolean>(false);
   const [viewmode, setViewMode] = useState<ViewMode>('saved');
-  const inputStyle = 'w-full px-4 py-2 text-sm focus:outline-none';
+  const inputStyle = 'w-[calc(100%-16px)] px-4 py-2 text-sm focus:outline-none';
   const [routes, setRoutes] = useState<RouteItem[]>([]);
   const [savedRoutes, setSavedRoutes] = useState<RouteItem[]>([]);
   const [recentRoutes, setRecentRoutes] = useState<RouteItem[]>([]);
@@ -129,6 +129,38 @@ export default function RoadSection({
     setViewMode((prev) => (prev === 'bookmark' ? 'saved' : 'bookmark'));
   };
   const handleNavigate = async () => {
+    if (startValue.name === '') {
+      toast.error(<span>출발지를 입력해주세요</span>, {
+        duration: 2000,
+        style: {
+          border: '1px solid #ebebeb',
+          padding: '16px',
+          color: '#e4270f',
+        },
+        iconTheme: {
+          primary: '#e4270f',
+          secondary: '#FFFAEE',
+        },
+      });
+      return;
+    }
+    if (endValue.name === '') {
+      toast.error(<span>도착지를 입력해주세요</span>, {
+        duration: 2000,
+        style: {
+          border: '1px solid #ebebeb',
+          padding: '16px',
+          color: '#e4270f',
+        },
+        iconTheme: {
+          primary: '#e4270f',
+          secondary: '#FFFAEE',
+        },
+      });
+      return;
+    }
+
+    setIsLoading(true);
     try {
       onClose(1);
       const body: DirectionRequestBody = {
@@ -166,7 +198,7 @@ export default function RoadSection({
       } else {
         // AI 길찾기
         const res = await findDirectionPathAI(body);
-        console.log(res);
+
         setRoutes(DirecitonRoot(res));
         setScenario(res.data.scenario);
         setViewMode('route');
@@ -188,7 +220,7 @@ export default function RoadSection({
       try {
         refreshSavedRoutes();
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     };
     fetchBookmark();
@@ -288,12 +320,12 @@ export default function RoadSection({
   };
 
   return (
-    <div className="max-w-md mx-auto  space-y-4 bg-white min-h-dvh">
-      <div className="flex relative top-4 w-[95%] ml-2 py-1 rounded-xl bg-gray-100 shadow-inner">
+    <div className="space-y-4 bg-white px-6 pt-2 overflow-y-auto w-full h-[calc(100dvh-190px)] md:h-[calc(100dvh-56px)] scrollbar-custom">
+      <div className="flex relative top-4 w-full py-1 px-1 rounded-xl bg-gray-100 shadow-inner">
         <button
           onClick={() => setRoadMode('default')}
           className={clsx(
-            `w-1/2 py-2 cursor-pointer text-sm font-semibold rounded-xl transition-all duration-200`,
+            `w-1/2 py-2 cursor-pointer text-sm font-semibold rounded-l-xl transition-all duration-200`,
 
             Roadmode === 'default'
               ? 'bg-primaryGreen-80 text-white shadow-sm  border border-primaryGreen-80'
@@ -305,7 +337,7 @@ export default function RoadSection({
         <button
           onClick={() => setRoadMode('ai')}
           className={clsx(
-            `w-1/2 py-2 cursor-pointer text-sm font-semibold rounded-xl transition-all duration-200  `,
+            `w-1/2 py-2 cursor-pointer text-sm font-semibold rounded-r-xl transition-all duration-200  `,
 
             Roadmode === 'ai'
               ? 'bg-primaryGreen-80 text-white shadow-md animate-none border border-primaryGreen-80'
@@ -324,9 +356,9 @@ export default function RoadSection({
         </span>
       </div>
       {/* 입력창 + 액션 버튼  */}
-      <div className="space-y-3 py-4 px-2 bg-white ">
+      <div className="space-y-3 py-4 bg-white">
         {/* 입력창 영역 */}
-        <div className="relative w-full max-w-md mx-auto">
+        <div className="relative w-full">
           {/*인풋 컨테이너 */}
           <div className="border relative border-gray-300 rounded-xl overflow-hidden">
             {/* 출발지 */}
@@ -520,56 +552,98 @@ export default function RoadSection({
       )}
 
       {/* 저장한 경로 */}
-      {viewmode === 'saved' && (
-        <div className="space-y-2 px-2">
-          <p className="text-xl font-semibold text-gray-600">저장한 경로</p>
-          {!savedRoutes || savedRoutes.length === 0 ? (
-            <div className="py-4 text-center text-gray-400 text-sm space-y-1">
-              <p>저장된 경로가 없어요!</p>
-              {Roadmode === 'default' && (
-                <>
-                  <p>AI 길찾기를 통해 경로 추천 받고 저장해봐요!</p>
-                  <Button size="sm" onClick={() => setRoadMode('ai')}>
-                    AI 길찾기 이동하기
-                  </Button>
-                </>
-              )}
-            </div>
-          ) : (
-            <ul className="space-y-1">
-              {savedRoutes.map((route, idx) => (
-                <li
-                  key={`${route.directionid}-${idx}`}
-                  className="flex cursor-pointer items-center justify-between px-3 py-2 bg-white rounded-2xl  hover:bg-primaryGreen-40 border border-white hover:border-primaryGreen-80"
-                  onClick={() => openRoadDetail(route)}
-                >
-                  <RouteLine
-                    from={route.from}
-                    waypoints={route.waypoints?.map((w) => w.name) || []}
-                    to={route.to}
-                  />
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSavedRoutes((s) =>
-                        s.filter((x) => x.directionid !== route.directionid),
-                      );
-                      routeDeleteBookmark(route);
-                    }}
-                    className="p-1 text-gray-400 hover:text-red-500"
-                  >
-                    <Trash2 size={18} className="cursor-pointer" />
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
+      {isLoading ? (
+        <div className="h-96 flex flex-col justify-center items-center gap-3">
+          <img
+            src={MapImage}
+            alt="AI 길찾기 안내"
+            className="w-24 h-24 animate-bounce"
+          />
+          <div className="text-lg font-semibold text-gray-700">
+            {Roadmode === 'default'
+              ? '경로를 찾고 있어요'
+              : 'AI가 최적 경로를 찾고 있어요...'}
+          </div>
         </div>
+      ) : (
+        // 로딩이 아닐 때만 아래 보이도록
+        viewmode === 'saved' && (
+          <div className="space-y-2">
+            <p className="text-xl font-semibold text-gray-600">저장한 경로</p>
+            {!isLoggedIn ? (
+              <div className="py-4 text-center text-gray-400 text-sm space-y-1">
+                <p>로그인을 하고 나만의 경로를 저장해봐요!</p>
+                <Button
+                  size="sm"
+                  variant="primary"
+                  onClick={() => navigate('/login')}
+                >
+                  로그인 하러가기
+                </Button>
+              </div>
+            ) : savedRoutesLoading ? (
+              <div className="h-screen flex justify-center items-center">
+                <Ring
+                  size="48"
+                  stroke="3"
+                  bgOpacity="0"
+                  speed="2"
+                  color="#6fc3d1"
+                />
+              </div>
+            ) : savedRoutes.length === 0 ? (
+              <div className="py-4 text-center text-gray-400 text-sm space-y-1">
+                <p>저장된 경로가 없어요!</p>
+                {Roadmode === 'default' ? (
+                  <>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setRoadMode('ai')}
+                    >
+                      AI 길찾기 이동하기
+                    </Button>
+                  </>
+                ) : (
+                  <p>AI 길찾기를 통해 경로 추천 받고 저장해봐요!</p>
+                )}
+              </div>
+            ) : (
+              <ul className="space-y-1">
+                {savedRoutes.map((route, idx) => (
+                  <li
+                    key={`${route.directionid}-${idx}`}
+                    className="flex cursor-pointer items-center justify-between px-3 py-2 bg-white rounded-2xl  hover:bg-primaryGreen-40 border border-white hover:border-primaryGreen-80"
+                    onClick={() => openRoadDetail(route)}
+                  >
+                    <RouteLine
+                      from={route.from}
+                      waypoints={route.waypoints?.map((w) => w.name) || []}
+                      to={route.to}
+                    />
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSavedRoutes((s) =>
+                          s.filter((x) => x.directionid !== route.directionid),
+                        );
+                        routeDeleteBookmark(route);
+                      }}
+                      className="p-1 text-gray-400 hover:text-red-500"
+                    >
+                      <Trash2 size={18} className="cursor-pointer" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )
       )}
 
       {/* 최근 경로 토글 */}
-      {viewmode === 'saved' && (
-        <div className="space-y-2 px-2">
+      {!isLoading && viewmode === 'saved' && (
+        <div className="space-y-2 mb-40">
           <div className="flex items-center justify-between">
             <p className="text-xl font-semibold text-gray-600">최근 경로</p>
             <OnOffBtn setShowRecent={setShowRecent} showRecent={showRecent} />
@@ -605,8 +679,8 @@ export default function RoadSection({
           )}
         </div>
       )}
-      {viewmode === 'route' && (
-        <div className="flex flex-col px-2 ">
+      {!isLoading && viewmode === 'route' && (
+        <div className="flex flex-col">
           {routes.map((route, idx) => (
             <RouteCard
               key={route.directionid}
