@@ -20,6 +20,8 @@ const ShareDetailPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
   const [isConfirmLoading, setIsConfirmLoading] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -28,14 +30,17 @@ const ShareDetailPage = () => {
   useEffect(() => {
     const fetchPost = async () => {
       if (!postId) return;
+      const token = localStorage.getItem('authToken');
 
       try {
         setIsLoading(true);
-        const [postData, userData] = await Promise.all([
-          getSharePostById(postId),
-          getUserInfo(),
-        ]);
-        const userEmail = userData.data.email;
+        const postData = await getSharePostById(postId);
+        let userData;
+        if (token) userData = await getUserInfo();
+        else userData = null;
+
+        const userEmail = userData?.data.email;
+        setIsLoggedIn(!!userEmail);
         const modifiedPost = {
           ...postData,
           isMine: postData.author.email === userEmail,
@@ -57,6 +62,11 @@ const ShareDetailPage = () => {
   const dateTime = fromISOStringToDateTime(post.promiseDate);
 
   const handleStartChat = async () => {
+    if (!isLoggedIn) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+
     if (!post) return;
 
     try {
@@ -223,6 +233,34 @@ const ShareDetailPage = () => {
           </>
         }
       ></Modal>
+      <Modal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        img={
+          <div className="w-full flex justify-center items-center">
+            <img src={dolphinImg} alt="돌고래 캐릭터" className="w-30 h-30" />
+          </div>
+        }
+        title="로그인 후 이용 가능합니다"
+        description="채팅 기능을 사용하려면 로그인이 필요합니다."
+        actions={
+          <>
+            <Button
+              variant="secondary"
+              fullWidth
+              onClick={() => setIsLoginModalOpen(false)}
+            >
+              닫기
+            </Button>
+            <Button
+              fullWidth
+              onClick={() => navigate('/login')} // 로그인 페이지로 이동
+            >
+              로그인하기
+            </Button>
+          </>
+        }
+      />
     </div>
   );
 };

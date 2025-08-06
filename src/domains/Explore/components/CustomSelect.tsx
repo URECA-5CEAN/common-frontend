@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import type { ReactNode } from 'react';
 import { ChevronDown } from 'lucide-react';
 import type { SelectOption, TimeValue } from '../types/share';
 
@@ -11,6 +12,7 @@ interface CustomSelectProps {
   options?: SelectOption[];
   placeholder?: string;
   disabled?: boolean;
+  icon?: ReactNode;
 }
 
 const CustomSelect = ({
@@ -20,6 +22,7 @@ const CustomSelect = ({
   value,
   onChange,
   disabled = false,
+  icon,
 }: CustomSelectProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
@@ -41,7 +44,7 @@ const CustomSelect = ({
 
   const renderOptions = () => {
     switch (type) {
-      case 'single': {
+      case 'single':
         return (
           <div className="min-w-24">
             <ul>
@@ -64,11 +67,9 @@ const CustomSelect = ({
             </ul>
           </div>
         );
-      }
 
       case 'time': {
         const timeValue = value as TimeValue;
-
         return (
           <div className="flex gap-4">
             {/* 오전/오후 선택 */}
@@ -77,7 +78,11 @@ const CustomSelect = ({
                 onClick={() => {
                   onChange({ ...timeValue, period: '오전' });
                 }}
-                className={`cursor-pointer px-4 py-1 rounded ${timeValue.period === '오전' ? 'bg-primaryGreen text-white' : 'hover:bg-primaryGreen-40'} `}
+                className={`cursor-pointer px-4 py-1 rounded ${
+                  timeValue.period === '오전'
+                    ? 'bg-primaryGreen text-white'
+                    : 'hover:bg-primaryGreen-40'
+                }`}
               >
                 오전
               </li>
@@ -85,7 +90,11 @@ const CustomSelect = ({
                 onClick={() => {
                   onChange({ ...timeValue, period: '오후' });
                 }}
-                className={`cursor-pointer px-4 py-1 rounded ${timeValue.period === '오후' ? 'bg-primaryGreen text-white' : 'hover:bg-primaryGreen-40'} `}
+                className={`cursor-pointer px-4 py-1 rounded ${
+                  timeValue.period === '오후'
+                    ? 'bg-primaryGreen text-white'
+                    : 'hover:bg-primaryGreen-40'
+                }`}
               >
                 오후
               </li>
@@ -95,7 +104,11 @@ const CustomSelect = ({
               {Array.from({ length: 12 }, (_, i) => String(i + 1)).map((h) => (
                 <li
                   key={h}
-                  className={`cursor-pointer px-4 py-1 rounded ${timeValue.hour === h ? 'bg-primaryGreen text-white' : 'hover:bg-primaryGreen-40 '}`}
+                  className={`cursor-pointer px-4 py-1 rounded ${
+                    timeValue.hour === h
+                      ? 'bg-primaryGreen text-white'
+                      : 'hover:bg-primaryGreen-40'
+                  }`}
                   onClick={() => {
                     onChange({ ...timeValue, hour: h });
                   }}
@@ -104,13 +117,16 @@ const CustomSelect = ({
                 </li>
               ))}
             </ul>
-
             {/* 분 선택 */}
             <ul>
               {['00', '10', '20', '30', '40', '50'].map((m) => (
                 <li
                   key={m}
-                  className={`cursor-pointer px-5 py-1 rounded ${timeValue.minute === m ? 'bg-primaryGreen text-white' : 'hover:bg-primaryGreen-40 '}`}
+                  className={`cursor-pointer px-5 py-1 rounded ${
+                    timeValue.minute === m
+                      ? 'bg-primaryGreen text-white'
+                      : 'hover:bg-primaryGreen-40'
+                  }`}
                   onClick={() => {
                     onChange({ ...timeValue, minute: m });
                   }}
@@ -146,7 +162,7 @@ const CustomSelect = ({
       <div
         className={`rounded-2xl border p-3 ${
           disabled
-            ? 'bg-gray-100 border-gray-200 text-gray-400 cursor-'
+            ? 'bg-gray-100 border-gray-200 text-gray-400 cursor-default'
             : 'border-gray-200 text-gray-600'
         }`}
       >
@@ -155,10 +171,12 @@ const CustomSelect = ({
             if (type === 'single' && (!options || options.length === 0)) return;
             setIsOpen(!isOpen);
           }}
-          className={`flex justify-between min-w-24 gap-1 cursor-pointer`}
+          className="flex justify-between min-w-24 gap-2 items-center cursor-pointer"
           disabled={disabled}
         >
-          <span>{displayValue()}</span> <ChevronDown />
+          {icon && <span className="flex items-center">{icon}</span>}
+          <span className="flex-1 text-left">{displayValue()}</span>
+          <ChevronDown />
         </button>
       </div>
       {isOpen && (
