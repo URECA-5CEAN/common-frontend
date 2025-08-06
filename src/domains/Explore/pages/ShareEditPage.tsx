@@ -82,7 +82,6 @@ const ShareEditPage = () => {
     const fetchPost = async () => {
       try {
         const data = await getSharePostById(postId);
-        console.log(data);
         setCategory({ label: data.category, value: data.category });
         setBrand({ label: data.brandName, value: '' });
         setBenefitType({ label: data.benefitName, value: '' });

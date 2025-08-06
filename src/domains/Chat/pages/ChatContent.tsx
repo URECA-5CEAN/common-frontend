@@ -5,8 +5,8 @@ import { Button } from '@/components/Button';
 import { Send, ArrowLeft, MoreVertical } from 'lucide-react';
 import useWebSocket from '../hooks/useWebSocket';
 import {
-  convertTimeFormat,
   fromISOStringToDateTime,
+  fromISOToTimeStr,
 } from '@/domains/Explore/utils/datetimeUtils';
 import { leaveChatRoom } from '../api/chat';
 import toast from 'react-hot-toast';
@@ -99,7 +99,7 @@ const ChatContent = ({
     selectedRoom.postResponseDto;
 
   const promiseDateObj = fromISOStringToDateTime(promiseDate);
-  console.log(selectedRoom);
+
   return (
     <main
       className={`flex flex-col h-full ${isMobile ? 'w-full' : 'flex-1'} sm:max-w-[1050px]`}
@@ -192,7 +192,7 @@ const ChatContent = ({
                   >
                     {myMessage && (
                       <span className="text-xs text-gray-400 ml-2 self-end">
-                        {convertTimeFormat(msg.time || '')}
+                        {msg.time ? fromISOToTimeStr(msg.time) : ''}
                       </span>
                     )}
 
@@ -208,7 +208,7 @@ const ChatContent = ({
 
                     {!myMessage && (
                       <span className="text-xs text-gray-400 mr-2 self-end">
-                        {convertTimeFormat(msg.time || '')}
+                        {msg.time ? fromISOToTimeStr(msg.time) : ''}
                       </span>
                     )}
                   </div>

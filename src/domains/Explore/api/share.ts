@@ -59,11 +59,8 @@ export const getSharePostList = async (
 };
 
 export const getSharePostById = async (postId: string): Promise<Post> => {
-  const token = localStorage.getItem('authToken');
-
   const response = await axios.get(`${baseURL}/user/article/detail`, {
     params: { postId },
-    headers: { Authorization: token },
   });
 
   return response.data.data;

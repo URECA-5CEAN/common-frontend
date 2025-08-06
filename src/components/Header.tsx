@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useMemo, useState, useEffect, useRef } from 'react';
 import arrowIcon from '@/assets/icons/arrow_icon.svg';
 import headerWaveImg from '@/assets/image/header-wave.svg';
@@ -498,9 +498,11 @@ const Header = () => {
     setIsSubOpen((prev) => prev.map((open, i) => (i === index ? !open : open)));
   };
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const navigate = useNavigate();
   const handleLogout = () => {
     logout();
     setIsMenuOpen(false);
+    navigate('/map');
   };
   const handleLogoutClick = () => {
     setIsAuthModalOpen(true);

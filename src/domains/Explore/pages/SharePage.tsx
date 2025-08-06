@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react';
+import { MapPin, Plus } from 'lucide-react';
 import { Button } from '@/components/Button';
 import type {
   Post,
@@ -331,6 +331,7 @@ const SharePage = () => {
             options={locations}
             onChange={handleLocation}
             value={location}
+            icon={<MapPin size={20} strokeWidth={2} />}
           />
 
           <input
