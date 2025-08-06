@@ -69,21 +69,27 @@ function FilterMarker({
     if (!map) return [];
     if (panel.menu === '길찾기') return [];
     const level = map.getLevel?.() ?? 5;
-    const max2D = level <= 2 ? 30 : level <= 4 ? 30 : level <= 6 ? 20 : 20;
-    return stores
-      .map((m) => ({
-        marker: m,
-        distance: getDistance(center, { lat: m.latitude, lng: m.longitude }),
-      }))
-      .slice(0, max2D)
-      .map((item) => ({
-        id: item.marker.id,
-        lat: item.marker.latitude,
-        lng: item.marker.longitude,
-        imageUrl: item.marker.brandImageUrl ?? '',
-        isRecommended: item.marker.isRecommended ?? '',
-      }));
-  }, [stores, map, panel.menu]);
+    let candidates = stores;
+    if (level <= 6) {
+      candidates = stores
+        .map((m) => ({
+          marker: m,
+          distance: getDistance(center, { lat: m.latitude, lng: m.longitude }),
+        }))
+        .sort((a, b) => a.distance - b.distance)
+        .slice(0, level <= 2 ? 60 : level <= 4 ? 40 : 30)
+        .map((item) => item.marker);
+    } else {
+      candidates = stores.slice(0, 100);
+    }
+    return candidates.map((m) => ({
+      id: m.id,
+      lat: m.latitude,
+      lng: m.longitude,
+      imageUrl: m.brandImageUrl ?? '',
+      isRecommended: m.isRecommended ?? '',
+    }));
+  }, [stores, map, panel.menu, center]);
 
   // stores 배열을 Map으로 변환
   const storeMap = useMemo(() => {
@@ -165,7 +171,7 @@ function FilterMarker({
   }, [Markers]);
 
   // 마커 개수에 따라 클러스터링 여부 결정
-  const shouldCluster = Markers.length > 30;
+  const shouldCluster = Markers.length > 10;
 
   // 2D 마커 렌더링 함수 분리
   const renderFarMarkers = useCallback(
@@ -206,7 +212,7 @@ function FilterMarker({
         <MarkerClusterer
           averageCenter
           minLevel={7}
-          gridSize={150}
+          gridSize={200}
           styles={[
             {
               width: '50px',
