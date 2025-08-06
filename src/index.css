@@ -403,3 +403,18 @@
     top: 96px !important;
   }
 }
+
+/* 기프티콘 */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.floating {
+  animation: float 1.5s ease-in-out infinite;
+}

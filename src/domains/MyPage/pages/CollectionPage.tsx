@@ -121,7 +121,7 @@ const CollectionPage = () => {
           {loading ? (
             <div className="w-full h-100 flex flex-col justify-center items-center gap-4 text-gray-600">
               <Grid size="100" speed="1.5" color="#6fc3d1" />
-              통계 데이터를 불러오고 있어요
+              도감 데이터를 불러오고 있어요
             </div>
           ) : sortedResult.length !== 0 ? (
             <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full">
@@ -172,7 +172,7 @@ const CollectionPage = () => {
                   alt="무언가를 찾는 돌고래"
                   className="w-20"
                 />
-                통계를 불러오는 중 오류가 발생했어요.
+                도감을 불러오는 중 오류가 발생했어요.
                 <br />
                 잠시 후 다시 시도해주세요.
               </div>

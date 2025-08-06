@@ -4,43 +4,28 @@ import { Modal } from '@/components/Modal';
 import { useEffect, useRef, useState } from 'react';
 import Banner from '@/domains/MyPage/components/Banner';
 import { ProgressBar } from '@/domains/MyPage/components/ProgressBar';
-import dolphinBeach from '@/assets/image/dolphin-beach.svg';
 import type { UserInfoApi } from '@/domains/MyPage/types/profile';
 import { getUserInfo, getUserStat } from '@/domains/MyPage/api/profile';
-import gifticonLv1 from '@/assets/image/gifticon/gifticon_level1.png';
-// import gifticonLv10 from '@/assets/image/gifticon/gifticon_level10.png';
-import gifticonLv20 from '@/assets/image/gifticon/gifticon_level20.png';
-import gifticonLv30 from '@/assets/image/gifticon/gifticon_level30.png';
-import gifticonLv40 from '@/assets/image/gifticon/gifticon_level40.png';
-import gifticonLv50 from '@/assets/image/gifticon/gifticon_level50.png';
 import { useAuthStore } from '@/store/useAuthStore';
-import { Grid } from 'ldrs/react';
-import { Info } from 'lucide-react';
+import { Info, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
-interface LevelButtonProps {
-  level: number;
-  active: boolean;
-  onClick?: () => void;
-}
-
-const LevelButton = ({ level, active, onClick }: LevelButtonProps) => {
-  return (
-    <div
-      className={`relative w-fit z-1 ${active ? 'cursor-pointer' : 'cursor-not-allowed'}`}
-      onClick={onClick}
-    >
-      <div
-        className={`w-30 h-20 rounded-full absolute top-2 ${active ? 'bg-primaryGreen-80' : 'bg-gray-300'}`}
-      ></div>
-      <div
-        className={`w-30 h-20 select-none translate-y-0 rounded-full flex justify-center items-center font-bold text-xl ${active ? 'active:translate-y-2 transition-all duration-100 bg-primaryGreen text-white' : 'bg-gray-200 text-gray-300'} `}
-      >
-        Lv.{level}
-      </div>
-    </div>
-  );
-};
+import gs25 from '@/assets/image/gifticon/gs25.png';
+import megabox from '@/assets/image/gifticon/megabox.png';
+import shakeshack from '@/assets/image/gifticon/shakeshack.png';
+import vips from '@/assets/image/gifticon/vips.png';
+import baskin from '@/assets/image/gifticon/baskin.png';
+import cgv from '@/assets/image/gifticon/cgv.png';
+import giftLv1 from '@/assets/image/gifticon/gift_level_1.png';
+import giftLv5 from '@/assets/image/gifticon/gift_level_5.png';
+import giftLv10 from '@/assets/image/gifticon/gift_level_10.png';
+import giftLv15 from '@/assets/image/gifticon/gift_level_15.png';
+import giftLv20 from '@/assets/image/gifticon/gift_level_20.png';
+import giftLv25 from '@/assets/image/gifticon/gift_level_25.png';
+import giftLv30 from '@/assets/image/gifticon/gift_level_30.png';
+import giftLv35 from '@/assets/image/gifticon/gift_level_35.png';
+import giftLv40 from '@/assets/image/gifticon/gift_level_40.png';
+import giftLv45 from '@/assets/image/gifticon/gift_level_45.png';
+import giftLv50 from '@/assets/image/gifticon/gift_level_50.png';
 
 const RewardPage = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -61,54 +46,35 @@ const RewardPage = () => {
   const [loading, setLoading] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [height, setHeight] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
 
   const { isLoggedIn } = useAuthStore();
 
+  const infoRef = useRef<HTMLDivElement | null>(null);
+
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768); // Tailwind md 기준
-    };
-
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  const handleDesktopEnter = () => {
-    if (!isMobile) setIsInfoOpen(true);
+  const handleOpenInfo = () => {
+    setIsInfoOpen(true);
   };
-
-  const handleDesktopLeave = () => {
-    if (!isMobile) setIsInfoOpen(false);
+  const handleCloseInfo = () => {
+    setIsInfoOpen(false);
   };
-
-  const handleMobileClick = () => {
-    if (isMobile) setIsInfoOpen((prev) => !prev);
-  };
-
-  const infoWrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!isMobile) return;
-
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        infoWrapperRef.current &&
-        !infoWrapperRef.current.contains(e.target as Node)
-      ) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (infoRef.current && !infoRef.current.contains(event.target as Node)) {
         setIsInfoOpen(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    if (isInfoOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isMobile]);
+  }, [isInfoOpen]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -134,11 +100,17 @@ const RewardPage = () => {
   }, [isLoggedIn]);
 
   const gifticonMap: Record<number, string> = {
-    10: gifticonLv1,
-    20: gifticonLv20,
-    30: gifticonLv30,
-    40: gifticonLv40,
-    50: gifticonLv50,
+    1: giftLv1,
+    5: giftLv5,
+    10: giftLv10,
+    15: giftLv15,
+    20: giftLv20,
+    25: giftLv25,
+    30: giftLv30,
+    35: giftLv35,
+    40: giftLv40,
+    45: giftLv45,
+    50: giftLv50,
   };
   const imageUrl = gifticonMap[selectedLevel];
   const handleDownload = () => {
@@ -150,22 +122,68 @@ const RewardPage = () => {
     document.body.removeChild(link);
   };
 
-  function getExpByLevel(level: number): number {
-    if (!isLoggedIn) return 0;
-    if (level >= 50) return 520;
-    if (level >= 40) return 400;
-    if (level >= 30) return 240;
-    if (level >= 20) return 120;
-    return 0; // level < 20
+  const LeftStart = () => {
+    return (
+      <>
+        <div className="absolute left-20 w-[calc(100%-160px)] h-4 bg-primaryGreen-40" />
+        <div className="absolute w-40 h-40 right-0 rounded-full bg-primaryGreen-40">
+          <div className="absolute w-32 h-32 rounded-full bg-white top-1/2 right-1/2 -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute w-32 h-32 bg-white top-4 right-20"></div>
+        </div>
+        <div className="absolute left-20 w-[calc(100%-160px)] h-4 bg-primaryGreen-40 top-36" />
+      </>
+    );
+  };
+  const RightStart = () => {
+    return (
+      <>
+        <div className="absolute left-20 w-[calc(100%-160px)] h-4 bg-primaryGreen-40" />
+        <div className="absolute w-40 h-40 rounded-full bg-primaryGreen-40">
+          <div className="absolute w-32 h-32 rounded-full bg-white top-1/2 left-1/2 -translate-1/2" />
+          <div className="absolute w-32 h-32 bg-white top-4 left-20"></div>
+        </div>
+        <div className="absolute left-20 w-[calc(100%-160px)] h-4 bg-primaryGreen-40 top-36" />
+      </>
+    );
+  };
+
+  interface RewardProps {
+    level: number;
+    brand: string;
+    reward: string;
+    isDone: boolean;
+    onClick?: () => void;
   }
+  const Reward = ({ level, brand, reward, isDone, onClick }: RewardProps) => {
+    return (
+      <div
+        onClick={onClick}
+        className={`select-none absolute w-18 xl:w-26 h-18 xl:h-26 bg-white rounded-full border-2 z-1 transform-all duration-300 ${isDone ? 'cursor-pointer border-primaryGreen-60 hover:scale-110' : 'border-gray-200'}`}
+      >
+        <div className={`${isDone ? 'floating' : ''}`}>
+          <span
+            className={`absolute -top-10 xl:-top-8 text-sm xl:text-base left-1/2 -translate-x-1/2 z-1 p-2 rounded-xl font-bold whitespace-nowrap ${isDone ? 'bg-primaryGreen text-white' : 'bg-gray-200 text-gray-300'} `}
+          >
+            Lv.{level} 달성
+          </span>
+          <div
+            className={`w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-t-12 border-b-0 absolute left-1/2 -top-1 xl:top-1 -translate-x-1/2 ${isDone ? 'border-primaryGreen' : 'border-gray-200'}`}
+          />
+        </div>
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setHeight(getExpByLevel(userInfo.level));
-    });
-
-    return () => clearTimeout(timer);
-  }, [userInfo]);
+        <img
+          src={brand}
+          alt={brand}
+          className={`w-10 xl:w-15 absolute top-4 xl:top-6 left-1/2 -translate-x-1/2 rounded-xl ${isDone ? 'opacity-100' : 'opacity-30'}`}
+        />
+        <span
+          className={`whitespace-nowrap absolute text-sm xl:text-base top-10 xl:top-15 left-1/2 -translate-x-1/2 font-bold ${isDone ? 'text-[#2ba9cf]' : 'text-gray-300'}`}
+        >
+          {reward}
+        </span>
+      </div>
+    );
+  };
 
   return (
     <>
@@ -173,39 +191,43 @@ const RewardPage = () => {
         <Breadcrumb title="혜택 탐험" subtitle="기프티콘" />
         <div className="text-[32px] mt-3 mb-2 font-bold flex items-center">
           <span className="flex items-center">기프티콘</span>
-          <div className="relative" ref={infoWrapperRef}>
+          <div className="relative">
             <div
-              className="p-3 cursor-pointer md:cursor-default"
-              onMouseEnter={handleDesktopEnter}
-              onMouseLeave={handleDesktopLeave}
-              onClick={handleMobileClick}
+              className="cursor-pointer flex justify-end pl-2 items-center gap-0.5"
+              onClick={handleOpenInfo}
             >
-              <Info />
+              <Info color="#808080" size={18} />
+              <span className="text-sm text-[#808080]">레벨업 하려면?</span>
             </div>
             {isInfoOpen && (
               <div
-                onMouseEnter={handleDesktopEnter}
-                onMouseLeave={handleDesktopLeave}
-                // onClick={handleMobileClick}
-                className="border border-gray-200 font-medium text-base md:shadow-xl p-4 absolute top-10 md:top-6 -left-26 md:left-6 z-3 rounded-tr-xl rounded-br-xl rounded-bl-xl rounded-tl-xl md:rounded-tl-none	md:rounded-tl-0 bg-gray-100 w-[260px] flex flex-col gap-2"
+                ref={infoRef}
+                className="text-[#6e6e6e] select-none border border-gray-500 font-medium text-base md:shadow-xl p-4 absolute top-0 left-1/2 -translate-x-1/2 z-3 rounded-xl bg-white w-[220%] sm:w-[320px] flex flex-col gap-2 cursor-auto"
               >
-                <div className="block md:hidden absolute -top-4 left-[117px] w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-b-[20px] border-b-gray-100"></div>
-
-                <span className="font-semibold">레벨을 올리려면?</span>
+                <div className="flex justify-between">
+                  <span className="">레벨업 하려면?</span>
+                  <X
+                    color="#717379"
+                    className="cursor-pointer"
+                    onClick={() => {
+                      handleCloseInfo();
+                    }}
+                  />
+                </div>
                 <div className="">
                   -{' '}
                   <span
-                    className="font-semibold cursor-pointer"
+                    className="font-semibold cursor-pointer text-primaryGreen-80"
                     onClick={() => {
                       navigate('/map?autoClick=true');
                     }}
                   >
                     지도 페이지 → 혜택 인증
                   </span>{' '}
-                  탭에서 인증하기
+                  탭에서 인증하기!
                   <br />-{' '}
                   <span
-                    className="font-semibold cursor-pointer"
+                    className="font-semibold cursor-pointer text-primaryGreen-80"
                     onClick={() => {
                       if (!isLoggedIn) {
                         setIsModalOpen(true);
@@ -216,150 +238,235 @@ const RewardPage = () => {
                   >
                     마이 페이지 → 미션
                   </span>{' '}
-                  탭에서 미션 완료하기
+                  탭에서 미션 완료하기!
                 </div>
               </div>
             )}
           </div>
         </div>
         <div className="flex flex-col-reverse lg:flex-row gap-4 lg:justify-between">
-          <div className="flex gap-4 w-full justify-center bg-[#ffe1be] p-10 rounded-xl relative">
-            {loading ? (
-              <div className="flex flex-col justify-center items-center gap-4 h-[680px]">
-                <Grid size="100" speed="1.5" color="#6fc3d1" />
-                정보를 불러오고 있어요
-              </div>
-            ) : (
-              <>
-                <div className="w-fit flex flex-col gap-12 relative">
-                  <LevelButton
-                    level={1}
-                    active={!!userInfo && isLoggedIn && userInfo.level >= 1}
-                    onClick={() => {
-                      if ((userInfo?.level ?? 0) >= 1 && isLoggedIn) {
-                        setIsOpen(true);
-                        setSelectedLevel(1);
-                      }
-                    }}
-                  />
-                  <LevelButton
-                    level={20}
-                    active={!!userInfo && isLoggedIn && userInfo.level >= 20}
-                    onClick={() => {
-                      if ((userInfo?.level ?? 0) >= 20 && isLoggedIn) {
-                        setIsOpen(true);
-                        setSelectedLevel(20);
-                      }
-                    }}
-                  />
-                  <LevelButton
-                    level={30}
-                    active={!!userInfo && isLoggedIn && userInfo.level >= 30}
-                    onClick={() => {
-                      if ((userInfo?.level ?? 0) >= 30 && isLoggedIn) {
-                        setIsOpen(true);
-                        setSelectedLevel(30);
-                      }
-                    }}
-                  />
-                  <LevelButton
-                    level={40}
-                    active={!!userInfo && isLoggedIn && userInfo.level >= 40}
-                    onClick={() => {
-                      if ((userInfo?.level ?? 0) >= 40 && isLoggedIn) {
-                        setIsOpen(true);
-                        setSelectedLevel(40);
-                      }
-                    }}
-                  />
-                  <LevelButton
-                    level={50}
-                    active={!!userInfo && isLoggedIn && userInfo.level >= 50}
-                    onClick={() => {
-                      if ((userInfo?.level ?? 0) >= 50 && isLoggedIn) {
-                        setIsOpen(true);
-                        setSelectedLevel(50);
-                      }
-                    }}
-                  />
-                  <div className="absolute top-5 left-1/2 -translate-x-1/2 w-5 h-140 bg-gray-200" />
-                  {userInfo && (
-                    <div
-                      className="absolute top-5 left-1/2 -translate-x-1/2 w-5 bg-primaryGreen-60 transition-all duration-1000 ease-in-out"
-                      style={{
-                        height: `${height}px`,
+          <div className="flex gap-4 w-full h-[880px] pt-36 justify-center border border-gray-200 p-10 rounded-xl relative">
+            <div className="absolute w-full h-20 bg-white">
+              {/*  */}
+              <div className="relative flex justify-center items-center w-[calc(100%-72px)] pl-18 h-200">
+                {/*  */}
+                <div className="absolute w-full h-fit top-0">
+                  <LeftStart />
+
+                  {/* 1렙 */}
+                  <div className="absolute w-24 h-24 z-1 -top-7 xl:-top-12 -left-6">
+                    <Reward
+                      level={1}
+                      brand={gs25}
+                      reward="백원"
+                      isDone={!!userInfo && isLoggedIn && userInfo.level >= 1}
+                      onClick={() => {
+                        if ((userInfo?.level ?? 0) >= 1 && isLoggedIn) {
+                          setIsOpen(true);
+                          setSelectedLevel(1);
+                        }
                       }}
                     />
-                  )}
-                </div>
-                <div className="w-fit flex flex-col gap-12 mt-2">
-                  <div
-                    className={`h-20 flex items-center rounded-xl p-3 font-bold justify-center break-keep text-center ${
-                      (userInfo?.level ?? 0) >= 1 && isLoggedIn
-                        ? 'text-primaryGreen-40 bg-primaryGreen-80'
-                        : 'text-gray-300 bg-gray-200'
-                    }`}
-                  >
-                    GS25 100원권
+                    <div className="absolute top-7 xl:top-12 -right-4 bg-primaryGreen-40 h-4 w-10"></div>
                   </div>
-                  <div
-                    className={`h-20 flex items-center rounded-xl p-3 font-bold justify-center break-keep text-center ${
-                      (userInfo?.level ?? 0) >= 20 && isLoggedIn
-                        ? 'text-primaryGreen-40 bg-primaryGreen-80'
-                        : 'text-gray-300 bg-gray-200'
-                    }`}
-                  >
-                    할리스커피 2,500원권
+
+                  {/* 5렙 */}
+                  <div className="absolute w-24 h-24 z-1 -top-7 xl:-top-12 left-[40%]">
+                    <Reward
+                      level={5}
+                      brand={gs25}
+                      reward="삼천원"
+                      isDone={!!userInfo && isLoggedIn && userInfo.level >= 5}
+                      onClick={() => {
+                        if ((userInfo?.level ?? 0) >= 5 && isLoggedIn) {
+                          setIsOpen(true);
+                          setSelectedLevel(5);
+                        }
+                      }}
+                    />
                   </div>
-                  <div
-                    className={`h-20 flex items-center rounded-xl p-3 font-bold justify-center break-keep text-center ${
-                      (userInfo?.level ?? 0) >= 30 && isLoggedIn
-                        ? 'text-primaryGreen-40 bg-primaryGreen-80'
-                        : 'text-gray-300 bg-gray-200'
-                    }`}
-                  >
-                    파리바게트 5,000원권
-                  </div>
-                  <div
-                    className={`h-20 flex items-center rounded-xl p-3 font-bold justify-center break-keep text-center ${
-                      (userInfo?.level ?? 0) >= 40 && isLoggedIn
-                        ? 'text-primaryGreen-40 bg-primaryGreen-80'
-                        : 'text-gray-300 bg-gray-200'
-                    }`}
-                  >
-                    CGV 10,000원권
-                  </div>
-                  <div
-                    className={`h-20 flex items-center rounded-xl p-3 font-bold justify-center break-keep text-center ${
-                      (userInfo?.level ?? 0) >= 50 && isLoggedIn
-                        ? 'text-primaryGreen-40 bg-primaryGreen-80'
-                        : 'text-gray-300 bg-gray-200'
-                    }`}
-                  >
-                    VIPS 20,000원권
+
+                  {/* 10렙 */}
+                  <div className="absolute w-24 h-24 z-1 -top-4 sm:-top-6 md:-top-4 xl:-top-10 left-[75%] sm:left-[80%]">
+                    <Reward
+                      level={10}
+                      brand={baskin}
+                      reward="싱글킹"
+                      isDone={!!userInfo && isLoggedIn && userInfo.level >= 10}
+                      onClick={() => {
+                        if ((userInfo?.level ?? 0) >= 10 && isLoggedIn) {
+                          setIsOpen(true);
+                          setSelectedLevel(10);
+                        }
+                      }}
+                    />
                   </div>
                 </div>
-                <img
-                  src={dolphinBeach}
-                  alt="돌고래"
-                  className="absolute top-40 right-[3%] w-30 hidden xl:block"
-                />
-              </>
-            )}
+
+                <div className="absolute w-full h-fit top-36">
+                  <RightStart />
+
+                  {/* 15렙 */}
+                  <div className="absolute w-24 h-24 z-1 -top-7 xl:-top-12 left-[60%]">
+                    <Reward
+                      level={15}
+                      brand={shakeshack}
+                      reward="쉑버거"
+                      isDone={!!userInfo && isLoggedIn && userInfo.level >= 15}
+                      onClick={() => {
+                        if ((userInfo?.level ?? 0) >= 15 && isLoggedIn) {
+                          setIsOpen(true);
+                          setSelectedLevel(15);
+                        }
+                      }}
+                    />
+                  </div>
+
+                  {/* 20렙 */}
+                  <div className="absolute w-24 h-24 z-1 -top-1 xl:-top-8 -left-0">
+                    <Reward
+                      level={20}
+                      brand={baskin}
+                      reward="파인트"
+                      isDone={!!userInfo && isLoggedIn && userInfo.level >= 20}
+                      onClick={() => {
+                        if ((userInfo?.level ?? 0) >= 20 && isLoggedIn) {
+                          setIsOpen(true);
+                          setSelectedLevel(20);
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div className="absolute w-full h-fit top-72">
+                  <LeftStart />
+
+                  {/* 25렙 */}
+                  <div className="absolute w-24 h-24 z-1 -top-7 xl:-top-12 left-[25%]">
+                    <Reward
+                      level={25}
+                      brand={gs25}
+                      reward="만원"
+                      isDone={!!userInfo && isLoggedIn && userInfo.level >= 25}
+                      onClick={() => {
+                        if ((userInfo?.level ?? 0) >= 25 && isLoggedIn) {
+                          setIsOpen(true);
+                          setSelectedLevel(25);
+                        }
+                      }}
+                    />
+                  </div>
+
+                  {/* 30렙 */}
+                  <div className="absolute w-24 h-24 z-1 -top-7 xl:-top-12 left-[70%]">
+                    <Reward
+                      level={30}
+                      brand={megabox}
+                      reward="1매"
+                      isDone={!!userInfo && isLoggedIn && userInfo.level >= 30}
+                      onClick={() => {
+                        if ((userInfo?.level ?? 0) >= 30 && isLoggedIn) {
+                          setIsOpen(true);
+                          setSelectedLevel(30);
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div className="absolute w-full h-fit top-108">
+                  <RightStart />
+
+                  {/* 35렙 */}
+                  <div className="absolute w-24 h-24 z-1 -top-7 xl:-top-12 left-[50%]">
+                    <Reward
+                      level={35}
+                      brand={vips}
+                      reward="이만원"
+                      isDone={!!userInfo && isLoggedIn && userInfo.level >= 35}
+                      onClick={() => {
+                        if ((userInfo?.level ?? 0) >= 35 && isLoggedIn) {
+                          setIsOpen(true);
+                          setSelectedLevel(35);
+                        }
+                      }}
+                    />
+                  </div>
+
+                  {/* 40렙 */}
+                  <div className="absolute w-24 h-24 z-1 top-2 xl:-top-4 -left-3 xl:-left-6">
+                    <Reward
+                      level={40}
+                      brand={baskin}
+                      reward="패밀리"
+                      isDone={!!userInfo && isLoggedIn && userInfo.level >= 40}
+                      onClick={() => {
+                        if ((userInfo?.level ?? 0) >= 40 && isLoggedIn) {
+                          setIsOpen(true);
+                          setSelectedLevel(40);
+                        }
+                      }}
+                    />
+                  </div>
+
+                  {/* 45렙 */}
+                  <div className="absolute w-24 h-24 z-1 top-28 xl:top-24 left-[35%]">
+                    <Reward
+                      level={45}
+                      brand={cgv}
+                      reward="2매"
+                      isDone={!!userInfo && isLoggedIn && userInfo.level >= 45}
+                      onClick={() => {
+                        if ((userInfo?.level ?? 0) >= 45 && isLoggedIn) {
+                          setIsOpen(true);
+                          setSelectedLevel(45);
+                        }
+                      }}
+                    />
+                  </div>
+
+                  {/* 50렙 */}
+                  <div className="absolute w-24 h-24 z-1 top-28 xl:top-24 -right-6 xl:-right-4">
+                    <Reward
+                      level={50}
+                      brand={vips}
+                      reward="오만원"
+                      isDone={!!userInfo && isLoggedIn && userInfo.level >= 50}
+                      onClick={() => {
+                        if ((userInfo?.level ?? 0) >= 50 && isLoggedIn) {
+                          setIsOpen(true);
+                          setSelectedLevel(50);
+                        }
+                      }}
+                    />
+                    <div className="absolute top-8 xl:top-12 -left-4 bg-primaryGreen-40 h-4 w-10"></div>
+                  </div>
+                </div>
+              </div>
+              {/*  */}
+            </div>
           </div>
           <div className="w-full lg:w-70 flex flex-col gap-4">
-            {userInfo && isLoggedIn ? (
-              <div className="flex flex-col h-fit justify-between p-3 gap-1 text-gray-700 bg-gray-200 rounded-xl">
-                <p className="font-bold text-xl">
-                  {userInfo?.nickname}{' '}
-                  <span className="text-sm">Lv.{userInfo?.level}</span>
-                </p>
-                <div>
+            {loading ? (
+              <div className="flex flex-col h-20 justify-center p-3 gap-1 text-white rounded-xl items-center">
+                <span className="">사용자 정보를 불러오고 있어요</span>
+              </div>
+            ) : userInfo && isLoggedIn ? (
+              <div
+                onClick={() => navigate('/mypage/profile')}
+                className="flex flex-col h-fit justify-between p-3 gap-1 text-white bg-primaryGreen rounded-xl cursor-pointer transform-all duration-200 hover:bg-[#6ab6c4]"
+              >
+                <p className="">{userInfo?.nickname} </p>
+                <div className="flex gap-2 items-center">
+                  <span className="text-xl font-bold">
+                    Lv.{userInfo?.level}
+                  </span>
                   <ProgressBar current={userInfo.exp} max={50} />
                 </div>
               </div>
             ) : (
-              <div className="break-keep flex flex-col h-fit justify-between p-3 gap-1 text-gray-700 bg-gray-200 rounded-xl">
+              <div className="break-keep flex flex-col h-fit justify-between p-3 gap-1 text-gray-500 bg-gray-200 rounded-xl">
                 로그인 후, 혜택 인증과 미션 참여로 레벨업할 수 있어요. 지금
                 로그인하고 더 많은 혜택을 만나보세요!
               </div>
@@ -390,19 +497,37 @@ const RewardPage = () => {
       >
         <div className="w-full flex justify-center">
           {selectedLevel === 1 && (
-            <img src={gifticonLv1} alt="기프티콘" className="w-60" />
+            <img src={giftLv1} alt="기프티콘" className="w-60" />
+          )}
+          {selectedLevel === 5 && (
+            <img src={giftLv5} alt="기프티콘" className="w-60" />
+          )}
+          {selectedLevel === 10 && (
+            <img src={giftLv10} alt="기프티콘" className="w-60" />
+          )}
+          {selectedLevel === 15 && (
+            <img src={giftLv15} alt="기프티콘" className="w-60" />
           )}
           {selectedLevel === 20 && (
-            <img src={gifticonLv20} alt="기프티콘" className="w-60" />
+            <img src={giftLv20} alt="기프티콘" className="w-60" />
+          )}
+          {selectedLevel === 25 && (
+            <img src={giftLv25} alt="기프티콘" className="w-60" />
           )}
           {selectedLevel === 30 && (
-            <img src={gifticonLv30} alt="기프티콘" className="w-60" />
+            <img src={giftLv30} alt="기프티콘" className="w-60" />
+          )}
+          {selectedLevel === 35 && (
+            <img src={giftLv35} alt="기프티콘" className="w-60" />
           )}
           {selectedLevel === 40 && (
-            <img src={gifticonLv40} alt="기프티콘" className="w-60" />
+            <img src={giftLv40} alt="기프티콘" className="w-60" />
+          )}
+          {selectedLevel === 45 && (
+            <img src={giftLv45} alt="기프티콘" className="w-60" />
           )}
           {selectedLevel === 50 && (
-            <img src={gifticonLv50} alt="기프티콘" className="w-60" />
+            <img src={giftLv50} alt="기프티콘" className="w-60" />
           )}
         </div>
       </Modal>

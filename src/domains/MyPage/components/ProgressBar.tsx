@@ -18,7 +18,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({ current, max }) => {
   }, [progressPercentage]);
 
   return (
-    <div className="relative bg-gray-300 rounded-full h-4 text-xs w-full overflow-hidden">
+    <div className="relative bg-gray-200 rounded-full h-4 text-xs w-full overflow-hidden">
       <div
         className="absolute top-0 bg-[#96E0ED] h-full rounded-full 
                    after:content-[''] after:block after:h-[2px] after:absolute after:mx-2/3
