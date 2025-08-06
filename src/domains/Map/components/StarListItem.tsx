@@ -13,7 +13,7 @@ export default function StarListItem({
   onRoadClick,
 }: StarListProps) {
   return (
-    <div className="border-b border-gray-200 space-y-1 flex justify-between cursor-pointer">
+    <div className="border-b border-gray-200 space-y-1 flex justify-between cursor-pointer hover:bg-gray-50">
       <div onClick={onRoadClick}>
         <p className="font-semibold">{bookmark.name}</p>
         <p className="text-xs w-60 truncate">{bookmark.address}</p>
