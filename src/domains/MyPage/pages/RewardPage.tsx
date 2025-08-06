@@ -245,10 +245,10 @@ const RewardPage = () => {
           </div>
         </div>
         <div className="flex flex-col-reverse lg:flex-row gap-4 lg:justify-between">
-          <div className="flex gap-4 w-full h-[880px] pt-36 justify-center border border-gray-200 p-10 rounded-xl relative">
+          <div className="flex gap-4 w-full h-[880px] pt-36 justify-center border border-gray-200 px-10 rounded-xl relative">
             <div className="absolute w-full h-20 bg-white">
               {/*  */}
-              <div className="relative flex justify-center items-center w-[calc(100%-72px)] pl-18 h-200">
+              <div className="relative flex justify-center items-center w-[calc(100%-96px)] pl-24 h-200">
                 {/*  */}
                 <div className="absolute w-full h-fit top-0">
                   <LeftStart />
@@ -411,7 +411,7 @@ const RewardPage = () => {
                   </div>
 
                   {/* 45렙 */}
-                  <div className="absolute w-24 h-24 z-1 top-28 xl:top-24 left-[35%]">
+                  <div className="absolute w-24 h-24 z-2 top-28 xl:top-24 left-[35%]">
                     <Reward
                       level={45}
                       brand={cgv}
@@ -427,7 +427,7 @@ const RewardPage = () => {
                   </div>
 
                   {/* 50렙 */}
-                  <div className="absolute w-24 h-24 z-1 top-28 xl:top-24 -right-6 xl:-right-4">
+                  <div className="absolute w-24 h-24 z-1 top-28 xl:top-24 left-[85%]">
                     <Reward
                       level={50}
                       brand={vips}
@@ -440,7 +440,7 @@ const RewardPage = () => {
                         }
                       }}
                     />
-                    <div className="absolute top-8 xl:top-12 -left-4 bg-primaryGreen-40 h-4 w-10"></div>
+                    <div className="absolute top-8 xl:top-12 -left-12 sm:-left-20 bg-primaryGreen-40 h-4 w-20 sm:w-30 -z-1"></div>
                   </div>
                 </div>
               </div>
