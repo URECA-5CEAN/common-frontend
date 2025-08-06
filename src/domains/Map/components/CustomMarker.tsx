@@ -153,7 +153,7 @@ const CustomMarker: React.FC<CustomMarkerProps> = React.memo(
             height: 130,
             position: 'relative',
             display: 'flex',
-            top: -32,
+            top: -12,
             flexDirection: 'column',
             alignItems: 'center',
             pointerEvents: 'auto',
