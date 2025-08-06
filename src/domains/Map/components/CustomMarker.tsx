@@ -153,12 +153,12 @@ const CustomMarker: React.FC<CustomMarkerProps> = React.memo(
             height: 130,
             position: 'relative',
             display: 'flex',
-            top: -12,
+            top: -82,
             flexDirection: 'column',
             alignItems: 'center',
             pointerEvents: 'auto',
             cursor: 'pointer',
-            transform: 'translateX(-5px)',
+            transform: 'translateX(-25px)',
             transition: 'transform 0.25s cubic-bezier(.4,2,.2,1)',
             animation: selected
               ? 'floatY 2.0s ease-in-out infinite'
