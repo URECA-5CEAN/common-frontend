@@ -150,15 +150,15 @@ const CustomMarker: React.FC<CustomMarkerProps> = React.memo(
           onMouseLeave={onMouseLeave}
           style={{
             width: 90,
-            height: 10,
+            height: 130,
             position: 'relative',
             display: 'flex',
-            top: -112,
+            top: -32,
             flexDirection: 'column',
             alignItems: 'center',
             pointerEvents: 'auto',
             cursor: 'pointer',
-            transform: 'translateX(-25px)',
+            transform: 'translateX(-5px)',
             transition: 'transform 0.25s cubic-bezier(.4,2,.2,1)',
             animation: selected
               ? 'floatY 2.0s ease-in-out infinite'
@@ -170,8 +170,8 @@ const CustomMarker: React.FC<CustomMarkerProps> = React.memo(
             <style>
               {`
                   @keyframes floatY {
-                    0%,100% { transform: scale(1.1) translateY(0); }
-                    50% { transform: scale(1.1) translateY(-7px);}
+                    0%,100% { transform: scale(1.1)  }
+                    50% { transform: scale(1.1) }
                   }
                 `}
             </style>
