@@ -236,8 +236,8 @@ const CustomMarker: React.FC<CustomMarkerProps> = React.memo(
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginTop: 1,
-                boxShadow: '0 4px 8px rgba(0,0,0,0.10)',
+                marginBottom: 2,
+                boxShadow: '0 2px 10px rgba(18, 158, 223, 0.14)',
               }}
             >
               <img
@@ -268,7 +268,7 @@ const CustomMarker: React.FC<CustomMarkerProps> = React.memo(
               borderRight: '18px solid transparent',
               borderTop: '30px solid #158c9f',
               zIndex: 0,
-              filter: 'drop-shadow(2px 6px 10px rgba(0,0,0,0.12))',
+              filter: 'drop-shadow(2px 6px 10px rgba(22,100,180,0.12))',
             }}
           />
         </div>
