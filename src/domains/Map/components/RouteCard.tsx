@@ -52,7 +52,18 @@ export default function RouteCard({
       refreshSavedRoutes?.();
     } catch (err) {
       console.error(err);
-      alert('저장 중 오류가 발생했습니다.');
+      toast.error(<span>경로저장이 실패했습니다</span>, {
+        duration: 2000,
+        style: {
+          border: '1px solid #ebebeb',
+          padding: '16px',
+          color: '#f52105',
+        },
+        iconTheme: {
+          primary: '#f52105',
+          secondary: '#FFFAEE',
+        },
+      });
     }
   };
 
