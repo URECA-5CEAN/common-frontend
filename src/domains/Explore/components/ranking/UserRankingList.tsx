@@ -81,7 +81,7 @@ const UserRankingList = ({ rankList }: RankingListProps) => {
       setMyNickname(null);
       return;
     }
-    console.log(token);
+
     const fetchUser = async () => {
       try {
         const res = await getUserInfo();
