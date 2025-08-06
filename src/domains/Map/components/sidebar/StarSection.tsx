@@ -79,7 +79,7 @@ export default function StarSection({
         내 즐겨찾기
       </div>
       {/* 리스트 아이템 반복 */}
-      <div className="absolute top-16 w-full md:w-[332px] h-[calc(100dvh-320px)] md:h-[calc(100dvh-120px)] overflow-y-auto scrollbar-custom">
+      <div className="absolute top-16 w-full md:w-[332px] h-[calc(100dvh-320px)] md:h-[calc(100dvh-120px)] md:overflow-y-auto scrollbar-custom">
         {bookmarks.length === 0 && (
           <div className="w-full flex flex-col  items-center justify-center pt-10 md:pt-50 gap-2">
             <img src={dolphinFind} alt="돌고래" className="w-24" />
