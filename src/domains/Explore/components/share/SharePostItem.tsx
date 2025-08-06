@@ -97,12 +97,12 @@ const SharePostItem = ({ post }: SharePostItemProps) => {
           </div>
         </div>
         <div className="sm:flex hidden sm:flex-col items-end gap-2 justify-end text-gray-400">
-          <div className="flex items-center gap-2">
-            <Calendar size={20} />
+          <div className="flex items-center gap-1 text-sm">
+            <Calendar size={16} />
             {`${dateTime.date}, ${dateTime.time.period} ${dateTime.time.hour}:${dateTime.time.minute}`}
           </div>
-          <div className="flex items-center gap-2">
-            <MapPin size={20} /> {post.storeName}
+          <div className="flex items-center gap-1 text-sm">
+            <MapPin size={16} /> {post.storeName}
           </div>
         </div>
       </li>
