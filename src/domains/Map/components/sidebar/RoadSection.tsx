@@ -634,15 +634,18 @@ export default function RoadSection({
           </Button>
         </div>
         <div>
-          <button
-            type="button"
-            onClick={() => {
-              setWaypoints([...waypoints, { name: '', lat: 0, lng: 0 }]);
-            }}
-            className=" text-xs text-primaryGreen cursor-pointer hover:text-primaryGreen-80"
-          >
-            + 경유지 추가
-          </button>
+          {waypoints.length < 5 && (
+            <button
+              type="button"
+              onClick={() => {
+                if (waypoints.length >= 5) return;
+                setWaypoints([...waypoints, { name: '', lat: 0, lng: 0 }]);
+              }}
+              className=" text-xs text-primaryGreen cursor-pointer hover:text-primaryGreen-80"
+            >
+              + 경유지 추가
+            </button>
+          )}
         </div>
       </div>
 
