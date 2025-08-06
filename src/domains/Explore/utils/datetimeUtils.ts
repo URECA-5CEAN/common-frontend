@@ -1,17 +1,5 @@
 import type { TimeValue } from '../types/share';
 
-export const convertTimeFormat = (time?: string): string => {
-  if (!time) return '';
-
-  const [hourStr, minute] = time.split(':');
-  const hour = parseInt(hourStr, 10);
-
-  const period = hour < 12 ? '오전' : '오후';
-  const hour12 = hour % 12 === 0 ? 12 : hour % 12;
-
-  return `${period} ${hour12}:${minute}`;
-};
-
 export const getDefaultTime = (interval = 10): TimeValue => {
   const now = new Date();
 
@@ -100,4 +88,21 @@ export function fromISOStringToDateTime(isoString: string): DateTimeResult {
       minute,
     },
   };
+}
+
+export function fromISOToTimeStr(isoString: string): string {
+  const dateObj = new Date(isoString);
+
+  const rawHour = dateObj.getHours();
+  const minute = String(dateObj.getMinutes()).padStart(2, '0');
+
+  const period: TimeValue['period'] = rawHour < 12 ? '오전' : '오후';
+  const hour =
+    rawHour === 0
+      ? '12'
+      : rawHour > 12
+        ? String(rawHour - 12)
+        : String(rawHour);
+
+  return `${period} ${hour}:${minute}`;
 }
