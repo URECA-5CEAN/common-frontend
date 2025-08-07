@@ -1,4 +1,3 @@
-import { useRef } from 'react';
 import dolphinFinger from '@/assets/image/dolphin-finger.svg';
 import mapPage5 from '@/assets/image/mapPage.png';
 import clsx from 'clsx';
