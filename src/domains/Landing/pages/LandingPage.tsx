@@ -84,12 +84,12 @@ const LandingPage = () => {
         style={{
           background: 'linear-gradient(180deg, #4DD2EB 0%, #2C6385 100%)',
         }}
-        className="absolute w-full h-700 sm:h-700 md:h-950 lg:h-1100 top-200 md:top-250"
+        className="absolute w-full h-700 sm:h-700 md:h-950 lg:h-1250 top-200 md:top-250"
       ></div>
 
       {/* 첫 번째 섹션 - 메인 타이틀 */}
       <HeroSection />
-      <div className="overflow-hidden hidden absolute left-1/2 -translate-x-1/2 xl:block w-full max-w-385 h-1200">
+      <div className="overflow-hidden hidden absolute left-1/2 -translate-x-1/2 xl:block w-full h-1200">
         <MotionPathAnimation />
       </div>
       <div className="absolute w-full flex flex-col items-center top-240 max-w-[1242px] left-1/2 -translate-x-1/2">
