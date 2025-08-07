@@ -1,3 +1,4 @@
+import FadeInSection from '@/domains/Landing/components/FadeInSection';
 import { useState, useEffect } from 'react';
 
 interface Brand {
@@ -32,16 +33,16 @@ const StoreSection = () => {
   }, []);
 
   return (
-    <div className="absolute top-[330vh] md:top-[390vh] w-full">
+    <FadeInSection className="w-full mt-40 md:mt-70">
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
         {/* 제목 */}
         <div className="flex items-center justify-center mb-3 sm:mb-4 md:mb-6">
-          <h2 className="text-base md:text-2xl lg:text-xl xl:text-[40px] 2xl:text-3xl 3xl:text-4xl text-white font-bold">
+          <h2 className="text-2xl md:text-4xl text-white font-bold leading-tight">
             다양한 혜택이 준비되어 있어요
           </h2>
         </div>
         <p
-          className="text-[10px] sm:text-[12px] md:text-xl lg:text-2xl font-medium text-center text-white mb-8 sm:mb-12 md:mb-16 lg:mb-20"
+          className="text-[10px] sm:text-[12px] md:text-xl lg:text-2xl font-medium text-center text-white mb-8"
           style={{ lineHeight: '1.5' }}
         >
           전국 약 1500개의 오프라인 매장에서 혜택을 찾아보세요
@@ -149,7 +150,7 @@ const StoreSection = () => {
           </div>
         </div>
       </div>
-    </div>
+    </FadeInSection>
   );
 };
 
