@@ -1,4 +1,4 @@
-import { Share2, Star, Webcam } from 'lucide-react';
+import { Star, Webcam } from 'lucide-react';
 import StartEndBtn from './StartEndBtn';
 import IconActionGroup from './IconActionGroup';
 import type { StoreInfo } from '../api/store';

@@ -41,7 +41,7 @@ export default function CategorySlider({
         return (
           <div
             key={`category-${cate}-${idx}`}
-            className="keen-slider__slide pr-24 md:hidden py-4"
+            className="keen-slider__slide pr-25 md:hidden py-4"
           >
             <button
               className={clsx(
