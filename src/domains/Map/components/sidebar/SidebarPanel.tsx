@@ -60,6 +60,8 @@ interface SidebarPanelProps {
   isMainLoading: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
   isOpen: boolean;
+  waypoints: LocationInfo[];
+  setWaypoints: Dispatch<SetStateAction<LocationInfo[]>>;
 }
 
 function SidebarPanel({
@@ -100,6 +102,8 @@ function SidebarPanel({
   isMainLoading,
   setIsOpen,
   isOpen,
+  waypoints,
+  setWaypoints,
 }: SidebarPanelProps) {
   const [userInfo, setUserInfo] = useState<UserInfoApi>();
   const token = localStorage.getItem('authToken');
@@ -204,6 +208,8 @@ function SidebarPanel({
             onClose={onClose}
             setFocusField={setFocusField}
             focusField={focusField}
+            waypoints={waypoints}
+            setWaypoints={setWaypoints}
           />
         )}
         {index === 1 && panel.type === 'detail' && panel.item && (

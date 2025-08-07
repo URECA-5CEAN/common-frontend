@@ -72,6 +72,8 @@ interface SideBarProps {
   setFocusField: Dispatch<SetStateAction<'start' | 'end' | number | null>>;
   focusField: 'start' | 'end' | number | null;
   isMainLoading: boolean;
+  waypoints: LocationInfo[];
+  setWaypoints: Dispatch<SetStateAction<LocationInfo[]>>;
 }
 function MapSidebar({
   stores,
@@ -114,6 +116,8 @@ function MapSidebar({
   setFocusField,
   focusField,
   isMainLoading,
+  waypoints,
+  setWaypoints,
 }: SideBarProps) {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   //메뉴 선택 시 openMenu 호출 + 시트를 middle 위치로 스냅
@@ -182,6 +186,8 @@ function MapSidebar({
             isMainLoading={isMainLoading}
             setIsOpen={setIsModalOpen}
             isOpen={isModalOpen}
+            waypoints={waypoints}
+            setWaypoints={setWaypoints}
           />
 
           {/* 상세 패널 (panel.type이 'detail'일 때만) */}
@@ -226,6 +232,8 @@ function MapSidebar({
                   isMainLoading={isMainLoading}
                   setIsOpen={setIsModalOpen}
                   isOpen={isModalOpen}
+                  waypoints={waypoints}
+                  setWaypoints={setWaypoints}
                 />
               </Suspense>
             )}
@@ -282,6 +290,8 @@ function MapSidebar({
                 isMainLoading={isMainLoading}
                 setIsOpen={setIsModalOpen}
                 isOpen={isModalOpen}
+                waypoints={waypoints}
+                setWaypoints={setWaypoints}
               />
             </BottomSheet>
           )}
@@ -336,6 +346,8 @@ function MapSidebar({
                   isMainLoading={isMainLoading}
                   setIsOpen={setIsModalOpen}
                   isOpen={isModalOpen}
+                  waypoints={waypoints}
+                  setWaypoints={setWaypoints}
                 />
               </BottomSheet>
             </Suspense>
@@ -389,6 +401,8 @@ function MapSidebar({
                   isMainLoading={isMainLoading}
                   setIsOpen={setIsModalOpen}
                   isOpen={isModalOpen}
+                  waypoints={waypoints}
+                  setWaypoints={setWaypoints}
                 />
               </BottomSheet>
             </Suspense>

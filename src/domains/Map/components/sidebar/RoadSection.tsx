@@ -95,6 +95,8 @@ interface RouteInputProps {
   onClose: (idx: number) => void;
   setFocusField: Dispatch<SetStateAction<'start' | 'end' | number | null>>;
   focusField: 'start' | 'end' | number | null;
+  waypoints: LocationInfo[];
+  setWaypoints: Dispatch<SetStateAction<LocationInfo[]>>;
 }
 type ViewMode = 'bookmark' | 'saved' | 'route';
 export default function RoadSection({
@@ -114,6 +116,8 @@ export default function RoadSection({
   onClose,
   setFocusField,
   focusField,
+  waypoints,
+  setWaypoints,
 }: RouteInputProps) {
   const [showRecent, setShowRecent] = useState<boolean>(false);
   const [viewmode, setViewMode] = useState<ViewMode>('saved');
@@ -121,7 +125,6 @@ export default function RoadSection({
   const [routes, setRoutes] = useState<RouteItem[]>([]);
   const [savedRoutes, setSavedRoutes] = useState<RouteItem[]>([]);
   const [recentRoutes, setRecentRoutes] = useState<RouteItem[]>([]);
-  const [waypoints, setWaypoints] = useState<LocationInfo[]>([]);
   const [Roadmode, setRoadMode] = useState<'default' | 'ai'>('default');
   const [scenario, setScenario] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
