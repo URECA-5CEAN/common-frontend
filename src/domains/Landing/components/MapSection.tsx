@@ -1,48 +1,15 @@
-import { useState, useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import dolphinFinger from '@/assets/image/dolphin-finger.svg';
-import mapPage from '@/assets/image/mapPage.png';
+import mapPage5 from '@/assets/image/mapPage.png';
+import clsx from 'clsx';
+import FadeInSection from '@/domains/Landing/components/FadeInSection';
 
 const MapSection = () => {
-  const [visibleBoxes, setVisibleBoxes] = useState<number[]>([]);
-  const sectionRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            // 섹션이 보이면 박스들을 순차적으로 나타나게 함
-            setTimeout(() => setVisibleBoxes([1]), 100);
-            setTimeout(() => setVisibleBoxes([1, 2]), 250);
-            setTimeout(() => setVisibleBoxes([1, 2, 3]), 400);
-          } else {
-            // 섹션이 보이지 않으면 초기화
-            setVisibleBoxes([]);
-          }
-        });
-      },
-      {
-        threshold: 0.3, // 30%가 보일 때 트리거
-      },
-    );
-
-    const currentSection = sectionRef.current;
-    if (currentSection) {
-      observer.observe(currentSection);
-    }
-
-    return () => {
-      if (currentSection) {
-        observer.unobserve(currentSection);
-      }
-    };
-  }, []);
-
   return (
-    <div className="absolute top-[55vh] md:top-[100vh] w-full" ref={sectionRef}>
-      <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
-        <div className="flex items-center justify-center mb-4 sm:mb-6 md:mb-8 lg:mb-12">
-          <h2 className="text-base sm:text-xl md:text-2xl lg:text-3xl xl:text-[40px] text-white font-bold mr-2 sm:mr-4">
+    <div className="w-full -mt-30 md:mt-60 px-6 md:px-10">
+      <div className="w-full mx-auto flex flex-col text-center">
+        <div className="flex items-center justify-center mb-0 2xl:mb-8 translate-x-">
+          <h2 className="text-2xl md:text-4xl text-white font-bold leading-tight pl-8 sm:pl-[48px] md:pl-[64px] lg:pl-20">
             멤버십 제휴 매장을
             <br />
             지도를 통해 확인해보세요!
@@ -55,72 +22,65 @@ const MapSection = () => {
         </div>
 
         {/* 지도와 설명 박스들 */}
-        <div className="relative flex flex-col md:flex-row items-center justify-center gap-4 sm:gap-6 md:gap-12 lg:gap-16 w-full max-w-7xl mt-4 sm:mt-8 md:mt-16 lg:mt-20">
+        <div className="relative w-full py-6 flex flex-col sm:h-60 md:h-110 xl:h-120 2xl:h-150">
           {/* 지도 이미지 */}
           <div
-            className="w-[80vw] sm:w-[70vw] md:w-[45vw] lg:w-[35vw] max-w-[700px] bg-white rounded-lg overflow-hidden shadow-lg"
+            className="sm:w-[70%] bg-white rounded-2xl overflow-hidden pt-1/2 h-fit shadow-lg sm:absolute xl:left-10 xl:top-1/2 xl:-translate-y-1/2"
             style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)' }}
           >
-            <img
-              src={mapPage}
-              alt="멤버십 지도"
-              className="w-full h-auto object-contain"
-            />
+            <img src={mapPage5} alt="멤버십 지도" className="brightness-100" />
           </div>
 
           {/* 설명 박스들 */}
-          <div className="flex flex-col space-y-4 sm:space-y-6 md:space-y-8 flex-1 md:items-center lg:transform lg:-translate-x-8">
-            <div
-              className="bg-primaryGreen-80 text-white p-3 sm:p-4 md:p-6 lg:p-8 rounded-2xl lg:transform lg:-translate-x-12 min-h-[80px] sm:min-h-[100px] md:min-h-[120px] lg:min-h-[158px] flex items-center justify-center w-full md:max-w-[32vw] lg:max-w-[28vw]"
-              style={{
-                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
-                transform: visibleBoxes.includes(1)
-                  ? 'translateX(0)'
-                  : 'translateX(100px)',
-                opacity: visibleBoxes.includes(1) ? 1 : 0,
-                transition: 'transform 0.5s ease-out, opacity 0.5s ease-out',
-              }}
+          <div className="pt-4 sm:pt-0 select-none flex flex-col justify-center gap-2 sm:gap-4 sm:absolute sm:right-10 sm:top-[54%] w-full sm:w-fit xl:top-1/2 sm:-translate-y-1/2">
+            <FadeInSection
+              className={clsx(
+                'bg-primaryGreen-80 text-white rounded-2xl flex items-center justify-center p-2 md:p-3 lg:p-6',
+                'transition-all duration-700 ease-out',
+                'sm:-translate-x-24',
+                // visibleBoxes.includes(1)
+                //   ? 'translate-y-0 opacity-100'
+                //   : 'translate-y-12 opacity-0',
+              )}
             >
-              <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-2xl font-medium text-center leading-[1.75]">
+              <p className="text-sm md:text-lg lg:text-2xl leading-normal">
                 멤버십 지도에서 제휴 매장을
                 <br />
-                빠르게 찾아보세요
+                빠르게 찾아보세요!
               </p>
-            </div>
-            <div
-              className="bg-primaryGreen-80 text-white p-3 sm:p-4 md:p-6 lg:p-8 rounded-2xl min-h-[80px] sm:min-h-[100px] md:min-h-[120px] lg:min-h-[158px] flex items-center justify-center w-full md:max-w-[32vw] lg:max-w-[28vw]"
-              style={{
-                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
-                transform: visibleBoxes.includes(2)
-                  ? 'translateX(0)'
-                  : 'translateX(100px)',
-                opacity: visibleBoxes.includes(2) ? 1 : 0,
-                transition: 'transform 0.5s ease-out, opacity 0.5s ease-out',
-              }}
+            </FadeInSection>
+            <FadeInSection
+              className={clsx(
+                'bg-primaryGreen-80 text-white rounded-2xl flex items-center justify-center p-2 md:p-3 lg:p-6',
+                'transition-all duration-700 ease-out',
+                'sm:-translate-x-12',
+                // visibleBoxes.includes(2)
+                //   ? 'translate-y-0 opacity-100'
+                //   : 'translate-y-12 opacity-0',
+              )}
             >
-              <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl 2xl:text-2xl font-medium text-center leading-[1.75]">
+              <p className="text-sm md:text-lg lg:text-2xl leading-normal">
                 제휴 매장을 클릭하여
                 <br />
-                매장 및 혜택 정보를 확인해보세요
+                매장 및 혜택 정보를 확인해보세요!
               </p>
-            </div>
-            <div
-              className="bg-primaryGreen-80 text-white p-4 md:p-8 rounded-2xl min-h-[100px] md:min-h-[158px] flex items-center justify-center lg:transform lg:translate-x-12 w-full md:max-w-[28vw]"
-              style={{
-                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
-                transform: visibleBoxes.includes(3)
-                  ? 'translateX(0)'
-                  : 'translateX(100px)',
-                opacity: visibleBoxes.includes(3) ? 1 : 0,
-                transition: 'transform 0.5s ease-out, opacity 0.5s ease-out',
-              }}
+            </FadeInSection>
+            <FadeInSection
+              className={clsx(
+                'bg-primaryGreen-80 text-white rounded-2xl flex items-center justify-center p-2 md:p-3 lg:p-6',
+                'transition-all duration-700 ease-out',
+                'sm:-translate-x-0',
+                // visibleBoxes.includes(3)
+                //   ? 'translate-y-0 opacity-100'
+                //   : 'translate-y-12 opacity-0',
+              )}
             >
-              <p className="text-xs sm:text-sm md:text-lg lg:text-xl xl:text-2xl font-medium text-center leading-[1.75]">
+              <p className="text-sm md:text-lg lg:text-2xl leading-normal">
                 자주 가는 제휴 매장을 즐겨찾기하고
                 <br />
-                AI 추천 제휴처도 확인해보세요
+                AI 추천 제휴처도 확인해보세요!
               </p>
-            </div>
+            </FadeInSection>
           </div>
         </div>
       </div>
