@@ -1,6 +1,7 @@
 import dolphinMap from '@/assets/image/dolphin-map.svg';
 import dolphinExploration from '@/assets/image/dolphin-exploration.svg';
 import dolphinSofa from '@/assets/image/dolphin-sofa.svg';
+import FadeInSection from '@/domains/Landing/components/FadeInSection';
 
 interface NavigationSectionProps {
   onMapClick: () => void;
@@ -14,7 +15,7 @@ const NavigationSection = ({
   onMyPageClick,
 }: NavigationSectionProps) => {
   return (
-    <div className="absolute top-[400vh] md:top-[480vh] w-full">
+    <FadeInSection className="w-full mt-50 md:mt-100 xl:mt-150">
       <div className="w-full max-w-[90rem] xl:max-w-[1440px] mx-auto px-[1rem] sm:px-[1.5rem] lg:px-[2rem] flex flex-col items-center text-center">
         {/* 제목 */}
         <div className="flex items-center justify-center mb-16 lg:mb-20">
@@ -28,7 +29,7 @@ const NavigationSection = ({
           {/* 멤버십 지도 */}
           <div className="flex flex-col items-center">
             <div
-              className="bg-primaryGreen-40 rounded-full flex flex-col items-center justify-between hover:scale-105 transition-transform duration-300 cursor-pointer w-[28vw] h-[28vw] max-w-[110px] max-h-[110px] sm:w-[25vw] sm:h-[25vw] sm:max-w-[140px] sm:max-h-[140px] md:w-[26vw] md:h-[26vw] md:max-w-[280px] md:max-h-[280px] lg:w-80 lg:h-80 p-2 sm:p-3 md:p-6 lg:p-8"
+              className="bg-primaryGreen-40 rounded-full flex flex-col items-center justify-between hover:scale-105 transition-transform duration-300 cursor-pointer w-[28vw] h-[28vw] max-w-[110px] max-h-[110px] sm:w-[30vw] sm:h-[30vw] sm:max-w-[190px] sm:max-h-[190px] md:w-[26vw] md:h-[26vw] md:max-w-[280px] md:max-h-[280px] lg:w-80 lg:h-80 p-2 sm:p-3 md:p-6 lg:p-8"
               style={{
                 boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
               }}
@@ -44,8 +45,8 @@ const NavigationSection = ({
                 className="text-center"
                 style={{ marginBottom: 'min(1rem, 2vw)' }}
               >
-                <div className="bg-white bg-opacity-90 rounded-full overflow-hidden px-1 py-0.5 sm:px-2 sm:py-1 md:px-2 md:py-1.5 lg:px-4 lg:py-2 max-w-[95%] md:max-w-[95%] lg:max-w-none">
-                  <h3 className="font-bold text-gray-700 whitespace-nowrap md:whitespace-nowrap lg:whitespace-normal text-[8px] sm:text-[2vw] md:text-[10px] lg:text-lg">
+                <div className="bg-opacity-90 rounded-full overflow-hidden">
+                  <h3 className="font-bold text-gray-600 whitespace-nowrap md:whitespace-nowrap lg:whitespace-normal text-[8px] sm:text-[2vw] md:text-[12px] lg:text-lg px-1 py-1 sm:px-2 sm:py-2 md:px-2 md:py-2 lg:px-4 lg:py-2">
                     멤버십 지도 바로가기
                   </h3>
                 </div>
@@ -56,7 +57,7 @@ const NavigationSection = ({
           {/* 혜택 탐험 */}
           <div className="flex flex-col items-center">
             <div
-              className="bg-primaryGreen-40 rounded-full flex flex-col items-center justify-between hover:scale-105 transition-transform duration-300 cursor-pointer w-[28vw] h-[28vw] max-w-[110px] max-h-[110px] sm:w-[25vw] sm:h-[25vw] sm:max-w-[140px] sm:max-h-[140px] md:w-[26vw] md:h-[26vw] md:max-w-[280px] md:max-h-[280px] lg:w-80 lg:h-80 p-2 sm:p-3 md:p-6 lg:p-8"
+              className="bg-primaryGreen-40 rounded-full flex flex-col items-center justify-between hover:scale-105 transition-transform duration-300 cursor-pointer w-[28vw] h-[28vw] max-w-[110px] max-h-[110px] sm:w-[25vw] sm:h-[25vw] sm:max-w-[190px] sm:max-h-[190px] md:w-[26vw] md:h-[26vw] md:max-w-[280px] md:max-h-[280px] lg:w-80 lg:h-80 p-2 sm:p-3 md:p-6 lg:p-8"
               style={{
                 boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
               }}
@@ -72,8 +73,8 @@ const NavigationSection = ({
                 className="text-center"
                 style={{ marginBottom: 'min(1rem, 2vw)' }}
               >
-                <div className="bg-white bg-opacity-90 rounded-full overflow-hidden px-1 py-0.5 sm:px-2 sm:py-1 md:px-2 md:py-1.5 lg:px-4 lg:py-2 max-w-[95%] md:max-w-[95%] lg:max-w-none">
-                  <h3 className="font-bold text-gray-700 whitespace-nowrap md:whitespace-nowrap lg:whitespace-normal text-[8px] sm:text-[2vw] md:text-[10px] lg:text-lg">
+                <div className="bg-opacity-90 rounded-full overflow-hidden">
+                  <h3 className="font-bold text-gray-600 whitespace-nowrap md:whitespace-nowrap lg:whitespace-normal text-[8px] sm:text-[2vw] md:text-[12px] lg:text-lg px-1 py-1 sm:px-2 sm:py-2 md:px-2 md:py-2 lg:px-4 lg:py-2">
                     혜택 탐험 바로가기
                   </h3>
                 </div>
@@ -84,7 +85,7 @@ const NavigationSection = ({
           {/* 마이페이지 */}
           <div className="flex flex-col items-center">
             <div
-              className="bg-primaryGreen-40 rounded-full flex flex-col items-center justify-between hover:scale-105 transition-transform duration-300 cursor-pointer w-[28vw] h-[28vw] max-w-[110px] max-h-[110px] sm:w-[25vw] sm:h-[25vw] sm:max-w-[140px] sm:max-h-[140px] md:w-[26vw] md:h-[26vw] md:max-w-[280px] md:max-h-[280px] lg:w-80 lg:h-80 p-2 sm:p-3 md:p-6 lg:p-8"
+              className="bg-primaryGreen-40 rounded-full flex flex-col items-center justify-between hover:scale-105 transition-transform duration-300 cursor-pointer w-[28vw] h-[28vw] max-w-[110px] max-h-[110px] sm:w-[25vw] sm:h-[25vw] sm:max-w-[190px] sm:max-h-[190px] md:w-[26vw] md:h-[26vw] md:max-w-[280px] md:max-h-[280px] lg:w-80 lg:h-80 p-2 sm:p-3 md:p-6 lg:p-8"
               style={{
                 boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
               }}
@@ -100,8 +101,8 @@ const NavigationSection = ({
                 className="text-center"
                 style={{ marginBottom: 'min(1rem, 2vw)' }}
               >
-                <div className="bg-white bg-opacity-90 rounded-full overflow-hidden px-1 py-0.5 sm:px-2 sm:py-1 md:px-2 md:py-1.5 lg:px-4 lg:py-2 max-w-[95%] md:max-w-[95%] lg:max-w-none">
-                  <h3 className="font-bold text-gray-700 whitespace-nowrap md:whitespace-nowrap lg:whitespace-normal text-[8px] sm:text-[2vw] md:text-[10px] lg:text-lg">
+                <div className="bg-opacity-90 rounded-full overflow-hidden">
+                  <h3 className="font-bold text-gray-600 whitespace-nowrap md:whitespace-nowrap lg:whitespace-normal text-[8px] sm:text-[2vw] md:text-[12px] lg:text-lg px-1 py-1 sm:px-2 sm:py-2 md:px-2 md:py-2 lg:px-4 lg:py-2">
                     마이페이지 바로가기
                   </h3>
                 </div>
@@ -110,7 +111,7 @@ const NavigationSection = ({
           </div>
         </div>
       </div>
-    </div>
+    </FadeInSection>
   );
 };
 

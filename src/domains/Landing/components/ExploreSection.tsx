@@ -2,16 +2,17 @@ import rankingPodium from '@/assets/image/ranking-podium.png';
 import woosIcon from '@/assets/image/woos.svg';
 import vipIcon from '@/assets/icons/vip_icon.png';
 import vvipIcon from '@/assets/icons/vvip_icon.png';
+import FadeInSection from '@/domains/Landing/components/FadeInSection';
 
 const ExploreSection = () => {
   return (
-    <div className="absolute top-[140vh] md:top-[200vh] w-full">
-      <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center relative">
+    <div className="w-full mt-30 sm:mt-50 md:mt-30 xl:mt-60 2xl:mt-12">
+      <div className="w-full mx-auto flex flex-col text-center">
         {/* 데스크톱 버전 - 기존 레이아웃 유지 */}
-        <div className="hidden md:block relative w-full">
+        <FadeInSection className="hidden md:block relative w-full">
           {/* 메인 카드 */}
           <div
-            className="bg-[#FFBC52] rounded-2xl p-8 md:p-8 lg:p-16 w-full max-w-4xl md:max-w-2xl lg:max-w-4xl shadow-2xl min-h-[300px] md:min-h-[280px] lg:min-h-[400px] flex flex-col justify-center mt-32 relative mx-auto"
+            className="bg-[#FFBC52] rounded-2xl p-4 md:p-8 lg:p-10 w-full max-w-4xl md:max-w-2xl lg:max-w-2xl shadow-2xl min-h-[300px] md:min-h-[280px] lg:min-h-[400px] flex flex-col justify-center mt-32 relative mx-auto"
             style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)' }}
           >
             <div className="absolute -top-32 md:-top-36 lg:-top-42 left-1/2 transform -translate-x-1/2 z-10">
@@ -93,26 +94,26 @@ const ExploreSection = () => {
               />
             </div>
           </div>
-        </div>
+        </FadeInSection>
 
         {/* 모바일 버전 - 세로 배치 */}
-        <div className="block md:hidden relative w-full mt-16">
+        <FadeInSection className="block md:hidden relative w-full mt-16 px-6">
           {/* 메인 카드 */}
           <div
-            className="bg-[#FFBC52] rounded-2xl p-3 w-full max-w-xs shadow-2xl min-h-[160px] flex flex-col justify-center relative mx-auto"
+            className="bg-[#FFBC52] rounded-2xl p-8 w-full max-w-md shadow-2xl min-h-[160px] flex flex-col justify-center relative mx-auto"
             style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)' }}
           >
-            <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 z-10">
-              <img src={rankingPodium} className="w-auto h-12 object-contain" />
+            <div className="absolute -top-18 left-1/2 transform -translate-x-1/2 z-10">
+              <img src={rankingPodium} className="w-auto h-24 object-contain" />
             </div>
 
-            <h2 className="text-base text-white font-bold mb-2 leading-[1.5]">
+            <h2 className="text-lg sm:text-2xl text-white font-bold mb-2 leading-[1.5]">
               멤버십 혜택 탐험을 떠나요
             </h2>
-            <p className="text-xs text-white font-medium mb-2 leading-[1.5]">
+            <p className="text-base sm:text-lg text-white font-medium mb-2 leading-[1.5]">
               멤버십 혜택 활용 순위를 확인해보세요
             </p>
-            <p className="text-xs text-white font-medium leading-[1.5]">
+            <p className="text-base sm:text-lg text-white font-medium leading-[1.5]">
               혜택을 나누고 싶은 사람을 찾고
               <br />
               채팅을 통해 소통할 수 있어요
@@ -144,7 +145,7 @@ const ExploreSection = () => {
               />
             </div>
           </div>
-        </div>
+        </FadeInSection>
       </div>
     </div>
   );
