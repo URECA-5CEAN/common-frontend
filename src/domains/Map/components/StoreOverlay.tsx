@@ -1,4 +1,4 @@
-import { Share2, Star, Webcam } from 'lucide-react';
+import { Star, Webcam } from 'lucide-react';
 import StartEndBtn from './StartEndBtn';
 import IconActionGroup from './IconActionGroup';
 import type { StoreInfo } from '../api/store';
@@ -86,7 +86,6 @@ const StoreOverlay = ({
               label: '로드뷰',
               onClick: () => setIsLoad(true),
             },
-            { icon: <Share2 />, label: '공유' },
           ]}
         />
         {/* 출발/도착 버튼 */}
