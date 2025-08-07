@@ -154,7 +154,7 @@ export default function MapSection({
         <div className="flex justify-center items-center py-10 absolute top-90 w-full">
           <Grid size="100" speed="1.5" color="#6fc3d1" />
         </div>
-      ) : modeStore && modeStore.length !== 0 ? (
+      ) : Array.isArray(modeStore) && modeStore.length !== 0 ? (
         <div className="md:scrollbar-custom border-t border-t-gray-200 w-full absolute top-51 md:top-66 md:overflow-y-auto h-[calc(100dvh-460px)] md:h-[calc(100dvh-320px)]">
           {modeStore.map((store, idx) => (
             <StoreCard
@@ -170,7 +170,7 @@ export default function MapSection({
             />
           ))}
         </div>
-      ) : stores.length === 0 ? (
+      ) : modeStore.length === 0 ? (
         <div className="absolute top-80 w-[308px] pl-6 text-gray-400 py-10 text-center flex flex-col justify-center items-center">
           <p>조건에 맞는 매장을 찾을 수 없어요.</p>
           <p>검색 조건을 변경해 다시 시도해보세요.</p>
