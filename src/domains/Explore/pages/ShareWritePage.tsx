@@ -21,6 +21,8 @@ import { useUnsavedChanges } from '../../../contexts/UnsavedChangesContext';
 import { ChevronLeft } from 'lucide-react';
 import SelectStoreModal from '../components/share/SelectStoreModal';
 import toast from 'react-hot-toast';
+import { Modal } from '@/components/Modal';
+import dolphin from '@/assets/image/dolphin_normal.png';
 
 const ShareWritePage = () => {
   const navigate = useNavigate();
@@ -44,6 +46,7 @@ const ShareWritePage = () => {
   }));
   const [selectedStore, setSelectedStore] = useState<Store | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [outModal, setOutModal] = useState(false);
 
   const { setHasUnsavedChanges } = useUnsavedChanges();
 
@@ -142,57 +145,93 @@ const ShareWritePage = () => {
     setShowModal(true);
   };
 
+  const handleBackClick = () => {
+    setOutModal(true);
+  };
+  const outConfirmClick = () => {
+    navigate(-1);
+  };
+
   return (
-    <div className="w-[calc(100%-48px)] max-w-[1050px] m-6">
-      <div className="flex  md:flex-row flex-col">
-        <ChevronLeft
-          size={40}
-          className="relative right-3 text-gray-500 cursor-pointer "
-          onClick={() => navigate('/explore/share')}
-        />
+    <>
+      <div className="w-[calc(100%-48px)] md:w-[80%] max-w-[1050px] mb-50 md:mb-100">
+        <button
+          className="w-10 h-10 mb-4 cursor-pointer"
+          onClick={handleBackClick}
+          aria-label="뒤로가기"
+        >
+          <ChevronLeft size={40} />
+        </button>
         <h2 className="text-[28px] font-bold mb-6 ">나눔 글 작성</h2>
-      </div>
 
-      <SelectFields
-        selectedCategory={category}
-        setSelectedCategory={setCategory}
-        selectedBrand={brand}
-        setSelectedBrand={setBrand}
-        selectedBenefitType={benefitType}
-        setSelectedBenefitType={setBenefitType}
-      />
-
-      <PostContentFields
-        title={title}
-        setTitle={setTitle}
-        content={content}
-        setContent={setContent}
-      />
-
-      <DateTimePicker
-        date={date}
-        setDate={setDate}
-        selectedTime={time}
-        setSelectedTime={setTime}
-      />
-
-      <PlaceField selectedStore={selectedStore} onOpen={handleOpenModal} />
-
-      {showModal && (
-        <SelectStoreModal
-          category={category?.label || null}
-          brand={brand?.label || null}
-          onClose={() => setShowModal(false)}
-          onSelect={(store) => setSelectedStore(store)}
+        <SelectFields
+          selectedCategory={category}
+          setSelectedCategory={setCategory}
+          selectedBrand={brand}
+          setSelectedBrand={setBrand}
+          selectedBenefitType={benefitType}
+          setSelectedBenefitType={setBenefitType}
         />
-      )}
 
-      <div className="flex justify-end mt-6">
-        <Button onClick={handleSubmit} size="lg">
-          등록하기
-        </Button>
+        <PostContentFields
+          title={title}
+          setTitle={setTitle}
+          content={content}
+          setContent={setContent}
+        />
+
+        <DateTimePicker
+          date={date}
+          setDate={setDate}
+          selectedTime={time}
+          setSelectedTime={setTime}
+        />
+
+        <PlaceField selectedStore={selectedStore} onOpen={handleOpenModal} />
+
+        {showModal && (
+          <SelectStoreModal
+            category={category?.label || null}
+            brand={brand?.label || null}
+            onClose={() => setShowModal(false)}
+            onSelect={(store) => setSelectedStore(store)}
+          />
+        )}
+
+        <div className="flex justify-end mt-6">
+          <Button onClick={handleSubmit} size="lg">
+            등록하기
+          </Button>
+        </div>
       </div>
-    </div>
+      {
+        <Modal
+          isOpen={outModal}
+          onClose={() => setOutModal(false)}
+          title="작성을 그만두시겠어요?"
+          description="페이지를 나가면 작성한 내용은 저장되지 않고 모두 사라져요"
+          actions={
+            <>
+              <Button
+                fullWidth
+                variant="secondary"
+                onClick={() => setOutModal(false)}
+              >
+                취소
+              </Button>
+              <Button onClick={outConfirmClick} fullWidth>
+                그만두기
+              </Button>
+            </>
+          }
+          img={
+            <div className="w-full flex justify-center">
+              <img src={dolphin} alt="캐릭터" className="w-30 h-30" />
+            </div>
+          }
+        />
+      }
+    </>
   );
 };
 
