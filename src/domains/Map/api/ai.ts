@@ -7,7 +7,7 @@ const apiClient: AxiosInstance = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-const token = localStorage.getItem('authToken');
+// const token = localStorage.getItem('authToken');
 export interface AiRecommendResult {
   reason: string;
   store: StoreInfo;
@@ -16,6 +16,7 @@ export interface AiRecommendResult {
 export async function fetchAiRecommendedStore(
   params: FetchStoresParams,
 ): Promise<AiRecommendResult | null> {
+  const token = localStorage.getItem('authToken');
   if (!token) {
     return null;
   }

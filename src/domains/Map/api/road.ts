@@ -115,12 +115,13 @@ export interface Guide {
   road_index: number;
 }
 
-const token = localStorage.getItem('authToken');
+// const token = localStorage.getItem('authToken');
 
 export async function findDirectionPath(
   body: DirectionRequestBody,
 ): Promise<DirectionAIResponse> {
   try {
+    const token = localStorage.getItem('authToken');
     const response = await apiClient.post<DirectionAIResponse>(
       '/direction/path',
       body,
@@ -144,6 +145,7 @@ export async function findDirectionPath(
 
 export async function getDirectionPath(): Promise<DirectionBookmarkResponse> {
   try {
+    const token = localStorage.getItem('authToken');
     const response = await apiClient.get<DirectionBookmarkResponse>(
       '/direction',
       {
@@ -180,6 +182,7 @@ export interface DirectionBookmarkResponse {
 
 export async function fetchDirectionBookmarks(): Promise<DirectionBookmark[]> {
   try {
+    const token = localStorage.getItem('authToken');
     const response = await apiClient.get<DirectionBookmarkResponse>(
       '/direction/bookmark',
       {
@@ -205,6 +208,7 @@ export async function updateBookmarkStatus(
   bookmark: boolean,
 ): Promise<DirectionBookmarkResponse> {
   try {
+    const token = localStorage.getItem('authToken');
     const res = await apiClient.put<DirectionBookmarkResponse>(
       `/direction`,
       {},
@@ -228,6 +232,7 @@ export async function updateBookmarkStatus(
 
 export async function deleteDirectionPath(id: string): Promise<void> {
   try {
+    const token = localStorage.getItem('authToken');
     await apiClient.delete(`/direction/${id}`, {
       headers: {
         Authorization: token,
@@ -304,6 +309,7 @@ export async function findDirectionPathAI(
   body: DirectionRequestBody,
 ): Promise<DirectionAIResponse> {
   try {
+    const token = localStorage.getItem('authToken');
     const response = await apiClient.post<DirectionAIResponse>(
       '/direction/pathByLLM',
       body,
