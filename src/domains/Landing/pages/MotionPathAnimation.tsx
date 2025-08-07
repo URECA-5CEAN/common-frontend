@@ -365,6 +365,7 @@ const MotionPathAnimation: React.FC = () => {
             ? 3800 // 큰 화면용 고정 viewBox 높이 (더 크게)
             : originalViewBox.height
         }`}
+        transform={`${screenSize.width >= 2000 ? 'translate(200, 0)' : ''}`}
         xmlSpace="preserve"
         preserveAspectRatio="xMidYMax meet"
       >
@@ -387,7 +388,7 @@ const MotionPathAnimation: React.FC = () => {
           ref={motionPathRef}
           id="motionPath"
           className="st0"
-          d={scaledPath || originalPath}
+          d={scaledPath}
         />
 
         {/* 체크포인트 아이콘들 - GSAP가 로드된 후에만 표시 */}
