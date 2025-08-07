@@ -126,7 +126,6 @@ function DetailSection({
                 label: '로드뷰',
                 onClick: () => setIsLoad((prev) => !prev),
               },
-              { icon: <Share2 />, label: '공유' },
             ]}
           />
           {/* 출발/도착 버튼 */}

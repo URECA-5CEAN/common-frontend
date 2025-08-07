@@ -378,6 +378,8 @@ export default function MapPage() {
 
     [panel.menu],
   );
+
+  console.log(panel);
   // 길찾기 상세보기
   const openRoadDetail = useCallback(
     (route: RouteItem) => {
@@ -429,9 +431,6 @@ export default function MapPage() {
     setPanelIndex(0);
     setSelectedRoute(null);
     setSelectedCardId('');
-    setStartValue({ name: '', lat: 0, lng: 0 });
-    setEndValue({ name: '', lat: 0, lng: 0 });
-    setWaypoints([{ name: '', lat: 0, lng: 0 }]);
   }, [panel.menu]);
 
   //키워드 변경 시 카테고리 초기화
