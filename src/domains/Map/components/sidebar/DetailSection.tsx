@@ -1,4 +1,4 @@
-import { Star, Share2, Webcam, Map, ChevronRight, Info } from 'lucide-react';
+import { Star, Webcam, Map, ChevronRight, Info } from 'lucide-react';
 import StartEndBtn from '../StartEndBtn';
 import IconActionGroup from '../IconActionGroup';
 import { type StoreInfo } from '../../api/store';
@@ -126,7 +126,6 @@ function DetailSection({
                 label: '로드뷰',
                 onClick: () => setIsLoad((prev) => !prev),
               },
-              { icon: <Share2 />, label: '공유' },
             ]}
           />
           {/* 출발/도착 버튼 */}
