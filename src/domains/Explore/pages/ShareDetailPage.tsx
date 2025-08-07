@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { createChatRoom, getSharePostById } from '../api/share';
 import type { Post } from '../types/share';
-import { Calendar, MapPin, Pencil, Trash2 } from 'lucide-react';
+import { Calendar, ChevronLeft, MapPin, Pencil, Trash2 } from 'lucide-react';
 import { fromISOStringToDateTime } from '../utils/datetimeUtils';
 import { Button } from '@/components/Button';
 import { Modal } from '@/components/Modal';
@@ -98,6 +98,13 @@ const ShareDetailPage = () => {
 
   return (
     <div className="w-[calc(100%-48px)] md:w-[80%] max-w-[1050px] mb-50 md:mb-100">
+      <button
+        className="w-10 h-10 mb-4 cursor-pointer"
+        onClick={() => navigate(-1)}
+        aria-label="뒤로가기"
+      >
+        <ChevronLeft size={40} />
+      </button>
       <div className="flex flex-col gap-5">
         <div className="flex gap-4 sm:items-center">
           <div className="relative w-16 h-16 sm:w-32 sm:h-32 flex items-center justify-center flex-shrink-0">

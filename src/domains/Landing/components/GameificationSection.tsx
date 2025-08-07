@@ -4,19 +4,20 @@ import bookIcon from '@/assets/icons/book-icon.svg';
 import missionIcon from '@/assets/icons/mission-icon.svg';
 import titleIcon from '@/assets/icons/title-icon.svg';
 import statsIcon from '@/assets/icons/stats-icon.svg';
+import FadeInSection from '@/domains/Landing/components/FadeInSection';
 
 const GameificationSection = () => {
   return (
-    <div className="absolute top-[210vh] md:top-[290vh] w-full">
-      <div className="w-full max-w-[90rem] xl:max-w-[1440px] mx-auto px-[1rem] sm:px-[1.5rem] lg:px-[2rem] flex flex-col items-center text-center">
+    <FadeInSection className="w-full mt-40 md:mt-50">
+      <div className="select-none w-full max-w-[90rem] xl:max-w-[1440px] mx-auto px-[1rem] sm:px-[1.5rem] lg:px-[2rem] flex flex-col items-center text-center">
         {/* 제목 */}
-        <div className="flex items-center justify-center mb-[4rem] lg:mb-16">
+        <div className="flex items-center justify-center mb-8 lg:mb-16">
           <img
             src={orangeFish}
             className="w-[2.5rem] h-[2.5rem] lg:w-12 lg:h-12 mr-[0.75rem] lg:mr-3"
             alt="물고기 아이콘"
           />
-          <h2 className="text-base md:text-2xl lg:text-2xl xl:text-[40px] 2xl:text-4xl text-white font-bold leading-tight">
+          <h2 className="text-2xl md:text-4xl  text-white font-bold leading-tight pr-13 lg:pr-[60px]">
             게임처럼
             <br /> 재미있게 이용해 보세요!
           </h2>
@@ -131,7 +132,7 @@ const GameificationSection = () => {
           <div className="hidden md:flex flex-row justify-center items-center gap-[1.5rem] lg:gap-6 w-full">
             {/* 출석 체크 카드 */}
             <div
-              className="bg-primaryGreen-40 rounded-2xl p-4 md:p-[1.25rem] lg:p-8 flex-shrink-0 mx-auto md:mx-2 lg:mx-0 w-48 md:w-64 max-w-[70vw] md:max-w-[320px]"
+              className="bg-primaryGreen-40 rounded-2xl p-4 md:p-[1.25rem] lg:p-8 flex-shrink-0 mx-auto md:mx-2 lg:mx-0 w-48 md:w-64 max-w-[70vw] md:max-w-[320px] hover:scale-105 transition-all duration-500 ease-out"
               style={{
                 boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
               }}
@@ -155,7 +156,7 @@ const GameificationSection = () => {
 
             {/* 칭호 설정 카드 */}
             <div
-              className="bg-primaryGreen-40 rounded-2xl p-4 md:p-[1.25rem] lg:p-8 flex-shrink-0 mx-auto md:mx-2 lg:mx-0 w-48 md:w-64 max-w-[70vw] md:max-w-[320px]"
+              className="bg-primaryGreen-40 rounded-2xl p-4 md:p-[1.25rem] lg:p-8 flex-shrink-0 mx-auto md:mx-2 lg:mx-0 w-48 md:w-64 max-w-[70vw] md:max-w-[320px] hover:scale-105 transition-all duration-500 ease-out"
               style={{
                 boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
               }}
@@ -182,7 +183,7 @@ const GameificationSection = () => {
           <div className="hidden md:flex flex-row justify-center items-center gap-[1.5rem] lg:gap-6 w-full">
             {/* 미션 시스템 카드 */}
             <div
-              className="bg-primaryGreen-40 rounded-2xl p-4 md:p-[1.25rem] lg:p-8 mx-auto md:mx-2 lg:mx-0 w-48 md:w-64 max-w-[70vw] md:max-w-[320px]"
+              className="bg-primaryGreen-40 rounded-2xl p-4 md:p-[1.25rem] lg:p-8 mx-auto md:mx-2 lg:mx-0 w-48 md:w-64 max-w-[70vw] md:max-w-[320px] hover:scale-105 transition-all duration-500 ease-out"
               style={{
                 boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
               }}
@@ -206,7 +207,7 @@ const GameificationSection = () => {
 
             {/* 통계 확인 카드 */}
             <div
-              className="bg-primaryGreen-40 rounded-2xl p-4 md:p-[1.25rem] lg:p-8 mx-auto md:mx-2 lg:mx-0 w-48 md:w-64 max-w-[70vw] md:max-w-[320px]"
+              className="bg-primaryGreen-40 rounded-2xl p-4 md:p-[1.25rem] lg:p-8 mx-auto md:mx-2 lg:mx-0 w-48 md:w-64 max-w-[70vw] md:max-w-[320px] hover:scale-105 transition-all duration-500 ease-out"
               style={{
                 boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
               }}
@@ -230,7 +231,7 @@ const GameificationSection = () => {
 
             {/* 혜택 도감 카드 */}
             <div
-              className="bg-primaryGreen-40 rounded-2xl p-4 md:p-[1.25rem] lg:p-8 mx-auto md:mx-2 lg:mx-0 w-48 md:w-64 max-w-[70vw] md:max-w-[320px]"
+              className="bg-primaryGreen-40 rounded-2xl p-4 md:p-[1.25rem] lg:p-8 mx-auto md:mx-2 lg:mx-0 w-48 md:w-64 max-w-[70vw] md:max-w-[320px] hover:scale-105 transition-all duration-500 ease-out"
               style={{
                 boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
               }}
@@ -254,7 +255,7 @@ const GameificationSection = () => {
           </div>
         </div>
       </div>
-    </div>
+    </FadeInSection>
   );
 };
 

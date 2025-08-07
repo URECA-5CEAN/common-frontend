@@ -54,9 +54,9 @@ const MotionPathAnimation: React.FC = () => {
   const checkpointPositions = React.useMemo(
     () => [
       0.12, // 지도 섹션 앞 부분 - y 좌표가 처음 떨어지는 지점
-      0.35, // 혜택 탐험 섹션 옆 커브
+      0.34, // 혜택 탐험 섹션 옆 커브
       0.55, // 게이미피케이션 섹션 옆 커브
-      0.75, // 제휴처 섹션 옆 커브
+      0.79, // 제휴처 섹션 옆 커브
       0.9, // 네비게이션 섹션 커브 전
     ],
     [],
@@ -339,15 +339,19 @@ const MotionPathAnimation: React.FC = () => {
     <div
       style={{
         margin: 0,
-        background: 'linear-gradient(180deg, #4DD2EB 0%, #2C6385 100%)',
+        // background: 'linear-gradient(180deg, #4DD2EB 0%, #2C6385 100%)',
       }}
-      className="absolute w-full top-[40vh] md:top-[100dvh] h-[400vh] md:h-[470vh] z-10"
+      className="absolute hidden 2xl:block pt-150 w-1000 h-1200 left-1/2 -translate-x-1/2"
     >
       <svg
         ref={svgRef}
         id="linesvg"
-        style={{ opacity: 0, overflow: 'hidden' }}
-        className={screenSize.width > 1800 ? 'block' : 'hidden'}
+        style={{
+          opacity: 0,
+          overflow: 'hidden',
+        }}
+        className="w-full h-full object-fill"
+        // className={screenSize.width > 1800 ? 'block' : 'hidden'}
         xmlns="http://www.w3.org/2000/svg"
         xmlnsXlink="http://www.w3.org/1999/xlink"
         x="0px"
@@ -361,6 +365,7 @@ const MotionPathAnimation: React.FC = () => {
             ? 3800 // 큰 화면용 고정 viewBox 높이 (더 크게)
             : originalViewBox.height
         }`}
+        transform={`${screenSize.width >= 2000 ? 'translate(200, 0)' : ''}`}
         xmlSpace="preserve"
         preserveAspectRatio="xMidYMax meet"
       >
@@ -383,7 +388,7 @@ const MotionPathAnimation: React.FC = () => {
           ref={motionPathRef}
           id="motionPath"
           className="st0"
-          d={scaledPath || originalPath}
+          d={scaledPath}
         />
 
         {/* 체크포인트 아이콘들 - GSAP가 로드된 후에만 표시 */}
@@ -453,7 +458,7 @@ const MotionPathAnimation: React.FC = () => {
           })}
 
         {/* 이미지 실제로 화면에 나타나는 부분 - path 위에 배치 */}
-        <foreignObject x="0" y="0" width="100%" height="100%">
+        <foreignObject x="0" y="0" width="100%" height="100%" className="">
           <div
             ref={motionDivRef}
             id="motionSVG"
@@ -465,7 +470,7 @@ const MotionPathAnimation: React.FC = () => {
           >
             <div
               id="tractor"
-              className="hidden md:flex"
+              // className="hidden md:flex"
               style={{
                 width: screenSize.width >= 2000 ? '120px' : '80px',
                 height: screenSize.width >= 2000 ? '120px' : '80px',
