@@ -45,7 +45,7 @@ const StoreSection = () => {
           className="text-[10px] sm:text-[12px] md:text-xl lg:text-2xl font-medium text-center text-white mb-8"
           style={{ lineHeight: '1.5' }}
         >
-          전국 약 1500개의 오프라인 매장에서 혜택을 찾아보세요
+          전국 약 15000개의 오프라인 매장에서 혜택을 찾아보세요
         </p>
 
         {/* 메인 카드 */}
