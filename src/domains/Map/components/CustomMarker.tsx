@@ -142,10 +142,6 @@ const CustomMarker: React.FC<CustomMarkerProps> = React.memo(
         yAnchor={1.0}
       >
         <div
-          onClick={(e) => {
-            onClick(id);
-            e.stopPropagation();
-          }}
           onMouseEnter={() => onMouseEnter(id)}
           onMouseLeave={onMouseLeave}
           style={{
@@ -156,7 +152,7 @@ const CustomMarker: React.FC<CustomMarkerProps> = React.memo(
             top: -82,
             flexDirection: 'column',
             alignItems: 'center',
-            pointerEvents: 'auto',
+            pointerEvents: 'none',
             cursor: 'pointer',
             transform: 'translateX(-25px)',
             transition: 'transform 0.25s cubic-bezier(.4,2,.2,1)',
@@ -197,6 +193,10 @@ const CustomMarker: React.FC<CustomMarkerProps> = React.memo(
           />
           {/* 말풍선(테두리 원) + AI의 픽! */}
           <div
+            onClick={(e) => {
+              onClick(id);
+              e.stopPropagation();
+            }}
             style={{
               width: 50,
               height: 75,
@@ -206,6 +206,7 @@ const CustomMarker: React.FC<CustomMarkerProps> = React.memo(
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
+              pointerEvents: 'auto',
               justifyContent: 'flex-start',
               position: 'relative',
               boxShadow: '10px 10px 20px rgba(31, 209, 31, 0.28)',
@@ -220,6 +221,7 @@ const CustomMarker: React.FC<CustomMarkerProps> = React.memo(
                 marginTop: 15,
                 marginBottom: 2,
                 letterSpacing: '-0.5px',
+
                 textShadow: '0 2px 8px rgba(0,0,0,0.09)',
               }}
             >
@@ -233,6 +235,7 @@ const CustomMarker: React.FC<CustomMarkerProps> = React.memo(
                 borderRadius: '50%',
                 background: '#fff',
                 overflow: 'hidden',
+                pointerEvents: 'auto',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',

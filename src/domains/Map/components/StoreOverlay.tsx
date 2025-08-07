@@ -41,7 +41,9 @@ const StoreOverlay = ({
     <div
       className={clsx(
         'hidden sm:block   rounded-2xl  w-[360px] p-4 space-y-3 z-1',
-        store.isRecommended ? 'bg-primaryGreen-40' : 'bg-white',
+        store.isRecommended
+          ? 'bg-primaryGreen-40 relative bottom-5'
+          : 'bg-white',
       )}
     >
       {/* 헤더 */}

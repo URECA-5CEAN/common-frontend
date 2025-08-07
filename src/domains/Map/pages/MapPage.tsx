@@ -741,6 +741,8 @@ export default function MapPage() {
           searchStores={searchStores}
           setStartInput={setStartInput}
           setEndInput={setEndInput}
+          waypoints={waypoints}
+          setWaypoints={setWaypoints}
           setWayInput={setWayInput}
           setIsBenefitModalOpen={setIsBenefitModalOpen}
           setFocusField={setFocusField}
