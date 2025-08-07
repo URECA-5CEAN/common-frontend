@@ -31,9 +31,7 @@ const ConfirmModal = () => {
     setPendingNavigation(null);
   };
 
-  const isEditPage = location.pathname.includes('/mypage/share/edit')
-    ? true
-    : false;
+  const isEditPage = location.pathname.includes('/share/edit') ? true : false;
 
   return (
     <Modal

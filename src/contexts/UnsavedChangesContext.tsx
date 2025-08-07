@@ -49,6 +49,7 @@ export const UnsavedChangesProvider: React.FC<{
     // 글쓰기 페이지들 정의 (필요에 따라 추가)
     const writePages = [
       '/explore/share/write',
+      '/explore/share/edit',
       '/mypage/share/edit',
       '/mypage/share/write',
     ];
